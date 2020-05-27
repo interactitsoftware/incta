@@ -1,0 +1,21 @@
+{
+  "name": "aarts-types",
+  "version": "0.1.8",
+  "description": "base lib for using aarts",
+  "main": "./dist/nodejs/node_modules/aarts-types/index.js",
+  "types": "./dist/nodejs/node_modules/aarts-types/index.d.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^14.0.5",
+    "typescript": "^3.9.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -fr ./dist",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "author": "akrsmv",
+  "license": "ISC"
+}

@@ -1,0 +1,23 @@
+{
+  "name": "aarts-dynamodb",
+  "version": "0.0.5",
+  "description": "dynamo db baseitem handler",
+  "main": "./dist/nodejs/node_modules/aarts-dynamodb/index.js",
+  "types": "./dist/nodejs/node_modules/aarts-dynamodb/index.d.ts",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.47",
+    "@types/node": "^13.11.0",
+    "aarts-types": "^0.1.8",
+    "aws-sdk": "^2.653.0",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -fr ./dist",
+    "watch": "tsc -w",
+    "test": "jest"
+  },
+  "author": "akrsmv",
+  "license": "ISC"
+}
