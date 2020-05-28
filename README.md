@@ -10,7 +10,6 @@ Aws artifacts(aarts) is a tiny tool for getting your existing domain logic to se
 Implementing a simple interface will allow you to run your code in a aws lambda container,using the infinite-scaling dynamodb, as persistent storage. 
 
 ## Firts milestone implementation
-Techniques used are 
 - Injecting the domain logic into the lambda handler, simple IoC using the NodejsGlobal interface
 - Decribing the domain entities, in a way, for aarts to know which one are of interest, so we can query over them (I call them refkeys)
 - Typescript async generators allowing for reporting (notifying) over the execution progress
