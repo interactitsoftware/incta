@@ -30,4 +30,7 @@ TODO
 - describe actions: create, update, delete, get, query, start(call)
 - desribe payloads
 - describe possible queries
+- scripts for aws resource creation
+- script for sam local dynamodb
+- desribe local development
 
