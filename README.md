@@ -33,4 +33,6 @@ TODO
 - scripts for aws resource creation
 - script for sam local dynamodb
 - desribe local development
+- maintain aggregation records for each domain entity (i.e support "total items" in grid views)
+- support for scheduling a call to itself with specific payload (i.e on an expiration of an order you want to do something..)
 
