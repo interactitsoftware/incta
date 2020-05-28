@@ -10,7 +10,7 @@ Aws artifacts(aarts) is a tiny tool for getting your existing domain logic to se
 Implementing a simple interface will allow you to run your code in a aws lambda container,using the infinite-scaling dynamodb, as persistent storage. 
 
 ## Firts milestone implementation
-- Injecting whatever domain logic into the lambda handler, simple IoC using the Nodejs Global interface. Convention.
+- Injecting whatever domain logic into the lambda handler, simple IoC using the Nodejs Global interface. Convention. Pattern Matching.
 - Decribing the domain entities, in a way, for aarts to know which one are of interest, so we can query over them (I call them refkeys)
 - Typescript async generators allowing for reporting (notifying clients etc) over the execution progress
 - Mixin patterns for merging / decorating each domain entitiy with necessary dynamo item keys. Thanks to [Nickolay Platonov](https://www.bryntum.com/blog/the-mixin-pattern-in-typescript-all-you-need-to-know/)
@@ -21,9 +21,13 @@ Implementing a simple interface will allow you to run your code in a aws lambda 
 - Dynamodb trickery is mainly inspired by the talks of [Rick Houlihan](https://www.youtube.com/watch?v=HaEPXoXVf2k&t=1054s)
 ## Example usage
 Example is with a airline management application, dealing with planes, airports, flights, pasaggers
+TODO 
+
 
 TODO
 - provide example domain
 - describe refkeys 
-- 
+- describe actions: create, update, delete, get, query, start(call)
+- desribe payloads
+- describe possible queries
 
