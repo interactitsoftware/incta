@@ -1,3 +1,6 @@
+# TODO consider a separate repo
+in order to run the example you need only this folder. There are now npm packages for aarts-* specific code
+
 # Example app
 - An air lines app, dealing with:
   - Flights
