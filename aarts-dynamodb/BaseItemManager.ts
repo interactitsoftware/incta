@@ -1,8 +1,5 @@
-import { putItem } from "./dynamodb-putItem";
-import { batchPutItems } from "./dynamodb-batchPutItems";
-import { removeEmpty, ensureOnlyNewKeyUpdates, versionString } from "./DynamoDbClient";
+import { versionString } from "./DynamoDbClient";
 import { batchGetItem } from "./dynamodb-batchGetItem";
-import { updateItem } from "./dynamodb-updateItem";
 import { transactUpdateItem } from "./dynamodb-transactUpdateItem";
 import { transactPutItem } from "./dynamodb-transactPutItem";
 import { queryItems } from "./dynamodb-queryItems";

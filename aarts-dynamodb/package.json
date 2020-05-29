@@ -1,6 +1,6 @@
 {
   "name": "aarts-dynamodb",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "dynamo db baseitem handler",
   "main": "./dist/nodejs/node_modules/aarts-dynamodb/index.js",
   "types": "./dist/nodejs/node_modules/aarts-dynamodb/index.d.ts",
