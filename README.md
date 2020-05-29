@@ -1,6 +1,6 @@
 # aarts-core
-Aws artifacts(aarts) is a tiny tool for getting your existing domain logic to serverless / lambda / dynamodb
-It is modularized into three npm packages, so clien applications may focus only on domain logic. Please refer to the example-app
+Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage.
+It is modularized into npm packages, so client applications may focus only on domain logic. Please refer to the example-app in this repo 
 
 # Features
 - unique values/constraints
