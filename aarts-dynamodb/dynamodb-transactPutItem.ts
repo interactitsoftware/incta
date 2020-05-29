@@ -2,13 +2,15 @@
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { AWSError } from 'aws-sdk'
-import { TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { ItemReference } from './BaseItemManager';
+import { TransactWriteItemsInput, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
+import { ItemReference, RefKey, DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty } from './DynamoDbClient';
+import { ppjson } from 'aarts-types/idGenUtil';
 
-// TODO need to pay attention if one allows more than 1 elements in the array, to restrict the number of ref keys allowed. Key is not to exceed the 25 limit
-export const transactPutItem = <T extends Record<string,any>>(item: T, __item_refkeys: string[]): Promise<T> =>
+export const transactPutItem = (item: DynamoItem, __item_refkeys: RefKey<DynamoItem>[]): Promise<DynamoItem> =>
     new Promise((resolve, reject) => {
+        process.env.DEBUG || console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
+        console.log("transactPutItem: THE REFKEYS ARE ", ppjson(__item_refkeys))
 
         const ditem = toAttributeMap(item)
 
@@ -19,19 +21,46 @@ export const transactPutItem = <T extends Record<string,any>>(item: T, __item_re
                     ReturnValuesOnConditionCheckFailure: "ALL_OLD",
                     Item: ditem
                 }
+            },
+            { // update aggregations
+                Update: {
+                    TableName: DB_NAME,
+                    ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                    Key: Object.assign({
+                        id: { S: "aggregations" },
+                        meta: { S: `totals` },
+                    }),
+                    UpdateExpression: `SET #${item.item_type} = if_not_exists(#${item.item_type}, :zero) + :inc_one`,
+                    ExpressionAttributeNames: {[`#${item.item_type}`]: item.item_type},
+                    ExpressionAttributeValues: {":zero": {"N":"0"}, ":inc_one": {"N":"1"}},
+                }
             }
         ]
         // build all updates by also examining refkeys
-        const allTransactWriteItemList = Object.keys(ditem).reduce<TransactWriteItem[]>((accum, refkey) => {
-            if (__item_refkeys && __item_refkeys.indexOf(refkey) > -1 && !!item[refkey]) {
+        const allTransactWriteItemList = Object.keys(ditem).reduce<TransactWriteItem[]>((accum, key) => {
+            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && !!item[key]) {
                 accum.push({
                     Put: {
-                        Item: toAttributeMap(removeEmpty(new class Ref extends ItemReference(item, refkey) { }) as unknown as T),
+                        Item: toAttributeMap(removeEmpty(new class Ref extends ItemReference(item, {key}) { })),
                         TableName: DB_NAME,
                         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                     }
                 })
             }
+            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && !!item[key] && __item_refkeys.filter(r=>r.key === key)[0].unique === true) {
+                const duniqueItem = toAttributeMap({id:`uq|${item.item_type}}${key}`, meta: `${item[key]}`})
+                accum.push({
+                    Put: {
+                        Item: duniqueItem,
+                        TableName: DB_NAME,
+                        ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                        ConditionExpression: "attribute_not_exists(#id) and attribute_not_exists(#meta)",
+                        ExpressionAttributeNames: {"#id": "id", "#meta":"meta"},
+                        // ExpressionAttributeValues: {":id": duniqueItem.id, ":meta": duniqueItem.meta}
+                    }
+                })
+            }
+
             return accum
         }, itemTransactWriteItemList)
 

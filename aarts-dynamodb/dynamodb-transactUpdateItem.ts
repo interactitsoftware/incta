@@ -3,11 +3,11 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { DynamoDB, AWSError } from 'aws-sdk'
 import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { ExistingDynamoItem } from './BaseItemManager';
+import { ItemReference, RefKey, DynamoItem  } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString } from './DynamoDbClient';
 
 
-export const transactUpdateItem = <T extends ExistingDynamoItem>(existingItem: T, itemUpdates: Partial<T>, __item_refkeys: string[]): Promise<T> =>
+export const transactUpdateItem = (existingItem: DynamoItem, itemUpdates: Partial<DynamoItem>, __item_refkeys: RefKey<DynamoItem>[]): Promise<DynamoItem> =>
     new Promise((resolve, reject) => {
         const drevisionsUpdates = toAttributeMap(
             { "inc_revision": 1, "start_revision": 0 })
@@ -18,7 +18,7 @@ export const transactUpdateItem = <T extends ExistingDynamoItem>(existingItem: T
         const dexistingItem = toAttributeMap(existingItem)
 
         if (Object.keys(ditemUpdates).length === 1 && "revisions" in ditemUpdates) {
-            // no new updates, only old revision passed
+            // no new updates, only revision passed
             throw new Error(`no new updates, only revision passed for id[${existingItem.id}]`)
         }
         const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Object.keys(ditemUpdates).filter(uk => uk != "revisions").map(uk => `#${uk} = :${uk}`).join(", ")}`
@@ -36,9 +36,6 @@ export const transactUpdateItem = <T extends ExistingDynamoItem>(existingItem: T
         process.env.DEBUG || console.log("================================================")
         //#endregion
 
-        
-        
-
         const itemTransactWriteItemList: TransactWriteItemList = [
             {
                 Update: {
@@ -52,7 +49,7 @@ export const transactUpdateItem = <T extends ExistingDynamoItem>(existingItem: T
                     ExpressionAttributeValues: Object.assign(
                         {},
                         Object.keys(ditemUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
-                            accum[`:${key}`] = ditemUpdates[key]
+                            accum[`:${key}`] = ditemUpdates[key].S !== "__del__" ? ditemUpdates[key] : {NULL:true}
                             return accum
                         }, {}),
                         Object.keys(drevisionsUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
@@ -106,8 +103,11 @@ export const transactUpdateItem = <T extends ExistingDynamoItem>(existingItem: T
             }
         ]
         // build all updates by also examining refkeys
-        const allTransactWriteItemList = Object.keys(ditemUpdates).reduce<TransactWriteItem[]>((accum, key) => {
-            if (__item_refkeys && __item_refkeys.indexOf(key) > -1) {
+        const allTransactWriteItemList = 
+        itemTransactWriteItemList.concat(
+        Object.keys(ditemUpdates).reduce<TransactWriteItem[]>((accum, key) => {
+            if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && ditemUpdates[key].S !== "__del__") { // changed/added ones
+                process.env.DEBUG || console.log(`refkey ${key} marked for update`)
                 accum.push({
                     Update: {
                         Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.item_type}}${key}` } },
@@ -119,8 +119,41 @@ export const transactUpdateItem = <T extends ExistingDynamoItem>(existingItem: T
                     }
                 })
             }
+            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && __item_refkeys.filter(r=>r.key === key)[0].unique === true) {
+                if (dexistingItem[key]) { // if uq constraint already present, delete it
+                    accum.push({
+                        Delete: {
+                            Key: toAttributeMap({id:`uq|${existingItem.item_type}}${key}`, meta: `${existingItem[key]}`}),
+                            TableName: DB_NAME,
+                            ReturnValuesOnConditionCheckFailure: "ALL_OLD"
+                        }
+                    })
+                }
+                if(ditemUpdates[key].S !== "__del__") {
+                    accum.push({
+                        Put: {
+                            Item: toAttributeMap({id:`uq|${existingItem.item_type}}${key}`, meta: `${itemUpdates[key]}`}),
+                            TableName: DB_NAME,
+                            ReturnValuesOnConditionCheckFailure: "ALL_OLD"
+                        }
+                    })
+                }
+            }
             return accum
-        }, itemTransactWriteItemList)
+        }, [])).concat(
+        Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
+            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && Object.keys(ditemUpdates).indexOf(key) > -1 && ditemUpdates[key].S === "__del__") { // removed ones
+                process.env.DEBUG || console.log(`refkey ${key} marked for delete`)
+                accum.push({
+                    Delete: {
+                        Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.item_type}}${key}` } },
+                        TableName: DB_NAME,
+                        ReturnValuesOnConditionCheckFailure: "ALL_OLD"
+                    }
+                })
+            }
+            return accum
+        }, []))
 
         const params: TransactWriteItemsInput = {
             TransactItems: allTransactWriteItemList,

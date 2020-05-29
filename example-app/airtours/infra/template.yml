@@ -1,0 +1,282 @@
+Resources:
+  LibsA7595D14:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      Content:
+        S3Bucket:
+          Ref: AssetParameters325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5cS3BucketA38EB843
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5cS3VersionKeyB1216FFD
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5cS3VersionKeyB1216FFD
+      CompatibleRuntimes:
+        - nodejs12.x
+      Description: A layer holding the contracts-compliant domain adapter
+      LicenseInfo: Apache-2.0
+    Metadata:
+      aws:cdk:path: AartsCoreStack/Libs/Resource
+      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-core\example-app\airtours\airtours\libs-lambda-layer
+      aws:asset:property: Content
+  airtoursHandlerServiceRole025FF503:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: AartsCoreStack/airtoursHandler/ServiceRole/Resource
+  airtoursHandlerServiceRoleDefaultPolicyD62ACCE2:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: dynamodb:*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - airtoursTable4628C246
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - airtoursTable4628C246
+                        - Arn
+                    - /index/*
+        Version: "2012-10-17"
+      PolicyName: airtoursHandlerServiceRoleDefaultPolicyD62ACCE2
+      Roles:
+        - Ref: airtoursHandlerServiceRole025FF503
+    Metadata:
+      aws:cdk:path: AartsCoreStack/airtoursHandler/ServiceRole/DefaultPolicy/Resource
+  airtoursHandlerF1FE74A4:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55S3Bucket71B89694
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55S3VersionKey1BFDACC2
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55S3VersionKey1BFDACC2
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - airtoursHandlerServiceRole025FF503
+          - Arn
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          DB_NAME:
+            Ref: airtoursTable4628C246
+          DB_ENDPOINT: ""
+      FunctionName: airtoursHandler
+      Layers:
+        - Ref: LibsA7595D14
+      MemorySize: 256
+      Timeout: 30
+    DependsOn:
+      - airtoursHandlerServiceRoleDefaultPolicyD62ACCE2
+      - airtoursHandlerServiceRole025FF503
+    Metadata:
+      aws:cdk:path: AartsCoreStack/airtoursHandler/Resource
+      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-core\example-app\airtours\airtours\dist
+      aws:asset:property: Code
+  airtoursHandlerEventInvokeConfig2925B2FF:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName:
+        Ref: airtoursHandlerF1FE74A4
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 2
+    Metadata:
+      aws:cdk:path: AartsCoreStack/airtoursHandler/EventInvokeConfig/Resource
+  airtoursTable4628C246:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: meta
+          KeyType: RANGE
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: meta
+          AttributeType: S
+        - AttributeName: smetadata
+          AttributeType: S
+        - AttributeName: nmetadata
+          AttributeType: "N"
+      GlobalSecondaryIndexes:
+        - IndexName: meta__smetadata
+          KeySchema:
+            - AttributeName: meta
+              KeyType: HASH
+            - AttributeName: smetadata
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: meta__nmetadata
+          KeySchema:
+            - AttributeName: meta
+              KeyType: HASH
+            - AttributeName: nmetadata
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: smetadata__meta
+          KeySchema:
+            - AttributeName: smetadata
+              KeyType: HASH
+            - AttributeName: meta
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: nmetadata__meta
+          KeySchema:
+            - AttributeName: nmetadata
+              KeyType: HASH
+            - AttributeName: meta
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+      ProvisionedThroughput:
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: airtours
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: AartsCoreStack/airtoursTable/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Modules: aws-cdk=1.36.1,@aws-cdk/assets=1.31.0,@aws-cdk/aws-applicationautoscaling=1.31.0,@aws-cdk/aws-autoscaling=1.31.0,@aws-cdk/aws-autoscaling-common=1.31.0,@aws-cdk/aws-autoscaling-hooktargets=1.31.0,@aws-cdk/aws-cloudformation=1.31.0,@aws-cdk/aws-cloudwatch=1.31.0,@aws-cdk/aws-dynamodb=1.31.0,@aws-cdk/aws-ec2=1.31.0,@aws-cdk/aws-ecr=1.31.0,@aws-cdk/aws-ecr-assets=1.31.0,@aws-cdk/aws-ecs=1.31.0,@aws-cdk/aws-elasticloadbalancingv2=1.31.0,@aws-cdk/aws-events=1.31.0,@aws-cdk/aws-iam=1.31.0,@aws-cdk/aws-kms=1.31.0,@aws-cdk/aws-lambda=1.31.0,@aws-cdk/aws-logs=1.31.0,@aws-cdk/aws-s3=1.31.0,@aws-cdk/aws-s3-assets=1.31.0,@aws-cdk/aws-servicediscovery=1.31.0,@aws-cdk/aws-sns=1.31.0,@aws-cdk/aws-sns-subscriptions=1.31.0,@aws-cdk/aws-sqs=1.31.0,@aws-cdk/aws-ssm=1.31.0,@aws-cdk/aws-stepfunctions=1.31.0,@aws-cdk/aws-stepfunctions-tasks=1.31.0,@aws-cdk/cdk-assets-schema=1.41.0,@aws-cdk/cloud-assembly-schema=1.41.0,@aws-cdk/core=1.31.0,@aws-cdk/custom-resources=1.31.0,@aws-cdk/cx-api=1.31.0,@aws-cdk/region-info=1.31.0,jsii-runtime=node.js/v12.13.0
+    Condition: CDKMetadataAvailable
+Parameters:
+  AssetParameters325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5cS3BucketA38EB843:
+    Type: String
+    Description: S3 bucket for asset "325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5c"
+  AssetParameters325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5cS3VersionKeyB1216FFD:
+    Type: String
+    Description: S3 key for asset version "325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5c"
+  AssetParameters325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5cArtifactHashA594E585:
+    Type: String
+    Description: Artifact hash for asset "325ee919d5fcd67decf9dabc3db61a3cc8341a0ff8158636b450cc1bb361ea5c"
+  AssetParameters1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55S3Bucket71B89694:
+    Type: String
+    Description: S3 bucket for asset "1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55"
+  AssetParameters1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55S3VersionKey1BFDACC2:
+    Type: String
+    Description: S3 key for asset version "1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55"
+  AssetParameters1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55ArtifactHash0FB9BF02:
+    Type: String
+    Description: Artifact hash for asset "1a87b17a2aaf856f617410bcf2195b20fa1a842930db942ad5c56c58658e1a55"
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+

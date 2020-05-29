@@ -3,11 +3,11 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { DynamoDB, AWSError } from 'aws-sdk'
 import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { ExistingDynamoItem } from './BaseItemManager';
+import { ExistingDynamoItem, DynamoItem, RefKey } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, deletedVersionString } from './DynamoDbClient';
 
 
-export const transactDeleteItem = <T extends ExistingDynamoItem>(existingItem: T, __item_refkeys: string[]): Promise<T> =>
+export const transactDeleteItem = (existingItem: DynamoItem, __item_refkeys: RefKey<DynamoItem>[]): Promise<DynamoItem> =>
     new Promise((resolve, reject) => {
         let itemUpdates = {id: existingItem.id, meta: existingItem.meta} //i.e all items are to be updated, when deleting
 
@@ -90,14 +90,36 @@ export const transactDeleteItem = <T extends ExistingDynamoItem>(existingItem: T
                         }, {})
                     ),
                 }
+            },
+            { // UPDATE aggregations
+                Update: {
+                    TableName: DB_NAME,
+                    ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                    Key: Object.assign({
+                        id: { S: "aggregations" },
+                        meta: { S: `totals` },
+                    }),
+                    UpdateExpression: `SET #${existingItem.item_type} = #${existingItem.item_type} - :dec_one`,
+                    ExpressionAttributeNames: {[`#${existingItem.item_type}`]: existingItem.item_type},
+                    ExpressionAttributeValues: {":dec_one": {"N":"1"}},
+                }
             }
         ]
         // build all updates by also examining refkeys
         const allTransactWriteItemList = Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
-            if (__item_refkeys && __item_refkeys.indexOf(key) > -1) {
+            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1) {
                 accum.push({
                     Delete: {
                         Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.item_type}}${key}` } },
+                        TableName: DB_NAME,
+                        ReturnValuesOnConditionCheckFailure: "ALL_OLD"
+                    }
+                })
+            }
+            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && __item_refkeys.filter(r=>r.key === key)[0].unique === true) {
+                accum.push({
+                    Delete: {
+                        Key: toAttributeMap({id:`uq|${existingItem.item_type}}${key}`, meta: `${existingItem[key]}`}),
                         TableName: DB_NAME,
                         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                     }

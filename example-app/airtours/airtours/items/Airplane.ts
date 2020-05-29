@@ -17,13 +17,13 @@ export class Airplane {
     public model: string = ""
     public manifacturer: string = ""
     //--rest of keys
-    public number_of_seats: number = 17
+    public number_of_seats: number = 0
 }
 
 
 export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
     async *validateCreate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<string, AirplaneItem, undefined> {
-        process.env.DEBUG && (yield `[airplaneManager/validateCreate]: BEGIN validateCreate method`)
+        process.env.DEBUG || (yield `[airplaneManager/validateCreate]: BEGIN validateCreate method`)
             // example domain validations
             const errors: string[] = []
 
@@ -52,7 +52,7 @@ export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
     }
 
     async *validateUpdate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<string, AirplaneItem, undefined> {
-            process.env.DEBUG && (yield "AirplaneItem validator validating " + ppjson(airplane))
+            process.env.DEBUG || (yield "AirplaneItem validator validating " + ppjson(airplane))
             return airplane
     }
 

@@ -34,7 +34,7 @@ export const deletedVersionString = (nr: number) => `d_${nr}`
 export function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemUpdates: Record<string, any>): object {
     return Object.keys(itemUpdates)
     // Remove those with same value, preserving whatever the revisions passed
-        .filter(k => k === "revisions" || itemUpdates[k] != existingItem[k]) 
+        .filter(k => k === "revisions" || (itemUpdates[k] === "__del__" && existingItem[k]) ||  (itemUpdates[k] !== "__del__" && itemUpdates[k] != existingItem[k])) 
         .reduce(
             (newObj, k) =>
                 typeof itemUpdates[k] === "object"

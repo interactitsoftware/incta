@@ -4,8 +4,8 @@ import { transactUpdateItem } from "./dynamodb-transactUpdateItem";
 import { transactPutItem } from "./dynamodb-transactPutItem";
 import { queryItems } from "./dynamodb-queryItems";
 import { transactDeleteItem } from "./dynamodb-transactDeleteItem";
-import { AnyConstructor, Mixin } from "aarts-types/Mixin"
-import { uuid } from "aarts-types/idGenUtil"
+import { AnyConstructor, Mixin, MixinConstructor } from "aarts-types/Mixin"
+import { uuid, ppjson } from "aarts-types/idGenUtil"
 import { AartsPayload, IIdentity, IItemManager } from "aarts-types/interfaces"
 
 export type DomainItem = Record<string, any>
@@ -33,21 +33,21 @@ export interface DdbQueryOutput {
     lastEvaluatedKey: DdbItemKey
 }
 
-export type RefKey<T extends AnyConstructor> = keyof IBaseDynamoItemProps | keyof InstanceType<T>
+export type RefKey<T extends DomainItem> = {key:keyof IBaseDynamoItemProps | keyof T, ref?:string, unique?:boolean}
 
-export const ItemReference = // TODO DOES IT NEED ALL ATTR OR3 ONLY THE KEYS?
-    <T extends AnyConstructor<DomainItem>>(item: InstanceType<T>, refkey: RefKey<T>) => {
+export const ItemReference = // TODO DOES IT NEED ALL ATTR OR ONLY THE KEYS?
+    (item: DynamoItem, refkey: RefKey<DynamoItem>) => {
         class ItemReference {
 
             public id: string = `${item.id}`
-            public meta: string = `${item.item_type}}${refkey}` //}${item[refkey]}
+            public meta: string = `${item.item_type}}${refkey.key}` //}${item[refkey]}
             // SKIP SHARDING IDEA FOR NOW
             // public shardnr: number = (new Date()).getFullYear()//item.shardnr -> TODO invent a function that will calculate shardnr based on the ID
             
-            public smetadata: string|undefined = typeof item[refkey] === "string" ? item[refkey] : undefined
-            public nmetadata: number|undefined = typeof item[refkey] === "number" ? item[refkey] : undefined
+            public smetadata: string|undefined = typeof item[refkey.key] === "string" ? item[refkey.key] as string : undefined
+            public nmetadata: number|undefined = typeof item[refkey.key] === "number" ? item[refkey.key] as number : undefined
 
-            public item_type: string = `ref_key|${item.item_type}}${refkey}`
+            public item_type: string = `ref_key|${item.item_type}}${refkey.key}`
 
             // TODO do we need those below?
             public item_state: string = "unknown"
@@ -88,12 +88,16 @@ export interface DynamoItemKey  {
 }
 
 export const DynamoItem =
-    <T extends AnyConstructor<DomainItem>>(base: T, t: string, refkeys?: RefKey<T>[]) => {
+    <T extends AnyConstructor<DomainItem>>(base: T, t: string, refkeys?: RefKey<InstanceType<T>>[]) => {
         const idstr = `${t}|${uuid()}`
-        class DynamoItem extends base implements IBaseDynamoItemProps{
+        class DynamoItem extends base implements IBaseDynamoItemProps {
+
+            constructor(...args: any[]) {
+                super()
+            }
 
             public static __type: string = t
-            public static __refkeys: RefKey<T>[] = refkeys || []
+            public static __refkeys: RefKey<InstanceType<T>>[] = refkeys || []
 
             public id: string = idstr
             public meta: string = `${versionString(0)}|${t}`
@@ -372,7 +376,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param payload 
      */
     async *baseValidateCreate(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
-        process.env.DEBUG || (yield `[${__type}:baseValidateCreate] checking for mandatory item keys`)
+        process.env.DEBUG || (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))
         
         if (payload.arguments > 1) {
 			throw new Error(`[${__type}:baseValidateCreate] Payload is array an it excedes the max arguments array length constraint(1)`)
@@ -507,7 +511,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 await transactUpdateItem(
                     existingItem,
                     arg,
-                    (this.lookupItems.get(__type) as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys)
+                    (this.lookupItems.get(__type) as MixinConstructor<typeof DynamoItem>).__refkeys)
+
+                    // (this.lookupItems.get(__type) as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys)
             )
         }
 
@@ -526,7 +532,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         const item_refkeys = (proto as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys
         // console.log("WILL ITERATE OVER THOSE REF KEYS", item_refkeys)
-        process.env.DEBUG || (yield { arguments: `[${__type}:SAVE] Analyzing item refkeys`, identity: undefined })
+        process.env.DEBUG || (yield { arguments: `[${__type}:SAVE] Analyzing item refkeys, ${ppjson(item_refkeys)}`, identity: undefined })
         
 
         // USING BATCH WRITEITEM WITHOUT TRANSACTION, TODO leave a method for non transactional save of bulk data? (Should again define it on a IItemManager level, good idea)
