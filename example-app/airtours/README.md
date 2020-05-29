@@ -6,7 +6,7 @@
   - Pasangers
   
  
-### TODO consider a separate repo
+#### TODO consider a separate repo
 in order to run the example you need only this folder. There are now npm packages for aarts-* specific code
  
 Each of theese may have their domain specific validation logic, etc. Refer to AirplaneItem for example 
