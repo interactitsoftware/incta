@@ -1,6 +1,5 @@
 # aarts-core
-Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage.
-It is modularized into npm packages, so client applications may focus only on domain logic. Please refer to the example-app in this repo 
+Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage. It is modularized into npm packages, so client applications may focus only on domain logic. Please refer to the example-app in this repo 
 
 # Features
 - unique values/constraints
@@ -9,16 +8,20 @@ It is modularized into npm packages, so client applications may focus only on do
 - aggregations
   
 ## Final goal
-Implementing a simple interface will allow you to run your code in a aws lambda container,using the infinite-scaling dynamodb, as persistent storage. 
+Implementing a simple interface will allow you to run your code in an aws lambda container, using the infinite-scaling dynamodb, as persistent storage. In the core version, there is only one lambda needed. Client (domain) code is deployed into a lambda layer, so the code for the lambda is really a tiny one, only serving as a dispatcher to different entry points into the client application. 
 
 ## initial conditions
 - You have a set of domain entities, a business context, with a controllers / repositories / etc, and probably with bunch of domain validators in fornt of any CRUD/RPC logic.
   OR
 - you start building an app from scratch
+
+## Prerequisites
 - aws cli, nodejs, typescript
 - aws sam local, docker, NoSQL AWS Workbench - for rapid local development
 
-## Firts milestone implementation
+----------
+
+## First milestone implementation
 - Injecting whatever domain logic into the lambda handler, simple IoC using the Nodejs Global interface. Convention. Pattern Matching.
 - Decribing the domain entities, in a way, for aarts to know which one are of interest, so we can query over them (I call them refkeys)
 - Typescript async generators allowing for reporting (notifying clients etc) over the execution progress
