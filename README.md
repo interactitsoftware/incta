@@ -28,9 +28,10 @@ TODO
 
 
 TODO
-- provide example domain
+- [OK]~~provide example domain
 - describe refkeys 
-- describe actions: create, update, delete, get, query, start(call)
+- describe actions: create, update, delete, get, query, 
+- TODO action: start(call)
 - desribe payloads
 - describe possible queries
 - scripts for aws resource creation
