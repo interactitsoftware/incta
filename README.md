@@ -1,5 +1,6 @@
 # aarts-core
 Aws artifacts(aarts) is a tiny tool for getting your existing domain logic to serverless / lambda / dynamodb
+It is modularized into three npm packages, so clien applications may focus only on domain logic. Please refer to the example-app
 
 ## Final goal
 Implementing a simple interface will allow you to run your code in a aws lambda container,using the infinite-scaling dynamodb, as persistent storage. 
