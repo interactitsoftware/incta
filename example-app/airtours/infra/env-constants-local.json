@@ -1,0 +1,8 @@
+{
+    "Parameters": {
+        "AWS_SAM_LOCAL": "1",
+        "DB_NAME": "ITEMS",
+        "DB_ENDPOINT": "http://dynamodb:8000",
+        "DEBUG": "1"
+    }
+}

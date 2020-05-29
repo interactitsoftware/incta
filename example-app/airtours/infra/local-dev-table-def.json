@@ -1,0 +1,119 @@
+{
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "id",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "meta",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "smetadata",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "nmetadata",
+            "AttributeType": "N"
+        }
+
+    ],
+    "TableName": "TEST1",
+    "KeySchema": [
+        {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "meta",
+            "KeyType": "RANGE"
+        }
+    ],
+    "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "meta__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "meta",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+            }
+        },
+        {
+            "IndexName": "smetadata__meta",
+            "KeySchema": [
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "meta",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+            }
+        },
+        {
+            "IndexName": "meta__nmetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "meta",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "nmetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+            }
+        },
+        {
+            "IndexName": "nmetadata__meta",
+            "KeySchema": [
+                {
+                    "AttributeName": "nmetadata",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "meta",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+            }
+        }
+    ],
+    "BillingMode": "PROVISIONED",
+    "ProvisionedThroughput": {
+        "ReadCapacityUnits": 1,
+        "WriteCapacityUnits": 1
+    }
+}
