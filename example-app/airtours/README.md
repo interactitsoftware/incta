@@ -19,7 +19,7 @@ Notice how all the code is purely domain specific - except the code in index.ts 
 I will appreciate any feedback on this project, and its feature list. 
 
 Also, if you found it helpful, you may buy me a cup of tea :) 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](krasimir.atanasov@gmail.com)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](krasimir.atanasoff@gmail.com)
 
 TODO
 - [OK]~~provide example domain
