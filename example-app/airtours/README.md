@@ -27,11 +27,11 @@ TODO
 - describe actions: create, update, delete, get, query, 
 - desribe payloads
 - describe possible queries
-- [OK]~~unique constraints
-- [OK]~~scripts for aws resource creation
-- [OK]~~script for sam local dynamodb
+- [OK]~~unique constraints~~
+- [OK]~~scripts for aws resource creation~~
+- [OK]~~script for sam local dynamodb~~
 - desribe local development
-- [OK]~~maintain aggregation records for each domain entity (i.e support "total items" in grid views)
+- [OK]~~maintain aggregation records for each domain entity (i.e support "total items" in grid views)~~
 - support for scheduling a call to itself with specific payload (i.e on an expiration of an order you want to do something..)
 
 
