@@ -18,21 +18,22 @@ Notice how all the code is purely domain specific - except the code in index.ts 
 
 I will appreciate any feedback on this project, and its feature list. 
 
-Also, if you found it helpful, you may buy me a cup of tea :) 
+Also, if you find this project helpful, help it grow :) You may buy me a cup of tea
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J778EQEXLVHVU&source=url)
 
 TODO
-- [OK]~~provide example domain
+- desribe local development
 - describe refkeys 
 - describe actions: create, update, delete, get, query, 
 - desribe payloads
 - describe possible queries
+- support for scheduling a call to itself with specific payload (i.e on an expiration of an order you want to do something..)
+- aarts-appsync npm package that can employ all the yielded notifications and pass them to client apps
+- start(call) method implementation - for invoking procedures, that are more than simple CRUD operations
 - [OK]~~unique constraints~~
 - [OK]~~scripts for aws resource creation~~
 - [OK]~~script for sam local dynamodb~~
-- desribe local development
 - [OK]~~maintain aggregation records for each domain entity (i.e support "total items" in grid views)~~
-- support for scheduling a call to itself with specific payload (i.e on an expiration of an order you want to do something..)
+- [OK]~~provide example domain
+- more..
 
-
-## TODO item's start(call) method implementation - for invoking procedures, that are more than simple CRUD operations
