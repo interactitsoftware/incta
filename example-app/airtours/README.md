@@ -19,7 +19,7 @@ Notice how all the code is purely domain specific - except the code in index.ts 
 I will appreciate any feedback on this project, and its feature list. 
 
 If you find this project helpful, you may support it by contributing to the source, or by feeding its owner :)
-[![Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J778EQEXLVHVU&source=url)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J778EQEXLVHVU&source=url)
 
 TODO
 - desribe local development
