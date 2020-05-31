@@ -16,7 +16,7 @@
   "dependencies": {
     "@types/aws-lambda": "^8.10.47",
     "@types/node": "^13.11.0",
-    "aarts-types": "^0.1.0-alpha.0",
+    "aarts-types": "^0.1.0",
     "aws-sdk": "^2.653.0",
     "typescript": "^3.8.3"
   },
