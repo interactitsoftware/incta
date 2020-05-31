@@ -3,11 +3,11 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { DynamoDB, AWSError } from 'aws-sdk'
 import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { ItemReference, RefKey, DynamoItem  } from './BaseItemManager';
-import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString } from './DynamoDbClient';
+import { RefKey, DynamoItem, DomainItem  } from './BaseItemManager';
+import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, refkeyitemmeta } from './DynamoDbClient';
 
 
-export const transactUpdateItem = (existingItem: DynamoItem, itemUpdates: Partial<DynamoItem>, __item_refkeys: RefKey<DynamoItem>[]): Promise<DynamoItem> =>
+export const transactUpdateItem = <T extends DomainItem & DynamoItem>(existingItem: T, itemUpdates: Partial<T>, __item_refkeys: RefKey<T>[]): Promise<T> =>
     new Promise((resolve, reject) => {
         const drevisionsUpdates = toAttributeMap(
             { "inc_revision": 1, "start_revision": 0 })
@@ -110,7 +110,7 @@ export const transactUpdateItem = (existingItem: DynamoItem, itemUpdates: Partia
                 process.env.DEBUG || console.log(`refkey ${key} marked for update`)
                 accum.push({
                     Update: {
-                        Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.item_type}}${key}` } },
+                        Key: { id: dexistingItemkey.id, meta: { S: refkeyitemmeta(existingItem,key) } },
                         TableName: DB_NAME,
                         ExpressionAttributeNames: "S" in ditemUpdates[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" },
                         ExpressionAttributeValues: "S" in ditemUpdates[key] ? { ":smetadata": ditemUpdates[key] } : { ":nmetadata": ditemUpdates[key] },
@@ -166,6 +166,7 @@ export const transactUpdateItem = (existingItem: DynamoItem, itemUpdates: Partia
         dynamoDbClient.transactWriteItems(params, (error: AWSError, result: TransactWriteItemsOutput) => {
             // handle potential errors
             if (error) {
+                throw error
                 console.error(error)
                 return reject(error)
             }

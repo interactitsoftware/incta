@@ -3,14 +3,13 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { AWSError } from 'aws-sdk'
 import { TransactWriteItemsInput, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { ItemReference, RefKey, DynamoItem } from './BaseItemManager';
-import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty } from './DynamoDbClient';
-import { ppjson } from 'aarts-types/idGenUtil';
+import { RefKey, DynamoItem, DomainItem } from './BaseItemManager';
+import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqueitemrefkeyid } from './DynamoDbClient';
+import { ppjson } from 'aarts-types/utils';
 
-export const transactPutItem = (item: DynamoItem, __item_refkeys: RefKey<DynamoItem>[]): Promise<DynamoItem> =>
+export const transactPutItem = <T extends DomainItem & DynamoItem>(item: T, __item_refkeys: RefKey<T>[]): Promise<T> =>
     new Promise((resolve, reject) => {
         process.env.DEBUG || console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
-        console.log("transactPutItem: THE REFKEYS ARE ", ppjson(__item_refkeys))
 
         const ditem = toAttributeMap(item)
 
@@ -41,14 +40,14 @@ export const transactPutItem = (item: DynamoItem, __item_refkeys: RefKey<DynamoI
             if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && !!item[key]) {
                 accum.push({
                     Put: {
-                        Item: toAttributeMap(removeEmpty(new class Ref extends ItemReference(item, {key}) { })),
+                        Item: toAttributeMap(refkeyitem(item, key)),
                         TableName: DB_NAME,
                         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                     }
                 })
             }
             if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && !!item[key] && __item_refkeys.filter(r=>r.key === key)[0].unique === true) {
-                const duniqueItem = toAttributeMap({id:`uq|${item.item_type}}${key}`, meta: `${item[key]}`})
+                const duniqueItem = toAttributeMap({id:uniqueitemrefkeyid(item,key), meta: `${item[key]}`})
                 accum.push({
                     Put: {
                         Item: duniqueItem,

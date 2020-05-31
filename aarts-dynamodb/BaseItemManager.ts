@@ -5,7 +5,7 @@ import { transactPutItem } from "./dynamodb-transactPutItem";
 import { queryItems } from "./dynamodb-queryItems";
 import { transactDeleteItem } from "./dynamodb-transactDeleteItem";
 import { AnyConstructor, Mixin, MixinConstructor } from "aarts-types/Mixin"
-import { uuid, ppjson } from "aarts-types/idGenUtil"
+import { uuid, ppjson } from "aarts-types/utils"
 import { AartsPayload, IIdentity, IItemManager } from "aarts-types/interfaces"
 
 export type DomainItem = Record<string, any>
@@ -35,48 +35,48 @@ export interface DdbQueryOutput {
 
 export type RefKey<T extends DomainItem> = {key:keyof IBaseDynamoItemProps | keyof T, ref?:string, unique?:boolean}
 
-export const ItemReference = // TODO DOES IT NEED ALL ATTR OR ONLY THE KEYS?
-    (item: DynamoItem, refkey: RefKey<DynamoItem>) => {
-        class ItemReference {
+// export const ItemReference = // TODO DOES IT NEED ALL ATTR OR ONLY THE KEYS?
+//     (item: DynamoItem, refkey: RefKey<DynamoItem>) => {
+//         class ItemReference {
 
-            public id: string = `${item.id}`
-            public meta: string = `${item.item_type}}${refkey.key}` //}${item[refkey]}
-            // SKIP SHARDING IDEA FOR NOW
-            // public shardnr: number = (new Date()).getFullYear()//item.shardnr -> TODO invent a function that will calculate shardnr based on the ID
+//             public id: string = `${item.id}`
+//             public meta: string = `${item.item_type}}${refkey.key}` //}${item[refkey]}
+//             // SKIP SHARDING IDEA FOR NOW
+//             // public shardnr: number = (new Date()).getFullYear()//item.shardnr -> TODO invent a function that will calculate shardnr based on the ID
             
-            public smetadata: string|undefined = typeof item[refkey.key] === "string" ? item[refkey.key] as string : undefined
-            public nmetadata: number|undefined = typeof item[refkey.key] === "number" ? item[refkey.key] as number : undefined
+//             public smetadata: string|undefined = typeof item[refkey.key] === "string" ? item[refkey.key] as string : undefined
+//             public nmetadata: number|undefined = typeof item[refkey.key] === "number" ? item[refkey.key] as number : undefined
 
-            public item_type: string = `ref_key|${item.item_type}}${refkey.key}`
+//             public item_type: string = `ref_key|${item.item_type}}${refkey.key}`
 
-            // TODO do we need those below?
-            public item_state: string = "unknown"
-            public state_history: [string?] = []
-            public revisions: number = 0
-            public checksum: string = "not_calculated"
+//             // TODO do we need those below?
+//             public item_state?: string
+//             public state_history?: Record<number,string>
+//             public revisions: number = 0
+//             public checksum?: string
 
-            public user_created: string = "unknown"
-            public user_updated: string = "unknown"
-            public date_created: string = new Date().toISOString()
-            public date_updated: string = new Date().toISOString()
-        }
+//             public user_created?: string
+//             public user_updated?: string
+//             public date_created: string = new Date().toISOString()
+//             public date_updated: string = new Date().toISOString()
+//         }
 
-        return ItemReference
-    }
-export type ItemReference = Mixin<typeof ItemReference>
+//         return ItemReference
+//     }
+// export type ItemReference = Mixin<typeof ItemReference>
 
 export interface IBaseDynamoItemProps  {
 
     id: string
 
     item_type: string
-    item_state: string
-    state_history: [string?]
+    item_state?: string
+    state_history?: Record<number,string>
     revisions: number
-    checksum: string
+    checksum?: string
 
-    user_created: string
-    user_updated: string
+    user_created?: string
+    user_updated?: string
     date_created: string
     date_updated: string
 }
@@ -103,16 +103,18 @@ export const DynamoItem =
             public meta: string = `${versionString(0)}|${t}`
             // SKIP SHARDING IDEA FOR NOW
             // public shardnr: number = 0 // these we do not want spread in GSI's as we do index preloading (only taking them by id)
-            public smetadata: string = idstr
+            
+            // LEAVE (s|n))metadata keys ONLY TO REFKEY LOGIC
+            // public smetadata: string = idstr
 
             public item_type: string = t
-            public item_state: string = "unknown"
-            public state_history: [string?] = []
+            public item_state?: string
+            public state_history?: Record<number,string>
             public revisions: number = 0
-            public checksum: string = "not_calculated"
+            public checksum?: string
 
-            public user_created: string = "unknown"
-            public user_updated: string = "unknown"
+            public user_created?: string
+            public user_updated?: string
             public date_created: string = new Date().toISOString()
             public date_updated: string = new Date().toISOString()
         }

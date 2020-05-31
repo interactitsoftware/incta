@@ -1,12 +1,14 @@
 import { DynamoDB } from 'aws-sdk'
 import { AttributeMap } from 'aws-sdk/clients/dynamodb';
+import { MixinConstructor } from 'aarts-types/Mixin';
+import { DynamoItem } from './BaseItemManager';
 
-const offline_options = {
+export const offline_options = {
     region: 'ddblocal',
     apiVersion: '2012-08-10',
     signatureVersion: 'v4',
     dynamoDbCrc32: false,
-    endpoint: process.env["DB_ENDPOINT"]
+    endpoint: "http://localhost:8000"
 }
 
 export const dynamoDbClient: DynamoDB = process.env["AWS_SAM_LOCAL"] ? new DynamoDB(offline_options) : new DynamoDB();
@@ -31,6 +33,24 @@ export function removeEmpty(obj: Record<string, any>): object {
 export const versionString = (nr: number) => `v_${nr}`
 export const deletedVersionString = (nr: number) => `d_${nr}`
 
+export const uniqueitemrefkeyid = (item: DynamoItem, key: string) => `uq|${item.item_type}}${key}`
+
+export const refkeyitemid = (item: DynamoItem, key: string) => `${item.item_type}}${key}`
+export const refkeyitemmeta = (item: DynamoItem, key: string) => `${item.item_type}}${key}`
+export const refkeyitemtype = (item: DynamoItem, key: string) => `ref_key|${item.item_type}}${key}`
+export const refkeyitem = (item: DynamoItem, key: string) => Object.assign(
+    {},
+    item,
+    {
+        meta:  refkeyitemmeta(item, key),
+        smetadata: typeof item[key] === "string" ? item[key] as string : undefined,
+        nmetadata: typeof item[key] === "number" ? item[key] as number : undefined,
+        item_type: refkeyitemtype(item, key)
+    })
+
+
+
+
 export function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemUpdates: Record<string, any>): object {
     return Object.keys(itemUpdates)
     // Remove those with same value, preserving whatever the revisions passed
@@ -44,8 +64,8 @@ export function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemU
         )
 }
 
-export const fromAttributeMap = <T>(item: AttributeMap) => DynamoDB.Converter.unmarshall(
-    item,
+export const fromAttributeMap = <T>(item: AttributeMap | undefined) => DynamoDB.Converter.unmarshall(
+    item || {},
     dynamoDbConverterOptions
 ) as T
 
