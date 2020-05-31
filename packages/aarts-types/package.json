@@ -1,6 +1,6 @@
 {
   "name": "aarts-types",
-  "version": "0.1.10",
+  "version": "0.1.0-alpha.0",
   "description": "base lib for using aarts",
   "main": "./dist/nodejs/node_modules/aarts-types/index.js",
   "types": "./dist/nodejs/node_modules/aarts-types/index.d.ts",

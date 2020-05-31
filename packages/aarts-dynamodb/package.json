@@ -1,18 +1,22 @@
 {
   "name": "aarts-dynamodb",
-  "contributors": ["akrsmv"],
-  "version": "0.0.13",
+  "contributors": [
+    "akrsmv"
+  ],
+  "version": "0.1.0-alpha.0",
   "description": "dynamo db baseitem handler",
   "main": "./dist",
   "types": "./dist/index.d.ts",
-  "repository": {"url": "https://github.com/akrsmv/aarts-dynamodb.git"},
+  "repository": {
+    "url": "https://github.com/akrsmv/aarts-dynamodb.git"
+  },
   "files": [
     "dist/*.js"
   ],
   "dependencies": {
     "@types/aws-lambda": "^8.10.47",
     "@types/node": "^13.11.0",
-    "aarts-types": "^0.1.10",
+    "aarts-types": "^0.1.0-alpha.0",
     "aws-sdk": "^2.653.0",
     "typescript": "^3.8.3"
   },
