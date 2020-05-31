@@ -3,5 +3,6 @@
   "private": true,
   "devDependencies": {
     "lerna": "^3.22.0"
-  }
+  },
+  "author": {"email": "krasimir.atanasoff@gmail.com","name": "Krasimir Atanasov"}
 }

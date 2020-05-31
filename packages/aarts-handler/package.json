@@ -17,7 +17,8 @@
     "clean": "rm -fr ./dist",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "prepublish": "npm run build"
   },
   "author": "akrsmv",
   "license": "ISC"

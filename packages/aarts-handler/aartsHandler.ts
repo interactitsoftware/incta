@@ -1,6 +1,6 @@
 import { Context } from "aws-lambda"
 import { IItemManager, AartsPayload, AartsEvent } from "aarts-types/interfaces"
-import { ppjson } from "aarts-types/idGenUtil"
+import { ppjson } from "aarts-types/utils"
 
 export const handler = async (input: AartsEvent, context: Context): Promise<any> => {
 	process.env.DEBUG || console.log('received AartsPayload: ', input)
