@@ -1,6 +1,3 @@
-import { BaseDynamoItemManager } from "aarts-dynamodb/dist/BaseItemManager"
-
-
 export class Country { 
     //-- ref keys
     //-- rest of keys

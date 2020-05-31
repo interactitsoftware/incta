@@ -2,9 +2,10 @@
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { DynamoDB, AWSError } from 'aws-sdk'
-import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
+import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList, AttributeMap } from 'aws-sdk/clients/dynamodb'
 import { RefKey, DynamoItem, DomainItem  } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, refkeyitemmeta } from './DynamoDbClient';
+import { ppjson } from 'aarts-types/utils';
 
 
 export const transactUpdateItem = <T extends DomainItem & DynamoItem>(existingItem: T, itemUpdates: Partial<T>, __item_refkeys: RefKey<T>[]): Promise<T> =>
@@ -36,27 +37,31 @@ export const transactUpdateItem = <T extends DomainItem & DynamoItem>(existingIt
         process.env.DEBUG || console.log("================================================")
         //#endregion
 
+
+        const updateExpressionValues: Record<AttributeName, AttributeValue> = Object.assign(
+            {},
+            Object.keys(ditemUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
+                accum[`:${key}`] = ditemUpdates[key].S !== "__del__" ? ditemUpdates[key] : {NULL:true}
+                return accum
+            }, {}),
+            Object.keys(drevisionsUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
+                accum[`:${key}`] = drevisionsUpdates[key]
+                return accum
+            }, {})
+        )
+        const updateExpressionNames: Record<AttributeName, AttributeName> = Object.keys(ditemUpdates)
+        .reduce<{ [key: string]: AttributeName }>((accum, key) => {
+            accum[`#${key}`] = key
+            return accum
+        }, {})
         const itemTransactWriteItemList: TransactWriteItemList = [
             {
                 Update: {
                     ConditionExpression: `#revisions = :revisions`,
                     Key: dexistingItemkey,
                     TableName: DB_NAME,
-                    ExpressionAttributeNames: Object.keys(ditemUpdates).reduce<{ [key: string]: AttributeName }>((accum, key) => {
-                        accum[`#${key}`] = key
-                        return accum
-                    }, {}),
-                    ExpressionAttributeValues: Object.assign(
-                        {},
-                        Object.keys(ditemUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
-                            accum[`:${key}`] = ditemUpdates[key].S !== "__del__" ? ditemUpdates[key] : {NULL:true}
-                            return accum
-                        }, {}),
-                        Object.keys(drevisionsUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
-                            accum[`:${key}`] = drevisionsUpdates[key]
-                            return accum
-                        }, {})
-                    ),
+                    ExpressionAttributeNames: updateExpressionNames,
+                    ExpressionAttributeValues: updateExpressionValues,
                     UpdateExpression: updateExpr,
                     ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                 }
@@ -105,21 +110,41 @@ export const transactUpdateItem = <T extends DomainItem & DynamoItem>(existingIt
         // build all updates by also examining refkeys
         const allTransactWriteItemList = 
         itemTransactWriteItemList.concat(
-        Object.keys(ditemUpdates).reduce<TransactWriteItem[]>((accum, key) => {
-            if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && ditemUpdates[key].S !== "__del__") { // changed/added ones
+        Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
+            if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")) { // changed/added ones
                 process.env.DEBUG || console.log(`refkey ${key} marked for update`)
+                const dmetadataupdateExpressionNames: Record<AttributeName,AttributeName> = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
+                const dmetadataupdateExpressionValues: Record<AttributeName,AttributeValue> = "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] }
+                console.log("------------------------------------------------------------")
+                console.log("s in key" + ("S" in dexistingItem[key]))
+                console.log("AAAAAAAAAAAAAAAAAAAAAA " + updateExpr + ("S" in dexistingItem[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata"))
+                console.log("KKKKKKKKKKK " + key)
+                console.log("BBBBBBBBBBBBBBBBBBBBBBBB " + ppjson(Object.assign(
+                    {},
+                    dmetadataupdateExpressionValues,
+                    updateExpressionValues
+                )))
                 accum.push({
                     Update: {
+                        ConditionExpression: `#revisions = :revisions`,
                         Key: { id: dexistingItemkey.id, meta: { S: refkeyitemmeta(existingItem,key) } },
                         TableName: DB_NAME,
-                        ExpressionAttributeNames: "S" in ditemUpdates[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" },
-                        ExpressionAttributeValues: "S" in ditemUpdates[key] ? { ":smetadata": ditemUpdates[key] } : { ":nmetadata": ditemUpdates[key] },
-                        UpdateExpression: "S" in ditemUpdates[key] ? "set #smetadata = :smetadata" : "set #nmetadata = :nmetadata",
+                        ExpressionAttributeNames: Object.assign(
+                            {},
+                            dmetadataupdateExpressionNames,
+                            updateExpressionNames
+                        ),
+                        ExpressionAttributeValues: Object.assign(
+                            {},
+                            dmetadataupdateExpressionValues,
+                            updateExpressionValues
+                        ),
+                        UpdateExpression: updateExpr + ("S" in dexistingItem[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata"),
                         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                     }
                 })
             }
-            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && __item_refkeys.filter(r=>r.key === key)[0].unique === true) {
+            if (ditemUpdates[key] && __item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && __item_refkeys.filter(r=>r.key === key)[0].unique === true) {
                 if (dexistingItem[key]) { // if uq constraint already present, delete it
                     accum.push({
                         Delete: {
@@ -142,7 +167,7 @@ export const transactUpdateItem = <T extends DomainItem & DynamoItem>(existingIt
             return accum
         }, [])).concat(
         Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
-            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && Object.keys(ditemUpdates).indexOf(key) > -1 && ditemUpdates[key].S === "__del__") { // removed ones
+            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && ditemUpdates[key] && ditemUpdates[key].S === "__del__") { // removed ones
                 process.env.DEBUG || console.log(`refkey ${key} marked for delete`)
                 accum.push({
                     Delete: {

@@ -1,6 +1,5 @@
 import { DynamoDB } from 'aws-sdk'
 import { AttributeMap } from 'aws-sdk/clients/dynamodb';
-import { MixinConstructor } from 'aarts-types/Mixin';
 import { DynamoItem } from './BaseItemManager';
 
 export const offline_options = {
@@ -8,7 +7,7 @@ export const offline_options = {
     apiVersion: '2012-08-10',
     signatureVersion: 'v4',
     dynamoDbCrc32: false,
-    endpoint: "http://localhost:8000"
+    endpoint: process.env.DDB_LOCAL_URL
 }
 
 export const dynamoDbClient: DynamoDB = process.env["AWS_SAM_LOCAL"] ? new DynamoDB(offline_options) : new DynamoDB();
@@ -35,9 +34,8 @@ export const deletedVersionString = (nr: number) => `d_${nr}`
 
 export const uniqueitemrefkeyid = (item: DynamoItem, key: string) => `uq|${item.item_type}}${key}`
 
-export const refkeyitemid = (item: DynamoItem, key: string) => `${item.item_type}}${key}`
 export const refkeyitemmeta = (item: DynamoItem, key: string) => `${item.item_type}}${key}`
-export const refkeyitemtype = (item: DynamoItem, key: string) => `ref_key|${item.item_type}}${key}`
+// export const refkeyitemtype = (item: DynamoItem, key: string) => `ref_key|${item.item_type}}${key}`
 export const refkeyitem = (item: DynamoItem, key: string) => Object.assign(
     {},
     item,
@@ -45,7 +43,7 @@ export const refkeyitem = (item: DynamoItem, key: string) => Object.assign(
         meta:  refkeyitemmeta(item, key),
         smetadata: typeof item[key] === "string" ? item[key] as string : undefined,
         nmetadata: typeof item[key] === "number" ? item[key] as number : undefined,
-        item_type: refkeyitemtype(item, key)
+        // item_type: refkeyitemtype(item, key)
     })
 
 

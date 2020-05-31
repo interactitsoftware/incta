@@ -8,6 +8,8 @@ export const stripCreatedUpdatedDates =  (obj: DynamoItem & DomainItem) : Record
     delete obj.date_updated
     return obj
 }
+export const withSMetadata = (obj:Record<string,any>, key: string) => Object.assign({},obj, {smetadata: obj[key]})
+export const withNMetadata = (obj:Record<string,any>, key: string) => Object.assign({},obj, {nmetadata: obj[key]})
 
 export const clearDynamo = async () =>{
     let scanResult

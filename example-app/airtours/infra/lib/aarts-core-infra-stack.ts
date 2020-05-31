@@ -3,7 +3,7 @@ import { FollowMode } from '@aws-cdk/assets';
 import { join } from 'path';
 import { Duration, RemovalPolicy, App, StackProps, Stack } from '@aws-cdk/core';
 import { AttributeType, BillingMode, StreamViewType, ProjectionType, Table } from '@aws-cdk/aws-dynamodb';
-import { ENV_VARS__DB_NAME, ENV_VARS__DB_ENDPOINT } from '../env-constants';
+import { ENV_VARS__DB_NAME, ENV_VARS__DDB_LOCAL_URL } from '../env-constants';
 import { sep } from "path"
 
 
@@ -73,6 +73,6 @@ table.addGlobalSecondaryIndex({
 
   table.grantFullAccess(handler);
   handler.addEnvironment(ENV_VARS__DB_NAME, table.tableName);
-  handler.addEnvironment(ENV_VARS__DB_ENDPOINT, ``); // used only for local testing
+  handler.addEnvironment(ENV_VARS__DDB_LOCAL_URL, ``); // used only for local testing
   }
 }

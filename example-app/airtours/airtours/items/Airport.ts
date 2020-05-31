@@ -1,4 +1,4 @@
-import { BaseDynamoItemManager, DomainItem } from "aarts-dynamodb/dist/BaseItemManager"
+import { BaseDynamoItemManager, DomainItem } from "aarts-dynamodb/BaseItemManager"
 import { AirportItem } from "./_DynamoItems";
 import { IIdentity } from "aarts-types/interfaces";
 

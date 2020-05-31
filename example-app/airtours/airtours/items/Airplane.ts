@@ -1,4 +1,4 @@
-import { BaseDynamoItemManager } from "aarts-dynamodb/dist/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
 import { Nomenclature } from "./Nomenclature"
 import { AirplaneItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
