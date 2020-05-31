@@ -1,6 +1,6 @@
 import { AirplaneManager } from "./items/Airplane"
 import { AirportManager } from "./items/Airport"
-import { DynamoItem, BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { DynamoItem, BaseDynamoItemManager } from "aarts-dynamodb/dist/BaseDynamoItemManager"
 import { handler } from "aarts-handler/aartsHandler"
 
 import {

@@ -11,7 +11,7 @@
     "url": "https://github.com/akrsmv/aarts-dynamodb.git"
   },
   "files": [
-    "dist/*.js"
+    "dist/*.js","dist/*.d.ts"
   ],
   "dependencies": {
     "@types/aws-lambda": "^8.10.47",
