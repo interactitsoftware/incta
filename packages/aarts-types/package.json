@@ -21,5 +21,6 @@
     "prepublish": "npm run build"
   },
   "author": "akrsmv",
-  "license": "ISC"
+  "license": "ISC",
+  "gitHead": "f3c4cb0b1ea2906ddbc660ca274f5942b3edf978"
 }

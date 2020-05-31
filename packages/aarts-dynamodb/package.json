@@ -31,8 +31,9 @@
     "clear_jest": "jest --clearCache",
     "watch": "tsc -w",
     "test": "jest",
-    "prepublish": "npm run build"
+    "prepublish": "npm run clean && npm run build"
   },
   "author": "akrsmv",
-  "license": "ISC"
+  "license": "ISC",
+  "gitHead": "f3c4cb0b1ea2906ddbc660ca274f5942b3edf978"
 }
