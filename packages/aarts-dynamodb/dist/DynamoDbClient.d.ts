@@ -1,0 +1,44 @@
+import { DynamoDB } from 'aws-sdk';
+import { AttributeMap } from 'aws-sdk/clients/dynamodb';
+import { DynamoItem } from './BaseItemManager';
+export declare const offline_options: {
+    region: string;
+    apiVersion: string;
+    signatureVersion: string;
+    dynamoDbCrc32: boolean;
+    endpoint: string;
+};
+export declare const dynamoDbClient: DynamoDB;
+export declare const DB_NAME: string;
+export declare const dynamoDbConverterOptions: DynamoDB.Converter.ConverterOptions;
+export declare function removeEmpty(obj: Record<string, any>): object;
+export declare const versionString: (nr: number) => string;
+export declare const deletedVersionString: (nr: number) => string;
+export declare const uniqueitemrefkeyid: (item: DynamoItem, key: string) => string;
+export declare const refkeyitemid: (item: DynamoItem, key: string) => string;
+export declare const refkeyitemmeta: (item: DynamoItem, key: string) => string;
+export declare const refkeyitemtype: (item: DynamoItem, key: string) => string;
+export declare const refkeyitem: (item: DynamoItem, key: string) => {
+    [x: string]: any;
+    id: string;
+    meta: string;
+    item_type: string;
+    item_state?: string | undefined;
+    state_history?: Record<number, string> | undefined;
+    revisions: number;
+    checksum?: string | undefined;
+    user_created?: string | undefined;
+    user_updated?: string | undefined;
+    date_created: string;
+    date_updated: string;
+} & Record<string, any> & {
+    meta: string;
+    smetadata: string | undefined;
+    nmetadata: number | undefined;
+    item_type: string;
+};
+export declare function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemUpdates: Record<string, any>): object;
+export declare const fromAttributeMap: <T>(item: AttributeMap | undefined) => T;
+export declare const toAttributeMap: <T>(item: T) => DynamoDB.AttributeMap;
+export declare const toAttributeMapArray: <T>(items: T[]) => DynamoDB.AttributeMap[];
+export declare const fromAttributeMapArray: <T>(attrMapArray: DynamoDB.AttributeMap[]) => T[];

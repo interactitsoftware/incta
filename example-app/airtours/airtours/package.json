@@ -22,9 +22,8 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^13.11.0",
-    "aarts-dynamodb": "file:../../../packages/aarts-dynamodb",
-    "aarts-handler": "file:../../../packages/aarts-handler",
-    "aarts-types": "file:../../../packages/aarts-types",
+    "aarts-dynamodb": "0.1.0-alpha.0",
+    "aarts-handler": "0.1.0-alpha.0",
     "typescript": "^3.8.3"
   },
   "devDependencies": {}
