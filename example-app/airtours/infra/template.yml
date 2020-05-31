@@ -4,7 +4,7 @@ Resources:
     Properties:
       Content:
         S3Bucket:
-          Ref: AssetParameters399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26S3BucketE9DE2AAA
+          Ref: AssetParameters527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78fS3BucketB6D9BDB0
         S3Key:
           Fn::Join:
             - ""
@@ -12,12 +12,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26S3VersionKey7F2BDA69
+                      - Ref: AssetParameters527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78fS3VersionKey8D521193
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26S3VersionKey7F2BDA69
+                      - Ref: AssetParameters527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78fS3VersionKey8D521193
       CompatibleRuntimes:
         - nodejs12.x
       Description: A layer holding the contracts-compliant domain adapter
@@ -196,15 +196,15 @@ Resources:
       Modules: aws-cdk=1.36.1,@aws-cdk/assets=1.31.0,@aws-cdk/aws-applicationautoscaling=1.31.0,@aws-cdk/aws-autoscaling=1.31.0,@aws-cdk/aws-autoscaling-common=1.31.0,@aws-cdk/aws-autoscaling-hooktargets=1.31.0,@aws-cdk/aws-cloudformation=1.31.0,@aws-cdk/aws-cloudwatch=1.31.0,@aws-cdk/aws-dynamodb=1.31.0,@aws-cdk/aws-ec2=1.31.0,@aws-cdk/aws-ecr=1.31.0,@aws-cdk/aws-ecr-assets=1.31.0,@aws-cdk/aws-ecs=1.31.0,@aws-cdk/aws-elasticloadbalancingv2=1.31.0,@aws-cdk/aws-events=1.31.0,@aws-cdk/aws-iam=1.31.0,@aws-cdk/aws-kms=1.31.0,@aws-cdk/aws-lambda=1.31.0,@aws-cdk/aws-logs=1.31.0,@aws-cdk/aws-s3=1.31.0,@aws-cdk/aws-s3-assets=1.31.0,@aws-cdk/aws-servicediscovery=1.31.0,@aws-cdk/aws-sns=1.31.0,@aws-cdk/aws-sns-subscriptions=1.31.0,@aws-cdk/aws-sqs=1.31.0,@aws-cdk/aws-ssm=1.31.0,@aws-cdk/aws-stepfunctions=1.31.0,@aws-cdk/aws-stepfunctions-tasks=1.31.0,@aws-cdk/cdk-assets-schema=1.41.0,@aws-cdk/cloud-assembly-schema=1.41.0,@aws-cdk/core=1.31.0,@aws-cdk/custom-resources=1.31.0,@aws-cdk/cx-api=1.31.0,@aws-cdk/region-info=1.31.0,jsii-runtime=node.js/v12.13.0
     Condition: CDKMetadataAvailable
 Parameters:
-  AssetParameters399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26S3BucketE9DE2AAA:
+  AssetParameters527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78fS3BucketB6D9BDB0:
     Type: String
-    Description: S3 bucket for asset "399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26"
-  AssetParameters399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26S3VersionKey7F2BDA69:
+    Description: S3 bucket for asset "527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78f"
+  AssetParameters527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78fS3VersionKey8D521193:
     Type: String
-    Description: S3 key for asset version "399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26"
-  AssetParameters399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26ArtifactHash86828510:
+    Description: S3 key for asset version "527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78f"
+  AssetParameters527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78fArtifactHash6DC3003A:
     Type: String
-    Description: Artifact hash for asset "399665b65d287d4704b678e023a75191f32dc7d11cfbc4802a10232eaca20d26"
+    Description: Artifact hash for asset "527a9a426263eb787c18b6b0fa7cb7c7b3581fb9cbc8ab54e34d752b6d56e78f"
   AssetParameters855479b6310f4fb55951f44116bef96014ff6605e938dc7431b131d2f5d2587aS3Bucket43B40D86:
     Type: String
     Description: S3 bucket for asset "855479b6310f4fb55951f44116bef96014ff6605e938dc7431b131d2f5d2587a"

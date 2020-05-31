@@ -1,14 +1,21 @@
 {
   "name": "aarts-types",
   "version": "0.2.1",
-  "description": "base lib for using aarts",
-  "main": "./dist/nodejs/node_modules/aarts-types/index.js",
-  "types": "./dist/nodejs/node_modules/aarts-types/index.d.ts",
+  "description": "base types for aarts - aws lambda/dynamodb transactional support",
+  "main": "./dist",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "url": "https://github.com/akrsmv/aarts-core.git"
+  },
+  "files": [
+    "dist/*.js",
+    "dist/*.d.ts"
+  ],
   "dependencies": {
-    "@types/uuid": "^8.0.0",
     "uuid": "^8.1.0"
   },
   "devDependencies": {
+    "@types/uuid": "^8.0.0",
     "@types/node": "^14.0.5",
     "typescript": "^3.9.3"
   },
@@ -18,7 +25,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "prepublish": "npm run build"
+    "prepublish": "npm run clean && npm run build"
   },
   "author": "akrsmv",
   "license": "ISC",

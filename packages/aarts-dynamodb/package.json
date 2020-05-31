@@ -4,11 +4,11 @@
     "akrsmv"
   ],
   "version": "0.2.3",
-  "description": "dynamo db baseitem handler",
+  "description": "dynamo db transactoinal crud operations with support on refkeys and uniqeness",
   "main": "./dist",
   "types": "./dist/index.d.ts",
   "repository": {
-    "url": "https://github.com/akrsmv/aarts-dynamodb.git"
+    "url": "https://github.com/akrsmv/aarts-core.git"
   },
   "files": [
     "dist/*.js",
