@@ -1,4 +1,4 @@
-import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-dynamodb/dist/BaseItemManager"
 
 
 export class Country { 

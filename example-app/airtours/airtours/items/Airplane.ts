@@ -1,8 +1,8 @@
-import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-dynamodb/dist/BaseItemManager"
 import { Nomenclature } from "./Nomenclature"
 import { AirplaneItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
-import { ppjson } from "aarts-types/idGenUtil"
+import { ppjson } from "aarts-types/utils"
 
 export class AirplaneModel extends Nomenclature { }
 export class AirplaneManifacturer extends Nomenclature { }

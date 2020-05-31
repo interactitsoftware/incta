@@ -1,4 +1,4 @@
-import { DynamoItem } from "aarts-dynamodb/BaseItemManager";
+import { DynamoItem } from "aarts-dynamodb/dist/BaseItemManager";
 import { Airport } from "./Airport";
 import { Flight } from "./Flight";
 import { Airplane, AirplaneModel, AirplaneManifacturer } from "./Airplane";
