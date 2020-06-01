@@ -81,7 +81,7 @@ export const toAttributeMapArray = <T>(items: T[]) => items.reduce<DynamoDB.Attr
         return prev
     }, [])
 
-export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[]) => attrMapArray.reduce<T[]>(
+export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] | undefined) => (attrMapArray || []).reduce<T[]>(
     (accum: T[], attrMap: AttributeMap) => {
         accum.push(DynamoDB.Converter.unmarshall(
             attrMap,

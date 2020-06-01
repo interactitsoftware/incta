@@ -14,7 +14,9 @@ export const TestModel_FlightRefkeys: RefKey<TestModel_Flight>[] = [
 export class TestModel_FlightItem extends DynamoItem(TestModel_Flight, "flight", TestModel_FlightRefkeys) { }
 
 export const TestModel_AirplaneRefkeys:RefKey<TestModel_Airplane>[] = [
-    {key: "number_of_seats", unique:true},
+    {key: "unique_id_str", unique: true},
+    {key: "unique_id_nr", unique: true},
+    {key: "number_of_seats"},
     {key: "home_airport", ref:"airport"},
     {key: "country", ref: "country"},
     {key: "model", ref: "airplane|nomenclature|model"},

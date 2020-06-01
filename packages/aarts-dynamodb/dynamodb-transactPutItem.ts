@@ -8,13 +8,13 @@ import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqu
 import { ppjson } from 'aarts-types/utils';
 
 export const transactPutItem = <T extends DomainItem & DynamoItem>(item: T, __item_refkeys: RefKey<T>[]): Promise<T> =>
-    new Promise((resolve, reject) => {
+    new Promise(async (resolve, reject) => {
         process.env.DEBUG || console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
 
         const ditem = toAttributeMap(item)
 
         const itemTransactWriteItemList: TransactWriteItemList = [
-            { 
+            {
                 Put: {
                     TableName: DB_NAME,
                     ReturnValuesOnConditionCheckFailure: "ALL_OLD",
@@ -30,14 +30,14 @@ export const transactPutItem = <T extends DomainItem & DynamoItem>(item: T, __it
                         meta: { S: `totals` },
                     }),
                     UpdateExpression: `SET #${item.item_type} = if_not_exists(#${item.item_type}, :zero) + :inc_one`,
-                    ExpressionAttributeNames: {[`#${item.item_type}`]: item.item_type},
-                    ExpressionAttributeValues: {":zero": {"N":"0"}, ":inc_one": {"N":"1"}},
+                    ExpressionAttributeNames: { [`#${item.item_type}`]: item.item_type },
+                    ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
                 }
             }
         ]
         // build all updates by also examining refkeys
         const allTransactWriteItemList = Object.keys(ditem).reduce<TransactWriteItem[]>((accum, key) => {
-            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && !!item[key]) {
+            if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && !!item[key]) {
                 accum.push({
                     Put: {
                         Item: toAttributeMap(refkeyitem(item, key)),
@@ -46,15 +46,15 @@ export const transactPutItem = <T extends DomainItem & DynamoItem>(item: T, __it
                     }
                 })
             }
-            if (__item_refkeys && __item_refkeys.map(r=>r.key).indexOf(key) > -1 && !!item[key] && __item_refkeys.filter(r=>r.key === key)[0].unique === true) {
-                const duniqueItem = toAttributeMap({id:uniqueitemrefkeyid(item,key), meta: `${item[key]}`})
+            if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && !!item[key] && __item_refkeys.filter(r => r.key === key)[0].unique === true) {
+                const duniqueItem = toAttributeMap({ id: uniqueitemrefkeyid(item, key), meta: `${item[key]}` })
                 accum.push({
                     Put: {
                         Item: duniqueItem,
                         TableName: DB_NAME,
                         ReturnValuesOnConditionCheckFailure: "ALL_OLD",
                         ConditionExpression: "attribute_not_exists(#id) and attribute_not_exists(#meta)",
-                        ExpressionAttributeNames: {"#id": "id", "#meta":"meta"},
+                        ExpressionAttributeNames: { "#id": "id", "#meta": "meta" },
                         // ExpressionAttributeValues: {":id": duniqueItem.id, ":meta": duniqueItem.meta}
                     }
                 })
@@ -71,10 +71,9 @@ export const transactPutItem = <T extends DomainItem & DynamoItem>(item: T, __it
         }
 
         // write item to the database
-        dynamoDbClient.transactWriteItems(params, (error: AWSError, result: TransactWriteItemsOutput) => {
+        await dynamoDbClient.transactWriteItems(params, (error: AWSError, result: TransactWriteItemsOutput) => {
             // handle potential errors
             if (error) {
-                console.error(error)
                 return reject(error)
             }
 
@@ -82,5 +81,5 @@ export const transactPutItem = <T extends DomainItem & DynamoItem>(item: T, __it
 
             // create a response
             return resolve(item)
-        })
+        }).promise()
     })

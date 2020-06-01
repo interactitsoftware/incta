@@ -9,7 +9,7 @@ import { ppjson } from 'aarts-types/utils';
 
 
 export const transactUpdateItem = <T extends DomainItem & DynamoItem>(existingItem: T, itemUpdates: Partial<T>, __item_refkeys: RefKey<T>[]): Promise<T> =>
-    new Promise((resolve, reject) => {
+    new Promise(async (resolve, reject) => {
         const drevisionsUpdates = toAttributeMap(
             { "inc_revision": 1, "start_revision": 0 })
         const ditemUpdates: DynamoDB.AttributeMap = toAttributeMap(
@@ -115,15 +115,7 @@ export const transactUpdateItem = <T extends DomainItem & DynamoItem>(existingIt
                 process.env.DEBUG || console.log(`refkey ${key} marked for update`)
                 const dmetadataupdateExpressionNames: Record<AttributeName,AttributeName> = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
                 const dmetadataupdateExpressionValues: Record<AttributeName,AttributeValue> = "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] }
-                console.log("------------------------------------------------------------")
-                console.log("s in key" + ("S" in dexistingItem[key]))
-                console.log("AAAAAAAAAAAAAAAAAAAAAA " + updateExpr + ("S" in dexistingItem[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata"))
-                console.log("KKKKKKKKKKK " + key)
-                console.log("BBBBBBBBBBBBBBBBBBBBBBBB " + ppjson(Object.assign(
-                    {},
-                    dmetadataupdateExpressionValues,
-                    updateExpressionValues
-                )))
+                
                 accum.push({
                     Update: {
                         ConditionExpression: `#revisions = :revisions`,
@@ -188,18 +180,16 @@ export const transactUpdateItem = <T extends DomainItem & DynamoItem>(existingIt
         }
 
         // write item to the database
-        dynamoDbClient.transactWriteItems(params, (error: AWSError, result: TransactWriteItemsOutput) => {
+        await dynamoDbClient.transactWriteItems(params, (error: AWSError, result: TransactWriteItemsOutput) => {
             // handle potential errors
             if (error) {
-                throw error
-                console.error(error)
                 return reject(error)
             }
 
-            console.log("====DDB==== TransactWriteItemsOutput: ", result)
+            process.env.DEBUG || console.log("====DDB==== TransactWriteItemsOutput: ", result)
 
             // create a response
             delete itemUpdates.revisions
             return resolve(Object.assign(existingItem, itemUpdates))
-        })
+        }).promise()
     })

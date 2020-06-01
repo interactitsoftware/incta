@@ -8,7 +8,7 @@ import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versi
 
 
 export const transactDeleteItem = (existingItem: DynamoItem, __item_refkeys: RefKey<DynamoItem>[]): Promise<DynamoItem> =>
-    new Promise((resolve, reject) => {
+    new Promise(async (resolve, reject) => {
         let itemUpdates = {id: existingItem.id, meta: existingItem.meta} //i.e all items are to be updated, when deleting
 
         const drevisionsUpdates = toAttributeMap(
@@ -136,10 +136,9 @@ export const transactDeleteItem = (existingItem: DynamoItem, __item_refkeys: Ref
         }
 
         // write item to the database
-        dynamoDbClient.transactWriteItems(params, (error: AWSError, result: TransactWriteItemsOutput) => {
+        await dynamoDbClient.transactWriteItems(params, (error: AWSError, result: TransactWriteItemsOutput) => {
             // handle potential errors
             if (error) {
-                console.error(error)
                 return reject(error)
             }
 
@@ -148,5 +147,5 @@ export const transactDeleteItem = (existingItem: DynamoItem, __item_refkeys: Ref
             // create a response
             itemUpdates.meta = `${deletedVersionString(++existingItem.revisions)}|${existingItem.item_type}`
             return resolve(Object.assign(existingItem, itemUpdates))
-        })
+        }).promise()
     })

@@ -1,13 +1,49 @@
 import { DomainItem, DynamoItem } from "../BaseItemManager"
-import { dynamoDbClient, DB_NAME } from "../DynamoDbClient"
+import { dynamoDbClient, DB_NAME, fromAttributeMapArray } from "../DynamoDbClient"
 import { chunks } from "aarts-types/utils"
 import { WriteRequest } from "aws-sdk/clients/dynamodb"
 
-export const stripCreatedUpdatedDates =  (obj: DynamoItem & DomainItem) : Record<string, any> => {
+
+export const queryForId = async (id:string) => {
+    const ddbItemResult = await dynamoDbClient.query(
+    {
+      TableName: DB_NAME,
+      ExpressionAttributeValues: { ":id": { S: id } },
+      ExpressionAttributeNames: { "#id": "id" },
+      KeyConditionExpression: "#id = :id"
+    }).promise();
+    return fromAttributeMapArray(ddbItemResult.Items) as (DynamoItem & DomainItem)[]
+}
+
+export class Strippable {
+    public _obj: DynamoItem & DomainItem
+    constructor(obj:DynamoItem & DomainItem) {
+        this._obj = obj
+    }
+    public stripCreatedUpdatedDates = () => stripCreatedUpdatedDates.call(null, this._obj)
+    public stripMeta = () => stripMeta.call(null, this._obj)
+    public stripSmetadata = () => stripSmetadata.call(null, this._obj)
+    public stripNmetadata = () => stripNmetadata.call(null, this._obj)
+}
+
+const stripCreatedUpdatedDates =  (obj: DynamoItem & DomainItem) : Strippable => {
     delete obj.date_created
     delete obj.date_updated
-    return obj
+    return new Strippable(obj)
 }
+const stripMeta =  (obj: DynamoItem & DomainItem) : Strippable => {
+    delete obj.meta
+    return new Strippable(obj)
+}
+const stripSmetadata =  (obj: DynamoItem & DomainItem) : Strippable => {
+    delete obj.smetadata
+    return new Strippable(obj)
+}
+ const stripNmetadata =  (obj: DynamoItem & DomainItem) : Strippable => {
+    delete obj.nmetadata
+    return new Strippable(obj)
+}
+
 export const withSMetadata = (obj:Record<string,any>, key: string) => Object.assign({},obj, {smetadata: obj[key]})
 export const withNMetadata = (obj:Record<string,any>, key: string) => Object.assign({},obj, {nmetadata: obj[key]})
 

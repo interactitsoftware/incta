@@ -23,8 +23,7 @@ export const batchGetItem = <T extends DynamoItemKey>(items: T[]): Promise<Dynam
     // write item to the database
     dynamoDbClient.batchGetItem(params, (error: AWSError, result: BatchGetItemOutput) => {
         if (error) {
-            console.error(error)
-            return reject(new Error('Couldn\'t get item.'))
+            return reject(error)
         }
         process.env.DEBUG || console.log("====DDB==== BatchGetItemOutput: ", result)
         
