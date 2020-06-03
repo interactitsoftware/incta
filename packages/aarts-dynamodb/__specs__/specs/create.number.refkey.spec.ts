@@ -4,7 +4,7 @@ import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { versionString, refkeyitemmeta } from "../../DynamoDbClient"
 
 beforeAll(clearDynamo)
-afterAll(clearDynamo)
+// afterAll(clearDynamo)
 test('create number refkey', async () => {
   const airplane = new TestModel_AirplaneItem()
   airplane.number_of_seats = 13

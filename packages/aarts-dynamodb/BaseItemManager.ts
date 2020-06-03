@@ -89,9 +89,8 @@ export interface DynamoItemKey  {
 
 export const DynamoItem =
     <T extends AnyConstructor<DomainItem>>(base: T, t: string, refkeys?: RefKey<InstanceType<T>>[]) => {
-        const idstr = `${t}|${uuid()}`
+        
         class DynamoItem extends base implements IBaseDynamoItemProps {
-
             constructor(...args: any[]) {
                 super()
             }
@@ -99,7 +98,7 @@ export const DynamoItem =
             public static __type: string = t
             public static __refkeys: RefKey<InstanceType<T>>[] = refkeys || []
 
-            public id: string = idstr
+            public id: string = `${t}|${uuid()}`
             public meta: string = `${versionString(0)}|${t}`
             // SKIP SHARDING IDEA FOR NOW
             // public shardnr: number = 0 // these we do not want spread in GSI's as we do index preloading (only taking them by id)

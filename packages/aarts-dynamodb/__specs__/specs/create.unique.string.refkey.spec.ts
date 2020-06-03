@@ -4,7 +4,7 @@ import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../DynamoDbClient"
 
 beforeAll(clearDynamo)
-afterAll(clearDynamo)
+// afterAll(clearDynamo)
 
 test('create unique string refkey', async () => {
   const airplane = new TestModel_AirplaneItem()
@@ -13,19 +13,20 @@ test('create unique string refkey', async () => {
   return await transactPutItem(airplane, TestModel_AirplaneRefkeys).then(async result => {
     expect(result).toBeInstanceOf(TestModel_AirplaneItem)
   
-    const createdConstraints = await queryForId(uniqueitemrefkeyid(airplane, "unique_id_str"))
+    const ddbCreated = await queryForId(airplane.id)
+    expect(ddbCreated.length).toBe(2)//1 main item,2 refkey item copy 
 
+    const createdConstraints = await queryForId(uniqueitemrefkeyid(airplane, "unique_id_str"))
     expect(createdConstraints.length).toBe(1)
     expect(createdConstraints[0]).toEqual({id: uniqueitemrefkeyid(airplane, "unique_id_str"), meta: "abcdef"})
 
   })
 })
 
-test('consequent creates with same value will be rejected', async () => {
+test('create unique string refkey consequent creates with same value will be rejected', async () => {
   const airplane = new TestModel_AirplaneItem()
-  airplane.unique_id_str = "abcdef"
+  airplane.unique_id_str = "abcdef" // arrange already existing for create (prev test ensures existing, TODO make independant)
   
-  const promised = transactPutItem(airplane, TestModel_AirplaneRefkeys)
-  return expect(promised).rejects
+  return await expect(transactPutItem(airplane, TestModel_AirplaneRefkeys)).rejects.toThrow(Error)
 
 })

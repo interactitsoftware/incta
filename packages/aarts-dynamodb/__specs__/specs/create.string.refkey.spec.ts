@@ -6,7 +6,7 @@ import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { ItemList } from "aws-sdk/clients/dynamodb"
 
 beforeAll(clearDynamo)
-afterAll(clearDynamo)
+// afterAll(clearDynamo)
 
 test('create string refkey', async () => {
   const airplane = new TestModel_AirplaneItem()

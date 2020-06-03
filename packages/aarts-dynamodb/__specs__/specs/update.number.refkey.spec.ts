@@ -5,8 +5,7 @@ import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
 import { versionString, refkeyitemmeta } from "../../DynamoDbClient"
 
 beforeAll(clearDynamo)
-afterAll(clearDynamo)
-
+// afterAll(clearDynamo)
 
 test('update number refkey', async () => {
 

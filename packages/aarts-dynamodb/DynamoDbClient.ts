@@ -1,5 +1,6 @@
-import { DynamoDB } from 'aws-sdk'
-import { AttributeMap } from 'aws-sdk/clients/dynamodb';
+import { DynamoDB, AWSError } from 'aws-sdk'
+import { Request } from 'aws-sdk/lib/request'
+import { AttributeMap, TransactWriteItemsInput, TransactWriteItemsOutput } from 'aws-sdk/clients/dynamodb';
 import { DynamoItem } from './BaseItemManager';
 
 export const offline_options = {
@@ -89,3 +90,25 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
         ) as T)
         return accum
     }, [])
+
+    export const ddbRequest = async (
+        request: Request<TransactWriteItemsOutput, AWSError>,
+    ): Promise<TransactWriteItemsOutput> => {
+        let cancellationReasons:{Item:any, Code:string, Message:string}[] = []
+
+        request.on('extractError', (response) => {
+            try {
+                cancellationReasons = JSON.parse(response.httpResponse.body.toString()).CancellationReasons;
+            } catch (err) {
+                // suppress this just in case some types of errors aren't JSON parseable
+                console.error('Error extracting cancellation error', err);
+            }
+        });
+
+        try {
+            return await request.promise()
+        } catch (err) {
+            throw new Error(JSON.stringify({ cancellationReasons:cancellationReasons.filter(c=> c.Item || c.Message) , err }))
+        }
+
+    }

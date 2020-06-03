@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Dynamodb Tests",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}/packages/aarts-dynamodb",
+            "program": "${workspaceRoot}/packages/aarts-dynamodb/node_modules/jest/bin/jest.js",
+            "args": [
+                "--runInBand",
+                "--testNamePattern",
+                "update.unique.str"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}
