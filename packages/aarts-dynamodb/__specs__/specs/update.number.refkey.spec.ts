@@ -4,33 +4,37 @@ import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
 import { versionString, refkeyitemmeta } from "../../DynamoDbClient"
 
-beforeAll(clearDynamo)
-// afterAll(clearDynamo)
+describe('update number refkey', () => {
 
-test('update number refkey', async () => {
+  beforeAll(async (done) => { await clearDynamo(); done() })
 
-  const airplane = new TestModel_AirplaneItem()
-  airplane.number_of_seats = 11 // arrange string refkey to be updated, see testmodel
+  test('update number refkey', async () => {
 
-  return await transactPutItem(airplane, TestModel_AirplaneRefkeys).then(async arrangedItem => { // arrange existing item
-    
-    await transactUpdateItem(arrangedItem, { // update arranged item
-      id: arrangedItem.id,
-      meta: arrangedItem.meta,
-      revisions: arrangedItem.revisions,
-      number_of_seats: 13
-    }, TestModel_AirplaneRefkeys).then(async updateResult => { 
+    const airplane = new TestModel_AirplaneItem()
+    airplane.number_of_seats = 11 // arrange string refkey to be updated, see testmodel
 
-      expect(updateResult).toBeInstanceOf(TestModel_AirplaneItem)
+    return await transactPutItem(airplane, TestModel_AirplaneRefkeys).then(async arrangedItem => { // arrange existing item
 
-      const createdItems = await queryForId(airplane.id)
+      await transactUpdateItem(arrangedItem, { // update arranged item
+        id: arrangedItem.id,
+        meta: arrangedItem.meta,
+        revisions: arrangedItem.revisions,
+        number_of_seats: 13
+      }, TestModel_AirplaneRefkeys).then(async updateResult => {
 
-      const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${TestModel_AirplaneItem.__type}`)[0]
-      const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(airplane, "number_of_seats"))[0]
+        expect(updateResult).toBeInstanceOf(TestModel_AirplaneItem)
 
-      expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
-      .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripNmetadata()._obj)
+        const createdItems = await queryForId(airplane.id)
 
+        const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${TestModel_AirplaneItem.__type}`)[0]
+        const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(airplane, "number_of_seats"))[0]
+
+        expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
+          .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripNmetadata()._obj)
+
+      })
     })
   })
 })
+
+

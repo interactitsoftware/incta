@@ -12,5 +12,5 @@ module.exports = {
   "setupFiles": ["./__specs__/setup/envVars.js"],
   "setupFilesAfterEnv": ["./__specs__/setup/envVars.js"],
   "testPathIgnorePatterns": ["/node_modules/"],
-  // "collectCoverage": true
+  "collectCoverage": true
 }

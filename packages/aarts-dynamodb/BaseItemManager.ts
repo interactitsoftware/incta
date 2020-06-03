@@ -222,7 +222,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     //#endregion
  
   
-    //#region DELETE - TODO NOT IMPL YET
+    //#region DELETE
     /**
      * 
      * @param item implemented by client intem managers, if custom domain validation needed
@@ -244,12 +244,11 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         }
         
         for (const arg of payload.arguments) {
-            if (!("id" in arg)) {
+            if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
                 throw new Error("{id} key is mandatory when deleting")
             } else {
                 arg["meta"] = `${versionString(0)}|${__type}`
-                arg["id"] = arg.id
             }
         }
 

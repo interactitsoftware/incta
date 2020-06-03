@@ -1,23 +1,25 @@
-import { DomainItem, DynamoItem } from "../BaseItemManager"
-import { dynamoDbClient, DB_NAME, fromAttributeMapArray } from "../DynamoDbClient"
+import { DomainItem, DynamoItem, RefKey } from "../BaseItemManager"
+import { dynamoDbClient, DB_NAME, fromAttributeMapArray, versionString, refkeyitemmeta } from "../DynamoDbClient"
 import { chunks } from "aarts-types/utils"
 import { WriteRequest } from "aws-sdk/clients/dynamodb"
+import { AnyConstructor } from "aarts-types/Mixin"
+import { transactPutItem } from "../dynamodb-transactPutItem"
 
 
-export const queryForId = async (id:string) => {
+export const queryForId = async (id: string) => {
     const ddbItemResult = await dynamoDbClient.query(
-    {
-      TableName: DB_NAME,
-      ExpressionAttributeValues: { ":id": { S: id } },
-      ExpressionAttributeNames: { "#id": "id" },
-      KeyConditionExpression: "#id = :id"
-    }).promise();
+        {
+            TableName: DB_NAME,
+            ExpressionAttributeValues: { ":id": { S: id } },
+            ExpressionAttributeNames: { "#id": "id" },
+            KeyConditionExpression: "#id = :id"
+        }).promise();
     return fromAttributeMapArray(ddbItemResult.Items) as (DynamoItem & DomainItem)[]
 }
 
 export class Strippable {
     public _obj: DynamoItem & DomainItem
-    constructor(obj:DynamoItem & DomainItem) {
+    constructor(obj: DynamoItem & DomainItem) {
         this._obj = obj
     }
     public stripCreatedUpdatedDates = () => stripCreatedUpdatedDates.call(null, this._obj)
@@ -26,40 +28,40 @@ export class Strippable {
     public stripNmetadata = () => stripNmetadata.call(null, this._obj)
 }
 
-const stripCreatedUpdatedDates =  (obj: DynamoItem & DomainItem) : Strippable => {
+const stripCreatedUpdatedDates = (obj: DynamoItem & DomainItem): Strippable => {
     delete obj.date_created
     delete obj.date_updated
     return new Strippable(obj)
 }
-const stripMeta =  (obj: DynamoItem & DomainItem) : Strippable => {
+const stripMeta = (obj: DynamoItem & DomainItem): Strippable => {
     delete obj.meta
     return new Strippable(obj)
 }
-const stripSmetadata =  (obj: DynamoItem & DomainItem) : Strippable => {
+const stripSmetadata = (obj: DynamoItem & DomainItem): Strippable => {
     delete obj.smetadata
     return new Strippable(obj)
 }
- const stripNmetadata =  (obj: DynamoItem & DomainItem) : Strippable => {
+const stripNmetadata = (obj: DynamoItem & DomainItem): Strippable => {
     delete obj.nmetadata
     return new Strippable(obj)
 }
 
-export const withSMetadata = (obj:Record<string,any>, key: string) => Object.assign({},obj, {smetadata: obj[key]})
-export const withNMetadata = (obj:Record<string,any>, key: string) => Object.assign({},obj, {nmetadata: obj[key]})
+export const withSMetadata = (obj: Record<string, any>, key: string) => Object.assign({}, obj, { smetadata: obj[key] })
+export const withNMetadata = (obj: Record<string, any>, key: string) => Object.assign({}, obj, { nmetadata: obj[key] })
 
-export const clearDynamo = async () =>{
+export const clearDynamo = async () => {
     let scanResult
     do {
-        let scanResult = await dynamoDbClient.scan({TableName: DB_NAME}).promise()
+        let scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
         const items = scanResult.Items && chunks(scanResult.Items, 25)
         if (items) {
             for (const chunk of items) {
                 await dynamoDbClient.batchWriteItem({
                     RequestItems: {
-                        [DB_NAME] : chunk.reduce<WriteRequest[]>((accum, item) => {
+                        [DB_NAME]: chunk.reduce<WriteRequest[]>((accum, item) => {
                             accum.push({
                                 DeleteRequest: {
-                                    Key: {id: {S: item.id.S}, meta: {S:item.meta.S}}
+                                    Key: { id: { S: item.id.S }, meta: { S: item.meta.S } }
                                 }
                             })
                             return accum
@@ -69,24 +71,58 @@ export const clearDynamo = async () =>{
             }
         }
 
-        scanResult = await dynamoDbClient.scan({TableName: DB_NAME}).promise()
+        scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
 
-    } while(scanResult && scanResult.LastEvaluatedKey)
-  }
+    } while (scanResult && scanResult.LastEvaluatedKey)
+}
 
-  export const getBy_meta__smetadata = (meta:string, smetadata:string) => dynamoDbClient.query(
+export const getBy_meta__smetadata = (meta: string, smetadata: string) => dynamoDbClient.query(
     {
-      TableName: DB_NAME, IndexName: "meta__smetadata",
-      KeyConditionExpression: "#meta=:meta and #smetadata = :smetadata",
-      ExpressionAttributeValues: { ":meta": { S: meta }, ":smetadata": { S: smetadata } },
-      ExpressionAttributeNames: { "#meta": "meta", "#smetadata": "smetadata" }
+        TableName: DB_NAME, IndexName: "meta__smetadata",
+        KeyConditionExpression: "#meta=:meta and #smetadata = :smetadata",
+        ExpressionAttributeValues: { ":meta": { S: meta }, ":smetadata": { S: smetadata } },
+        ExpressionAttributeNames: { "#meta": "meta", "#smetadata": "smetadata" }
     })
-  export const getBy_meta__nmetadata = (meta:string, nmetadata:number) => dynamoDbClient.query(
+export const getBy_meta__nmetadata = (meta: string, nmetadata: number) => dynamoDbClient.query(
     {
-      TableName: DB_NAME, IndexName: "meta__nmetadata",
-      KeyConditionExpression: "#meta=:meta and #nmetadata = :nmetadata",
-      ExpressionAttributeValues: { ":meta": { S: meta }, ":nmetadata": { N: `${nmetadata}` } },
-      ExpressionAttributeNames: { "#meta": "meta", "#nmetadata": "nmetadata" }
+        TableName: DB_NAME, IndexName: "meta__nmetadata",
+        KeyConditionExpression: "#meta=:meta and #nmetadata = :nmetadata",
+        ExpressionAttributeValues: { ":meta": { S: meta }, ":nmetadata": { N: `${nmetadata}` } },
+        ExpressionAttributeNames: { "#meta": "meta", "#nmetadata": "nmetadata" }
     })
-  export const getBy_smetadata__meta = (meta:string, smetadata:string) => {}
-  export const getBy_nmetadata__meta = (meta:string, smetadata:string) => {}
+// TODO
+export const getBy_smetadata__meta = (meta: string, smetadata: string) => { }
+export const getBy_nmetadata__meta = (meta: string, smetadata: string) => { }
+
+export const testInsertOneNonUniqueRefKey = async<T extends DynamoItem>(
+    input: {
+        dynamoItemCtor: AnyConstructor<T>,
+        propRefKey: string,
+        refKeyType: "string" | "number",
+        itemRefKeys: RefKey<T>[]
+    }) => {
+    const item =
+        Object.assign(
+            new input.dynamoItemCtor(),
+            { [input.propRefKey]: input.refKeyType === "string" ? "13" : 13 })
+
+    const result = await transactPutItem(item, input.itemRefKeys)
+    expect(result).toBeInstanceOf(input.dynamoItemCtor)
+
+    const createdItems = await queryForId(item.id)
+    expect(createdItems.length).toBe(2)
+
+    const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${item.item_type}`)[0]
+    const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(item, input.propRefKey))[0]
+
+    expect(item).toEqual(mainItem)
+
+    if (input.refKeyType === "string") {
+        return expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
+            .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripSmetadata()._obj)
+    } else {
+        return expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
+            .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripNmetadata()._obj)
+    }
+
+}

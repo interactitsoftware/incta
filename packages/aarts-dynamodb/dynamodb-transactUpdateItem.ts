@@ -153,7 +153,9 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
                             Put: {
                                 Item: toAttributeMap({ id: `uq|${existingItem.item_type}}${key}`, meta: `${itemUpdates[key]}` }),
                                 TableName: DB_NAME,
-                                ReturnValuesOnConditionCheckFailure: "ALL_OLD"
+                                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                                ConditionExpression: "attribute_not_exists(#id) and attribute_not_exists(#meta)",
+                                ExpressionAttributeNames: { "#id": "id", "#meta": "meta" }
                             }
                         })
                     }
@@ -184,5 +186,11 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
     delete itemUpdates.revisions
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
     process.env.DEBUG || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
-    return Object.assign(existingItem, itemUpdates)
+    
+    return Object.assign(existingItem,
+        Object.keys(itemUpdates).filter(k => itemUpdates[k] === "__del__")
+            .reduce<Record<string, any>>((accum, prop) => {
+                accum[prop] = undefined
+                return accum
+            }, {}))
 }

@@ -10,7 +10,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                "update.unique.str"
+                "create number refkey"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

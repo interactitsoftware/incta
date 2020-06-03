@@ -4,10 +4,10 @@ import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
 import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../DynamoDbClient"
 
-beforeAll(clearDynamo)
-// afterAll(clearDynamo)
 
 describe('update unique string refkey', () => {
+  beforeAll(async (done) => { await clearDynamo(); done() })
+
   test('update unique string refkey', async () => {
 
     const airplane = new TestModel_AirplaneItem()
@@ -23,7 +23,7 @@ describe('update unique string refkey', () => {
       }, TestModel_AirplaneRefkeys).then(async updateResult => {
         expect(updateResult).toBeInstanceOf(TestModel_AirplaneItem)
 
-        
+
         const ddbUpdated = await queryForId(arrangedItem.id)
         expect(ddbUpdated.length).toBe(3)//1 main item,2 refkey item copy 3 history record
 
@@ -35,8 +35,7 @@ describe('update unique string refkey', () => {
     })
   })
 
-  test('item updates setting refkeys to already existing unique ARE ALLOWED', async () => {
-    // TODO if want to dissallow updates to already existing unique refkeys, make batchGetItem check in transactUpdateItem first
+  test('item updates setting refkeys to already existing unique are rejected', async () => {
     const airplane = new TestModel_AirplaneItem()
     airplane.unique_id_str = "existing21"
     await transactPutItem(airplane, TestModel_AirplaneRefkeys) // arrange one existing
@@ -45,19 +44,19 @@ describe('update unique string refkey', () => {
     airplane1.unique_id_str = "existing13"
     await transactPutItem(airplane1, TestModel_AirplaneRefkeys) // arrange another one 
 
-    await transactUpdateItem(airplane1, { // update arranged item
-        id: airplane1.id,
-        meta: airplane1.meta,
-        revisions: airplane1.revisions,
-        unique_id_str: "existing21"
-      }, TestModel_AirplaneRefkeys)
+    return await expect(transactUpdateItem(airplane1, { // update arranged item
+      id: airplane1.id,
+      meta: airplane1.meta,
+      revisions: airplane1.revisions,
+      unique_id_str: "existing21"
+    }, TestModel_AirplaneRefkeys)).rejects.toThrow(/ConditionalCheckFailed/)
 
-    const ddbUpdated = await queryForId(airplane1.id)
-    expect(ddbUpdated.length).toBe(3) //1 main item,2 refkey item copy 3 history record
-    const mainItem = ddbUpdated.filter(i => i.meta === `${versionString(0)}|${TestModel_AirplaneItem.__type}`)[0]
-    const refkeyItemCopy = ddbUpdated.filter(i => i.meta === refkeyitemmeta(airplane, "unique_id_str"))[0]
+    // const ddbUpdated = await queryForId(airplane1.id)
+    // expect(ddbUpdated.length).toBe(3) //1 main item,2 refkey item copy 3 history record
+    // const mainItem = ddbUpdated.filter(i => i.meta === `${versionString(0)}|${TestModel_AirplaneItem.__type}`)[0]
+    // const refkeyItemCopy = ddbUpdated.filter(i => i.meta === refkeyitemmeta(airplane, "unique_id_str"))[0]
 
-    expect(mainItem).toEqual(airplane1)
-    expect(new Strippable(refkeyItemCopy).stripSmetadata().stripMeta()._obj).toEqual(new Strippable(airplane1).stripMeta()._obj)
+    // expect(mainItem).toEqual(airplane1)
+    // expect(new Strippable(refkeyItemCopy).stripSmetadata().stripMeta()._obj).toEqual(new Strippable(airplane1).stripMeta()._obj)
   })
 })
