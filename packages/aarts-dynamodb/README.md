@@ -1,2 +1,9 @@
-## This package is still in pre-release. 
-## Lots of modifications are done to code and its structure, still not indended for production use
+# Transactional CRUD
+## History & Unique constraint supported as per Dynamo docs
+## Up to 10 reference keys in an item are ensured
+That is, the same item is copied according to its refkey configuration, for ease of querying.
+This happens in transaction, thats why the limit, as DynamoDB transactions are up to 25 operations. 
+More documentation needed
+## Querying and building models is made generic as much as possible 
+## Tests 
+## Documentation coming :)

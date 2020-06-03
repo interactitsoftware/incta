@@ -3,7 +3,7 @@
   "contributors": [
     "akrsmv"
   ],
-  "version": "0.2.12",
+  "version": "0.3.0",
   "description": "dynamo db transactoinal crud operations with support on refkeys and uniqeness",
   "main": "./dist",
   "types": "./dist/index.d.ts",
@@ -26,7 +26,7 @@
     "ts-jest": "^26.0.0"
   },
   "scripts": {
-    "build": "tsc && cp package.json ./dist",
+    "build": "tsc && cp package.json README.md ./dist",
     "clean": "rm -fr ./dist",
     "test": "./node_modules/.bin/jest --runInBand",
     "clear_jest": "jest --clearCache",
