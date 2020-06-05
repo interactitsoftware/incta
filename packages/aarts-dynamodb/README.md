@@ -8,7 +8,7 @@ More documentation needed
 ## Querying and building models is made generic as much as possible 
 ### As Dynamodb is all about the specific use case and access patterns, one should tweak the code as it best fits his case, in order to optimize for querying capabilities and costs
 ### Test Model, test are based on
-<img src="./test-model.svg">
+<img src="https://github.com/akrsmv/aarts-core/blob/master/packages/aarts-dynamodb/test-model.svg">
 
 ## Tests 
 ## More ocumentation coming
