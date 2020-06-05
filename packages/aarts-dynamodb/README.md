@@ -9,6 +9,6 @@ More documentation needed
 ![Test Model, test are based on](./test-model.svg)
 
 ## Tests 
-## Documentation coming
+## More ocumentation coming
 
 
