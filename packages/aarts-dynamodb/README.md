@@ -6,5 +6,9 @@ This happens in transaction, thats why the limit, as DynamoDB transactions are u
 Inspired by https://www.youtube.com/watch?v=HaEPXoXVf2k
 More documentation needed
 ## Querying and building models is made generic as much as possible 
+![Test Model, test are based on](./test-model.svg)
+
 ## Tests 
-## Documentation coming :)
+## Documentation coming
+
+
