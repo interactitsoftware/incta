@@ -92,7 +92,13 @@ export const DynamoItem =
         
         class DynamoItem extends base implements IBaseDynamoItemProps {
             constructor(...args: any[]) {
-                super()
+                super(args)
+                Object.assign(this, args.reduce((accum, arg)=>{
+                    Object.keys(arg).forEach(k => {
+                        accum[k] = arg[k]
+                    })
+                    return accum
+                },{}))
             }
 
             public static __type: string = t

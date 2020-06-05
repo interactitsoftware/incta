@@ -5,11 +5,12 @@ export class TestModel_AirplaneModel extends TestModel_Nomenclature { }
 export class TestModel_AirplaneManifacturer extends TestModel_Nomenclature { }
 
 export class TestModel_Airplane {
+    
+    constructor (...args: any[]) {}
+
     //--ref keys
-    public unique_id_str?: string
-    public unique_id_nr?: number
-    public home_airport?: string
-    public country?: string
+    public reg_uq_str?: string
+    public reg_uq_number?: number
     public model?: string
     public manifacturer?: string
     //--rest of keys

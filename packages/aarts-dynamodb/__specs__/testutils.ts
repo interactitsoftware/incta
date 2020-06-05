@@ -112,17 +112,17 @@ export const testInsertOneNonUniqueRefKey = async<T extends DynamoItem>(
     const createdItems = await queryForId(item.id)
     expect(createdItems.length).toBe(2)
 
-    const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${item.item_type}`)[0]
-    const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(item, input.propRefKey))[0]
+    const ddbMainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${item.item_type}`)[0]
+    const ddbRefkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(item, input.propRefKey))[0]
 
-    expect(item).toEqual(mainItem)
+    expect(ddbMainItem).toEqual(item)
 
     if (input.refKeyType === "string") {
-        return expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
-            .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripSmetadata()._obj)
+        return expect(new Strippable(ddbMainItem).stripCreatedUpdatedDates().stripMeta()._obj)
+            .toEqual(new Strippable(ddbRefkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripSmetadata()._obj)
     } else {
-        return expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
-            .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripNmetadata()._obj)
+        return expect(new Strippable(ddbMainItem).stripCreatedUpdatedDates().stripMeta()._obj)
+            .toEqual(new Strippable(ddbRefkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripNmetadata()._obj)
     }
 
 }

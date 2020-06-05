@@ -1,3 +1,3 @@
 export class TestModel_Nomenclature {
-    public label: string = ""
+    public name: string = ""
 }

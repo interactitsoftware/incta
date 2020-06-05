@@ -1,4 +1,4 @@
-import { TestModel_AirplaneItem, TestModel_AirplaneRefkeys } from "../testmodel/_DynamoItems"
+import { TestModel_FlightItem } from "../testmodel/_DynamoItems"
 import { transactPutItem } from "../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
@@ -12,29 +12,27 @@ describe('update string refkey', () => {
 
   test('update string refkey', async () => {
 
-    const airplane = new TestModel_AirplaneItem()
-    airplane.home_airport = "kenedi" // arrange string refkey to be updated, see testmodel
+    const flight = new TestModel_FlightItem({tourist_season: "season-1"})// arrange string refkey to be updated, see testmodel
 
-    return await transactPutItem(airplane, TestModel_AirplaneRefkeys).then(async arrangedItem => { // arrange existing item
+    const arrangedItem = await transactPutItem(flight, TestModel_FlightItem.__refkeys)
 
-      await transactUpdateItem(arrangedItem, { // update arranged item
+    const updateResult = await transactUpdateItem(arrangedItem, { // update arranged item
         id: arrangedItem.id,
         meta: arrangedItem.meta,
         revisions: arrangedItem.revisions,
-        home_airport: "frankfurt"
-      }, TestModel_AirplaneRefkeys).then(async updateResult => {
+        tourist_season: "season-2"
+      }, TestModel_FlightItem.__refkeys)
 
-        expect(updateResult).toBeInstanceOf(TestModel_AirplaneItem)
+      expect(updateResult).toBeInstanceOf(TestModel_FlightItem)
 
-        const createdItems = await queryForId(airplane.id)
+      const createdItems = await queryForId(flight.id)
 
-        const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${TestModel_AirplaneItem.__type}`)[0]
-        const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(airplane, "home_airport"))[0]
+      const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${TestModel_FlightItem.__type}`)[0]
+      const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(flight, "tourist_season"))[0]
 
-        expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
-          .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripSmetadata()._obj)
+      expect(mainItem.tourist_season).toBe("season-2")
+      expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
+        .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripSmetadata()._obj)
 
-      })
-    })
   })
 })

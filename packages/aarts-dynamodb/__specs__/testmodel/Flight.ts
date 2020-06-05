@@ -1,15 +1,17 @@
 
 export class TestModel_Flight { 
+    constructor (...args: any[]) {}
+
     //-- ref keys
-    public airplane: string = ""
-    public passangers: string[] = []
-    public from_airport: string = ""
-    public to_airport: string = ""
-    public tourist_season: string = ""
-    public from_country: string = ""
-    public to_country: string = ""
+    public airplane?: string
+    public from_airport?: string
+    public to_airport?: string
+    public from_country?: string
+    public to_country?: string
     //-- rest of keys
-    public durration_hours: number = 0
+    public durration_hours?: number
+    public tourist_season?: string
+
 
 }
 

@@ -10,7 +10,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                "create number refkey"
+                "get"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

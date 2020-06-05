@@ -12,15 +12,16 @@ describe('delete item', () => {
 
   test('delete item keeps history', async () => {
 
-    const airplane = new TestModel_AirplaneItem()
-    airplane.number_of_seats = 11 // arrange one refkey
+    const airplane = new TestModel_AirplaneItem({number_of_seats:13}) //arrange with one refkey
     await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys)
 
     const allBeforeDelete = await queryForId(airplane.id)
     expect(allBeforeDelete.length).toBe(2)
+    expect(airplane.revisions).toBe(0)
 
     const deleteResult = await transactDeleteItem(airplane, TestModel_AirplaneItem.__refkeys)
     expect(deleteResult).toEqual(airplane)
+    expect(airplane.revisions).toBe(1)
     
     const allAfterDelete = await queryForId(airplane.id)
     expect(allAfterDelete.length).toBe(1)

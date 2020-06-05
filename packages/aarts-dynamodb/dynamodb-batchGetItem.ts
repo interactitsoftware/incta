@@ -6,7 +6,7 @@ import { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMa
 import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME } from './DynamoDbClient';
 import { DynamoItemKey, ExistingDynamoItem, DynamoItem } from './BaseItemManager';
 
-export const batchGetItem = <T extends DynamoItemKey>(items: T[]): Promise<DynamoItem[]> => 
+export const batchGetItem = (items: {id:string, meta:string}[]): Promise<DynamoItem[]> => 
     new Promise((resolve, reject) => 
 {
     const keys: AttributeMap[] = toAttributeMapArray(items.map(i => {return {id:i.id, meta:i.meta}}))
