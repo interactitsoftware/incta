@@ -6,7 +6,9 @@ This happens in transaction, thats why the limit, as DynamoDB transactions are u
 Inspired by https://www.youtube.com/watch?v=HaEPXoXVf2k
 More documentation needed
 ## Querying and building models is made generic as much as possible 
-![Test Model, test are based on](./test-model.svg)
+### As Dynamodb is all about the specific use case and access patterns, one should tweak the code as it best fits his case, in order to optimize for querying capabilities and costs
+### Test Model, test are based on
+<img src="./test-model.svg">
 
 ## Tests 
 ## More ocumentation coming
