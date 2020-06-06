@@ -2,6 +2,7 @@ import { DynamoDB, AWSError } from 'aws-sdk'
 import { Request } from 'aws-sdk/lib/request'
 import { AttributeMap, TransactWriteItemsInput, TransactWriteItemsOutput } from 'aws-sdk/clients/dynamodb';
 import { DynamoItem } from './BaseItemManager';
+import { ppjson } from 'aarts-types/utils';
 
 export const offline_options = {
     region: 'ddblocal',
@@ -46,9 +47,6 @@ export const refkeyitem = (item: DynamoItem, key: string) => Object.assign(
         nmetadata: typeof item[key] === "number" ? item[key] as number : undefined,
         // item_type: refkeyitemtype(item, key)
     })
-
-
-
 
 export function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemUpdates: Record<string, any>): object {
     return Object.keys(itemUpdates)
@@ -108,7 +106,9 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
         try {
             return await request.promise()
         } catch (err) {
-            throw new Error(JSON.stringify({ cancellationReasons:cancellationReasons.filter(c=> c.Item || c.Message) , err }))
+            throw new Error(ppjson({ 
+                cancellationReasons:cancellationReasons.length > 1 && cancellationReasons.filter(c=> c.Item || c.Message),
+                err }))
         }
 
     }

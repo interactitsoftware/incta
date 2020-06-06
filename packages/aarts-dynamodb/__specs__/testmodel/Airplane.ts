@@ -1,8 +1,12 @@
 import { TestModel_Nomenclature } from "./Nomenclature"
 
-export class TestModel_AirplaneModel extends TestModel_Nomenclature { }
+export class TestModel_AirplaneModel extends TestModel_Nomenclature { 
+    public manifacturer:string = "unknown"
+}
 
-export class TestModel_AirplaneManifacturer extends TestModel_Nomenclature { }
+export class TestModel_AirplaneManifacturer extends TestModel_Nomenclature { 
+    public country: string = "unknown"
+}
 
 export class TestModel_Airplane {
     

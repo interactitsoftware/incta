@@ -1,4 +1,4 @@
-import { TestModel_AirplaneItem, TestModel_AirplaneRefkeys } from "../testmodel/_DynamoItems"
+import { TestModel_AirplaneItem, /**XXX TestModel_AirplaneRefkeys */ } from "../testmodel/_DynamoItems"
 import { transactPutItem } from "../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../DynamoDbClient"
@@ -11,7 +11,7 @@ describe('create unique string refkey', () => {
     const airplane = new TestModel_AirplaneItem()
     airplane.reg_uq_str = "abcdef"
 
-    return await transactPutItem(airplane, TestModel_AirplaneRefkeys).then(async result => {
+    return await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys).then(async result => {
       expect(result).toBeInstanceOf(TestModel_AirplaneItem)
 
       const ddbCreated = await queryForId(airplane.id)
@@ -28,7 +28,7 @@ describe('create unique string refkey', () => {
     const airplane = new TestModel_AirplaneItem()
     airplane.reg_uq_str = "abcdef" // arrange already existing for create (prev test ensures existing, TODO make independant)
 
-    return await expect(transactPutItem(airplane, TestModel_AirplaneRefkeys)).rejects.toThrow(/ConditionalCheckFailed/)
+    return await expect(transactPutItem(airplane, TestModel_AirplaneItem.__refkeys)).rejects.toThrow(/ConditionalCheckFailed/)
 
   })
 })

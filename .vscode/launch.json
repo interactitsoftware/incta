@@ -10,7 +10,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                "get"
+                "query.spec"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

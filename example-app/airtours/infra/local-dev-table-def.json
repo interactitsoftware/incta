@@ -31,6 +31,26 @@
     ],
     "GlobalSecondaryIndexes": [
         {
+            "IndexName": "meta__id",
+            "KeySchema": [
+                {
+                    "AttributeName": "meta",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "id",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
             "IndexName": "meta__smetadata",
             "KeySchema": [
                 {
@@ -46,8 +66,8 @@
                 "ProjectionType": "ALL"
             },
             "ProvisionedThroughput": {
-                "ReadCapacityUnits": 1,
-                "WriteCapacityUnits": 1
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
             }
         },
         {
@@ -66,8 +86,8 @@
                 "ProjectionType": "ALL"
             },
             "ProvisionedThroughput": {
-                "ReadCapacityUnits": 1,
-                "WriteCapacityUnits": 1
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
             }
         },
         {
@@ -86,8 +106,8 @@
                 "ProjectionType": "ALL"
             },
             "ProvisionedThroughput": {
-                "ReadCapacityUnits": 1,
-                "WriteCapacityUnits": 1
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
             }
         },
         {
@@ -106,14 +126,14 @@
                 "ProjectionType": "ALL"
             },
             "ProvisionedThroughput": {
-                "ReadCapacityUnits": 1,
-                "WriteCapacityUnits": 1
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
             }
         }
     ],
     "BillingMode": "PROVISIONED",
     "ProvisionedThroughput": {
-        "ReadCapacityUnits": 1,
-        "WriteCapacityUnits": 1
+        "ReadCapacityUnits": 100,
+        "WriteCapacityUnits": 100
     }
 }

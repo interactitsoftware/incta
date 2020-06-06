@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
@@ -102,50 +102,50 @@
 <a name='L43'></a><a href='#L43'>43</a>
 <a name='L44'></a><a href='#L44'>44</a>
 <a name='L45'></a><a href='#L45'>45</a>
-<a name='L46'></a><a href='#L46'>46</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
+<a name='L46'></a><a href='#L46'>46</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { DynamoItem, RefKey } from "../../BaseItemManager";
 import { TestModel_Airport } from "./Airport";
@@ -154,43 +154,43 @@ import { TestModel_Airplane, TestModel_AirplaneModel, TestModel_AirplaneManifact
 import { TestModel_Country } from "./Country";
 import { TestModel_Tourist } from "./Tourist";
 &nbsp;
-export const TestModel_FlightRefkeys: RefKey&lt;TestModel_Flight&gt;[] = [
+export class TestModel_FlightItem extends DynamoItem(TestModel_Flight, "flight", [
     {key: "airplane", ref:"airplane"},
     {key: "from_airport", ref:"airport"},
     {key: "to_airport", ref:"airport"},
     {key: "tourist_season"}, // although not pointing to other type, we still want to query by it
     {key: "from_country", ref: "country"},
-    {key: "to_country", ref: "country"}]
-export class TestModel_FlightItem extends DynamoItem(TestModel_Flight, "flight", TestModel_FlightRefkeys) { }
+    {key: "to_country", ref: "country"}]) { }
 &nbsp;
-&nbsp;
-export const TestModel_TouristRefkeys: RefKey&lt;TestModel_Tourist&gt;[] = [
+export class TestModel_TouristItem extends DynamoItem(TestModel_Tourist, "tourist", [
     {key: "airplane", ref:"airplane"},
     {key: "from_airport", ref:"airport"},
     {key: "to_airport", ref:"airport"},
     {key: "flight", ref: "flight"}, 
     {key: "from_country", ref: "country"},
-    {key: "to_country", ref: "country"}]
-export class TestModel_TouristItem extends DynamoItem(TestModel_Tourist, "tourist", TestModel_TouristRefkeys) { }
+    {key: "to_country", ref: "country"}]) { }
 &nbsp;
-export const TestModel_AirplaneRefkeys:RefKey&lt;TestModel_Airplane&gt;[] = [
+export class TestModel_AirplaneItem extends DynamoItem(TestModel_Airplane, "airplane", [
     {key: "reg_uq_str", unique: true},
     {key: "reg_uq_number", unique: true},
     {key: "number_of_seats"},// although not pointing to other type, we still want to query by it
     {key: "model", ref: "airplane|nomenclature|model"},
     {key: "manifacturer", ref: "airplane|nomenclature|manifacturer"},
-]
-export class TestModel_AirplaneItem extends DynamoItem(TestModel_Airplane, "airplane", TestModel_AirplaneRefkeys) { }
+]) { }
 &nbsp;
-export const TestModel_AirportRefkeys:RefKey&lt;TestModel_Airport&gt;[] = [
+export class TestModel_AirportItem extends DynamoItem(TestModel_Airport, "airport", [
     {key: "country", ref: "country"}
-]
-export class TestModel_AirportItem extends DynamoItem(TestModel_Airport, "airport", TestModel_AirportRefkeys) { }
+]) { }
 &nbsp;
-&nbsp;
-export class TestModel_AirplaneModelItem extends DynamoItem(TestModel_AirplaneModel, "airplane|nomenclature|model") { }
-export class TestModel_AirplaneManifacturerItem extends DynamoItem(TestModel_AirplaneManifacturer, "airplane|nomenclature|manifacturer") { }
 export class TestModel_CountryItem extends DynamoItem(TestModel_Country, "country") { }
+&nbsp;
+export class TestModel_AirplaneModelItem extends DynamoItem(TestModel_AirplaneModel, "airplane|nomenclature|model", [
+    {key: "manifacturer", ref: "manifacturer"}
+]) { }
+&nbsp;
+export class TestModel_AirplaneManifacturerItem extends DynamoItem(TestModel_AirplaneManifacturer, "airplane|nomenclature|manifacturer", [
+    {key: "country", ref: "country"}
+]) { }
 &nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
@@ -199,7 +199,7 @@ export class TestModel_CountryItem extends DynamoItem(TestModel_Country, "countr
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Jun 04 2020 20:50:36 GMT+0300 (Eastern European Summer Time)
+                at Sat Jun 06 2020 19:21:13 GMT+0300 (Eastern European Summer Time)
             </div>
         </div>
         <script src="../../../prettify.js"></script>

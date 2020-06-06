@@ -130,26 +130,21 @@
 <a name='L71'></a><a href='#L71'>71</a>
 <a name='L72'></a><a href='#L72'>72</a>
 <a name='L73'></a><a href='#L73'>73</a>
-<a name='L74'></a><a href='#L74'>74</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">439x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">439x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">439x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -166,9 +161,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-yes">693x</span>
-<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -176,7 +168,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">693x</span>
+<span class="cline-any cline-yes">439x</span>
+<span class="cline-any cline-yes">5183x</span>
+<span class="cline-any cline-yes">135x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5183x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -189,20 +191,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">147x</span>
+<span class="cline-any cline-yes">5183x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">439x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-yes">19x</span>
-<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">439x</span>
+<span class="cline-any cline-yes">439x</span>
+<span class="cline-any cline-yes">439x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict'
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
@@ -211,9 +213,9 @@ import { RefKey, DynamoItem, DomainItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
 import { ppjson } from 'aarts-types/utils';
 &nbsp;
-export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&gt;(item: T, __item_refkeys: RefKey&lt;T&gt;[]): Promise&lt;T&gt; =&gt; {
+export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&gt;(item: T, __item_refkeys?: RefKey&lt;T&gt;[]): Promise&lt;T&gt; =&gt; {
     process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)</span>
-&nbsp;
+    
     const ditem = toAttributeMap(item)
 &nbsp;
     const itemTransactWriteItemList: TransactWriteItemList = [
@@ -232,12 +234,13 @@ export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&g
                     id: { S: "aggregations" },
                     meta: { S: `totals` },
                 }),
-                UpdateExpression: `SET #${item.item_type} = if_not_exists(#${item.item_type}, :zero) + :inc_one`,
-                ExpressionAttributeNames: { [`#${item.item_type}`]: item.item_type },
+                UpdateExpression: `SET #item_type = if_not_exists(#item_type, :zero) + :inc_one`,
+                ExpressionAttributeNames: { [`#item_type`]: item.item_type },
                 ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
             }
         }
     ]
+    
     // build all updates by also examining refkeys
     const allTransactWriteItemList = Object.keys(ditem).reduce&lt;TransactWriteItem[]&gt;((accum, key) =&gt; {
         if (__item_refkeys &amp;&amp; __item_refkeys.map(r =&gt; r.key).indexOf(key) &gt; -1 &amp;&amp; !!item[key]) {
@@ -283,7 +286,7 @@ export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&g
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Jun 04 2020 20:50:36 GMT+0300 (Eastern European Summer Time)
+                at Sat Jun 06 2020 19:21:13 GMT+0300 (Eastern European Summer Time)
             </div>
         </div>
         <script src="../prettify.js"></script>

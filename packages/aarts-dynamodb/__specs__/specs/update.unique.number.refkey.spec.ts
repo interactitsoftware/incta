@@ -1,4 +1,4 @@
-import { TestModel_AirplaneItem, TestModel_AirplaneRefkeys } from "../testmodel/_DynamoItems"
+import { TestModel_AirplaneItem, /**TestModel_AirplaneRefkeys */ } from "../testmodel/_DynamoItems"
 import { transactPutItem } from "../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
@@ -13,14 +13,14 @@ describe('update unique number refkey', () => {
     const airplane = new TestModel_AirplaneItem()
     airplane.reg_uq_number = 11 // arrange string refkey to be updated, see testmodel
 
-    return await transactPutItem(airplane, TestModel_AirplaneRefkeys).then(async arrangedItem => { // arrange existing item
+    return await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
       await transactUpdateItem(arrangedItem, { // update arranged item
         id: arrangedItem.id,
         meta: arrangedItem.meta,
         revisions: arrangedItem.revisions,
         reg_uq_number: 13
-      }, TestModel_AirplaneRefkeys).then(async updateResult => {
+      }, TestModel_AirplaneItem.__refkeys).then(async updateResult => {
         expect(updateResult).toBeInstanceOf(TestModel_AirplaneItem)
 
         const ddbUpdated = await queryForId(arrangedItem.id)
@@ -37,18 +37,18 @@ describe('update unique number refkey', () => {
   test('item updates setting refkeys to already existing unique values are rejected', async () => {
     const airplane = new TestModel_AirplaneItem()
     airplane.reg_uq_number = 21
-    await transactPutItem(airplane, TestModel_AirplaneRefkeys) // arrange one existing
+    await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys) // arrange one existing
 
     const airplane1 = new TestModel_AirplaneItem()
     airplane1.reg_uq_number = 23
-    await transactPutItem(airplane1, TestModel_AirplaneRefkeys) // arrange another one 
+    await transactPutItem(airplane1, TestModel_AirplaneItem.__refkeys) // arrange another one 
 
     return expect(transactUpdateItem(airplane1, { // update arranged item
       id: airplane1.id,
       meta: airplane1.meta,
       revisions: airplane1.revisions,
       reg_uq_number: 21
-    }, TestModel_AirplaneRefkeys)).rejects.toThrow(/ConditionalCheckFailed/)
+    }, TestModel_AirplaneItem.__refkeys)).rejects.toThrow(/ConditionalCheckFailed/)
 
     // const ddbUpdated = await queryForId(airplane1.id)
     // expect(ddbUpdated.length).toBe(3) //1 main item,2 refkey item copy 3 history record

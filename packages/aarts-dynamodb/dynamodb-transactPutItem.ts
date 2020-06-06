@@ -6,9 +6,9 @@ import { RefKey, DynamoItem, DomainItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
 import { ppjson } from 'aarts-types/utils';
 
-export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T, __item_refkeys: RefKey<T>[]): Promise<T> => {
+export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
     process.env.DEBUG || console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
-
+    
     const ditem = toAttributeMap(item)
 
     const itemTransactWriteItemList: TransactWriteItemList = [
@@ -27,12 +27,13 @@ export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T
                     id: { S: "aggregations" },
                     meta: { S: `totals` },
                 }),
-                UpdateExpression: `SET #${item.item_type} = if_not_exists(#${item.item_type}, :zero) + :inc_one`,
-                ExpressionAttributeNames: { [`#${item.item_type}`]: item.item_type },
+                UpdateExpression: `SET #item_type = if_not_exists(#item_type, :zero) + :inc_one`,
+                ExpressionAttributeNames: { [`#item_type`]: item.item_type },
                 ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
             }
         }
     ]
+    
     // build all updates by also examining refkeys
     const allTransactWriteItemList = Object.keys(ditem).reduce<TransactWriteItem[]>((accum, key) => {
         if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && !!item[key]) {

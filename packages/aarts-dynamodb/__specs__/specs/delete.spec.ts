@@ -1,4 +1,4 @@
-import { TestModel_AirplaneItem, TestModel_AirplaneRefkeys } from "../testmodel/_DynamoItems"
+import { TestModel_AirplaneItem /**XXXTestModel_AirplaneRefkeys */ } from "../testmodel/_DynamoItems"
 import { transactPutItem } from "../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"

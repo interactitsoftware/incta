@@ -1,4 +1,4 @@
-import { TestModel_AirplaneItem, TestModel_AirplaneRefkeys } from "../testmodel/_DynamoItems"
+import { TestModel_AirplaneItem, /**TestModel_AirplaneRefkeys */ } from "../testmodel/_DynamoItems"
 import { transactPutItem } from "../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
@@ -13,7 +13,7 @@ describe('update remove refkey', () => {
     const airplane = new TestModel_AirplaneItem()
     airplane.number_of_seats = 11 // arrange string refkey to be deleted
 
-    return await transactPutItem(airplane, TestModel_AirplaneRefkeys).then(async arrangedItem => { // arrange existing item
+    return await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
       const result = await transactUpdateItem(arrangedItem, { // update arranged item
         id: arrangedItem.id,
@@ -21,7 +21,7 @@ describe('update remove refkey', () => {
         revisions: arrangedItem.revisions,
         //@ts-ignore
         number_of_seats: "__del__"
-      }, TestModel_AirplaneRefkeys)
+      }, TestModel_AirplaneItem.__refkeys)
 
         expect(result).toBeInstanceOf(TestModel_AirplaneItem) // main item returned
         expect(result).toEqual(Object.assign({},airplane, {number_of_seats: undefined}))
