@@ -7,6 +7,7 @@ import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../DynamoD
 
 describe('update unique string refkey', () => {
   beforeAll(async (done) => { await clearDynamo(); done() })
+  afterAll(async (done) => { await clearDynamo(); done() })
 
   test('update unique string refkey', async () => {
 

@@ -8,6 +8,7 @@ export class TestModel_Flight {
     public to_airport?: string
     public from_country?: string
     public to_country?: string
+    public flight_code?: string 
     //-- rest of keys
     public durration_hours?: number
     public tourist_season?: string

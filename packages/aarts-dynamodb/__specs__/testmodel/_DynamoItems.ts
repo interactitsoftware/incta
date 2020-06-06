@@ -6,6 +6,7 @@ import { TestModel_Country } from "./Country";
 import { TestModel_Tourist } from "./Tourist";
 
 export class TestModel_FlightItem extends DynamoItem(TestModel_Flight, "flight", [
+    {key: "flight_code", unique:true},
     {key: "airplane", ref:"airplane"},
     {key: "from_airport", ref:"airport"},
     {key: "to_airport", ref:"airport"},
@@ -30,10 +31,13 @@ export class TestModel_AirplaneItem extends DynamoItem(TestModel_Airplane, "airp
 ]) { }
 
 export class TestModel_AirportItem extends DynamoItem(TestModel_Airport, "airport", [
-    {key: "country", ref: "country"}
+    {key: "country", ref: "country"},
+    {key: "name", unique: true}
 ]) { }
 
-export class TestModel_CountryItem extends DynamoItem(TestModel_Country, "country") { }
+export class TestModel_CountryItem extends DynamoItem(TestModel_Country, "country", [
+    {key: "name", unique: true}
+]) { }
 
 export class TestModel_AirplaneModelItem extends DynamoItem(TestModel_AirplaneModel, "airplane|nomenclature|model", [
     {key: "manifacturer", ref: "manifacturer"}

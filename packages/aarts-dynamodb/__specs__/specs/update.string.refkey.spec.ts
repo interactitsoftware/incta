@@ -8,6 +8,7 @@ import { versionString, refkeyitemmeta } from "../../DynamoDbClient"
 describe('update string refkey', () => {
 
   beforeAll(async (done) => { await clearDynamo(); done() })
+  afterAll(async (done) => { await clearDynamo(); done() })
 
 
   test('update string refkey', async () => {

@@ -4,7 +4,12 @@ import { Strippable, clearDynamo, queryForId } from "../testutils"
 import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../DynamoDbClient"
 
 describe('create unique number refkey', () => {
-  beforeAll(async (done) => { await clearDynamo(); done() })
+  beforeAll(async (done) => { 
+    await clearDynamo()
+    done() 
+  })
+  afterAll(async (done) => { await clearDynamo(); done() })
+
   test('create unique number refkey', async () => {
     const airplane = new TestModel_AirplaneItem()
     airplane.reg_uq_number = 13

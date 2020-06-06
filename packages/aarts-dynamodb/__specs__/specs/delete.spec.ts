@@ -9,6 +9,7 @@ import { DynamoItem } from "../../BaseItemManager"
 describe('delete item', () => {
 
   beforeAll(async (done) => { await clearDynamo(); done() })
+  afterAll(async (done) => { await clearDynamo(); done() })
 
   test('delete item keeps history', async () => {
 

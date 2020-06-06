@@ -5,7 +5,12 @@ import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../DynamoD
 
 
 describe('create unique string refkey', () => {
-  beforeAll(async (done) => { await clearDynamo(); done() })
+  
+  beforeAll(async (done) => { 
+    await clearDynamo()
+    done() 
+  })
+  afterAll(async (done) => { await clearDynamo(); done() })
 
   test('create unique string refkey', async () => {
     const airplane = new TestModel_AirplaneItem()

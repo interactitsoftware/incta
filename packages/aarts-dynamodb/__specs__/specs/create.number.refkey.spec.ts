@@ -3,6 +3,7 @@ import { Strippable, clearDynamo, queryForId, testInsertOneNonUniqueRefKey } fro
 
 describe('create number refkey', () => {
   beforeAll(async (done) => { await clearDynamo(); done() })
+  afterAll(async (done) => { await clearDynamo(); done() })
 
   test('create number refkey', async () => {
     return await testInsertOneNonUniqueRefKey({

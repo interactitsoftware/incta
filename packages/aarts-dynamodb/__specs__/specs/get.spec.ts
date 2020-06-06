@@ -11,6 +11,7 @@ import { TestModel_Airport } from "../testmodel/Airport"
 describe('get', () => {
 
   beforeAll(async (done) => { await clearDynamo(); done() })
+  afterAll(async (done) => { await clearDynamo(); done() })
 
   test('get items by PK', async () => {
 
