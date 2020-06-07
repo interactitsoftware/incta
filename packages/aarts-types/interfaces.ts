@@ -18,7 +18,7 @@ export interface AartsPayload {
 }
 
 export interface DdbQueryInput {
-    pk: string,
+    pk: string | number,
     range?: string | number | {min:string|number, max:string|number},
     primaryKeyName: string,
     rangeKeyName: string,
@@ -26,7 +26,7 @@ export interface DdbQueryInput {
     filter?: {
         key: string,
         predicate: string,
-        value: string
+        value: string | number
     }[],
     limit?: number,
     paginationToken?: DdbItemKey
