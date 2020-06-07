@@ -3,7 +3,7 @@
   "contributors": [
     "akrsmv"
   ],
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "dynamo db transactoinal crud operations with support on refkeys and uniqeness",
   "main": "./dist",
   "types": "./dist/index.d.ts",
