@@ -19,11 +19,6 @@ export const transactDeleteItem = async <T extends DomainItem & DynamoItem>(exis
     const dexistingItemkey = { id: { S: itemUpdates.id }, meta: { S: itemUpdates.meta } };
     const dexistingItem = toAttributeMap(existingItem)
 
-    // NNO CHECK FOR REVISIONS IN A DELETE
-    // if (Object.keys(ditemUpdates).length === 1 && "revisions" in ditemUpdates) {
-    //     // no new updates, only old revision passed
-    //     throw new Error(`no new updates, only revision passed for id[${existingItem.id}]`)
-    // }
 
     //#region DEBUG msg
     process.env.DEBUG || console.log("================================================")
@@ -42,10 +37,6 @@ export const transactDeleteItem = async <T extends DomainItem & DynamoItem>(exis
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
             Delete: {
-                // ConditionExpression: `#revisions = :revisions`,
-                // ExpressionAttributeNames: {"#id": "id", "#meta": "meta"},
-                // ExpressionAttributeValues: {":id": ditemUpdates["id"], ":meta": ditemUpdates["meta"]},
-
                 Key: dexistingItemkey,
                 TableName: DB_NAME,
                 ReturnValuesOnConditionCheckFailure: "ALL_OLD"

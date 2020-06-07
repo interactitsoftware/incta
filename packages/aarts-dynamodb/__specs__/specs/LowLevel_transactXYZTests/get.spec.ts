@@ -1,17 +1,17 @@
-import { TestModel_AirplaneItem, TestModel_AirportItem } from "../testmodel/_DynamoItems"
-import { transactPutItem } from "../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../testutils"
-import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
-import { versionString, refkeyitemmeta, deletedVersionString } from "../../DynamoDbClient"
-import { transactDeleteItem } from "../../dynamodb-transactDeleteItem"
-import { DynamoItem } from "../../BaseItemManager"
-import { batchGetItem } from "../../dynamodb-batchGetItem"
-import { TestModel_Airport } from "../testmodel/Airport"
+import { TestModel_AirplaneItem, TestModel_AirportItem } from "../../testmodel/_DynamoItems"
+import { transactPutItem } from "../../../dynamodb-transactPutItem"
+import { Strippable, clearDynamo, queryForId } from "../../testutils"
+import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
+import { versionString, refkeyitemmeta, deletedVersionString } from "../../../DynamoDbClient"
+import { transactDeleteItem } from "../../../dynamodb-transactDeleteItem"
+import { DynamoItem } from "../../../BaseItemManager"
+import { batchGetItem } from "../../../dynamodb-batchGetItem"
+import { TestModel_Airport } from "../../testmodel/Airport"
 
 describe('get', () => {
 
   beforeAll(async (done) => { await clearDynamo(); done() })
-  afterAll(async (done) => { await clearDynamo(); done() })
+  // afterAll(async (done) => { await clearDynamo(); done() })
 
   test('get items by PK', async () => {
 

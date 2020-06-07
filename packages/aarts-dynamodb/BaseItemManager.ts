@@ -159,6 +159,15 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param identity 
      */
     async *baseValidateQuery(args: DdbQueryInput[], identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
+        
+        if (args.constructor !== Array){
+            throw new Error(`[baseValidateQuery] Query args is not an array!`)
+        }
+
+        if (args.length > 1) {
+			throw new Error(`[baseValidateQuery] Query args array excedes the max arguments array length currently supported(1)`)
+        }
+
         return args.reduce<DdbQueryInput[]>((accum, inputQueryArg) => {
             if (!inputQueryArg.pk) {
                 throw new Error(`PK is mandatory when querying`)
@@ -245,14 +254,18 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateDelete(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
         process.env.DEBUG || (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
-        if (payload.arguments > 1) {
+        if (payload.arguments.constructor !== Array){
+            throw new Error(`[${__type}:baseValidateDelete] Payload is not an array!`)
+        }
+
+        if (payload.arguments.length > 1) {
 			throw new Error(`[${__type}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(1)`)
         }
         
         for (const arg of payload.arguments) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
-                throw new Error("{id} key is mandatory when deleting")
+                throw new Error("id and revisions keys is mandatory when deleting")
             } else {
                 arg["meta"] = `${versionString(0)}|${__type}`
             }
@@ -275,10 +288,14 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         process.env.DEBUG || (yield { arguments: `[${__type}:DELETE] Loading requested items`, identity: undefined })
         const dynamoExistingItems = await batchGetItem(args.arguments);
-        process.env.DEBUG || console.log("result from batch get", JSON.stringify(dynamoExistingItems))
+        process.env.DEBUG || console.log("result from delete", JSON.stringify(dynamoExistingItems))
 
         if (dynamoExistingItems.length !== args.arguments.length) {
             throw new Error(`[${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)
+        }
+
+        if (dynamoExistingItems[0].revisions !== args.arguments[0].revisions) {
+            throw new Error(`[${__type}:DELETE] revisions passed does not match item revisions`)
         }
 
         const updatedItems = []
@@ -321,6 +338,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param identity 
      */
     async *baseValidateGet(args: T[], identity: IIdentity): AsyncGenerator<string, DynamoItemKey[], undefined> {
+        if (args.constructor !== Array){
+            throw new Error(`[baseValidateGet] Payload is not an array!`)
+        }
         return args.reduce<DynamoItemKey[]>((accum, item) => {
             if (item.id) {
                 accum.push({id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}`})
@@ -384,8 +404,12 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateCreate(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
         process.env.DEBUG || (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))
         
-        if (payload.arguments > 1) {
-			throw new Error(`[${__type}:baseValidateCreate] Payload is array an it excedes the max arguments array length constraint(1)`)
+        if (payload.arguments.constructor !== Array){
+            throw new Error(`[${__type}:baseValidateCreate] Payload is not an array!`)
+        }
+
+        if (payload.arguments.length > 1) {
+			throw new Error(`[${__type}:baseValidateCreate] excedes the max arguments array length constraint(1)`)
         }
         
         for (const arg of payload.arguments) {

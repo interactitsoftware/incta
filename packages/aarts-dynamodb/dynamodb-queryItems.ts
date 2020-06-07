@@ -41,11 +41,14 @@ export const queryItems = <T extends DdbQueryInput>(ddbQueryPayload: T): Promise
 
 
             } else {
-                dkeyConditionExpression += ` and begins_with(#${ddbQueryPayload.rangeKeyName},:${ddbQueryPayload.rangeKeyName})`
-                dexpressionAttributeValues[`:${ddbQueryPayload.rangeKeyName}`] = dqueryKeys.range
+                if (ddbQueryPayload.rangeKeyName === "nmetadata"){
+                    dkeyConditionExpression += ` and #${ddbQueryPayload.rangeKeyName} = :${ddbQueryPayload.rangeKeyName}`
+                } else {
+                    dkeyConditionExpression += ` and begins_with(#${ddbQueryPayload.rangeKeyName},:${ddbQueryPayload.rangeKeyName})`
+                }
                 
+                dexpressionAttributeValues[`:${ddbQueryPayload.rangeKeyName}`] = dqueryKeys.range
             }
-            
         }
         
 

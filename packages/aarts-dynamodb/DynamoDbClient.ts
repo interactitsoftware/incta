@@ -107,7 +107,7 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
             return await request.promise()
         } catch (err) {
             throw new Error(ppjson({ 
-                cancellationReasons:cancellationReasons.length > 1 && cancellationReasons.filter(c=> c.Item || c.Message),
+                cancellationReasons:cancellationReasons && cancellationReasons.length > 1 && cancellationReasons.filter(c=> c.Item || c.Message),
                 err }))
         }
 

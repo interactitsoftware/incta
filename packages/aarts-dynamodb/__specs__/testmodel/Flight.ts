@@ -1,6 +1,13 @@
 
 export class TestModel_Flight { 
-    constructor (...args: any[]) {}
+    constructor(...args: any[]) {
+        Object.assign(this, args.reduce((accum, arg)=>{
+            Object.keys(arg).forEach(k => {
+                accum[k] = arg[k]
+            })
+            return accum
+        },{}))
+    }
 
     //-- ref keys
     public airplane?: string

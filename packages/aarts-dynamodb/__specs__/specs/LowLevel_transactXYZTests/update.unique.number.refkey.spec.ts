@@ -1,13 +1,13 @@
-import { TestModel_AirplaneItem, /**TestModel_AirplaneRefkeys */ } from "../testmodel/_DynamoItems"
-import { transactPutItem } from "../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../testutils"
-import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
-import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../DynamoDbClient"
+import { TestModel_AirplaneItem, /**TestModel_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
+import { transactPutItem } from "../../../dynamodb-transactPutItem"
+import { Strippable, clearDynamo, queryForId } from "../../testutils"
+import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
+import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../../DynamoDbClient"
 
 
 describe('update unique number refkey', () => {
   beforeAll(async (done) => { await clearDynamo(); done() })
-  afterAll(async (done) => { await clearDynamo(); done() })
+  // afterAll(async (done) => { await clearDynamo(); done() })
 
   test('update unique number refkey', async () => {
 

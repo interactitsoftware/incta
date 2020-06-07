@@ -1,7 +1,7 @@
-import { TestModel_AirplaneItem, /**XXX TestModel_AirplaneRefkeys */ } from "../testmodel/_DynamoItems"
-import { transactPutItem } from "../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../testutils"
-import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../DynamoDbClient"
+import { TestModel_AirplaneItem, /**XXX TestModel_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
+import { transactPutItem } from "../../../dynamodb-transactPutItem"
+import { Strippable, clearDynamo, queryForId } from "../../testutils"
+import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../../DynamoDbClient"
 
 
 describe('create unique string refkey', () => {
@@ -10,7 +10,7 @@ describe('create unique string refkey', () => {
     await clearDynamo()
     done() 
   })
-  afterAll(async (done) => { await clearDynamo(); done() })
+  // afterAll(async (done) => { await clearDynamo(); done() })
 
   test('create unique string refkey', async () => {
     const airplane = new TestModel_AirplaneItem()
