@@ -21,7 +21,7 @@ export const queryItems = <T extends DdbQueryInput>(ddbQueryPayload: T): Promise
         const dfilterExpression = dfilter && dfilter.reduce<string>((accum, f)=>{
             accum+= `#${f.key.S} ${f.predicate.S} :${f.key.S}`
             return accum
-        },'')
+        },"")
 
         const dexpressionAttributeNames = {[`#${ddbQueryPayload.primaryKeyName}`]: ddbQueryPayload.primaryKeyName}
         
