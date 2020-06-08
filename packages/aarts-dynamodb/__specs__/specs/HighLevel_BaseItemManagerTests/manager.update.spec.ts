@@ -50,6 +50,9 @@ describe('manager.update.spec', () => {
 
     return await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
+      const allBeforeUpdate = await queryForId(airplane.id)
+      expect(allBeforeUpdate.length).toBe(3) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats
+      
       const updateGen = await domainAdapter.itemManagers[TestModel_AirplaneItem.__type].update(TestModel_AirplaneItem.__type, {
         arguments: [{ // update arranged item
           id: arrangedItem.id,
@@ -71,7 +74,7 @@ describe('manager.update.spec', () => {
       expect(updateProcessor.value.arguments[0]).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1}))// main item returned
 
       const all = await queryForId(airplane.id)
-      expect(all.length).toBe(2) // 1 main item, 2 history of update [no 3 - refkey was deleted]
+      expect(all.length).toBe(3) // 1 main item, 2 history of update, 3 refkey for manifacturer [no 4 - refkey for number_of_seats was deleted]
 
       const mainItem = all.filter(i => i.meta === `${versionString(0)}|${TestModel_AirplaneItem.__type}`)[0]
       expect(mainItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1 }))
