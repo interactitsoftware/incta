@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^13.11.0",
-    "aarts-dynamodb": "^0.4.5",
+    "aarts-dynamodb": "^0.4.6",
     "aarts-handler": "^0.3.0",
     "typescript": "^3.8.3"
   },
