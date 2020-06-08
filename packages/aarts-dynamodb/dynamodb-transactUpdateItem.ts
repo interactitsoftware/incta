@@ -112,7 +112,6 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
             Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
                 const isRefKey = __item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1
                 const isUniqueRefKey = isRefKey && __item_refkeys.filter(r => r.key === key)[0].unique === true
-                const isRefKeyMarkedForDelete = isRefKey && ditemUpdates[key].S !== "__del__"
                 if (isRefKey && (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")) { // changed/added ones
                     process.env.DEBUG || console.log(`refkey ${key} marked for create`)
                     const dmetadataupdateExpressionNames: Record<AttributeName, AttributeName> = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }

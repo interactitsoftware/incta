@@ -44,9 +44,9 @@ describe('manager.update.spec', () => {
         .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripNmetadata()._obj)
     })
   })
-  test('update remove refkey', async () => {
+  test.only('update remove refkey', async () => {
 
-    const airplane = new TestModel_AirplaneItem({number_of_seats:11})
+    const airplane = new TestModel_AirplaneItem({number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
 
     return await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
