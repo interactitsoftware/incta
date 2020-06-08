@@ -17,8 +17,7 @@ const nodeModulesLayer = new LayerVersion(this, 'Libs', {
   code: Code.fromAsset(join("..", clientAppName, "libs-lambda-layer"), {exclude: ["aws-sdk"], follow: FollowMode.ALWAYS}),
   compatibleRuntimes: [Runtime.NODEJS_12_X],
   license: 'Apache-2.0',
-  description: 'A layer holding the contracts-compliant domain adapter',
-
+  description: 'A layer holding the libraries needed for the contracts-compliant domain adapter',
 });
 
 const handler = new Function(this, `${clientAppName}Handler`, {
@@ -68,6 +67,13 @@ table.addGlobalSecondaryIndex({
   indexName: "nmetadata__meta",
   partitionKey: { name: "nmetadata", type: AttributeType.NUMBER },
   sortKey: { name: "meta", type: AttributeType.STRING },
+  projectionType: ProjectionType.ALL
+})
+
+table.addGlobalSecondaryIndex({
+  indexName: "meta__id",
+  partitionKey: { name: "meta", type: AttributeType.STRING },
+  sortKey: { name: "id", type: AttributeType.STRING },
   projectionType: ProjectionType.ALL
 })
 
