@@ -1,0 +1,2 @@
+- references domain adapter in order to know about all domain entities
+- will fire multiple (number is configurable) create events for different domain items
