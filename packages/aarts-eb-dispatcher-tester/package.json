@@ -1,6 +1,6 @@
 {
   "name": "aarts-eb-dispatcher-tester",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "In a loop it dispatches events to bus, decorating them with a client token.",
   "main": "./dist/eventDispatcherStressTester.js",
   "dependencies": {

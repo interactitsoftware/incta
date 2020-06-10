@@ -1,13 +1,25 @@
-import { Context } from "aws-lambda"
-import { AartsEvent } from "aarts-types/interfaces"
+import { Context, SQSEvent } from "aws-lambda"
+import { AartsEvent, IItemManagerKeys } from "aarts-types/interfaces"
 import { ppjson } from "aarts-types/utils"
 import { processPayloadAsync } from 'aarts-handler/aartsHandler'
 import { AartsEBUtil } from 'aarts-eb-types/aartsEBUtil'
 
-export const handler = async (input: AartsEvent, context: Context): Promise<any> => {
-	process.env.DEBUG || console.log('received AartsPayload: ', input)
+export const handler = async (message: SQSEvent, context: Context): Promise<any> => {
+	process.env.DEBUG || console.log('received SQS message: ', ppjson(message))
+	for (const record of message.Records) {
+		const aartsEvent = Object.assign(JSON.parse(record.body),
+			{
+				meta: {
+					item: record.messageAttributes["item"].stringValue as string,
+					action: record.messageAttributes["action"].stringValue as IItemManagerKeys,
+					ringToken: record.messageAttributes["ringToken"].stringValue as string,
+					eventSource: record.messageAttributes["eventSource"].stringValue as string
 
-	return await new AartsSqsHandler().processPayload(input, context)
+				}
+			})
+		console.log('parsed aartsEvent from SQS is ', aartsEvent)
+		await new AartsSqsHandler().processPayload(aartsEvent, context)
+	}
 }
 
 export class AartsSqsHandler extends AartsEBUtil {
@@ -38,7 +50,7 @@ export class AartsSqsHandler extends AartsEBUtil {
 					DataType: 'String',
 					StringValue: `worker:output:${processedBusEvent.meta.action}`,
 				},
-				"action": { 
+				"action": {
 					DataType: 'String',
 					StringValue: `${processedBusEvent.meta.action}`,
 				},

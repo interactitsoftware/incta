@@ -1,0 +1,8 @@
+{
+    "Parameters": {
+        "AWS_SAM_LOCAL": "1",
+        "DB_NAME": "TEST1",
+        "DDB_LOCAL_URL": "http://dynamodb:8000",
+        "DEBUG": "1"
+    }
+}

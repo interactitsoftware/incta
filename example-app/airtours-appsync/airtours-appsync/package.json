@@ -23,7 +23,11 @@
   "dependencies": {
     "@types/node": "^13.11.0",
     "aarts-dynamodb": "^0.4.6",
-    "aarts-handler": "^0.3.0",
+    "aarts-eb-dispatcher": "^1.0.0",
+    "aarts-eb-dispatcher-tester": "^1.0.1",
+    "aarts-eb-handler": "^0.3.0",
+    "aarts-eb-notifier": "0.0.3",
+    "aarts-eb-types": "^0.2.13",
     "typescript": "^3.8.3"
   },
   "devDependencies": {}

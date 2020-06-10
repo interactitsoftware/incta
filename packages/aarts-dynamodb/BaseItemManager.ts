@@ -443,6 +443,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[${__type}:CREATE] Not able to locate dynamo item prototype for item ${__type}`)
         }
 
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ", ppjson(args))
         const dynamoItems = []
         for (const arg of args.arguments) {
             const asyncGenDomain = this.validateCreate(

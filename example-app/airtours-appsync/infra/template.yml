@@ -1,0 +1,1403 @@
+Resources:
+  LibsA7595D14:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      Content:
+        S3Bucket:
+          Ref: AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3Bucket2D0AAFCA
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3VersionKeyEAAE53B3
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3VersionKeyEAAE53B3
+      CompatibleRuntimes:
+        - nodejs12.x
+      Description: A layer holding the libraries needed for the contracts-compliant domain adapter
+      LicenseInfo: Apache-2.0
+    Metadata:
+      aws:cdk:path: AartsAllStack/Libs/Resource
+      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\libs-lambda-layer
+      aws:asset:property: Content
+  BucketsOperationsBucketEEC1D0FF:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: airtours-appsync-operations-bucket
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - DELETE
+              - GET
+              - HEAD
+              - POST
+              - PUT
+            AllowedOrigins:
+              - "*"
+            ExposedHeaders:
+              - x-amz-server-side-encryption
+              - x-amz-request-id
+              - x-amz-id-2
+              - ETag
+            Id: allow_cors
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: AartsAllStack/Buckets/OperationsBucket/Resource
+  BucketsResourceBucketA851121C:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: airtours-appsync-resource-bucket
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: AartsAllStack/Buckets/ResourceBucket/Resource
+  DBairtoursappsync6F188FCF:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: meta
+          KeyType: RANGE
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: meta
+          AttributeType: S
+        - AttributeName: smetadata
+          AttributeType: S
+        - AttributeName: nmetadata
+          AttributeType: "N"
+      GlobalSecondaryIndexes:
+        - IndexName: meta__smetadata
+          KeySchema:
+            - AttributeName: meta
+              KeyType: HASH
+            - AttributeName: smetadata
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: meta__nmetadata
+          KeySchema:
+            - AttributeName: meta
+              KeyType: HASH
+            - AttributeName: nmetadata
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: smetadata__meta
+          KeySchema:
+            - AttributeName: smetadata
+              KeyType: HASH
+            - AttributeName: meta
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: nmetadata__meta
+          KeySchema:
+            - AttributeName: nmetadata
+              KeyType: HASH
+            - AttributeName: meta
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: meta__id
+          KeySchema:
+            - AttributeName: meta
+              KeyType: HASH
+            - AttributeName: id
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+      ProvisionedThroughput:
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: airtours-appsync
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: AartsAllStack/DB/airtours-appsync/Resource
+  DBTESTairtoursappsyncC9D51BAA:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: meta
+          KeyType: RANGE
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: meta
+          AttributeType: S
+        - AttributeName: smetadata
+          AttributeType: S
+        - AttributeName: nmetadata
+          AttributeType: "N"
+      GlobalSecondaryIndexes:
+        - IndexName: meta__smetadata
+          KeySchema:
+            - AttributeName: meta
+              KeyType: HASH
+            - AttributeName: smetadata
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: meta__nmetadata
+          KeySchema:
+            - AttributeName: meta
+              KeyType: HASH
+            - AttributeName: nmetadata
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: smetadata__meta
+          KeySchema:
+            - AttributeName: smetadata
+              KeyType: HASH
+            - AttributeName: meta
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: nmetadata__meta
+          KeySchema:
+            - AttributeName: nmetadata
+              KeyType: HASH
+            - AttributeName: meta
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: meta__id
+          KeySchema:
+            - AttributeName: meta
+              KeyType: HASH
+            - AttributeName: id
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+      ProvisionedThroughput:
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: TESTairtours-appsync
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: AartsAllStack/DB/TESTairtours-appsync/Resource
+  EventsBus45DE4339:
+    Type: AWS::SNS::Topic
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/Bus/Resource
+  EventsTestBusCC09F767:
+    Type: AWS::SNS::Topic
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/TestBus/Resource
+  EventsTESTQUEUEF997EE0A:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 1800
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/TESTQUEUE/Resource
+  EventsTESTQUEUEPolicy38BF01FE:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: sqs:SendMessage
+            Condition:
+              ArnEquals:
+                aws:SourceArn:
+                  Ref: EventsBus45DE4339
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Resource:
+              Fn::GetAtt:
+                - EventsTESTQUEUEF997EE0A
+                - Arn
+        Version: "2012-10-17"
+      Queues:
+        - Ref: EventsTESTQUEUEF997EE0A
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/TESTQUEUE/Policy/Resource
+  EventsTESTQUEUEAartsAllStackEventsBusF5B008F00E9A7B3A:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn:
+        Ref: EventsBus45DE4339
+      Endpoint:
+        Fn::GetAtt:
+          - EventsTESTQUEUEF997EE0A
+          - Arn
+      RawMessageDelivery: true
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/TESTQUEUE/AartsAllStackEventsBusF5B008F0/Resource
+  EventsDispatcherServiceRole4B971D17:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/Dispatcher/ServiceRole/Resource
+  EventsDispatcherServiceRoleDefaultPolicy48471377:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: EventsBus45DE4339
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: EventsTestBusCC09F767
+        Version: "2012-10-17"
+      PolicyName: EventsDispatcherServiceRoleDefaultPolicy48471377
+      Roles:
+        - Ref: EventsDispatcherServiceRole4B971D17
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/Dispatcher/ServiceRole/DefaultPolicy/Resource
+  EventsDispatcher09BE5065:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3Bucket70B4D6DD
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0
+      Handler: index.dispatcher
+      Role:
+        Fn::GetAtt:
+          - EventsDispatcherServiceRole4B971D17
+          - Arn
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          EVENT_BUS_TOPIC:
+            Ref: EventsBus45DE4339
+          TEST_EVENT_BUS_TOPIC:
+            Ref: EventsTestBusCC09F767
+      FunctionName: airtours-appsync-eventDispatcher
+      Layers:
+        - Ref: LibsA7595D14
+      MemorySize: 256
+      Timeout: 100
+    DependsOn:
+      - EventsDispatcherServiceRoleDefaultPolicy48471377
+      - EventsDispatcherServiceRole4B971D17
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/Dispatcher/Resource
+      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\dist
+      aws:asset:property: Code
+  EventsDispatcherStressTesterServiceRole9FAB05F3:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/DispatcherStressTester/ServiceRole/Resource
+  EventsDispatcherStressTesterServiceRoleDefaultPolicy1070617A:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: EventsBus45DE4339
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: EventsTestBusCC09F767
+        Version: "2012-10-17"
+      PolicyName: EventsDispatcherStressTesterServiceRoleDefaultPolicy1070617A
+      Roles:
+        - Ref: EventsDispatcherStressTesterServiceRole9FAB05F3
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/DispatcherStressTester/ServiceRole/DefaultPolicy/Resource
+  EventsDispatcherStressTesterC8BE4BAF:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3Bucket70B4D6DD
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0
+      Handler: index.dispatcherTester
+      Role:
+        Fn::GetAtt:
+          - EventsDispatcherStressTesterServiceRole9FAB05F3
+          - Arn
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          EVENT_BUS_TOPIC:
+            Ref: EventsBus45DE4339
+          TEST_EVENT_BUS_TOPIC:
+            Ref: EventsTestBusCC09F767
+      FunctionName: airtours-appsync-eventDispatcherStressTester
+      Layers:
+        - Ref: LibsA7595D14
+      MemorySize: 256
+      Timeout: 100
+    DependsOn:
+      - EventsDispatcherStressTesterServiceRoleDefaultPolicy1070617A
+      - EventsDispatcherStressTesterServiceRole9FAB05F3
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/DispatcherStressTester/Resource
+      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\dist
+      aws:asset:property: Code
+  AuthUserPoolsmsRole664FB2D2:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: AartsAllStackAuthUserPool7BFADCCE
+            Effect: Allow
+            Principal:
+              Service: cognito-idp.amazonaws.com
+        Version: "2012-10-17"
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Action: sns:Publish
+                Effect: Allow
+                Resource: "*"
+            Version: "2012-10-17"
+          PolicyName: sns-publish
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/UserPool/smsRole/Resource
+  AuthUserPool8115E87F:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      AutoVerifiedAttributes:
+        - email
+      EmailVerificationMessage: Hello {username}, Your verification code is {####}
+      EmailVerificationSubject: Verify your new account
+      LambdaConfig: {}
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+      SmsConfiguration:
+        ExternalId: AartsAllStackAuthUserPool7BFADCCE
+        SnsCallerArn:
+          Fn::GetAtt:
+            - AuthUserPoolsmsRole664FB2D2
+            - Arn
+      SmsVerificationMessage: The verification code to your new account is {####}
+      UsernameAttributes:
+        - email
+      UserPoolName: airtours-appsyncUserPool
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_CODE
+        EmailMessage: Hello {username}, Your verification code is {####}
+        EmailSubject: Verify your new account
+        SmsMessage: The verification code to your new account is {####}
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/UserPool/Resource
+  AuthUserPoolClient0AA456E4:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId:
+        Ref: AuthUserPool8115E87F
+      ClientName: UserPoolClientName
+      GenerateSecret: false
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/UserPoolClient/Resource
+  AuthIdentityPool12DFB5E1:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ClientId:
+            Ref: AuthUserPoolClient0AA456E4
+          ProviderName:
+            Fn::GetAtt:
+              - AuthUserPool8115E87F
+              - ProviderName
+          ServerSideTokenCheck: true
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/IdentityPool
+  AuthDefaultUnauthenticatedRole4BB86F4D:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud:
+                  Ref: AuthIdentityPool12DFB5E1
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: unauthenticated
+            Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/DefaultUnauthenticatedRole/Resource
+  AuthDefaultAuthenticatedRole28CC3415:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud:
+                  Ref: AuthIdentityPool12DFB5E1
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: authenticated
+            Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/DefaultAuthenticatedRole/Resource
+  AuthDefaultAuthenticatedRoleDefaultPolicy3F52EAD4:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: cognito-identity:*
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: AuthDefaultAuthenticatedRoleDefaultPolicy3F52EAD4
+      Roles:
+        - Ref: AuthDefaultAuthenticatedRole28CC3415
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/DefaultAuthenticatedRole/DefaultPolicy/Resource
+  AuthDefaultValidAttachmentB92352E3:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId:
+        Ref: AuthIdentityPool12DFB5E1
+      Roles:
+        unauthenticated:
+          Fn::GetAtt:
+            - AuthDefaultUnauthenticatedRole4BB86F4D
+            - Arn
+        authenticated:
+          Fn::GetAtt:
+            - AuthDefaultAuthenticatedRole28CC3415
+            - Arn
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/DefaultValidAttachment
+  AuthUsersGroupB0CEA1C6:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      UserPoolId:
+        Ref: AuthUserPool8115E87F
+      GroupName: user
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/UsersGroup
+  AuthSuperUsersGroup51FE8A65:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      UserPoolId:
+        Ref: AuthUserPool8115E87F
+      GroupName: superuser
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/SuperUsersGroup
+  AuthAdminsGroup7F4200F2:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      UserPoolId:
+        Ref: AuthUserPool8115E87F
+      GroupName: admin
+    Metadata:
+      aws:cdk:path: AartsAllStack/Auth/AdminsGroup
+  AppSync04210623:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      AuthenticationType: AMAZON_COGNITO_USER_POOLS
+      Name: airtours-appsyncAppSync
+      AdditionalAuthenticationProviders:
+        - AuthenticationType: AWS_IAM
+      UserPoolConfig:
+        AwsRegion:
+          Ref: AWS::Region
+        DefaultAction: ALLOW
+        UserPoolId:
+          Ref: AuthUserPool8115E87F
+    Metadata:
+      aws:cdk:path: AartsAllStack/AppSync/AppSync/Resource
+  AppSyncSchema1E096CFA:
+    Type: AWS::AppSync::GraphQLSchema
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      Definition: >2
+        
+
+         schema {
+             query: Query
+             mutation: Mutation
+             subscription: Subscription
+         }
+
+         type Mutation {
+            start(item: String!, payload: AWSJSON): AWSJSON
+            create(item: String!, payload: AWSJSON): AWSJSON
+            update(item: String!, payload: AWSJSON): AWSJSON
+            delete(item: String!, payload: AWSJSON): AWSJSON
+            notify(to: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
+         }
+
+         type Query {
+            get(item: String!, payload: AWSJSON): AWSJSON 
+            list(item: String!, payload: AWSJSON): AWSJSON
+         }
+
+         type Subscription {
+            inbox(to: String!): Notification @aws_subscribe(mutations: ["notify"])
+         }
+
+         type Notification @aws_iam @aws_cognito_user_pools{
+        	from: String!
+        	to: String!
+        	body: String!
+        	sentAt: String!
+        }
+    Metadata:
+      aws:cdk:path: AartsAllStack/AppSync/AppSync/Schema
+  MutationDSServiceRole312B069A:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: appsync.amazonaws.com
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/ServiceRole/Resource
+  MutationDSServiceRoleDefaultPolicy220D1924:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: lambda:InvokeFunction
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - EventsDispatcher09BE5065
+                - Arn
+        Version: "2012-10-17"
+      PolicyName: MutationDSServiceRoleDefaultPolicy220D1924
+      Roles:
+        - Ref: MutationDSServiceRole312B069A
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/ServiceRole/DefaultPolicy/Resource
+  MutationDSFDDB0869:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      Name: Lambda
+      Type: AWS_LAMBDA
+      LambdaConfig:
+        LambdaFunctionArn:
+          Fn::GetAtt:
+            - EventsDispatcher09BE5065
+            - Arn
+      ServiceRoleArn:
+        Fn::GetAtt:
+          - MutationDSServiceRole312B069A
+          - Arn
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/Resource
+  MutationDSMutationstartResolverBB99DEA7:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      FieldName: start
+      TypeName: Mutation
+      DataSourceName: Lambda
+      Kind: UNIT
+      RequestMappingTemplate: >-
+        {
+            "version": "2017-02-28",
+            "operation": "Invoke",
+            "payload": {
+                "action": "start",
+                "item": "$context.arguments.item",
+                "arguments": $utils.toJson($context.arguments),
+                "identity": $utils.toJson($context.identity)
+            }
+        }
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+    DependsOn:
+      - AppSyncSchema1E096CFA
+      - MutationDSFDDB0869
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/MutationstartResolver/Resource
+  MutationDSMutationcreateResolverB93253AF:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      FieldName: create
+      TypeName: Mutation
+      DataSourceName: Lambda
+      Kind: UNIT
+      RequestMappingTemplate: >-
+        {
+            "version": "2017-02-28",
+            "operation": "Invoke",
+            "payload": {
+                "action": "create",
+                "item": "$context.arguments.item",
+                "arguments": $utils.toJson($context.arguments),
+                "identity": $utils.toJson($context.identity)
+            }
+        }
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+    DependsOn:
+      - AppSyncSchema1E096CFA
+      - MutationDSFDDB0869
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/MutationcreateResolver/Resource
+  MutationDSMutationupdateResolver350E6F53:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      FieldName: update
+      TypeName: Mutation
+      DataSourceName: Lambda
+      Kind: UNIT
+      RequestMappingTemplate: >-
+        {
+            "version": "2017-02-28",
+            "operation": "Invoke",
+            "payload": {
+                "action": "update",
+                "item": "$context.arguments.item",
+                "arguments": $utils.toJson($context.arguments),
+                "identity": $utils.toJson($context.identity)
+            }
+        }
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+    DependsOn:
+      - AppSyncSchema1E096CFA
+      - MutationDSFDDB0869
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/MutationupdateResolver/Resource
+  MutationDSMutationdeleteResolverFAE10B86:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      FieldName: delete
+      TypeName: Mutation
+      DataSourceName: Lambda
+      Kind: UNIT
+      RequestMappingTemplate: >-
+        {
+            "version": "2017-02-28",
+            "operation": "Invoke",
+            "payload": {
+                "action": "delete",
+                "item": "$context.arguments.item",
+                "arguments": $utils.toJson($context.arguments),
+                "identity": $utils.toJson($context.identity)
+            }
+        }
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+    DependsOn:
+      - AppSyncSchema1E096CFA
+      - MutationDSFDDB0869
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/MutationdeleteResolver/Resource
+  MutationDSQuerygetResolver30865FF2:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      FieldName: get
+      TypeName: Query
+      DataSourceName: Lambda
+      Kind: UNIT
+      RequestMappingTemplate: >-
+        {
+            "version": "2017-02-28",
+            "operation": "Invoke",
+            "payload": {
+                "action": "get",
+                "item": "$context.arguments.item",
+                "arguments": $utils.toJson($context.arguments),
+                "identity": $utils.toJson($context.identity)
+            }
+        }
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+    DependsOn:
+      - AppSyncSchema1E096CFA
+      - MutationDSFDDB0869
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/QuerygetResolver/Resource
+  MutationDSQuerylistResolver25E93D0F:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      FieldName: list
+      TypeName: Query
+      DataSourceName: Lambda
+      Kind: UNIT
+      RequestMappingTemplate: >-
+        {
+            "version": "2017-02-28",
+            "operation": "Invoke",
+            "payload": {
+                "action": "list",
+                "item": "$context.arguments.item",
+                "arguments": $utils.toJson($context.arguments),
+                "identity": $utils.toJson($context.identity)
+            }
+        }
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+    DependsOn:
+      - AppSyncSchema1E096CFA
+      - MutationDSFDDB0869
+    Metadata:
+      aws:cdk:path: AartsAllStack/Mutation/DS/QuerylistResolver/Resource
+  LocalLocalDS4CFE86BD:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      Name: echo
+      Type: NONE
+      Description: loopback datasource
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/LocalDS
+  LocalLocalResolver939E9E6F:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+          - AppSync04210623
+          - ApiId
+      FieldName: notify
+      TypeName: Mutation
+      DataSourceName: echo
+      Kind: UNIT
+      RequestMappingTemplate: >-
+        {
+
+        "version": "2017-02-28",
+
+        "payload": {
+
+        "body": "$util.escapeJavaScript(${context.arguments.body})",
+
+        "from": "${context.identity.username}",
+
+        "to": "${context.arguments.to}",
+
+        "sentAt": "$util.time.nowISO8601()"
+
+        }
+
+        }
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+    DependsOn:
+      - AppSyncSchema1E096CFA
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/LocalResolver/Resource
+  LocalNotifyDEADLETTER9A9C1FD7:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: airtours-appsyncNotifier-DEADLETTER
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/DEADLETTER/Resource
+  LocalNotifyQueue6F47F0E5:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: airtours-appsyncNotifier
+      RedrivePolicy:
+        deadLetterTargetArn:
+          Fn::GetAtt:
+            - LocalNotifyDEADLETTER9A9C1FD7
+            - Arn
+        maxReceiveCount: 1
+      VisibilityTimeout: 180
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/Queue/Resource
+  LocalNotifyQueuePolicyE63F6CF9:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: sqs:SendMessage
+            Condition:
+              ArnEquals:
+                aws:SourceArn:
+                  Ref: EventsBus45DE4339
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Resource:
+              Fn::GetAtt:
+                - LocalNotifyQueue6F47F0E5
+                - Arn
+        Version: "2012-10-17"
+      Queues:
+        - Ref: LocalNotifyQueue6F47F0E5
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/Queue/Policy/Resource
+  LocalNotifyQueueAartsAllStackEventsBusF5B008F09FDF2918:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn:
+        Ref: EventsBus45DE4339
+      Endpoint:
+        Fn::GetAtt:
+          - LocalNotifyQueue6F47F0E5
+          - Arn
+      FilterPolicy:
+        eventSource:
+          - prefix: worker:output
+      RawMessageDelivery: true
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/Queue/AartsAllStackEventsBusF5B008F0/Resource
+  LocalNotifyWorkerServiceRole74450536:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/Worker/ServiceRole/Resource
+  LocalNotifyWorkerServiceRoleDefaultPolicyEE3CB3C7:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - sqs:ReceiveMessage
+              - sqs:ChangeMessageVisibility
+              - sqs:GetQueueUrl
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - LocalNotifyQueue6F47F0E5
+                - Arn
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: EventsBus45DE4339
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: EventsTestBusCC09F767
+          - Action: appsync:GraphQL
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - Fn::GetAtt:
+                      - AppSync04210623
+                      - Arn
+                  - /types/Mutation/fields/notify
+        Version: "2012-10-17"
+      PolicyName: LocalNotifyWorkerServiceRoleDefaultPolicyEE3CB3C7
+      Roles:
+        - Ref: LocalNotifyWorkerServiceRole74450536
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/Worker/ServiceRole/DefaultPolicy/Resource
+  LocalNotifyWorkerF5D9547C:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3BucketDA9203EF
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3
+      Handler: index.notifier
+      Role:
+        Fn::GetAtt:
+          - LocalNotifyWorkerServiceRole74450536
+          - Arn
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          EVENT_BUS_TOPIC:
+            Ref: EventsBus45DE4339
+          TEST_EVENT_BUS_TOPIC:
+            Ref: EventsTestBusCC09F767
+          APPSYNC_ENDPOINT_URL:
+            Fn::GetAtt:
+              - AppSync04210623
+              - GraphQLUrl
+      FunctionName: airtours-appsyncNotifier
+      MemorySize: 256
+      Timeout: 30
+    DependsOn:
+      - LocalNotifyWorkerServiceRoleDefaultPolicyEE3CB3C7
+      - LocalNotifyWorkerServiceRole74450536
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/Worker/Resource
+      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\dist
+      aws:asset:property: Code
+  LocalNotifyWorkerSqsEventSourceAartsAllStackLocalNotifyQueue1FEF9DF0B925BEFC:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn:
+        Fn::GetAtt:
+          - LocalNotifyQueue6F47F0E5
+          - Arn
+      FunctionName:
+        Ref: LocalNotifyWorkerF5D9547C
+      BatchSize: 10
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/Worker/SqsEventSource:AartsAllStackLocalNotifyQueue1FEF9DF0/Resource
+  LocalNotifyWorkerEventInvokeConfig1BA051E1:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName:
+        Ref: LocalNotifyWorkerF5D9547C
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 0
+    Metadata:
+      aws:cdk:path: AartsAllStack/Local/Notify/Worker/EventInvokeConfig/Resource
+  airtoursappsyncHandlerDEADLETTER3BFB9F90:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: airtours-appsyncHandler-DEADLETTER
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/DEADLETTER/Resource
+  airtoursappsyncHandlerQueue20B78536:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: airtours-appsyncHandler
+      RedrivePolicy:
+        deadLetterTargetArn:
+          Fn::GetAtt:
+            - airtoursappsyncHandlerDEADLETTER3BFB9F90
+            - Arn
+        maxReceiveCount: 1
+      VisibilityTimeout: 180
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Queue/Resource
+  airtoursappsyncHandlerQueuePolicy494476C1:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: sqs:SendMessage
+            Condition:
+              ArnEquals:
+                aws:SourceArn:
+                  Ref: EventsBus45DE4339
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Resource:
+              Fn::GetAtt:
+                - airtoursappsyncHandlerQueue20B78536
+                - Arn
+        Version: "2012-10-17"
+      Queues:
+        - Ref: airtoursappsyncHandlerQueue20B78536
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Queue/Policy/Resource
+  airtoursappsyncHandlerQueueAartsAllStackEventsBusF5B008F037D72D44:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn:
+        Ref: EventsBus45DE4339
+      Endpoint:
+        Fn::GetAtt:
+          - airtoursappsyncHandlerQueue20B78536
+          - Arn
+      FilterPolicy:
+        eventSource:
+          - prefix: worker:input
+      RawMessageDelivery: true
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Queue/AartsAllStackEventsBusF5B008F0/Resource
+  airtoursappsyncHandlerWorkerServiceRole43C1DF31:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Worker/ServiceRole/Resource
+  airtoursappsyncHandlerWorkerServiceRoleDefaultPolicy9FDE7918:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - sqs:ReceiveMessage
+              - sqs:ChangeMessageVisibility
+              - sqs:GetQueueUrl
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - airtoursappsyncHandlerQueue20B78536
+                - Arn
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: EventsBus45DE4339
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: EventsTestBusCC09F767
+          - Action: dynamodb:*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - DBairtoursappsync6F188FCF
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - DBairtoursappsync6F188FCF
+                        - Arn
+                    - /index/*
+          - Action: dynamodb:*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - DBTESTairtoursappsyncC9D51BAA
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - DBTESTairtoursappsyncC9D51BAA
+                        - Arn
+                    - /index/*
+        Version: "2012-10-17"
+      PolicyName: airtoursappsyncHandlerWorkerServiceRoleDefaultPolicy9FDE7918
+      Roles:
+        - Ref: airtoursappsyncHandlerWorkerServiceRole43C1DF31
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Worker/ServiceRole/DefaultPolicy/Resource
+  airtoursappsyncHandlerWorker3259AE92:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3BucketDA9203EF
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - airtoursappsyncHandlerWorkerServiceRole43C1DF31
+          - Arn
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          EVENT_BUS_TOPIC:
+            Ref: EventsBus45DE4339
+          TEST_EVENT_BUS_TOPIC:
+            Ref: EventsTestBusCC09F767
+          DB_NAME:
+            Ref: DBairtoursappsync6F188FCF
+          DDB_LOCAL_URL: only used when testing locally
+          TEST_DB_NAME:
+            Ref: DBTESTairtoursappsyncC9D51BAA
+      FunctionName: airtours-appsyncHandler
+      Layers:
+        - Ref: LibsA7595D14
+      MemorySize: 256
+      Timeout: 30
+    DependsOn:
+      - airtoursappsyncHandlerWorkerServiceRoleDefaultPolicy9FDE7918
+      - airtoursappsyncHandlerWorkerServiceRole43C1DF31
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Worker/Resource
+      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\dist
+      aws:asset:property: Code
+  airtoursappsyncHandlerWorkerSqsEventSourceAartsAllStackairtoursappsyncHandlerQueue026FD056CD53A528:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn:
+        Fn::GetAtt:
+          - airtoursappsyncHandlerQueue20B78536
+          - Arn
+      FunctionName:
+        Ref: airtoursappsyncHandlerWorker3259AE92
+      BatchSize: 10
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Worker/SqsEventSource:AartsAllStackairtoursappsyncHandlerQueue026FD056/Resource
+  airtoursappsyncHandlerWorkerEventInvokeConfigDC69043F:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName:
+        Ref: airtoursappsyncHandlerWorker3259AE92
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 0
+    Metadata:
+      aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Worker/EventInvokeConfig/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Modules: aws-cdk=1.36.1,@aws-cdk/assets=1.31.0,@aws-cdk/aws-apigateway=1.31.0,@aws-cdk/aws-applicationautoscaling=1.31.0,@aws-cdk/aws-appsync=1.31.0,@aws-cdk/aws-autoscaling=1.31.0,@aws-cdk/aws-autoscaling-common=1.31.0,@aws-cdk/aws-autoscaling-hooktargets=1.31.0,@aws-cdk/aws-cloudformation=1.31.0,@aws-cdk/aws-cloudwatch=1.31.0,@aws-cdk/aws-cognito=1.31.0,@aws-cdk/aws-dynamodb=1.31.0,@aws-cdk/aws-ec2=1.31.0,@aws-cdk/aws-ecr=1.31.0,@aws-cdk/aws-ecr-assets=1.31.0,@aws-cdk/aws-ecs=1.31.0,@aws-cdk/aws-elasticloadbalancingv2=1.31.0,@aws-cdk/aws-events=1.31.0,@aws-cdk/aws-iam=1.31.0,@aws-cdk/aws-kms=1.31.0,@aws-cdk/aws-lambda=1.31.0,@aws-cdk/aws-lambda-event-sources=1.31.0,@aws-cdk/aws-logs=1.31.0,@aws-cdk/aws-s3=1.31.0,@aws-cdk/aws-s3-assets=1.31.0,@aws-cdk/aws-s3-notifications=1.31.0,@aws-cdk/aws-servicediscovery=1.31.0,@aws-cdk/aws-sns=1.31.0,@aws-cdk/aws-sns-subscriptions=1.31.0,@aws-cdk/aws-sqs=1.31.0,@aws-cdk/aws-ssm=1.31.0,@aws-cdk/aws-stepfunctions=1.31.0,@aws-cdk/aws-stepfunctions-tasks=1.31.0,@aws-cdk/cdk-assets-schema=1.41.0,@aws-cdk/cloud-assembly-schema=1.41.0,@aws-cdk/core=1.31.0,@aws-cdk/custom-resources=1.31.0,@aws-cdk/cx-api=1.31.0,@aws-cdk/region-info=1.31.0,jsii-runtime=node.js/v12.13.0
+    Condition: CDKMetadataAvailable
+Parameters:
+  AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3Bucket2D0AAFCA:
+    Type: String
+    Description: S3 bucket for asset "f8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dc"
+  AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3VersionKeyEAAE53B3:
+    Type: String
+    Description: S3 key for asset version "f8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dc"
+  AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcArtifactHashCF27AC8B:
+    Type: String
+    Description: Artifact hash for asset "f8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dc"
+  AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3Bucket70B4D6DD:
+    Type: String
+    Description: S3 bucket for asset "6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213"
+  AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0:
+    Type: String
+    Description: S3 key for asset version "6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213"
+  AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213ArtifactHashA5FA04DD:
+    Type: String
+    Description: Artifact hash for asset "6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213"
+  AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3BucketDA9203EF:
+    Type: String
+    Description: S3 bucket for asset "bcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39fa"
+  AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3:
+    Type: String
+    Description: S3 key for asset version "bcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39fa"
+  AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faArtifactHashB2D148C8:
+    Type: String
+    Description: Artifact hash for asset "bcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39fa"
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+

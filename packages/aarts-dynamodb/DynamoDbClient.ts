@@ -11,7 +11,7 @@ export const offline_options = {
     dynamoDbCrc32: false,
     endpoint: process.env.DDB_LOCAL_URL
 }
-
+console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AWS_CAM_LOCAL " + process.env["AWS_SAM_LOCAL"] )
 export const dynamoDbClient: DynamoDB = process.env["AWS_SAM_LOCAL"] ? new DynamoDB(offline_options) : new DynamoDB();
 
 export const DB_NAME = process.env["DB_NAME"] as string
