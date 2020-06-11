@@ -21,8 +21,9 @@ export class AartsAllInfraStack extends Stack {
 
     const clientAppName = __dirname.split(sep).reverse()[2]
 
-    const nodeModulesLayer = new LayerVersion(this, 'Libs', {
-      code: Code.fromAsset(join("..", clientAppName, "libs-lambda-layer"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
+    const nodeModulesLayer = new LayerVersion(this, clientAppName + 'Modules', {
+      code: Code.fromAsset(join("node-modules-layer"), { exclude: [
+        "aws-sdk"], follow: FollowMode.ALWAYS }),
       compatibleRuntimes: [Runtime.NODEJS_12_X],
       license: 'Apache-2.0',
       description: 'A layer holding the libraries needed for the contracts-compliant domain adapter',
@@ -34,7 +35,7 @@ export class AartsAllInfraStack extends Stack {
 
     const eventBusConstruct = new EventBusConstruct(this, `Events`, {
       clientAppName,
-      nodeModulesLayer,
+      nodeModulesLayer
     })
     const cognitoConstruct = new CognitoConstruct(this, `Auth`, {clientAppName});
     const appSyncConstruct = new AppSyncConstruct(this, `AppSync`, {
@@ -53,6 +54,7 @@ export class AartsAllInfraStack extends Stack {
       clientAppName,
       eventBusConstruct: eventBusConstruct,
       appSyncConstruct: appSyncConstruct,
+      nodeModulesLayer
     })
 
     const workerInputHandler = new WorkerConstruct(this, `${clientAppName}Handler`, {
@@ -64,9 +66,10 @@ export class AartsAllInfraStack extends Stack {
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
       eventSource: "worker:input",
+      envVars: {"DEBUG":"1"},
       layers: [
         nodeModulesLayer
       ]
-    })
+    });
   }
 }

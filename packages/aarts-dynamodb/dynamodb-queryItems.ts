@@ -67,14 +67,14 @@ export const queryItems = <T extends DdbQueryInput>(ddbQueryPayload: T): Promise
                 },{}))
         }
         
-        process.env.DEBUG || console.log("================================================")
-        process.env.DEBUG || console.log("dqueryKeys ", dqueryKeys)
-        process.env.DEBUG || console.log("keyConditionExpression ", dkeyConditionExpression)
-        process.env.DEBUG || console.log("dfilter ", dfilter)
-        process.env.DEBUG || console.log("dfilterExpression ", dfilterExpression)
-        process.env.DEBUG || console.log("dexpressionAttributeNames ", dexpressionAttributeNames)
-        process.env.DEBUG || console.log("dexpressionAttributeValues ", dexpressionAttributeValues)
-        process.env.DEBUG || console.log("================================================")
+        process.env.DEBUG && console.log("================================================")
+        process.env.DEBUG && console.log("dqueryKeys ", dqueryKeys)
+        process.env.DEBUG && console.log("keyConditionExpression ", dkeyConditionExpression)
+        process.env.DEBUG && console.log("dfilter ", dfilter)
+        process.env.DEBUG && console.log("dfilterExpression ", dfilterExpression)
+        process.env.DEBUG && console.log("dexpressionAttributeNames ", dexpressionAttributeNames)
+        process.env.DEBUG && console.log("dexpressionAttributeValues ", dexpressionAttributeValues)
+        process.env.DEBUG && console.log("================================================")
         
         
         
@@ -99,7 +99,7 @@ export const queryItems = <T extends DdbQueryInput>(ddbQueryPayload: T): Promise
             return reject(error)
         }
 
-        process.env.DEBUG || console.log("====DDB==== QueryOutput: ", {ConsumedCapacity: result.ConsumedCapacity, ScannedCount: result.ScannedCount})
+        process.env.DEBUG && console.log("====DDB==== QueryOutput: ", {ConsumedCapacity: result.ConsumedCapacity, ScannedCount: result.ScannedCount})
 
         return resolve({items: fromAttributeMapArray(result.Items as AttributeMap[]), lastEvaluatedKey: fromAttributeMap<DdbItemKey>(result.LastEvaluatedKey as DynamoDB.Key), count: result.Count})
     })

@@ -25,15 +25,15 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
     const updateExprHistory = `set ${Object.keys(ditemUpdates).filter(diu => diu in dexistingItem).map(uk => `#${uk} = :${uk}`).join(", ")}`
 
     //#region DEBUG msg
-    process.env.DEBUG || console.log("================================================")
-    process.env.DEBUG || console.log('existing item ', existingItem)
-    process.env.DEBUG || console.log('itemUpdates ', itemUpdates)
-    process.env.DEBUG || console.log("drevisionsUpdates ", drevisionsUpdates)
-    process.env.DEBUG || console.log("ditemUpdates ", ditemUpdates)
-    process.env.DEBUG || console.log("dexistingItemkey ", dexistingItemkey)
-    process.env.DEBUG || console.log("updateExpr ", updateExpr)
-    process.env.DEBUG || console.log("updateExprHistory ", updateExprHistory)
-    process.env.DEBUG || console.log("================================================")
+    process.env.DEBUG && console.log("================================================")
+    process.env.DEBUG && console.log('existing item ', existingItem)
+    process.env.DEBUG && console.log('itemUpdates ', itemUpdates)
+    process.env.DEBUG && console.log("drevisionsUpdates ", drevisionsUpdates)
+    process.env.DEBUG && console.log("ditemUpdates ", ditemUpdates)
+    process.env.DEBUG && console.log("dexistingItemkey ", dexistingItemkey)
+    process.env.DEBUG && console.log("updateExpr ", updateExpr)
+    process.env.DEBUG && console.log("updateExprHistory ", updateExprHistory)
+    process.env.DEBUG && console.log("================================================")
     //#endregion
 
 
@@ -113,7 +113,7 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
                 const isRefKey = __item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1
                 const isUniqueRefKey = isRefKey && __item_refkeys.filter(r => r.key === key)[0].unique === true
                 if (isRefKey && (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")) { // changed/added ones
-                    process.env.DEBUG || console.log(`refkey ${key} marked for create`)
+                    process.env.DEBUG && console.log(`refkey ${key} marked for create`)
                     const dmetadataupdateExpressionNames: Record<AttributeName, AttributeName> = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
                     const dmetadataupdateExpressionValues: Record<AttributeName, AttributeValue> = "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] }
 
@@ -163,7 +163,7 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
             }, [])).concat(
                 Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
                     if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && ditemUpdates[key] && ditemUpdates[key].S === "__del__") { // removed ones
-                        process.env.DEBUG || console.log(`refkey ${key} marked for delete`)
+                        process.env.DEBUG && console.log(`refkey ${key} marked for delete`)
                         accum.push({
                             Delete: {
                                 Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.item_type}}${key}` } },
@@ -184,7 +184,7 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
 
     delete itemUpdates.revisions
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    process.env.DEBUG || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    process.env.DEBUG && console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
     
     return Object.assign(existingItem,
         Object.keys(itemUpdates).filter(k => itemUpdates[k] === "__del__")

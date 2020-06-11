@@ -1,14 +1,15 @@
 {
-  "name": "touristart",
-  "version": "0.0.1",
+  "name": "airtours-aarts-example",
+  "version": "0.0.5",
   "description": "example business domain using aws lambda and dynamodb via the aarts framework ",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -fr ./dist",
+    "build_win": "npm run clean_win && tsc && copy package.json .\\dist",
+    "build_lin": "npm run clean_lin && tsc && cp package.json ./dist",
     "watch": "tsc -w",
-    "test": "jest",
-    "cdk": "cdk"
+    "clean_lin": "rm -fr ./dist",
+    "clean_win": "rmdir /Q /S dist",
+    "test": "jest"
   },
   "keywords": [
     "aws",
@@ -21,10 +22,10 @@
   "author": "akrsmv",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^13.11.0",
-    "aarts-dynamodb": "^0.4.6",
-    "aarts-handler": "^0.3.0",
-    "typescript": "^3.8.3"
+    "@types/node": "^13.13.12",
+    "aarts-dynamodb": "^0.4.11",
+    "aarts-handler": "^0.3.5",
+    "typescript": "^3.9.5"
   },
   "devDependencies": {}
 }

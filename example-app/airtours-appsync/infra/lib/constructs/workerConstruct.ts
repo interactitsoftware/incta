@@ -5,6 +5,7 @@ import { DynamoDBConstruct } from './dynamoDbConstruct';
 import { SqsSubscription } from '@aws-cdk/aws-sns-subscriptions';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { Runtime, Code, Function, LayerVersion, ILayerVersion } from '@aws-cdk/aws-lambda';
+import { FollowMode } from '@aws-cdk/assets';
 
 export interface WorkerConstructProps {
     workerName: string,
@@ -50,7 +51,7 @@ export class WorkerConstruct extends Construct {
 
         this.function = new Function(this, "Worker", {
                     code: Code.fromAsset(props.functionImplementationPath, {
-                        exclude: ["aws-sdk"]
+                        exclude: ["aws-sdk"], follow: FollowMode.ALWAYS
                     }),
                     handler: props.functionHandler,
                     runtime: props.functionRuntime,

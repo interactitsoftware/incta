@@ -1,7 +1,7 @@
 import { MappingTemplate, CfnDataSource, Resolver, CfnResolver } from '@aws-cdk/aws-appsync';
 import { AppSyncConstruct } from './appSyncConstruct';
 import { Construct, Duration } from '@aws-cdk/core';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { Runtime, LayerVersion } from '@aws-cdk/aws-lambda';
 import { EventBusConstruct } from './eventBusConstruct';
 import { join } from 'path';
 import { WorkerConstruct } from './workerConstruct';
@@ -12,6 +12,7 @@ export interface AppSyncLocalDatasourceConstructProps {
     appSyncConstruct: AppSyncConstruct
     eventBusConstruct: EventBusConstruct
     clientAppName: string
+    nodeModulesLayer: LayerVersion
 }
 
 export class AppSyncLocalDatasourceConstruct extends Construct {
@@ -55,7 +56,8 @@ const notifyLocalResolver = new Resolver(this, `LocalResolver`, {
         functionImplementationPath: join("..", props.clientAppName, "dist"),
         functionRuntime: Runtime.NODEJS_12_X,
         eventBusConstruct: props.eventBusConstruct,
-        eventSource: "worker:output"
+        eventSource: "worker:output",
+        layers: [props.nodeModulesLayer]
     });
 
     this.notifierFunctionConstruct.function.addEnvironment(ENV_VARS__APPSYNC_ENDPOINT_URL, props.appSyncConstruct.graphQLApi.graphQlUrl);

@@ -472,15 +472,15 @@ export const transactUpdateItem = async &lt;T extends DomainItem &amp; DynamoIte
     const updateExprHistory = `set ${Object.keys(ditemUpdates).filter(diu =&gt; diu in dexistingItem).map(uk =&gt; `#${uk} = :${uk}`).join(", ")}`
 &nbsp;
     //#region DEBUG msg
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("================================================")</span>
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log('existing item ', existingItem)</span>
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log('itemUpdates ', itemUpdates)</span>
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("drevisionsUpdates ", drevisionsUpdates)</span>
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("ditemUpdates ", ditemUpdates)</span>
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("dexistingItemkey ", dexistingItemkey)</span>
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("updateExpr ", updateExpr)</span>
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("updateExprHistory ", updateExprHistory)</span>
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("================================================")</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("================================================")</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log('existing item ', existingItem)</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log('itemUpdates ', itemUpdates)</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("drevisionsUpdates ", drevisionsUpdates)</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("ditemUpdates ", ditemUpdates)</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("dexistingItemkey ", dexistingItemkey)</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("updateExpr ", updateExpr)</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("updateExprHistory ", updateExprHistory)</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("================================================")</span>
     //#endregion
 &nbsp;
 &nbsp;
@@ -560,7 +560,7 @@ export const transactUpdateItem = async &lt;T extends DomainItem &amp; DynamoIte
                 const isRefKey = __item_refkeys &amp;&amp; __item_refkeys.map(r =&gt; r.key).indexOf(key) &gt; -1
                 const isUniqueRefKey = isRefKey &amp;&amp; __item_refkeys.filter(r =&gt; r.key === key)[0].unique === true
                 if (isRefKey &amp;&amp; (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")) { // changed/added ones
-                    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`refkey ${key} marked for create`)</span>
+                    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`refkey ${key} marked for create`)</span>
                     const dmetadataupdateExpressionNames: Record&lt;AttributeName, AttributeName&gt; = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : <span class="branch-1 cbranch-no" title="branch not covered" >{ "#nmetadata": "nmetadata" }</span>
                     const dmetadataupdateExpressionValues: Record&lt;AttributeName, AttributeValue&gt; = "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : <span class="branch-1 cbranch-no" title="branch not covered" >{ ":nmetadata": ditemUpdates[key] || dexistingItem[key] }</span>
 &nbsp;
@@ -610,7 +610,7 @@ export const transactUpdateItem = async &lt;T extends DomainItem &amp; DynamoIte
             }, [])).concat(
                 Object.keys(dexistingItem).reduce&lt;TransactWriteItem[]&gt;((accum, key) =&gt; {
                     if (__item_refkeys &amp;&amp; __item_refkeys.map(r =&gt; r.key).indexOf(key) &gt; -1 &amp;&amp; ditemUpdates[key] &amp;&amp; ditemUpdates[key].S === "__del__") { // removed ones
-                        process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`refkey ${key} marked for delete`)</span>
+                        process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`refkey ${key} marked for delete`)</span>
                         accum.push({
                             Delete: {
                                 Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.item_type}}${key}` } },
@@ -631,7 +631,7 @@ export const transactUpdateItem = async &lt;T extends DomainItem &amp; DynamoIte
 &nbsp;
     delete itemUpdates.revisions
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))</span>
     
     return Object.assign(existingItem,
         Object.keys(itemUpdates).filter(k =&gt; itemUpdates[k] === "__del__")

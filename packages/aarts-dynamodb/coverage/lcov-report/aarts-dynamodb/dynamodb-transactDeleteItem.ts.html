@@ -342,13 +342,13 @@ export const transactDeleteItem = <span class="fstat-no" title="function not cov
 &nbsp;
 &nbsp;
     //#region DEBUG msg
-<span class="cstat-no" title="statement not covered" >    process.env.DEBUG || console.log("================================================")</span>
-<span class="cstat-no" title="statement not covered" >    process.env.DEBUG || console.log('existing item ', existingItem)</span>
-<span class="cstat-no" title="statement not covered" >    process.env.DEBUG || console.log('itemUpdates ', itemUpdates)</span>
-<span class="cstat-no" title="statement not covered" >    process.env.DEBUG || console.log("drevisionsUpdates ", drevisionsUpdates)</span>
-<span class="cstat-no" title="statement not covered" >    process.env.DEBUG || console.log("ditemUpdates ", ditemUpdates)</span>
-<span class="cstat-no" title="statement not covered" >    process.env.DEBUG || console.log("dexistingItemkey ", dexistingItemkey)</span>
-<span class="cstat-no" title="statement not covered" >    process.env.DEBUG || console.log("================================================")</span>
+<span class="cstat-no" title="statement not covered" >    process.env.DEBUG && console.log("================================================")</span>
+<span class="cstat-no" title="statement not covered" >    process.env.DEBUG && console.log('existing item ', existingItem)</span>
+<span class="cstat-no" title="statement not covered" >    process.env.DEBUG && console.log('itemUpdates ', itemUpdates)</span>
+<span class="cstat-no" title="statement not covered" >    process.env.DEBUG && console.log("drevisionsUpdates ", drevisionsUpdates)</span>
+<span class="cstat-no" title="statement not covered" >    process.env.DEBUG && console.log("ditemUpdates ", ditemUpdates)</span>
+<span class="cstat-no" title="statement not covered" >    process.env.DEBUG && console.log("dexistingItemkey ", dexistingItemkey)</span>
+<span class="cstat-no" title="statement not covered" >    process.env.DEBUG && console.log("================================================")</span>
     //#endregion
 &nbsp;
     const updateExpr = <span class="cstat-no" title="statement not covered" >`set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Object.keys(ditemUpdates).filter(<span class="fstat-no" title="function not covered" >uk </span>=&gt; <span class="cstat-no" title="statement not covered" >uk != "revisions")</span>.map(<span class="fstat-no" title="function not covered" >uk </span>=&gt; <span class="cstat-no" title="statement not covered" >`#${uk} = :${uk}`)</span>.join(", ")}`</span>
@@ -448,7 +448,7 @@ export const transactDeleteItem = <span class="fstat-no" title="function not cov
     }
 &nbsp;
     const result = <span class="cstat-no" title="statement not covered" >await ddbRequest(dynamoDbClient.transactWriteItems(params))</span>
-<span class="cstat-no" title="statement not covered" >    process.env.DEBUG || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))</span>
+<span class="cstat-no" title="statement not covered" >    process.env.DEBUG && console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))</span>
 <span class="cstat-no" title="statement not covered" >    return existingItem</span>
 }</pre></td></tr></table></pre>
 

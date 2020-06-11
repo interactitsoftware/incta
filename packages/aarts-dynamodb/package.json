@@ -3,7 +3,7 @@
   "contributors": [
     "akrsmv"
   ],
-  "version": "0.4.6",
+  "version": "0.4.11",
   "description": "dynamo db transactoinal crud operations with support on refkeys and uniqeness",
   "main": "./dist",
   "types": "./dist/index.d.ts",
@@ -17,17 +17,21 @@
     "url": "https://github.com/akrsmv/aarts-core/tree/master/packages/aarts-dynamodb"
   },
   "dependencies": {
-    "aarts-types": "^0.2.13",
-    "aws-sdk": "^2.653.0",
-    "typescript": "^3.8.3"
+    "aarts-types": "^0.2.18",
+    "aws-sdk": "^2.695.0",
+    "typescript": "^3.9.5"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",
-    "@types/node": "^14.0.6",
+    "@types/node": "^14.0.13",
     "jest": "^26.0.1",
-    "ts-jest": "^26.0.0"
+    "ts-jest": "^26.1.0"
   },
   "scripts": {
+    "build_win": "npm run clean_win && tsc && copy package.json README.md test-model.svg .\\dist",
+    "build_lin": "npm run clean_lin && tsc && cp package.json README.md test-model.svg ./dist",
+    "clean_lin": "rm -fr ./dist",
+    "clean_win": "rmdir /Q /S dist",
     "build": "tsc && cp package.json README.md test-model.svg ./dist",
     "clean": "rm -fr ./dist",
     "test": "./node_modules/.bin/jest --runInBand",

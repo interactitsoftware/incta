@@ -23,8 +23,8 @@ export class DynamoDBConstruct extends cdk.Construct {
                 partitionKey: { name: "id", type: AttributeType.STRING },
                 sortKey: { name: "meta", type: AttributeType.STRING },
                 billingMode: BillingMode.PROVISIONED,
-                readCapacity: 10,
-                writeCapacity: 10,
+                readCapacity: 2,
+                writeCapacity: 2,
                 stream: StreamViewType.NEW_AND_OLD_IMAGES,
                 removalPolicy: RemovalPolicy.DESTROY // TODO think for prod and later RETAINing of real data
               })
@@ -33,35 +33,45 @@ export class DynamoDBConstruct extends cdk.Construct {
                 indexName: "meta__smetadata",
                 partitionKey: { name: "meta", type: AttributeType.STRING },
                 sortKey: { name: "smetadata", type: AttributeType.STRING },
-                projectionType: ProjectionType.ALL
+                projectionType: ProjectionType.ALL,
+                readCapacity:2,
+                writeCapacity:2
               })
               
               table.addGlobalSecondaryIndex({
                 indexName: "meta__nmetadata",
                 partitionKey: { name: "meta", type: AttributeType.STRING },
                 sortKey: { name: "nmetadata", type: AttributeType.NUMBER },
-                projectionType: ProjectionType.ALL
+                projectionType: ProjectionType.ALL,
+                readCapacity: 2,
+                writeCapacity: 2
               })
               
               table.addGlobalSecondaryIndex({
                 indexName: "smetadata__meta",
                 partitionKey: { name: "smetadata", type: AttributeType.STRING },
                 sortKey: { name: "meta", type: AttributeType.STRING },
-                projectionType: ProjectionType.ALL
+                projectionType: ProjectionType.ALL,
+                readCapacity: 2,
+                writeCapacity: 2
               })
               
               table.addGlobalSecondaryIndex({
                 indexName: "nmetadata__meta",
                 partitionKey: { name: "nmetadata", type: AttributeType.NUMBER },
                 sortKey: { name: "meta", type: AttributeType.STRING },
-                projectionType: ProjectionType.ALL
+                projectionType: ProjectionType.ALL,
+                readCapacity: 2,
+                writeCapacity: 2
               })
               
               table.addGlobalSecondaryIndex({
                 indexName: "meta__id",
                 partitionKey: { name: "meta", type: AttributeType.STRING },
                 sortKey: { name: "id", type: AttributeType.STRING },
-                projectionType: ProjectionType.ALL
+                projectionType: ProjectionType.ALL,
+                readCapacity: 2,
+                writeCapacity: 2
               })
 
             return table;

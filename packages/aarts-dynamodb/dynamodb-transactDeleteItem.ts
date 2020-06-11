@@ -21,13 +21,13 @@ export const transactDeleteItem = async <T extends DomainItem & DynamoItem>(exis
 
 
     //#region DEBUG msg
-    process.env.DEBUG || console.log("================================================")
-    process.env.DEBUG || console.log('existing item ', existingItem)
-    process.env.DEBUG || console.log('itemUpdates ', itemUpdates)
-    process.env.DEBUG || console.log("drevisionsUpdates ", drevisionsUpdates)
-    process.env.DEBUG || console.log("ditemUpdates ", ditemUpdates)
-    process.env.DEBUG || console.log("dexistingItemkey ", dexistingItemkey)
-    process.env.DEBUG || console.log("================================================")
+    process.env.DEBUG && console.log("================================================")
+    process.env.DEBUG && console.log('existing item ', existingItem)
+    process.env.DEBUG && console.log('itemUpdates ', itemUpdates)
+    process.env.DEBUG && console.log("drevisionsUpdates ", drevisionsUpdates)
+    process.env.DEBUG && console.log("ditemUpdates ", ditemUpdates)
+    process.env.DEBUG && console.log("dexistingItemkey ", dexistingItemkey)
+    process.env.DEBUG && console.log("================================================")
     //#endregion
 
     const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Object.keys(ditemUpdates).filter(uk => uk != "revisions").map(uk => `#${uk} = :${uk}`).join(", ")}`
@@ -127,6 +127,6 @@ export const transactDeleteItem = async <T extends DomainItem & DynamoItem>(exis
     }
 
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    process.env.DEBUG || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    process.env.DEBUG && console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
     return existingItem
 }

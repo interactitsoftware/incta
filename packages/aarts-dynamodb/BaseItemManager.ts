@@ -205,8 +205,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      */
     async *query(item: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        process.env.DEBUG || console.log('query Received arguments: ', JSON.stringify(args, null, 4))
-        process.env.DEBUG || (yield { arguments: `[${item}:QUERY] Begin`, identity: undefined })
+        process.env.DEBUG && console.log('query Received arguments: ', JSON.stringify(args, null, 4))
+        process.env.DEBUG && (yield { arguments: `[${item}:QUERY] Begin`, identity: undefined })
 
         const asyncGenBaseValidate = this.baseValidateQuery(args.arguments, args.identity) // TODO check for id, meta present
         let processorBaseValidate = await asyncGenBaseValidate.next()
@@ -217,7 +217,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
         } while (!processorBaseValidate.done)
 
-        process.env.DEBUG || console.log("QUERIES ARE " + JSON.stringify(processorBaseValidate.value))
+        process.env.DEBUG && console.log("QUERIES ARE " + JSON.stringify(processorBaseValidate.value))
 
         // this can throw exception due to failed validation, eg. missing id/meta keys
         const asyncGen = this.validateQuery(processorBaseValidate.value, args.identity) // TODO check for id, meta present
@@ -231,7 +231,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         const dynamoItems = await queryItems(processor.value);
 
-        process.env.DEBUG || (yield { arguments: [`[${item}:QUERY] End`], identity: undefined })
+        process.env.DEBUG && (yield { arguments: [`[${item}:QUERY] End`], identity: undefined })
         return { arguments: dynamoItems, identity: args.identity }
     }
     //#endregion
@@ -252,7 +252,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param payload 
      */
     async *baseValidateDelete(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
-        process.env.DEBUG || (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
+        process.env.DEBUG && (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
         if (payload.arguments.constructor !== Array){
             throw new Error(`[${__type}:baseValidateDelete] Payload is not an array!`)
@@ -286,9 +286,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             yield { arguments: baseValidateResult, identity: undefined }
         }
 
-        process.env.DEBUG || (yield { arguments: `[${__type}:DELETE] Loading requested items`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:DELETE] Loading requested items`, identity: undefined })
         const dynamoExistingItems = await batchGetItem(args.arguments);
-        process.env.DEBUG || console.log("result from delete", JSON.stringify(dynamoExistingItems))
+        process.env.DEBUG && console.log("result from delete", JSON.stringify(dynamoExistingItems))
 
         if (dynamoExistingItems.length !== args.arguments.length) {
             throw new Error(`[${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)
@@ -316,7 +316,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             )
         }
 
-        process.env.DEBUG || (yield { arguments: `[${__type}:DELETE] END`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:DELETE] END`, identity: undefined })
 
         return { arguments: updatedItems, identity: args.identity }
 
@@ -356,8 +356,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      */
     async *get(item: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        process.env.DEBUG || console.log('Received arguments: ', args)
-        process.env.DEBUG || (yield { arguments: `[${item}:GET] Begin`, identity: undefined })
+        process.env.DEBUG && console.log('Received arguments: ', args)
+        process.env.DEBUG && (yield { arguments: `[${item}:GET] Begin`, identity: undefined })
 
         const asyncGenBaseValidate = this.baseValidateGet(args.arguments, args.identity) // TODO check for id, meta present
         let processorBaseValidate = await asyncGenBaseValidate.next()
@@ -368,7 +368,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
         } while (!processorBaseValidate.done)
 
-        process.env.DEBUG || console.log("KEYS TO SEARCH ARE " + JSON.stringify(processorBaseValidate.value))
+        process.env.DEBUG && console.log("KEYS TO SEARCH ARE " + JSON.stringify(processorBaseValidate.value))
 
         // this can throw exception due to failed validation, eg. missing id/meta keys
         const asyncGen = this.validateGet(processorBaseValidate.value, args.identity) // TODO check for id, meta present
@@ -382,7 +382,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         const dynamoItems = await batchGetItem(processor.value);
 
-        process.env.DEBUG || (yield { arguments: [`[${item}:GET] End`], identity: undefined })
+        process.env.DEBUG && (yield { arguments: [`[${item}:GET] End`], identity: undefined })
         return { arguments: dynamoItems, identity: args.identity }
     }
     //#endregion
@@ -402,7 +402,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param payload 
      */
     async *baseValidateCreate(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
-        process.env.DEBUG || (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))
+        process.env.DEBUG && (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))
         
         if (payload.arguments.constructor !== Array){
             throw new Error(`[${__type}:baseValidateCreate] Payload is not an array!`)
@@ -431,7 +431,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      */
     async *create(__type: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         // console.log('Received arguments: ', args)
-        process.env.DEBUG || (yield { arguments: `[${__type}:CREATE] Begin CREATE. Doing a gate check of payload`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:CREATE] Begin CREATE. Doing a gate check of payload`, identity: undefined })
 
         for await (const baseValidateResult of this.baseValidateCreate(__type, args)){
             yield { arguments: baseValidateResult, identity: undefined }
@@ -443,7 +443,6 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[${__type}:CREATE] Not able to locate dynamo item prototype for item ${__type}`)
         }
 
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ", ppjson(args))
         const dynamoItems = []
         for (const arg of args.arguments) {
             const asyncGenDomain = this.validateCreate(
@@ -459,13 +458,14 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             dynamoItems.push(processorDomain.value)
         }
 
-        process.env.DEBUG || (yield { arguments: `[${__type}:CREATE] Item applicable for saving. END.`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:CREATE] Item applicable for saving. END.`, identity: undefined })
 
         const asyncGenSave = this.save(__type, Object.assign({}, args, {arguments:dynamoItems}))
 			let processorSave = await asyncGenSave.next()
 			do {
 				if (!processorSave.done) {
-					yield Object.assign({}, args, {paylaod: { arguments: processorSave.value.arguments}})
+					// process.env.DEBUG && (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
+					process.env.DEBUG && (yield { arguments: processorSave.value.arguments, identity: undefined})
 					processorSave = await asyncGenSave.next()
 				}
 			} while (!processorSave.done)
@@ -489,7 +489,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param payload 
      */
     async *baseValidateUpdate(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
-        process.env.DEBUG || (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
+        process.env.DEBUG && (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
         if (payload.arguments > 1) {
 			throw new Error(`[${__type}:baseValidateUpdate] Payload is array an it excedes the max arguments array length constraint(1)`)
@@ -514,13 +514,13 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      */
     async *update(__type: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        process.env.DEBUG || (yield { arguments: `[${__type}:UPDATE] BEGIN. Doing a gate check of payload`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:UPDATE] BEGIN. Doing a gate check of payload`, identity: undefined })
         
         for await (const baseValidateResult of this.baseValidateUpdate(__type, args)) {
             yield { arguments: baseValidateResult, identity: undefined }
         }
 
-        process.env.DEBUG || (yield { arguments: `[${__type}:UPDATE] Loading requested items`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:UPDATE] Loading requested items`, identity: undefined })
         const dynamoExistingItems = await batchGetItem(args.arguments);
         // console.log("result from batch get", JSON.stringify(dynamoExistingItems))
         if (dynamoExistingItems.length !== args.arguments.length) {
@@ -548,7 +548,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             )
         }
 
-        process.env.DEBUG || (yield { arguments: `[${__type}:UPDATE] END`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:UPDATE] END`, identity: undefined })
 
         return { arguments: updatedItems, identity: args.identity }
 
@@ -557,13 +557,13 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
     async *save(__type: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
 
-        process.env.DEBUG || (yield { arguments: `[${__type}:SAVE] BEGIN`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:SAVE] BEGIN`, identity: undefined })
 
         const proto = this.lookupItems.get(__type)
 
         const item_refkeys = (proto as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys
         // console.log("WILL ITERATE OVER THOSE REF KEYS", item_refkeys)
-        process.env.DEBUG || (yield { arguments: `[${__type}:SAVE] Analyzing item refkeys, ${ppjson(item_refkeys)}`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:SAVE] Analyzing item refkeys, ${ppjson(item_refkeys)}`, identity: undefined })
         
 
         // USING BATCH WRITEITEM WITHOUT TRANSACTION, TODO leave a method for non transactional save of bulk data? (Should again define it on a IItemManager level, good idea)
@@ -589,10 +589,10 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         // USING WRITING IN A TRANSACTION
         for (const item of args.arguments) {
             let response = await transactPutItem(item, item_refkeys) 
-            process.env.DEBUG || console.log("SAVING TO DYNAMO RESULT: ", response)
+            process.env.DEBUG && console.log("SAVING TO DYNAMO RESULT: ", response)
         }
 
-        process.env.DEBUG || (yield { arguments: `[${__type}:SAVE] END`, identity: undefined })
+        process.env.DEBUG && (yield { arguments: `[${__type}:SAVE] END`, identity: undefined })
         return { arguments: args.arguments, identity: undefined }
     }
 }

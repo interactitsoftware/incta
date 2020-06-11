@@ -336,14 +336,14 @@ export const queryItems = <span class="fstat-no" title="function not covered" >&
                 },{}))
         }
         
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("================================================")</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("dqueryKeys ", dqueryKeys)</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("keyConditionExpression ", dkeyConditionExpression)</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("dfilter ", dfilter)</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("dfilterExpression ", dfilterExpression)</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("dexpressionAttributeNames ", dexpressionAttributeNames)</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("dexpressionAttributeValues ", dexpressionAttributeValues)</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("================================================")</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("================================================")</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("dqueryKeys ", dqueryKeys)</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("keyConditionExpression ", dkeyConditionExpression)</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("dfilter ", dfilter)</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("dfilterExpression ", dfilterExpression)</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("dexpressionAttributeNames ", dexpressionAttributeNames)</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("dexpressionAttributeValues ", dexpressionAttributeValues)</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("================================================")</span>
         
         
         
@@ -368,7 +368,7 @@ export const queryItems = <span class="fstat-no" title="function not covered" >&
 <span class="cstat-no" title="statement not covered" >            return reject(error)</span>
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("====DDB==== QueryOutput: ", {ConsumedCapacity: result.ConsumedCapacity, ScannedCount: result.ScannedCount})</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("====DDB==== QueryOutput: ", {ConsumedCapacity: result.ConsumedCapacity, ScannedCount: result.ScannedCount})</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return resolve({items: fromAttributeMapArray(result.Items as AttributeMap[]), lastEvaluatedKey: fromAttributeMap&lt;DdbItemKey&gt;(result.LastEvaluatedKey as DynamoDB.Key), count: result.Count})</span>
     })

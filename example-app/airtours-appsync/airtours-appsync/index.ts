@@ -2,9 +2,9 @@ import { AirplaneManager } from "./items/Airplane"
 import { AirportManager } from "./items/Airport"
 import { DynamoItem, BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
 import { handler } from "aarts-eb-handler/aartsSqsHandler"
-import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
-import { handler as dispatcherTester } from "aarts-eb-dispatcher-tester/aartsDispatcherStressTester"
 import { handler as notifier } from "aarts-eb-notifier/aartsAppsyncNotifier"
+import { handler as dispatcher} from "aarts-eb-dispatcher/aartsSnsDispatcher"
+import { handler as dispatcherTester} from "aarts-eb-dispatcher-tester/aartsDispatcherStressTester"
 
 import {
     AirplaneItem,
@@ -39,4 +39,4 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
 
 global.domainAdapter = new DomainAdapter()
 
-export {handler, dispatcher, dispatcherTester, notifier}
+export {dispatcher, dispatcherTester, handler, notifier}

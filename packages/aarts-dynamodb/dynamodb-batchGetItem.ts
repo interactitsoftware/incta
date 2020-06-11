@@ -25,7 +25,7 @@ export const batchGetItem = (items: {id:string, meta:string}[]): Promise<DynamoI
         if (error) {
             return reject(error)
         }
-        process.env.DEBUG || console.log("====DDB==== BatchGetItemOutput: ", result)
+        process.env.DEBUG && console.log("====DDB==== BatchGetItemOutput: ", result)
         
         // create a response
         return resolve(fromAttributeMapArray((result.Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[])

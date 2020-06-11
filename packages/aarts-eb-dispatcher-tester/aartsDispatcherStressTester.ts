@@ -14,7 +14,8 @@ class AartsDispatcherStressTester extends AartsEBUtil {
 		const domainItems = Object.keys(global.domainAdapter.itemManagers)
 		// TODO: also fire for update and delete
 		// TODO: const domainProcedures = Object.keys(domainAdapter.procedures)
-		const ringTokens = [];
+		const ringTokens = []
+		const publishings = []
 		for (let i = 0; i < Number((event.arguments.nrEvents) || 100); i++) {
 			const ringToken: string = this.uuid()
 			ringTokens.push(ringToken);
@@ -39,10 +40,10 @@ class AartsDispatcherStressTester extends AartsEBUtil {
 					}
 				}
 			}
-			await this.publish(publishInput)
-
+			publishings.push(this.publish(publishInput))
 		}
-
+		
+		await Promise.all(publishings) 
 
 		return {
 			statusCode: 200,

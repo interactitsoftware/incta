@@ -1,6 +1,6 @@
 {
   "name": "aarts-eb-notifier",
-  "version": "0.0.3",
+  "version": "0.0.8",
   "description": "calls an appsync local datasource with aarts payload passed",
   "main": "./aartsAppsyncNotifier.js",
   "types": "./aartsAppsyncNotifier.d.ts",
@@ -9,24 +9,25 @@
     "aartsAppsyncNotifier.d.ts"
   ],
   "dependencies": {
-    "@types/aws-lambda": "^8.10.47",
+    "@types/aws-lambda": "^8.10.55",
     "@types/graphql": "^14.5.0",
-    "@types/node": "^13.11.0",
+    "@types/node": "^13.13.12",
     "@types/redux": "^3.6.0",
     "@types/request": "^2.48.4",
     "aws-appsync": "^1.8.1",
-    "aws-sdk": "^2.653.0",
+    "aws-sdk": "^2.695.0",
     "cross-fetch": "^3.0.4",
     "graphql-tag": "^2.10.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.5"
   },
   "devDependencies": {},
   "scripts": {
-    "build": "tsc",
-    "clean": "rm ./aartsAppsyncNotifier.js",
+    "clean_lin": "rm ./aartsAppsyncNotifier.js",
+    "build_win": "tsc",
+    "build_lin": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
-    "cdk": "cdk"
+    "clean_win": "del /Q /S ./aartsAppsyncNotifier.js",
+    "test": "jest"
   },
   "author": "akrsmv",
   "license": "ISC"

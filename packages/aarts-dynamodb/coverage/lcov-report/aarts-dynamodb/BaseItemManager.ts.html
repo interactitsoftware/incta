@@ -1456,8 +1456,8 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
      * @param args 
      */
 <span class="fstat-no" title="function not covered" >    async </span>*query(item: string, args: AartsPayload): AsyncGenerator&lt;AartsPayload, AartsPayload, undefined&gt; {
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log('query Received arguments: ', JSON.stringify(args, null, 4))</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${item}:QUERY] Begin`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log('query Received arguments: ', JSON.stringify(args, null, 4))</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${item}:QUERY] Begin`, identity: undefined })</span>
 &nbsp;
         const asyncGenBaseValidate = <span class="cstat-no" title="statement not covered" >this.baseValidateQuery(args.arguments, args.identity) </span>// TODO check for id, meta present
         let processorBaseValidate = <span class="cstat-no" title="statement not covered" >await asyncGenBaseValidate.next()</span>
@@ -1468,7 +1468,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
             }
         } while (!processorBaseValidate.done)
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("QUERIES ARE " + JSON.stringify(processorBaseValidate.value))</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("QUERIES ARE " + JSON.stringify(processorBaseValidate.value))</span>
 &nbsp;
         // this can throw exception due to failed validation, eg. missing id/meta keys
         const asyncGen = <span class="cstat-no" title="statement not covered" >this.validateQuery(processorBaseValidate.value, args.identity) </span>// TODO check for id, meta present
@@ -1482,7 +1482,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
 &nbsp;
         const dynamoItems = <span class="cstat-no" title="statement not covered" >await queryItems(processor.value);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: [`[${item}:QUERY] End`], identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: [`[${item}:QUERY] End`], identity: undefined })</span>
 <span class="cstat-no" title="statement not covered" >        return { arguments: dynamoItems, identity: args.identity }</span>
     }
     //#endregion
@@ -1503,7 +1503,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
      * @param payload 
      */
 <span class="fstat-no" title="function not covered" >    async </span>*baseValidateDelete(__type: string, payload: AartsPayload): AsyncGenerator&lt;string, AartsPayload, undefined&gt; {
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (payload.arguments.constructor !== Array){</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error(`[${__type}:baseValidateDelete] Payload is not an array!`)</span>
@@ -1537,9 +1537,9 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
 <span class="cstat-no" title="statement not covered" >            yield { arguments: baseValidateResult, identity: undefined }</span>
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${__type}:DELETE] Loading requested items`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${__type}:DELETE] Loading requested items`, identity: undefined })</span>
         const dynamoExistingItems = <span class="cstat-no" title="statement not covered" >await batchGetItem(args.arguments);</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("result from delete", JSON.stringify(dynamoExistingItems))</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("result from delete", JSON.stringify(dynamoExistingItems))</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (dynamoExistingItems.length !== args.arguments.length) {</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error(`[${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)</span>
@@ -1567,7 +1567,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
             )
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${__type}:DELETE] END`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${__type}:DELETE] END`, identity: undefined })</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return { arguments: updatedItems, identity: args.identity }</span>
 &nbsp;
@@ -1607,8 +1607,8 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
      * @param args 
      */
 <span class="fstat-no" title="function not covered" >    async </span>*get(item: string, args: AartsPayload): AsyncGenerator&lt;AartsPayload, AartsPayload, undefined&gt; {
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log('Received arguments: ', args)</span>
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${item}:GET] Begin`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log('Received arguments: ', args)</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${item}:GET] Begin`, identity: undefined })</span>
 &nbsp;
         const asyncGenBaseValidate = <span class="cstat-no" title="statement not covered" >this.baseValidateGet(args.arguments, args.identity) </span>// TODO check for id, meta present
         let processorBaseValidate = <span class="cstat-no" title="statement not covered" >await asyncGenBaseValidate.next()</span>
@@ -1619,7 +1619,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
             }
         } while (!processorBaseValidate.done)
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || console.log("KEYS TO SEARCH ARE " + JSON.stringify(processorBaseValidate.value))</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && console.log("KEYS TO SEARCH ARE " + JSON.stringify(processorBaseValidate.value))</span>
 &nbsp;
         // this can throw exception due to failed validation, eg. missing id/meta keys
         const asyncGen = <span class="cstat-no" title="statement not covered" >this.validateGet(processorBaseValidate.value, args.identity) </span>// TODO check for id, meta present
@@ -1633,7 +1633,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
 &nbsp;
         const dynamoItems = <span class="cstat-no" title="statement not covered" >await batchGetItem(processor.value);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: [`[${item}:GET] End`], identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: [`[${item}:GET] End`], identity: undefined })</span>
 <span class="cstat-no" title="statement not covered" >        return { arguments: dynamoItems, identity: args.identity }</span>
     }
     //#endregion
@@ -1653,7 +1653,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
      * @param payload 
      */
 <span class="fstat-no" title="function not covered" >    async </span>*baseValidateCreate(__type: string, payload: AartsPayload): AsyncGenerator&lt;string, AartsPayload, undefined&gt; {
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))</span>
         
 <span class="cstat-no" title="statement not covered" >        if (payload.arguments.constructor !== Array){</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error(`[${__type}:baseValidateCreate] Payload is not an array!`)</span>
@@ -1682,7 +1682,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
      */
 <span class="fstat-no" title="function not covered" >    async </span>*create(__type: string, args: AartsPayload): AsyncGenerator&lt;AartsPayload, AartsPayload, undefined&gt; {
         // console.log('Received arguments: ', args)
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${__type}:CREATE] Begin CREATE. Doing a gate check of payload`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${__type}:CREATE] Begin CREATE. Doing a gate check of payload`, identity: undefined })</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        for await (const baseValidateResult of this.baseValidateCreate(__type, args)){</span>
 <span class="cstat-no" title="statement not covered" >            yield { arguments: baseValidateResult, identity: undefined }</span>
@@ -1709,7 +1709,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
 <span class="cstat-no" title="statement not covered" >            dynamoItems.push(processorDomain.value)</span>
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${__type}:CREATE] Item applicable for saving. END.`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${__type}:CREATE] Item applicable for saving. END.`, identity: undefined })</span>
 &nbsp;
         const asyncGenSave = <span class="cstat-no" title="statement not covered" >this.save(__type, Object.assign({}, args, {arguments:dynamoItems}))</span>
 			let processorSave = <span class="cstat-no" title="statement not covered" >await asyncGenSave.next()</span>
@@ -1739,7 +1739,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
      * @param payload 
      */
     async *baseValidateUpdate(__type: string, payload: AartsPayload): AsyncGenerator&lt;string, AartsPayload, undefined&gt; {
-        process.env.DEBUG || (<span class="branch-1 cbranch-no" title="branch not covered" >yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)</span>
+        process.env.DEBUG && (<span class="branch-1 cbranch-no" title="branch not covered" >yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)</span>
 &nbsp;
         <span class="missing-if-branch" title="if path not taken" >I</span>if (payload.arguments &gt; 1) {
 <span class="cstat-no" title="statement not covered" >			throw new Error(`[${__type}:baseValidateUpdate] Payload is array an it excedes the max arguments array length constraint(1)`)</span>
@@ -1764,13 +1764,13 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
      * @param args 
      */
     async *update(__type: string, args: AartsPayload): AsyncGenerator&lt;AartsPayload, AartsPayload, undefined&gt; {
-        process.env.DEBUG || (<span class="branch-1 cbranch-no" title="branch not covered" >yield { arguments: `[${__type}:UPDATE] BEGIN. Doing a gate check of payload`, identity: undefined })</span>
+        process.env.DEBUG && (<span class="branch-1 cbranch-no" title="branch not covered" >yield { arguments: `[${__type}:UPDATE] BEGIN. Doing a gate check of payload`, identity: undefined })</span>
         
         for await (const baseValidateResult of this.baseValidateUpdate(__type, args)) {
 <span class="cstat-no" title="statement not covered" >            yield { arguments: baseValidateResult, identity: undefined }</span>
         }
 &nbsp;
-        process.env.DEBUG || (<span class="branch-1 cbranch-no" title="branch not covered" >yield { arguments: `[${__type}:UPDATE] Loading requested items`, identity: undefined })</span>
+        process.env.DEBUG && (<span class="branch-1 cbranch-no" title="branch not covered" >yield { arguments: `[${__type}:UPDATE] Loading requested items`, identity: undefined })</span>
         const dynamoExistingItems = await batchGetItem(args.arguments);
         // console.log("result from batch get", JSON.stringify(dynamoExistingItems))
         <span class="missing-if-branch" title="if path not taken" >I</span>if (dynamoExistingItems.length !== args.arguments.length) {
@@ -1798,7 +1798,7 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
             )
         }
 &nbsp;
-        process.env.DEBUG || (<span class="branch-1 cbranch-no" title="branch not covered" >yield { arguments: `[${__type}:UPDATE] END`, identity: undefined })</span>
+        process.env.DEBUG && (<span class="branch-1 cbranch-no" title="branch not covered" >yield { arguments: `[${__type}:UPDATE] END`, identity: undefined })</span>
 &nbsp;
         return { arguments: updatedItems, identity: args.identity }
 &nbsp;
@@ -1807,13 +1807,13 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
 &nbsp;
 <span class="fstat-no" title="function not covered" >    async </span>*save(__type: string, args: AartsPayload): AsyncGenerator&lt;AartsPayload, AartsPayload, undefined&gt; {
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${__type}:SAVE] BEGIN`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${__type}:SAVE] BEGIN`, identity: undefined })</span>
 &nbsp;
         const proto = <span class="cstat-no" title="statement not covered" >this.lookupItems.get(__type)</span>
 &nbsp;
         const item_refkeys = (<span class="cstat-no" title="statement not covered" >proto as AnyConstructor&lt;DynamoItem&gt; &amp; DomainItem &amp; { __refkeys: any[] }).__refkeys</span>
         // console.log("WILL ITERATE OVER THOSE REF KEYS", item_refkeys)
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${__type}:SAVE] Analyzing item refkeys, ${ppjson(item_refkeys)}`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${__type}:SAVE] Analyzing item refkeys, ${ppjson(item_refkeys)}`, identity: undefined })</span>
         
 &nbsp;
         // USING BATCH WRITEITEM WITHOUT TRANSACTION, TODO leave a method for non transactional save of bulk data? (Should again define it on a IItemManager level, good idea)
@@ -1839,10 +1839,10 @@ export class BaseDynamoItemManager&lt;T extends DynamoItem&gt; implements IItemM
         // USING WRITING IN A TRANSACTION
 <span class="cstat-no" title="statement not covered" >        for (const item of args.arguments) {</span>
             let response = <span class="cstat-no" title="statement not covered" >await transactPutItem(item, item_refkeys) </span>
-<span class="cstat-no" title="statement not covered" >            process.env.DEBUG || console.log("SAVING TO DYNAMO RESULT: ", response)</span>
+<span class="cstat-no" title="statement not covered" >            process.env.DEBUG && console.log("SAVING TO DYNAMO RESULT: ", response)</span>
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG || (yield { arguments: `[${__type}:SAVE] END`, identity: undefined })</span>
+<span class="cstat-no" title="statement not covered" >        process.env.DEBUG && (yield { arguments: `[${__type}:SAVE] END`, identity: undefined })</span>
 <span class="cstat-no" title="statement not covered" >        return { arguments: args.arguments, identity: undefined }</span>
     }
 }</pre></td></tr></table></pre>

@@ -2,6 +2,7 @@ import { TestModel_Nomenclature } from "./Nomenclature"
 import { BaseDynamoItemManager } from "../../BaseItemManager"
 import { TestModel_AirportItem, TestModel_AirplaneItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
+import { ppjson } from "aarts-types/utils"
 
 export class TestModel_AirplaneModel extends TestModel_Nomenclature { 
     public manifacturer:string = "unknown"
@@ -51,7 +52,7 @@ export class TestModel_AirplaneManager extends BaseDynamoItemManager<TestModel_A
             }
 
             if (errors.length > 0) {
-                yield `[SamoletManager/validateCreate]: END WITH ERRORS validateCreate method`
+                yield `[SamoletManager/validateCreate]: END WITH ERRORS  ${ppjson(errors)}`
                 console.log('INVALID samolet: ', errors)
                 throw new Error(errors.join(";;"))
             } else {

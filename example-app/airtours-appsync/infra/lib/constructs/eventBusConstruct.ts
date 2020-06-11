@@ -7,6 +7,7 @@ import {ENV_VARS__EVENT_BUS_TOPIC, ENV_VARS__TEST_EVENT_BUS_TOPIC} from '../../e
 import { Duration } from '@aws-cdk/core'
 import { join } from 'path';
 import { LayerVersion, Code } from '@aws-cdk/aws-lambda';
+import { FollowMode } from '@aws-cdk/assets';
 
 export interface EventBusConstructProps {
     clientAppName: string,
@@ -37,7 +38,7 @@ export class EventBusConstruct extends cdk.Construct {
         this.eventDispatcher = new lambda.Function(this, "Dispatcher", {
             runtime: lambda.Runtime.NODEJS_12_X,
             functionName: `${props.clientAppName}-eventDispatcher`,
-            code: Code.fromAsset(join("..", props.clientAppName, "dist")),
+            code: Code.fromAsset(join("..", props.clientAppName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: 'index.dispatcher',
             memorySize: 256,
             timeout: cdk.Duration.seconds(100),
@@ -49,7 +50,7 @@ export class EventBusConstruct extends cdk.Construct {
         this.eventDispatcherStressTester = new lambda.Function(this, "DispatcherStressTester", {
             runtime: lambda.Runtime.NODEJS_12_X,
             functionName: `${props.clientAppName}-eventDispatcherStressTester`,
-            code: Code.fromAsset(join("..", props.clientAppName, "dist")),
+            code: Code.fromAsset(join("..", props.clientAppName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: 'index.dispatcherTester',
             memorySize: 256,
             timeout: cdk.Duration.seconds(100),

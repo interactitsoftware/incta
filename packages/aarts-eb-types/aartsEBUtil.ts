@@ -1,4 +1,4 @@
-import AWS from "aws-sdk";
+import * as AWS from "aws-sdk";
 import * as idGenUtil from 'aarts-types/utils'
 
 export interface AppSyncEvent {

@@ -214,7 +214,7 @@ import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqu
 import { ppjson } from 'aarts-types/utils';
 &nbsp;
 export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&gt;(item: T, __item_refkeys?: RefKey&lt;T&gt;[]): Promise&lt;T&gt; =&gt; {
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)</span>
     
     const ditem = toAttributeMap(item)
 &nbsp;
@@ -277,7 +277,7 @@ export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&g
 &nbsp;
     // write item to the database
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    process.env.DEBUG || <span class="branch-1 cbranch-no" title="branch not covered" >console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))</span>
+    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))</span>
     return item
 }</pre></td></tr></table></pre>
 
