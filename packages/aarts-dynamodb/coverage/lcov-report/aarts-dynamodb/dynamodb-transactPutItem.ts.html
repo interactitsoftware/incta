@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/20</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">86.67% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>12/15</span>
+                <span class='fraction'>13/15</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.24% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/17</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
@@ -136,17 +136,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">905x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">905x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">905x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -168,9 +166,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">55x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">905x</span>
+<span class="cline-any cline-yes">11532x</span>
+<span class="cline-any cline-yes">367x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -178,9 +178,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">55x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">11532x</span>
+<span class="cline-any cline-yes">108x</span>
+<span class="cline-any cline-yes">108x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -191,20 +191,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11532x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">905x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">905x</span>
+<span class="cline-any cline-yes">903x</span>
+<span class="cline-any cline-yes">903x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict'
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
@@ -214,7 +214,7 @@ import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqu
 import { ppjson } from 'aarts-types/utils';
 &nbsp;
 export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&gt;(item: T, __item_refkeys?: RefKey&lt;T&gt;[]): Promise&lt;T&gt; =&gt; {
-    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)</span>
+    process.env.DEBUG &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)</span>
     
     const ditem = toAttributeMap(item)
 &nbsp;
@@ -252,9 +252,9 @@ export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&g
                 }
             })
         }
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (__item_refkeys &amp;&amp; __item_refkeys.map(r =&gt; r.key).indexOf(key) &gt; -1 &amp;&amp; !!item[key] &amp;&amp; __item_refkeys.filter(r =&gt; r.key === key)[0].unique === true) {
-            const duniqueItem = <span class="cstat-no" title="statement not covered" >toAttributeMap({ id: uniqueitemrefkeyid(item, key), meta: `${item[key]}` })</span>
-<span class="cstat-no" title="statement not covered" >            accum.push({</span>
+        if (__item_refkeys &amp;&amp; __item_refkeys.map(r =&gt; r.key).indexOf(key) &gt; -1 &amp;&amp; !!item[key] &amp;&amp; __item_refkeys.filter(r =&gt; r.key === key)[0].unique === true) {
+            const duniqueItem = toAttributeMap({ id: uniqueitemrefkeyid(item, key), meta: `${item[key]}` })
+            accum.push({
                 Put: {
                     Item: duniqueItem,
                     TableName: DB_NAME,
@@ -277,7 +277,7 @@ export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&g
 &nbsp;
     // write item to the database
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    process.env.DEBUG && <span class="branch-1 cbranch-no" title="branch not covered" >console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))</span>
+    process.env.DEBUG &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))</span>
     return item
 }</pre></td></tr></table></pre>
 
@@ -286,7 +286,7 @@ export const transactPutItem = async &lt;T extends DomainItem &amp; DynamoItem&g
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Mon Jun 08 2020 21:19:44 GMT+0300 (Eastern European Summer Time)
+                at Fri Jun 12 2020 08:44:25 GMT+0300 (Eastern European Summer Time)
             </div>
         </div>
         <script src="../prettify.js"></script>

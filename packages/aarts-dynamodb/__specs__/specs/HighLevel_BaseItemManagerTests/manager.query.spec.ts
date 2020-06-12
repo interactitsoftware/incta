@@ -3,7 +3,7 @@ import { transactPutItem } from "../../../dynamodb-transactPutItem";
 import { TestModel_CountryItem, TestModel_AirportItem, TestModel_AirplaneManifacturerItem, TestModel_AirplaneModelItem, TestModel_AirplaneItem, TestModel_FlightItem, TestModel_TouristItem } from "../../testmodel/_DynamoItems";
 import { queryItems } from "../../../dynamodb-queryItems";
 import { versionString } from "../../../DynamoDbClient";
-import { seedAirtoursData } from "../LowLevel_transactXYZTests/query.spec";
+import { seedAirtoursData } from "../../testmodel/testDataSeeder";
 import { domainAdapter } from "../../testmodel/itemManagersMap";
 
 describe('query spec', () => {

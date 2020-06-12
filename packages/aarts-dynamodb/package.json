@@ -11,7 +11,9 @@
     "*.js",
     "*.d.ts",
     "*.svg",
-    "*.md"
+    "*.md",
+    "__specs__/testmodel/*.js",
+    "__specs__/testmodel/*.d.ts"
   ],
   "repository": {
     "url": "https://github.com/akrsmv/aarts-core/tree/master/packages/aarts-dynamodb"
