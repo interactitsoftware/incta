@@ -1,26 +1,30 @@
-import { TestModel_Nomenclature } from "./Nomenclature"
+import { _specs_Nomenclature } from "./Nomenclature"
 import { BaseDynamoItemManager } from "../../BaseItemManager"
-import { TestModel_AirportItem, TestModel_AirplaneItem } from "./_DynamoItems"
+import { _specs_AirportItem, _specs_AirplaneItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
 import { ppjson } from "aarts-types/utils"
 
-export class TestModel_AirplaneModel extends TestModel_Nomenclature { 
+export class _specs_AirplaneModel extends _specs_Nomenclature { 
     public manifacturer:string = "unknown"
 }
 
-export class TestModel_AirplaneManifacturer extends TestModel_Nomenclature { 
+export class _specs_AirplaneManifacturer extends _specs_Nomenclature { 
     public country: string = "unknown"
 }
 
-export class TestModel_Airplane {
+export class _specs_Airplane {
     
     constructor(...args: any[]) {
-        Object.assign(this, args.reduce((accum, arg)=>{
-            Object.keys(arg).forEach(k => {
-                accum[k] = arg[k]
-            })
-            return accum
-        },{}))
+        // client domain items left with a requirement to have a rest constructor,
+        // however below code is executed already on a DynamoItem level,
+        // and having it here again will cause a nested object with same props
+        
+        // Object.assign(this, args.reduce((accum, arg)=>{
+        //     Object.keys(arg).forEach(k => {
+        //         accum[k] = arg[k]
+        //     })
+        //     return accum
+        // },{}))
     }
 
     //--ref keys
@@ -32,8 +36,8 @@ export class TestModel_Airplane {
     public number_of_seats?: number
 }
 
-export class TestModel_AirplaneManager extends BaseDynamoItemManager<TestModel_AirplaneItem> {
-    async *validateCreate(samolet: TestModel_AirplaneItem, identity: IIdentity): AsyncGenerator<string, TestModel_AirplaneItem, undefined> {
+export class _specs_AirplaneManager extends BaseDynamoItemManager<_specs_AirplaneItem> {
+    async *validateCreate(samolet: _specs_AirplaneItem, identity: IIdentity): AsyncGenerator<string, _specs_AirplaneItem, undefined> {
         yield `[SamoletManager/validateCreate]: BEGIN validateCreate method`
             // TODO validate this samolet
             const errors: string[] = []
@@ -61,7 +65,7 @@ export class TestModel_AirplaneManager extends BaseDynamoItemManager<TestModel_A
             }
     }
 
-    async *validateUpdate(samolet: TestModel_AirplaneItem, identity: IIdentity): AsyncGenerator<string, TestModel_AirplaneItem, undefined> {
+    async *validateUpdate(samolet: _specs_AirplaneItem, identity: IIdentity): AsyncGenerator<string, _specs_AirplaneItem, undefined> {
             yield "SO THIS IS THE DOMAIN VALIDATE UPDATE METHOD"
             return samolet
     }

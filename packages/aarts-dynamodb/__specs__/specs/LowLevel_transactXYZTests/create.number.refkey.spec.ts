@@ -1,4 +1,4 @@
-import { TestModel_AirplaneItem, /**XXX TestModel_AirplaneRefkeys */} from "../../testmodel/_DynamoItems"
+import { _specs_AirplaneItem, /**XXX _specs_AirplaneRefkeys */} from "../../testmodel/_DynamoItems"
 import { Strippable, clearDynamo, queryForId, testInsertOneNonUniqueRefKey } from "../../testutils"
 import { transactPutItem } from "../../../dynamodb-transactPutItem";
 
@@ -10,10 +10,10 @@ describe('create number refkey', () => {
 
   test('create number refkey', async () => {
     return await testInsertOneNonUniqueRefKey({
-      dynamoItemCtor: TestModel_AirplaneItem,
+      dynamoItemCtor: _specs_AirplaneItem,
       propRefKey: "number_of_seats",
       refKeyType: "number",
-      itemRefKeys: TestModel_AirplaneItem.__refkeys
+      itemRefKeys: _specs_AirplaneItem.__refkeys
     })
   })
 })

@@ -1,6 +1,6 @@
 import { Strippable, clearDynamo, queryForId } from "../../testutils"
 import { transactPutItem } from "../../../dynamodb-transactPutItem";
-import { TestModel_CountryItem, TestModel_AirportItem, TestModel_AirplaneManifacturerItem, TestModel_AirplaneModelItem, TestModel_AirplaneItem, TestModel_FlightItem, TestModel_TouristItem } from "../../testmodel/_DynamoItems";
+import { _specs_CountryItem, _specs_AirportItem, _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "../../testmodel/_DynamoItems";
 import { queryItems } from "../../../dynamodb-queryItems";
 import { versionString } from "../../../DynamoDbClient";
 import { seedAirtoursData } from "../../testmodel/testDataSeeder";
@@ -23,7 +23,7 @@ describe('query spec', () => {
         ddbIndex: "meta__smetadata",
         primaryKeyName: "meta",
         rangeKeyName: "smetadata",
-        pk: `${TestModel_AirportItem.__type}}name`,
+        pk: `${_specs_AirportItem.__type}}name`,
         range: "Sofia"
       })
       // META: flight}to_airport; 
@@ -32,7 +32,7 @@ describe('query spec', () => {
         ddbIndex: "meta__smetadata",
         primaryKeyName: "meta",
         rangeKeyName: "smetadata",
-        pk: `${TestModel_FlightItem.__type}}to_airport`,
+        pk: `${_specs_FlightItem.__type}}to_airport`,
         range: sofia_airport.items && sofia_airport.items[0].id
       })
 
@@ -42,7 +42,7 @@ describe('query spec', () => {
       // get all airplanes with number_of_seats > 20
       const high_volume_planes = await queryItems({
         ddbIndex: "meta__smetadata",
-        pk: `${TestModel_FlightItem.__type}}flight_code`,
+        pk: `${_specs_FlightItem.__type}}flight_code`,
         range: "F13",
         rangeKeyName: 'smetadata',
         primaryKeyName: 'meta'
@@ -58,7 +58,7 @@ describe('query spec', () => {
       // get all airplanes with number_of_seats > 20
       const high_volume_planes = await queryItems({
         ddbIndex: "meta__nmetadata",
-        pk: `${TestModel_AirplaneItem.__type}}number_of_seats`,
+        pk: `${_specs_AirplaneItem.__type}}number_of_seats`,
         range: 15,
         rangeKeyName: 'nmetadata',
         primaryKeyName: 'meta'
@@ -70,7 +70,7 @@ describe('query spec', () => {
       // get all airplanes with number_of_seats > 20
       const high_volume_planes = await queryItems({
         ddbIndex: "meta__nmetadata",
-        pk: `${TestModel_AirplaneItem.__type}}number_of_seats`,
+        pk: `${_specs_AirplaneItem.__type}}number_of_seats`,
         range: { min: 20, max: 999 },
         rangeKeyName: 'nmetadata',
         primaryKeyName: 'meta'
@@ -83,7 +83,7 @@ describe('query spec', () => {
       // get all airplanes with number_of_seats < 20
       const low_volume_planes = await queryItems({
         ddbIndex: "meta__nmetadata",
-        pk: `${TestModel_AirplaneItem.__type}}number_of_seats`,
+        pk: `${_specs_AirplaneItem.__type}}number_of_seats`,
         range: { min: 0, max: 20 },
         rangeKeyName: 'nmetadata',
         primaryKeyName: 'meta'
@@ -96,7 +96,7 @@ describe('query spec', () => {
       // get all airplanes with 10 < number_of_seats < 25
       const low_volume_planes = await queryItems({
         ddbIndex: "meta__nmetadata",
-        pk: `${TestModel_AirplaneItem.__type}}number_of_seats`,
+        pk: `${_specs_AirplaneItem.__type}}number_of_seats`,
         range: { min: 10, max: 25 },
         rangeKeyName: 'nmetadata',
         primaryKeyName: 'meta'
@@ -114,7 +114,7 @@ describe('query spec', () => {
         ddbIndex: "meta__smetadata",
         primaryKeyName: "meta",
         rangeKeyName: "smetadata",
-        pk: `${TestModel_AirportItem.__type}}name`,
+        pk: `${_specs_AirportItem.__type}}name`,
         range: "Sofia"
       })
 
@@ -152,7 +152,7 @@ describe('query spec', () => {
         pk: airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].id
       })
 
-      expect(all_items_relating_to_airplane_555.count).toBe(0) // so airplane 555 never flew, see test model 
+      expect(all_items_relating_to_airplane_555.count).toBe(1) // so airplane 555 flew only once, see test model 
 
       const airplane_with_unique_ref_111 = await queryItems({
         ddbIndex: "nmetadata__meta",
@@ -183,7 +183,7 @@ describe('query spec', () => {
       const long_lasting_flights = await queryItems({
         ddbIndex: "meta__id",
         primaryKeyName: "meta",
-        pk: `${versionString(0)}|${TestModel_FlightItem.__type}`,
+        pk: `${versionString(0)}|${_specs_FlightItem.__type}`,
         rangeKeyName: "id",
         filter: [{ key: "duration_hours", predicate: ">", value: 10 }]
       })
@@ -193,7 +193,7 @@ describe('query spec', () => {
       const long_lasting_flights = await queryItems({
         ddbIndex: "meta__id",
         primaryKeyName: "meta",
-        pk: `${versionString(0)}|${TestModel_FlightItem.__type}`,
+        pk: `${versionString(0)}|${_specs_FlightItem.__type}`,
         rangeKeyName: "id",
         filter: [{ key: "duration_hours", predicate: ">=", value: 10 }]
       })

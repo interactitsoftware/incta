@@ -66,7 +66,7 @@ export class AartsAllInfraStack extends Stack {
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
       eventSource: "worker:input",
-      envVars: {"DEBUG":"1"},
+      // envVars: {"DEBUG":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
       layers: [
         nodeModulesLayer
       ]

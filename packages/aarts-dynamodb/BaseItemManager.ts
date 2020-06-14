@@ -12,7 +12,7 @@ export type DomainItem = Record<string, any>
 
 export interface DdbQueryInput {
     pk: string,
-    range?: string | number | {min:string|number, max:string|number},
+    range?: string | number | { min: string | number, max: string | number },
     primaryKeyName: string,
     rangeKeyName: string,
     ddbIndex: string,
@@ -23,9 +23,9 @@ export interface DdbQueryInput {
     }[],
     limit?: number,
     paginationToken?: DdbItemKey
-} 
+}
 
-export interface DdbItemKey {id: string, meta: string, smetadata?: string, nmetadata?: number}
+export interface DdbItemKey { id: string, meta: string, smetadata?: string, nmetadata?: number }
 
 export interface DdbQueryOutput {
     items?: Record<string, any>[],
@@ -33,7 +33,7 @@ export interface DdbQueryOutput {
     lastEvaluatedKey: DdbItemKey
 }
 
-export type RefKey<T extends DomainItem> = {key:keyof IBaseDynamoItemProps | keyof T, ref?:string, unique?:boolean}
+export type RefKey<T extends DomainItem> = { key: keyof IBaseDynamoItemProps | keyof T, ref?: string, unique?: boolean }
 
 // export const ItemReference = // TODO DOES IT NEED ALL ATTR OR ONLY THE KEYS?
 //     (item: DynamoItem, refkey: RefKey<DynamoItem>) => {
@@ -43,7 +43,7 @@ export type RefKey<T extends DomainItem> = {key:keyof IBaseDynamoItemProps | key
 //             public meta: string = `${item.item_type}}${refkey.key}` //}${item[refkey]}
 //             // SKIP SHARDING IDEA FOR NOW
 //             // public shardnr: number = (new Date()).getFullYear()//item.shardnr -> TODO invent a function that will calculate shardnr based on the ID
-            
+
 //             public smetadata: string|undefined = typeof item[refkey.key] === "string" ? item[refkey.key] as string : undefined
 //             public nmetadata: number|undefined = typeof item[refkey.key] === "number" ? item[refkey.key] as number : undefined
 
@@ -65,13 +65,13 @@ export type RefKey<T extends DomainItem> = {key:keyof IBaseDynamoItemProps | key
 //     }
 // export type ItemReference = Mixin<typeof ItemReference>
 
-export interface IBaseDynamoItemProps  {
+export interface IBaseDynamoItemProps {
 
     id: string
 
     item_type: string
     item_state?: string
-    state_history?: Record<number,string>
+    state_history?: Record<number, string>
     revisions: number
     checksum?: string
 
@@ -81,7 +81,7 @@ export interface IBaseDynamoItemProps  {
     date_updated: string
 }
 
-export interface DynamoItemKey  {
+export interface DynamoItemKey {
 
     id: string
     meta: string
@@ -89,16 +89,16 @@ export interface DynamoItemKey  {
 
 export const DynamoItem =
     <T extends AnyConstructor<DomainItem>>(base: T, t: string, refkeys?: RefKey<InstanceType<T>>[]) => {
-        
+
         class DynamoItem extends base implements IBaseDynamoItemProps {
             constructor(...args: any[]) {
                 super(args)
-                Object.assign(this, args.reduce((accum, arg)=>{
+                Object.assign(this, args.reduce((accum, arg) => {
                     Object.keys(arg).forEach(k => {
                         accum[k] = arg[k]
                     })
                     return accum
-                },{}))
+                }, {}))
             }
 
             public static __type: string = t
@@ -108,13 +108,13 @@ export const DynamoItem =
             public meta: string = `${versionString(0)}|${t}`
             // SKIP SHARDING IDEA FOR NOW
             // public shardnr: number = 0 // these we do not want spread in GSI's as we do index preloading (only taking them by id)
-            
+
             // LEAVE (s|n))metadata keys ONLY TO REFKEY LOGIC
             // public smetadata: string = idstr
 
             public item_type: string = t
             public item_state?: string
-            public state_history?: Record<number,string>
+            public state_history?: Record<number, string>
             public revisions: number = 0
             public checksum?: string
 
@@ -137,13 +137,86 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     constructor(lookupItems: Map<string, AnyConstructor<DynamoItem & DomainItem>>) {
         this.lookupItems = lookupItems
     }
-    
+    //#region 
+    //#region QUERY
+    /**
+     * implemeneted in client item managers - can add or ammend a query according to business logic
+     * @param args 
+     * @param identity 
+     */
+    async *validateStart(item: T, identity: IIdentity): AsyncGenerator<string, T, undefined> {
+        return item
+    }
+    /**
+     * T here is DdbQueryInput. TODO improve generics
+     * @param args holds gate checkins, transforming incomming args for dynamodb query
+     * @param identity 
+     */
+    async *baseValidateStart(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
+        process.env.DEBUG && (yield `[${__type}:baseValidateStart] START. checking for mandatory item keys: ` + ppjson(payload))
+
+        if (payload.arguments.constructor !== Array) {
+            throw new Error(`[${__type}:baseValidateStart] Payload is not an array!`)
+        }
+
+        if (payload.arguments.length > 1) {
+            throw new Error(`[${__type}:baseValidateStart] excedes the max arguments array length constraint(1)`)
+        }
+
+        return payload
+    }
     // TODO not implemented yet
     // TODO to initiate the start method of some domain procedure, following some standard contract, with a hirsotry record in dynamo of its execution
-    async *start(item: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        throw new Error("Method not implemented.")
+    async *start(__type: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+        // console.log('Received arguments: ', args)
+        process.env.DEBUG && (yield { arguments: `[${__type}:CREATE] Begin CREATE. Doing a gate check of payload`, identity: undefined })
+
+        for await (const baseValidateResult of this.baseValidateStart(__type, args)) {
+            yield { arguments: baseValidateResult, identity: undefined }
+        }
+
+        const proto = this.lookupItems.get(__type)
+
+        if (!proto) {
+            throw new Error(`[${__type}:START] Not able to locate dynamo item prototype for item ${__type}`)
+        }
+
+        const dynamoItems = []
+        for (const arg of args.arguments) {
+            const asyncGenDomain = this.validateStart(
+                Object.assign({}, new proto(), arg),
+                args.identity)
+            let processorDomain = await asyncGenDomain.next()
+            do {
+                if (!processorDomain.done) {
+                    yield { arguments: `[${__type}:validateStart] ${processorDomain.value}`, identity: undefined }
+                    processorDomain = await asyncGenDomain.next()
+                }
+            } while (!processorDomain.done)
+            dynamoItems.push(processorDomain.value)
+
+            process.env.DEBUG && (yield { arguments: `[${__type}:START] Procedure applicable for Starting.`, identity: undefined })
+
+            const procedureResult = await new proto(arg).start(__type, args)
+
+            process.env.DEBUG && (yield { arguments: `[${__type}:START] Procedure ended. Saving state.`, identity: undefined })
+
+            const asyncGenSave = this.save(__type, Object.assign({}, args, { arguments: [procedureResult] }))
+            let processorSave = await asyncGenSave.next()
+            do {
+                if (!processorSave.done) {
+                    // process.env.DEBUG && (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
+                    process.env.DEBUG && (yield { arguments: processorSave.value.arguments, identity: undefined })
+                    processorSave = await asyncGenSave.next()
+                }
+            } while (!processorSave.done)
+        }
+
+        return { arguments: dynamoItems, identity: args.identity }
     }
-   
+
+    //#endregion
+
     //#region QUERY
     /**
      * implemeneted in client item managers - can add or ammend a query according to business logic
@@ -159,13 +232,13 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param identity 
      */
     async *baseValidateQuery(args: DdbQueryInput[], identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
-        
-        if (args.constructor !== Array){
+
+        if (args.constructor !== Array) {
             throw new Error(`[baseValidateQuery] Query args is not an array!`)
         }
 
         if (args.length > 1) {
-			throw new Error(`[baseValidateQuery] Query args array excedes the max arguments array length currently supported(1)`)
+            throw new Error(`[baseValidateQuery] Query args array excedes the max arguments array length currently supported(1)`)
         }
 
         return args.reduce<DdbQueryInput[]>((accum, inputQueryArg) => {
@@ -174,9 +247,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
             // check for proper value on available GSIs
             if (!!inputQueryArg.ddbIndex && ["meta__smetadata",
-                                            "smetadata__meta",
-                                            "meta__nmetadata",
-                                            "nmetadata__meta",].indexOf(inputQueryArg.ddbIndex) < 0) {
+                "smetadata__meta",
+                "meta__nmetadata",
+                "nmetadata__meta",].indexOf(inputQueryArg.ddbIndex) < 0) {
                 throw new Error(`Provided GSI Name is invalid`)
             } else if (!!inputQueryArg.ddbIndex) {
                 // infer keys from index provided
@@ -235,8 +308,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         return { arguments: dynamoItems, identity: args.identity }
     }
     //#endregion
- 
-  
+
+
     //#region DELETE
     /**
      * 
@@ -254,14 +327,14 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateDelete(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
         process.env.DEBUG && (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
-        if (payload.arguments.constructor !== Array){
+        if (payload.arguments.constructor !== Array) {
             throw new Error(`[${__type}:baseValidateDelete] Payload is not an array!`)
         }
 
         if (payload.arguments.length > 1) {
-			throw new Error(`[${__type}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(1)`)
+            throw new Error(`[${__type}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(1)`)
         }
-        
+
         for (const arg of payload.arguments) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
@@ -281,7 +354,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      */
     async *delete(__type: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         yield { arguments: `[${__type}:DELETE] BEGIN. Doing a gate check of payload`, identity: undefined }
-        
+
         for await (const baseValidateResult of this.baseValidateDelete(__type, args)) {
             yield { arguments: baseValidateResult, identity: undefined }
         }
@@ -338,12 +411,12 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param identity 
      */
     async *baseValidateGet(args: T[], identity: IIdentity): AsyncGenerator<string, DynamoItemKey[], undefined> {
-        if (args.constructor !== Array){
+        if (args.constructor !== Array) {
             throw new Error(`[baseValidateGet] Payload is not an array!`)
         }
         return args.reduce<DynamoItemKey[]>((accum, item) => {
             if (item.id) {
-                accum.push({id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}`})
+                accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
             } else {
                 throw new Error(`invalid ID keys passed. id: ${item.id} meta: ${item.meta}`)
             }
@@ -403,15 +476,15 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      */
     async *baseValidateCreate(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
         process.env.DEBUG && (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))
-        
-        if (payload.arguments.constructor !== Array){
+
+        if (payload.arguments.constructor !== Array) {
             throw new Error(`[${__type}:baseValidateCreate] Payload is not an array!`)
         }
 
         if (payload.arguments.length > 1) {
-			throw new Error(`[${__type}:baseValidateCreate] excedes the max arguments array length constraint(1)`)
+            throw new Error(`[${__type}:baseValidateCreate] excedes the max arguments array length constraint(1)`)
         }
-        
+
         for (const arg of payload.arguments) {
             if ("id" in arg || "revisions" in arg) {
                 // throw new Error(`[${__type}:baseValidateCreate] {id, revisions} should not be present when creating item`)
@@ -433,7 +506,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         // console.log('Received arguments: ', args)
         process.env.DEBUG && (yield { arguments: `[${__type}:CREATE] Begin CREATE. Doing a gate check of payload`, identity: undefined })
 
-        for await (const baseValidateResult of this.baseValidateCreate(__type, args)){
+        for await (const baseValidateResult of this.baseValidateCreate(__type, args)) {
             yield { arguments: baseValidateResult, identity: undefined }
         }
 
@@ -460,15 +533,15 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         process.env.DEBUG && (yield { arguments: `[${__type}:CREATE] Item applicable for saving. END.`, identity: undefined })
 
-        const asyncGenSave = this.save(__type, Object.assign({}, args, {arguments:dynamoItems}))
-			let processorSave = await asyncGenSave.next()
-			do {
-				if (!processorSave.done) {
-					// process.env.DEBUG && (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
-					process.env.DEBUG && (yield { arguments: processorSave.value.arguments, identity: undefined})
-					processorSave = await asyncGenSave.next()
-				}
-			} while (!processorSave.done)
+        const asyncGenSave = this.save(__type, Object.assign({}, args, { arguments: dynamoItems }))
+        let processorSave = await asyncGenSave.next()
+        do {
+            if (!processorSave.done) {
+                // process.env.DEBUG && (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
+                process.env.DEBUG && (yield { arguments: processorSave.value.arguments, identity: undefined })
+                processorSave = await asyncGenSave.next()
+            }
+        } while (!processorSave.done)
 
         return { arguments: dynamoItems, identity: args.identity }
     }
@@ -492,9 +565,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         process.env.DEBUG && (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
         if (payload.arguments > 1) {
-			throw new Error(`[${__type}:baseValidateUpdate] Payload is array an it excedes the max arguments array length constraint(1)`)
+            throw new Error(`[${__type}:baseValidateUpdate] Payload is array an it excedes the max arguments array length constraint(1)`)
         }
-        
+
         for (const arg of payload.arguments) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
@@ -515,7 +588,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      */
     async *update(__type: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         process.env.DEBUG && (yield { arguments: `[${__type}:UPDATE] BEGIN. Doing a gate check of payload`, identity: undefined })
-        
+
         for await (const baseValidateResult of this.baseValidateUpdate(__type, args)) {
             yield { arguments: baseValidateResult, identity: undefined }
         }
@@ -544,7 +617,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                     arg,
                     (this.lookupItems.get(__type) as MixinConstructor<typeof DynamoItem>).__refkeys)
 
-                    // (this.lookupItems.get(__type) as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys)
+                // (this.lookupItems.get(__type) as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys)
             )
         }
 
@@ -564,7 +637,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const item_refkeys = (proto as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys
         // console.log("WILL ITERATE OVER THOSE REF KEYS", item_refkeys)
         process.env.DEBUG && (yield { arguments: `[${__type}:SAVE] Analyzing item refkeys, ${ppjson(item_refkeys)}`, identity: undefined })
-        
+
 
         // USING BATCH WRITEITEM WITHOUT TRANSACTION, TODO leave a method for non transactional save of bulk data? (Should again define it on a IItemManager level, good idea)
         // const item_refs: T[] = []
@@ -588,7 +661,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         // USING WRITING IN A TRANSACTION
         for (const item of args.arguments) {
-            let response = await transactPutItem(item, item_refkeys) 
+            let response = await transactPutItem(item, item_refkeys)
             process.env.DEBUG && console.log("SAVING TO DYNAMO RESULT: ", response)
         }
 

@@ -1,4 +1,4 @@
-import { TestModel_AirplaneItem, /**TestModel_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
+import { _specs_AirplaneItem, /**_specs_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../../testutils"
 import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
@@ -11,11 +11,11 @@ describe('manager.update.spec', () => {
 
   test('update number refkey', async () => {
 
-    const airplane = new TestModel_AirplaneItem({number_of_seats:11})
+    const airplane = new _specs_AirplaneItem({number_of_seats:11})
 
-    return await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
+    return await transactPutItem(airplane, _specs_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
-      const updateGen = await domainAdapter.itemManagers[TestModel_AirplaneItem.__type].update(TestModel_AirplaneItem.__type, {
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type, {
         arguments: [{ // update arranged item
           id: arrangedItem.id,
           meta: arrangedItem.meta,
@@ -37,7 +37,7 @@ describe('manager.update.spec', () => {
 
       const createdItems = await queryForId(airplane.id)
 
-      const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${TestModel_AirplaneItem.__type}`)[0]
+      const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
       const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(airplane, "number_of_seats"))[0]
 
       expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
@@ -46,14 +46,14 @@ describe('manager.update.spec', () => {
   })
   test.only('update remove refkey', async () => {
 
-    const airplane = new TestModel_AirplaneItem({number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
+    const airplane = new _specs_AirplaneItem({number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
 
-    return await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
+    return await transactPutItem(airplane, _specs_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
       const allBeforeUpdate = await queryForId(airplane.id)
       expect(allBeforeUpdate.length).toBe(3) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats
       
-      const updateGen = await domainAdapter.itemManagers[TestModel_AirplaneItem.__type].update(TestModel_AirplaneItem.__type, {
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type, {
         arguments: [{ // update arranged item
           id: arrangedItem.id,
           meta: arrangedItem.meta,
@@ -76,7 +76,7 @@ describe('manager.update.spec', () => {
       const all = await queryForId(airplane.id)
       expect(all.length).toBe(3) // 1 main item, 2 history of update, 3 refkey for manifacturer [no 4 - refkey for number_of_seats was deleted]
 
-      const mainItem = all.filter(i => i.meta === `${versionString(0)}|${TestModel_AirplaneItem.__type}`)[0]
+      const mainItem = all.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
       expect(mainItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1 }))
 
     })

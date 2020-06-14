@@ -43,7 +43,8 @@ export class EventBusConstruct extends cdk.Construct {
             memorySize: 256,
             timeout: cdk.Duration.seconds(100),
             environment: {  }, //"ENV_ONE": "ENV_ONE_VALUE", "ENV_TWO": "ENV_TWO_VALUE"
-            layers: [props.nodeModulesLayer]
+            layers: [props.nodeModulesLayer],
+            retryAttempts: 2
         })
         this.grantAccess(this.eventDispatcher)
 
@@ -55,7 +56,8 @@ export class EventBusConstruct extends cdk.Construct {
             memorySize: 256,
             timeout: cdk.Duration.seconds(100),
             environment: {  }, //"ENV_ONE": "ENV_ONE_VALUE", "ENV_TWO": "ENV_TWO_VALUE"
-            layers: [props.nodeModulesLayer]
+            layers: [props.nodeModulesLayer],
+            retryAttempts: 2
         })
         this.grantAccess(this.eventDispatcherStressTester)
     }

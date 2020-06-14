@@ -1,6 +1,6 @@
 import { Strippable, clearDynamo, queryForId } from "../../testutils"
 import { transactPutItem } from "../../../dynamodb-transactPutItem";
-import { TestModel_CountryItem, TestModel_AirportItem, TestModel_AirplaneManifacturerItem, TestModel_AirplaneModelItem, TestModel_AirplaneItem, TestModel_FlightItem, TestModel_TouristItem } from "../../testmodel/_DynamoItems";
+import { _specs_CountryItem, _specs_AirportItem, _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "../../testmodel/_DynamoItems";
 import { queryItems } from "../../../dynamodb-queryItems";
 import { versionString } from "../../../DynamoDbClient";
 import { seedAirtoursData } from "../../testmodel/testDataSeeder";
@@ -20,8 +20,8 @@ describe('query spec', () => {
         test('fill fail if arguments is not an array', async () => {
 
             // get the sofia airport dynamo record
-            const queryGen = await domainAdapter.itemManagers[TestModel_AirportItem.__type].query(
-                TestModel_AirportItem.__type,
+            const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
+                _specs_AirportItem.__type,
                 {
                     arguments: {
 
@@ -45,14 +45,14 @@ describe('query spec', () => {
         test('query all items having particular string refkey value', async () => {
 
             // get the sofia airport dynamo record
-            const queryGen = await domainAdapter.itemManagers[TestModel_AirportItem.__type].query(
-                TestModel_AirportItem.__type,
+            const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
+                _specs_AirportItem.__type,
                 {
                     arguments: [{
                         ddbIndex: "meta__smetadata",
                         primaryKeyName: "meta",
                         rangeKeyName: "smetadata",
-                        pk: `${TestModel_AirportItem.__type}}name`,
+                        pk: `${_specs_AirportItem.__type}}name`,
                         range: "Sofia"
                     }],
                     identity: "akrsmv"
@@ -68,14 +68,14 @@ describe('query spec', () => {
 
             // META: flight}to_airport; 
             // SMETADATA: SOFIA AIRPORT's ID
-            const queryGen1 = await domainAdapter.itemManagers[TestModel_AirportItem.__type].query(
-                TestModel_AirportItem.__type,
+            const queryGen1 = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
+                _specs_AirportItem.__type,
                 {
                     arguments: [{
                         ddbIndex: "meta__smetadata",
                         primaryKeyName: "meta",
                         rangeKeyName: "smetadata",
-                        pk: `${TestModel_FlightItem.__type}}to_airport`,
+                        pk: `${_specs_FlightItem.__type}}to_airport`,
                         range: queryProcessor.value.arguments.items && queryProcessor.value.arguments.items[0].id
                     }],
                     identity: "akrsmv"
@@ -97,7 +97,7 @@ describe('query spec', () => {
         //     // get all airplanes with number_of_seats > 20
         //     const high_volume_planes = await queryItems({
         //         ddbIndex: "meta__smetadata",
-        //         pk: `${TestModel_FlightItem.__type}}flight_code`,
+        //         pk: `${_specs_FlightItem.__type}}flight_code`,
         //         range: "F13",
         //         rangeKeyName: 'smetadata',
         //         primaryKeyName: 'meta'
@@ -107,13 +107,15 @@ describe('query spec', () => {
         // })
     })
 
+    // BASICALLY THE SAME FUNCTIONALITY TESTED AS IN LOW LEVEL QUERY TESTS, THIS TIME VIA A MANAGER AS SHOWN IN ABOVE TEST
+
 
     // describe('query.gsi2.meta__nmetadata.spec', () => {
     //     test('query all items having particular number refkey value', async () => {
     //         // get all airplanes with number_of_seats > 20
     //         const high_volume_planes = await queryItems({
     //             ddbIndex: "meta__nmetadata",
-    //             pk: `${TestModel_AirplaneItem.__type}}number_of_seats`,
+    //             pk: `${_specs_AirplaneItem.__type}}number_of_seats`,
     //             range: 15,
     //             rangeKeyName: 'nmetadata',
     //             primaryKeyName: 'meta'
@@ -125,7 +127,7 @@ describe('query spec', () => {
     //         // get all airplanes with number_of_seats > 20
     //         const high_volume_planes = await queryItems({
     //             ddbIndex: "meta__nmetadata",
-    //             pk: `${TestModel_AirplaneItem.__type}}number_of_seats`,
+    //             pk: `${_specs_AirplaneItem.__type}}number_of_seats`,
     //             range: { min: 20, max: 999 },
     //             rangeKeyName: 'nmetadata',
     //             primaryKeyName: 'meta'
@@ -138,7 +140,7 @@ describe('query spec', () => {
     //         // get all airplanes with number_of_seats < 20
     //         const low_volume_planes = await queryItems({
     //             ddbIndex: "meta__nmetadata",
-    //             pk: `${TestModel_AirplaneItem.__type}}number_of_seats`,
+    //             pk: `${_specs_AirplaneItem.__type}}number_of_seats`,
     //             range: { min: 0, max: 20 },
     //             rangeKeyName: 'nmetadata',
     //             primaryKeyName: 'meta'
@@ -151,7 +153,7 @@ describe('query spec', () => {
     //         // get all airplanes with 10 < number_of_seats < 25
     //         const low_volume_planes = await queryItems({
     //             ddbIndex: "meta__nmetadata",
-    //             pk: `${TestModel_AirplaneItem.__type}}number_of_seats`,
+    //             pk: `${_specs_AirplaneItem.__type}}number_of_seats`,
     //             range: { min: 10, max: 25 },
     //             rangeKeyName: 'nmetadata',
     //             primaryKeyName: 'meta'
@@ -169,7 +171,7 @@ describe('query spec', () => {
     //             ddbIndex: "meta__smetadata",
     //             primaryKeyName: "meta",
     //             rangeKeyName: "smetadata",
-    //             pk: `${TestModel_AirportItem.__type}}name`,
+    //             pk: `${_specs_AirportItem.__type}}name`,
     //             range: "Sofia"
     //         })
 
@@ -238,7 +240,7 @@ describe('query spec', () => {
     //         const long_lasting_flights = await queryItems({
     //             ddbIndex: "meta__id",
     //             primaryKeyName: "meta",
-    //             pk: `${versionString(0)}|${TestModel_FlightItem.__type}`,
+    //             pk: `${versionString(0)}|${_specs_FlightItem.__type}`,
     //             rangeKeyName: "id",
     //             filter: [{ key: "duration_hours", predicate: ">", value: 10 }]
     //         })
@@ -248,7 +250,7 @@ describe('query spec', () => {
     //         const long_lasting_flights = await queryItems({
     //             ddbIndex: "meta__id",
     //             primaryKeyName: "meta",
-    //             pk: `${versionString(0)}|${TestModel_FlightItem.__type}`,
+    //             pk: `${versionString(0)}|${_specs_FlightItem.__type}`,
     //             rangeKeyName: "id",
     //             filter: [{ key: "duration_hours", predicate: ">=", value: 10 }]
     //         })

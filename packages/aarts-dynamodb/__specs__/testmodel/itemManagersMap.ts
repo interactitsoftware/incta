@@ -1,38 +1,41 @@
-import { TestModel_AirplaneManager } from "./Airplane"
-import { TestModel_AirportManager } from "./Airport"
+import { _specs_AirplaneManager } from "./Airplane"
+import { _specs_AirportManager } from "./Airport"
 import { DynamoItem, BaseDynamoItemManager } from "../../BaseItemManager"
 
 
 import { IDomainAdapter } from "aarts-types/interfaces"
 import { AnyConstructor } from "aarts-types/Mixin"
 import { 
-    TestModel_AirportItem,
-    TestModel_AirplaneItem,
-    TestModel_AirplaneManifacturerItem, 
-    TestModel_AirplaneModelItem, 
-    TestModel_CountryItem, 
-    TestModel_FlightItem, 
-    TestModel_TouristItem } from "./_DynamoItems"
+    _specs_AirportItem,
+    _specs_AirplaneItem,
+    _specs_AirplaneManifacturerItem, 
+    _specs_AirplaneModelItem, 
+    _specs_CountryItem, 
+    _specs_FlightItem, 
+    _specs_TouristItem,
+    _specs_DataImporterItem } from "./_DynamoItems"
 
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
-allItems.set(TestModel_AirportItem.__type, TestModel_AirportItem)
-allItems.set(TestModel_AirplaneItem.__type, TestModel_AirplaneItem)
-allItems.set(TestModel_AirplaneManifacturerItem.__type, TestModel_AirplaneManifacturerItem)
-allItems.set(TestModel_AirplaneModelItem.__type, TestModel_AirplaneModelItem)
-allItems.set(TestModel_CountryItem.__type, TestModel_CountryItem)
-allItems.set(TestModel_FlightItem.__type, TestModel_FlightItem)
-allItems.set(TestModel_TouristItem.__type, TestModel_TouristItem)
+allItems.set(_specs_AirportItem.__type, _specs_AirportItem)
+allItems.set(_specs_AirplaneItem.__type, _specs_AirplaneItem)
+allItems.set(_specs_AirplaneManifacturerItem.__type, _specs_AirplaneManifacturerItem)
+allItems.set(_specs_AirplaneModelItem.__type, _specs_AirplaneModelItem)
+allItems.set(_specs_CountryItem.__type, _specs_CountryItem)
+allItems.set(_specs_FlightItem.__type, _specs_FlightItem)
+allItems.set(_specs_TouristItem.__type, _specs_TouristItem)
+allItems.set(_specs_DataImporterItem.__type, _specs_DataImporterItem)
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
     public itemManagers = {
-        [TestModel_AirplaneItem.__type]: new TestModel_AirplaneManager(allItems),
-        [TestModel_AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
-        [TestModel_AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
-        [TestModel_AirportItem.__type]: new TestModel_AirportManager(allItems),
-        [TestModel_FlightItem.__type]: new BaseDynamoItemManager(allItems),
-        [TestModel_CountryItem.__type]: new BaseDynamoItemManager(allItems),
-        [TestModel_TouristItem.__type]: new BaseDynamoItemManager(allItems)
+        [_specs_AirplaneItem.__type]: new _specs_AirplaneManager(allItems),
+        [_specs_AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
+        [_specs_AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
+        [_specs_AirportItem.__type]: new _specs_AirportManager(allItems),
+        [_specs_FlightItem.__type]: new BaseDynamoItemManager(allItems),
+        [_specs_CountryItem.__type]: new BaseDynamoItemManager(allItems),
+        [_specs_TouristItem.__type]: new BaseDynamoItemManager(allItems),
+        [_specs_DataImporterItem.__type]: new BaseDynamoItemManager(allItems)
     }
 }
 

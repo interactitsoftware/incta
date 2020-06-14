@@ -1,11 +1,12 @@
 import { DynamoItem, RefKey } from "../../BaseItemManager";
-import { TestModel_Airport } from "./Airport";
-import { TestModel_Flight } from "./Flight";
-import { TestModel_Airplane, TestModel_AirplaneModel, TestModel_AirplaneManifacturer } from "./Airplane";
-import { TestModel_Country } from "./Country";
-import { TestModel_Tourist } from "./Tourist";
+import { _specs_Airport } from "./Airport";
+import { _specs_Flight } from "./Flight";
+import { _specs_Airplane, _specs_AirplaneModel, _specs_AirplaneManifacturer } from "./Airplane";
+import { _specs_Country } from "./Country";
+import { _specs_Tourist } from "./Tourist";
+import { _specs_DataImporter } from "./DataImporter";
 
-export class TestModel_FlightItem extends DynamoItem(TestModel_Flight, "flight", [
+export class _specs_FlightItem extends DynamoItem(_specs_Flight, "flight", [
     {key: "flight_code", unique:true},
     {key: "airplane", ref:"airplane"},
     {key: "from_airport", ref:"airport"},
@@ -14,7 +15,7 @@ export class TestModel_FlightItem extends DynamoItem(TestModel_Flight, "flight",
     {key: "from_country", ref: "country"},
     {key: "to_country", ref: "country"}]) { }
 
-export class TestModel_TouristItem extends DynamoItem(TestModel_Tourist, "tourist", [
+export class _specs_TouristItem extends DynamoItem(_specs_Tourist, "tourist", [
     {key: "airplane", ref:"airplane"},
     {key: "from_airport", ref:"airport"},
     {key: "to_airport", ref:"airport"},
@@ -22,7 +23,7 @@ export class TestModel_TouristItem extends DynamoItem(TestModel_Tourist, "touris
     {key: "from_country", ref: "country"},
     {key: "to_country", ref: "country"}]) { }
 
-export class TestModel_AirplaneItem extends DynamoItem(TestModel_Airplane, "airplane", [
+export class _specs_AirplaneItem extends DynamoItem(_specs_Airplane, "airplane", [
     {key: "reg_uq_str", unique: true},
     {key: "reg_uq_number", unique: true},
     {key: "number_of_seats"},// although not pointing to other type, we still want to query by it
@@ -30,20 +31,25 @@ export class TestModel_AirplaneItem extends DynamoItem(TestModel_Airplane, "airp
     {key: "manifacturer", ref: "airplane|nomenclature|manifacturer"},
 ]) { }
 
-export class TestModel_AirportItem extends DynamoItem(TestModel_Airport, "airport", [
+export class _specs_AirportItem extends DynamoItem(_specs_Airport, "airport", [
     {key: "country", ref: "country"},
     {key: "name", unique: true}
 ]) { }
 
-export class TestModel_CountryItem extends DynamoItem(TestModel_Country, "country", [
+export class _specs_CountryItem extends DynamoItem(_specs_Country, "country", [
     {key: "name", unique: true}
 ]) { }
 
-export class TestModel_AirplaneModelItem extends DynamoItem(TestModel_AirplaneModel, "airplane|nomenclature|model", [
+export class _specs_AirplaneModelItem extends DynamoItem(_specs_AirplaneModel, "airplane|nomenclature|model", [
     {key: "manifacturer", ref: "manifacturer"}
 ]) { }
 
-export class TestModel_AirplaneManifacturerItem extends DynamoItem(TestModel_AirplaneManifacturer, "airplane|nomenclature|manifacturer", [
+export class _specs_AirplaneManifacturerItem extends DynamoItem(_specs_AirplaneManifacturer, "airplane|nomenclature|manifacturer", [
     {key: "country", ref: "country"}
 ]) { }
+
+export class _specs_DataImporterItem extends DynamoItem(_specs_DataImporter, "airtours|data_importer", [
+    {key: "exit_code"},
+    {key: "date_started"}
+]) {}
 

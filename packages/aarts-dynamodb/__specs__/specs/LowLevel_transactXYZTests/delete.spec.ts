@@ -1,4 +1,4 @@
-import { TestModel_AirplaneItem /**XXXTestModel_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
+import { _specs_AirplaneItem /**XXX_specs_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../../testutils"
 import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
@@ -13,14 +13,14 @@ describe('delete item', () => {
 
   test('delete item keeps history', async () => {
 
-    const airplane = new TestModel_AirplaneItem({number_of_seats:13}) //arrange with one refkey
-    await transactPutItem(airplane, TestModel_AirplaneItem.__refkeys)
+    const airplane = new _specs_AirplaneItem({number_of_seats:13}) //arrange with one refkey
+    await transactPutItem(airplane, _specs_AirplaneItem.__refkeys)
 
     const allBeforeDelete = await queryForId(airplane.id)
     expect(allBeforeDelete.length).toBe(2)
     expect(airplane.revisions).toBe(0)
 
-    const deleteResult = await transactDeleteItem(airplane, TestModel_AirplaneItem.__refkeys)
+    const deleteResult = await transactDeleteItem(airplane, _specs_AirplaneItem.__refkeys)
     expect(deleteResult).toEqual(airplane)
     expect(airplane.revisions).toBe(1)
     

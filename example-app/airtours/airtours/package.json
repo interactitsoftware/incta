@@ -1,6 +1,6 @@
 {
   "name": "airtours-aarts-example",
-  "version": "0.0.5",
+  "version": "0.0.10",
   "description": "example business domain using aws lambda and dynamodb via the aarts framework ",
   "main": "index.js",
   "scripts": {
@@ -23,8 +23,8 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^13.13.12",
-    "aarts-dynamodb": "^0.4.11",
-    "aarts-handler": "^0.3.5",
+    "aarts-dynamodb": "^0.4.17",
+    "aarts-handler": "^0.3.10",
     "typescript": "^3.9.5"
   },
   "devDependencies": {}

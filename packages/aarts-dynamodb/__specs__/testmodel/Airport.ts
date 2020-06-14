@@ -1,16 +1,20 @@
 import { BaseDynamoItemManager } from "../../BaseItemManager"
-import { TestModel_AirportItem } from "./_DynamoItems"
+import { _specs_AirportItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
 
-export class TestModel_Airport {
+export class _specs_Airport {
     
     constructor(...args: any[]) {
-        Object.assign(this, args.reduce((accum, arg)=>{
-            Object.keys(arg).forEach(k => {
-                accum[k] = arg[k]
-            })
-            return accum
-        },{}))
+        // client domain items left with a requirement to have a rest constructor,
+        // however below code is executed already on a DynamoItem level,
+        // and having it here again will cause a nested object with same props
+        
+        // Object.assign(this, args.reduce((accum, arg)=>{
+        //     Object.keys(arg).forEach(k => {
+        //         accum[k] = arg[k]
+        //     })
+        //     return accum
+        // },{}))
     }
 
     public airport_size: number = 100
@@ -18,8 +22,8 @@ export class TestModel_Airport {
     public name?: string
 }
 
-export class TestModel_AirportManager extends BaseDynamoItemManager<TestModel_AirportItem> {
-    async *validateCreate(airport: TestModel_AirportItem, identity: IIdentity): AsyncGenerator<string, TestModel_AirportItem, undefined> {
+export class _specs_AirportManager extends BaseDynamoItemManager<_specs_AirportItem> {
+    async *validateCreate(airport: _specs_AirportItem, identity: IIdentity): AsyncGenerator<string, _specs_AirportItem, undefined> {
             const errors: string[] = []
 
             if (airport.airport_size === 100) {
@@ -43,7 +47,7 @@ export class TestModel_AirportManager extends BaseDynamoItemManager<TestModel_Ai
             }
     }
 
-    async *validateUpdate(airport: TestModel_AirportItem, identity: IIdentity): AsyncGenerator<string, TestModel_AirportItem, undefined> {
+    async *validateUpdate(airport: _specs_AirportItem, identity: IIdentity): AsyncGenerator<string, _specs_AirportItem, undefined> {
         throw new Error("Method not implemented.")
     }
 }

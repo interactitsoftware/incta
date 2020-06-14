@@ -1,4 +1,4 @@
-import { TestModel_FlightItem } from "../../testmodel/_DynamoItems"
+import { _specs_FlightItem } from "../../testmodel/_DynamoItems"
 import { clearDynamo, testInsertOneNonUniqueRefKey } from "../../testutils"
 
 describe('create string refkey', () => {
@@ -6,8 +6,8 @@ describe('create string refkey', () => {
 
   test('create string refkey', async () => {
     return await testInsertOneNonUniqueRefKey({
-      dynamoItemCtor: TestModel_FlightItem,
-      itemRefKeys: TestModel_FlightItem.__refkeys,
+      dynamoItemCtor: _specs_FlightItem,
+      itemRefKeys: _specs_FlightItem.__refkeys,
       propRefKey: "tourist_season",
       refKeyType: "string"
     })

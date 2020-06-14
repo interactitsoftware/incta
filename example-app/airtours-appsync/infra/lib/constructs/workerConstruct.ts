@@ -70,7 +70,7 @@ export class WorkerConstruct extends Construct {
                             batchSize:10
                         })
                     ],
-                    retryAttempts: 0,
+                    retryAttempts: 2,
                     reservedConcurrentExecutions: props.reservedConcurrentExecutions,
                     layers: props.layers
                 })
