@@ -1,0 +1,10 @@
+{
+  "hosted-zone:account=216788398771:domainName=akrsmv.net:region=eu-west-2": {
+    "Id": "/hostedzone/Z3GKZC51ZF0DB4",
+    "Name": "akrsmv.net."
+  },
+  "hosted-zone:account=216788398771:domainName=akrsmv.net:region=eu-west-1": {
+    "Id": "/hostedzone/Z1KPGPJQ1885QH",
+    "Name": "akrsmv.net."
+  }
+}

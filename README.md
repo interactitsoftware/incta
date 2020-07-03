@@ -18,7 +18,7 @@ Aws artifacts(aarts) helps you get up to speed with migrating your existing doma
   
 ## Final goal
 Implementing a simple interface will allow you to run your code in an aws lambda container, using the infinite-scaling dynamodb, as persistent storage. In the core version, there is only one lambda needed. Client (domain) code is deployed into a lambda layer, so the code for the lambda is really a tiny one, only serving as a dispatcher to different entry points into the client application. There is an option for introducing another lambda, `eventDispatcher`, which unlocks the event bus features and asynchronous notifications via AWS AppSync 
-
+- __TODO AppSync graphql schema exposing various business logic related queries, with resolvers translating to the Dispatcher/aarts-dynamodb language__
 ## initial conditions
 - You have a set of domain entities, a business context, with a controllers / repositories / etc, and probably with bunch of domain validators in fornt of any CRUD/RPC logic.
   OR
@@ -40,4 +40,6 @@ Implementing a simple interface will allow you to run your code in an aws lambda
 - Keeping a history of all CRUD mainpulations, using versioning
 
 - Dynamodb trickery is inspired by the talks of [Rick Houlihan](https://www.youtube.com/watch?v=HaEPXoXVf2k&t=1054s) and the [AWS Dynamodb best practices](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html)
+
+
 
