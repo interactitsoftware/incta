@@ -17,7 +17,7 @@ export const handler = async (message: SQSEvent, context: Context): Promise<any>
 
 				}
 			})
-		console.log('parsed aartsEvent from SQS is ', aartsEvent)
+		process.env.DEBUG && console.log('parsed aartsEvent from SQS is ', aartsEvent)
 		await new AartsSqsHandler().processPayload(aartsEvent, context)
 	}
 }

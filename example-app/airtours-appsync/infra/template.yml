@@ -1,10 +1,10 @@
 Resources:
-  LibsA7595D14:
+  airtoursappsyncModulesBEED5E65:
     Type: AWS::Lambda::LayerVersion
     Properties:
       Content:
         S3Bucket:
-          Ref: AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3Bucket2D0AAFCA
+          Ref: AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3Bucket6461BC0D
         S3Key:
           Fn::Join:
             - ""
@@ -12,19 +12,19 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3VersionKeyEAAE53B3
+                      - Ref: AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3VersionKey11D3C3FE
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3VersionKeyEAAE53B3
+                      - Ref: AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3VersionKey11D3C3FE
       CompatibleRuntimes:
         - nodejs12.x
       Description: A layer holding the libraries needed for the contracts-compliant domain adapter
       LicenseInfo: Apache-2.0
     Metadata:
-      aws:cdk:path: AartsAllStack/Libs/Resource
-      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\libs-lambda-layer
+      aws:cdk:path: AartsAllStack/airtours-appsyncModules/Resource
+      aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\infra\node-modules-layer
       aws:asset:property: Content
   BucketsOperationsBucketEEC1D0FF:
     Type: AWS::S3::Bucket
@@ -87,8 +87,8 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
         - IndexName: meta__nmetadata
           KeySchema:
             - AttributeName: meta
@@ -98,8 +98,8 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
         - IndexName: smetadata__meta
           KeySchema:
             - AttributeName: smetadata
@@ -109,8 +109,8 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
         - IndexName: nmetadata__meta
           KeySchema:
             - AttributeName: nmetadata
@@ -120,8 +120,8 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
         - IndexName: meta__id
           KeySchema:
             - AttributeName: meta
@@ -131,11 +131,11 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
       ProvisionedThroughput:
-        ReadCapacityUnits: 10
-        WriteCapacityUnits: 10
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       TableName: airtours-appsync
@@ -170,8 +170,8 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
         - IndexName: meta__nmetadata
           KeySchema:
             - AttributeName: meta
@@ -181,8 +181,8 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
         - IndexName: smetadata__meta
           KeySchema:
             - AttributeName: smetadata
@@ -192,8 +192,8 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
         - IndexName: nmetadata__meta
           KeySchema:
             - AttributeName: nmetadata
@@ -203,8 +203,8 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
         - IndexName: meta__id
           KeySchema:
             - AttributeName: meta
@@ -214,11 +214,11 @@ Resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
       ProvisionedThroughput:
-        ReadCapacityUnits: 10
-        WriteCapacityUnits: 10
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       TableName: TESTairtours-appsync
@@ -317,7 +317,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3Bucket70B4D6DD
+          Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60
         S3Key:
           Fn::Join:
             - ""
@@ -325,12 +325,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0
+                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0
+                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
       Handler: index.dispatcher
       Role:
         Fn::GetAtt:
@@ -345,7 +345,7 @@ Resources:
             Ref: EventsTestBusCC09F767
       FunctionName: airtours-appsync-eventDispatcher
       Layers:
-        - Ref: LibsA7595D14
+        - Ref: airtoursappsyncModulesBEED5E65
       MemorySize: 256
       Timeout: 100
     DependsOn:
@@ -355,6 +355,15 @@ Resources:
       aws:cdk:path: AartsAllStack/Events/Dispatcher/Resource
       aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\dist
       aws:asset:property: Code
+  EventsDispatcherEventInvokeConfig393131D0:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName:
+        Ref: EventsDispatcher09BE5065
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 2
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/Dispatcher/EventInvokeConfig/Resource
   EventsDispatcherStressTesterServiceRole9FAB05F3:
     Type: AWS::IAM::Role
     Properties:
@@ -397,7 +406,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3Bucket70B4D6DD
+          Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60
         S3Key:
           Fn::Join:
             - ""
@@ -405,12 +414,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0
+                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0
+                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
       Handler: index.dispatcherTester
       Role:
         Fn::GetAtt:
@@ -425,7 +434,7 @@ Resources:
             Ref: EventsTestBusCC09F767
       FunctionName: airtours-appsync-eventDispatcherStressTester
       Layers:
-        - Ref: LibsA7595D14
+        - Ref: airtoursappsyncModulesBEED5E65
       MemorySize: 256
       Timeout: 100
     DependsOn:
@@ -435,6 +444,15 @@ Resources:
       aws:cdk:path: AartsAllStack/Events/DispatcherStressTester/Resource
       aws:asset:path: C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\dist
       aws:asset:property: Code
+  EventsDispatcherStressTesterEventInvokeConfig73219DD5:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName:
+        Ref: EventsDispatcherStressTesterC8BE4BAF
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 2
+    Metadata:
+      aws:cdk:path: AartsAllStack/Events/DispatcherStressTester/EventInvokeConfig/Resource
   AuthUserPoolsmsRole664FB2D2:
     Type: AWS::IAM::Role
     Properties:
@@ -1043,7 +1061,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3BucketDA9203EF
+          Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60
         S3Key:
           Fn::Join:
             - ""
@@ -1051,12 +1069,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3
+                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3
+                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
       Handler: index.notifier
       Role:
         Fn::GetAtt:
@@ -1074,6 +1092,8 @@ Resources:
               - AppSync04210623
               - GraphQLUrl
       FunctionName: airtours-appsyncNotifier
+      Layers:
+        - Ref: airtoursappsyncModulesBEED5E65
       MemorySize: 256
       Timeout: 30
     DependsOn:
@@ -1101,7 +1121,7 @@ Resources:
       FunctionName:
         Ref: LocalNotifyWorkerF5D9547C
       Qualifier: $LATEST
-      MaximumRetryAttempts: 0
+      MaximumRetryAttempts: 2
     Metadata:
       aws:cdk:path: AartsAllStack/Local/Notify/Worker/EventInvokeConfig/Resource
   airtoursappsyncHandlerDEADLETTER3BFB9F90:
@@ -1238,7 +1258,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3BucketDA9203EF
+          Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60
         S3Key:
           Fn::Join:
             - ""
@@ -1246,12 +1266,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3
+                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3
+                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -1271,7 +1291,7 @@ Resources:
             Ref: DBTESTairtoursappsyncC9D51BAA
       FunctionName: airtours-appsyncHandler
       Layers:
-        - Ref: LibsA7595D14
+        - Ref: airtoursappsyncModulesBEED5E65
       MemorySize: 256
       Timeout: 30
     DependsOn:
@@ -1299,42 +1319,33 @@ Resources:
       FunctionName:
         Ref: airtoursappsyncHandlerWorker3259AE92
       Qualifier: $LATEST
-      MaximumRetryAttempts: 0
+      MaximumRetryAttempts: 2
     Metadata:
       aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Worker/EventInvokeConfig/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Modules: aws-cdk=1.36.1,@aws-cdk/assets=1.31.0,@aws-cdk/aws-apigateway=1.31.0,@aws-cdk/aws-applicationautoscaling=1.31.0,@aws-cdk/aws-appsync=1.31.0,@aws-cdk/aws-autoscaling=1.31.0,@aws-cdk/aws-autoscaling-common=1.31.0,@aws-cdk/aws-autoscaling-hooktargets=1.31.0,@aws-cdk/aws-cloudformation=1.31.0,@aws-cdk/aws-cloudwatch=1.31.0,@aws-cdk/aws-cognito=1.31.0,@aws-cdk/aws-dynamodb=1.31.0,@aws-cdk/aws-ec2=1.31.0,@aws-cdk/aws-ecr=1.31.0,@aws-cdk/aws-ecr-assets=1.31.0,@aws-cdk/aws-ecs=1.31.0,@aws-cdk/aws-elasticloadbalancingv2=1.31.0,@aws-cdk/aws-events=1.31.0,@aws-cdk/aws-iam=1.31.0,@aws-cdk/aws-kms=1.31.0,@aws-cdk/aws-lambda=1.31.0,@aws-cdk/aws-lambda-event-sources=1.31.0,@aws-cdk/aws-logs=1.31.0,@aws-cdk/aws-s3=1.31.0,@aws-cdk/aws-s3-assets=1.31.0,@aws-cdk/aws-s3-notifications=1.31.0,@aws-cdk/aws-servicediscovery=1.31.0,@aws-cdk/aws-sns=1.31.0,@aws-cdk/aws-sns-subscriptions=1.31.0,@aws-cdk/aws-sqs=1.31.0,@aws-cdk/aws-ssm=1.31.0,@aws-cdk/aws-stepfunctions=1.31.0,@aws-cdk/aws-stepfunctions-tasks=1.31.0,@aws-cdk/cdk-assets-schema=1.41.0,@aws-cdk/cloud-assembly-schema=1.41.0,@aws-cdk/core=1.31.0,@aws-cdk/custom-resources=1.31.0,@aws-cdk/cx-api=1.31.0,@aws-cdk/region-info=1.31.0,jsii-runtime=node.js/v12.13.0
+      Modules: aws-cdk=1.45.0,@aws-cdk/assets=1.31.0,@aws-cdk/aws-apigateway=1.31.0,@aws-cdk/aws-applicationautoscaling=1.31.0,@aws-cdk/aws-appsync=1.31.0,@aws-cdk/aws-autoscaling=1.31.0,@aws-cdk/aws-autoscaling-common=1.31.0,@aws-cdk/aws-autoscaling-hooktargets=1.31.0,@aws-cdk/aws-cloudformation=1.31.0,@aws-cdk/aws-cloudwatch=1.31.0,@aws-cdk/aws-cognito=1.31.0,@aws-cdk/aws-dynamodb=1.31.0,@aws-cdk/aws-ec2=1.31.0,@aws-cdk/aws-ecr=1.31.0,@aws-cdk/aws-ecr-assets=1.31.0,@aws-cdk/aws-ecs=1.31.0,@aws-cdk/aws-elasticloadbalancingv2=1.31.0,@aws-cdk/aws-events=1.31.0,@aws-cdk/aws-iam=1.31.0,@aws-cdk/aws-kms=1.31.0,@aws-cdk/aws-lambda=1.31.0,@aws-cdk/aws-lambda-event-sources=1.31.0,@aws-cdk/aws-logs=1.31.0,@aws-cdk/aws-s3=1.31.0,@aws-cdk/aws-s3-assets=1.31.0,@aws-cdk/aws-s3-notifications=1.31.0,@aws-cdk/aws-servicediscovery=1.31.0,@aws-cdk/aws-sns=1.31.0,@aws-cdk/aws-sns-subscriptions=1.31.0,@aws-cdk/aws-sqs=1.31.0,@aws-cdk/aws-ssm=1.31.0,@aws-cdk/aws-stepfunctions=1.31.0,@aws-cdk/aws-stepfunctions-tasks=1.31.0,@aws-cdk/cdk-assets-schema=1.41.0,@aws-cdk/cloud-assembly-schema=1.41.0,@aws-cdk/core=1.31.0,@aws-cdk/custom-resources=1.31.0,@aws-cdk/cx-api=1.31.0,@aws-cdk/region-info=1.31.0,jsii-runtime=node.js/v12.13.0
     Condition: CDKMetadataAvailable
 Parameters:
-  AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3Bucket2D0AAFCA:
+  AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3Bucket6461BC0D:
     Type: String
-    Description: S3 bucket for asset "f8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dc"
-  AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcS3VersionKeyEAAE53B3:
+    Description: S3 bucket for asset "51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0a"
+  AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3VersionKey11D3C3FE:
     Type: String
-    Description: S3 key for asset version "f8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dc"
-  AssetParametersf8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dcArtifactHashCF27AC8B:
+    Description: S3 key for asset version "51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0a"
+  AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aArtifactHash1C1BBEF4:
     Type: String
-    Description: Artifact hash for asset "f8efee7710d2d87ede64068777551c8f0a82b9b8cec8739d4d5e8d269944d3dc"
-  AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3Bucket70B4D6DD:
+    Description: Artifact hash for asset "51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0a"
+  AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60:
     Type: String
-    Description: S3 bucket for asset "6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213"
-  AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213S3VersionKey886794B0:
+    Description: S3 bucket for asset "ec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555"
+  AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7:
     Type: String
-    Description: S3 key for asset version "6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213"
-  AssetParameters6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213ArtifactHashA5FA04DD:
+    Description: S3 key for asset version "ec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555"
+  AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555ArtifactHash6221E2BB:
     Type: String
-    Description: Artifact hash for asset "6abababe663961a42fddae88740847ddd55434c2fa7fa61ea4f19438d832e213"
-  AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3BucketDA9203EF:
-    Type: String
-    Description: S3 bucket for asset "bcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39fa"
-  AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faS3VersionKey290C42B3:
-    Type: String
-    Description: S3 key for asset version "bcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39fa"
-  AssetParametersbcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39faArtifactHashB2D148C8:
-    Type: String
-    Description: Artifact hash for asset "bcf42a5e15bf0d6ccca15af693302abff62a80efeba6d13df38dcad92c8c39fa"
+    Description: Artifact hash for asset "ec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555"
 Conditions:
   CDKMetadataAvailable:
     Fn::Or:

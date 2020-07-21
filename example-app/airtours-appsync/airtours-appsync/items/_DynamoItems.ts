@@ -1,26 +1,40 @@
 import { DynamoItem } from "aarts-dynamodb/BaseItemManager";
-import { Airport } from "./Airport";
-import { Flight } from "./Flight";
-import { Airplane, AirplaneModel, AirplaneManifacturer } from "./Airplane";
-import { Country } from "./Country";
 
-export class FlightItem extends DynamoItem(Flight, "flight", [
-    {key: "airplane", ref:"airplane"},
-    {key: "from_airport", ref:"airport"},
-    {key: "to_airport", ref:"airport"},
-    {key: "tourist_season"},
-    {key: "from_country", ref: "country"},
-    {key: "to_country", ref: "country"}]) { }
-export class AirportItem extends DynamoItem(Airport, "airport") { }
-export class CountryItem extends DynamoItem(Country, "country") { }
-export class AirplaneItem extends DynamoItem(Airplane, "airplane", [
-    {key: "number_of_seats", unique:true},
-    {key: "home_airport", ref:"airport"},
-    {key: "country", ref: "country"},
-    {key: "model", ref: "airplane|nomenclature|model"},
-    {key: "manifacturer", ref: "airplane|nomenclature|manifacturer"},
+
+import {
+    _specs_AirplaneItem as AirplaneItem,
+    _specs_AirplaneManifacturerItem as AirplaneManifacturerItem,
+    _specs_AirplaneModelItem as AirplaneModelItem,
+    _specs_AirportItem as AirportItem,
+    _specs_CountryItem as CountryItem,
+    _specs_FlightItem as FlightItem,
+    _specs_TouristItem as TouristItem,
+    _specs_DataImporterItem as DataImportProcedure
+} from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
+// just reuse the __specs__ test model of aarts-dynamodb lib. There are unit tests over it and also a procedure for seedin data, so its a good start for demo app
+export {
+    AirplaneItem,
+    AirplaneManifacturerItem,
+    AirplaneModelItem,
+    AirportItem,
+    CountryItem,
+    FlightItem,
+    TouristItem,
+    DataImportProcedure
+}
+
+// define two domain objects purely from this example app (demonstrate the whole steps needed)
+import { City } from "./City";  // the plain js objects (domain items)
+import { Pilot } from "./Pilot";
+
+export class CityItem extends DynamoItem(City, "city", [ // the dynamodb wrapper object that we deal with
+    {key:"name"},
+    {key: "population"},
+    {key: "country", ref:"country"}
 ]) { }
-    
-export class AirplaneModelItem extends DynamoItem(AirplaneModel, "airplane|nomenclature|model") { }
-export class AirplaneManifacturerItem extends DynamoItem(AirplaneManifacturer, "airplane|nomenclature|manifacturer") { }
+export class PilotItem extends DynamoItem(Pilot, "pilot", [ // the dynamodb wrapper object that we deal with
+    {key:"name"},
+    {key: "city", ref: "city"},
+    {key: "country", ref:"country"}
+]) { }  
 

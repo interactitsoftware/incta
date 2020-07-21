@@ -1,13 +1,10 @@
-import { BaseDynamoItemManager, DomainItem } from "aarts-dynamodb/BaseItemManager"
-import { AirportItem } from "./_DynamoItems";
+import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
 import { IIdentity } from "aarts-types/interfaces";
 
+// using the one from the aarts-dynamodb/__specs__
+import {_specs_AirportItem as AirportItem} from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 
-export class Airport {
-    public airport_size: number = 100
-}
-
-
+// Although we are reusing dynamoitem definition from the __specs__ we are redefining the manager for that object here
 export class AirportManager extends BaseDynamoItemManager<AirportItem> {
     async *validateCreate(airport: AirportItem, identity: IIdentity): AsyncGenerator<string, AirportItem, undefined> {
             const errors: string[] = []

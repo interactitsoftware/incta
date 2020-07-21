@@ -6,8 +6,8 @@ export const samLocalSimulateSQSHandler = async (testEvent: string) => new Promi
 
     exec(cmd, {}, function (err, sqsEventTemplate, stderr) {
         if (err) return reject(stderr);
-        
-        const simulatedPayload = prepareForDispatch(require(`../../../../infra/test/test-events/eventDispatcher/${testEvent}.json`), "myFakeLocalCorrelationToken")
+        // note this script works with relative paths, according to the aarts context in which its called. corresponding folders should exeist
+        const simulatedPayload = prepareForDispatch(require(`${testEvent}`), "myFakeLocalCorrelationToken")
         const sqsTemplate = JSON.parse(sqsEventTemplate)
 
         sqsTemplate.Records[0].body = simulatedPayload.Message
