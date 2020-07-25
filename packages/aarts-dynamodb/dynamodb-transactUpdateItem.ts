@@ -175,6 +175,22 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
                     return accum
                 }, []))
 
+    if (itemUpdates.procedure) {
+        allTransactWriteItemList.push({ // update procedures
+            Update: {
+                TableName: DB_NAME,
+                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                Key: Object.assign({
+                    id: { S: itemUpdates.procedure },
+                    meta: { S: `${versionString(0)}|${itemUpdates.procedure.substring(0, itemUpdates.procedure.indexOf("|"))}` },
+                }),
+                UpdateExpression: `SET #processed_events = if_not_exists(#item_type, :zero) + :inc_one`,
+                ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+                ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+            }
+        })
+    }
+
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,
         ReturnConsumedCapacity: "TOTAL",
@@ -185,7 +201,7 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
     delete itemUpdates.revisions
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
     process.env.DEBUG && console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
-    
+
     return Object.assign(existingItem,
         Object.keys(itemUpdates).filter(k => itemUpdates[k] === "__del__")
             .reduce<Record<string, any>>((accum, prop) => {

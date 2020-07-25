@@ -639,7 +639,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         process.env.DEBUG && (yield { arguments: `[${__type}:SAVE] Analyzing item refkeys, ${ppjson(item_refkeys)}`, identity: undefined })
 
 
-        // USING BATCH WRITEITEM WITHOUT TRANSACTION, TODO leave a method for non transactional save of bulk data? (Should again define it on a IItemManager level, good idea)
+        // USING BATCH WRITEITEM WITHOUT TRANSACTION, TODO leave a method for non transactional save of bulk data? +Can again define it on IItemManager level?
         // const item_refs: T[] = []
         // for (const item of args.arguments) {
         //     // analyse each item and create new DynamoItems for each item's ref

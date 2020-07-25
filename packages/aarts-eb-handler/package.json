@@ -1,17 +1,17 @@
 {
   "name": "aarts-eb-handler",
-  "version": "0.3.13",
+  "version": "0.3.15",
   "description": "reads messages from sqs and forwards them to aarts-handler",
   "main": "./dist/aartsSqsHandler.js",
   "dependencies": {
     "@types/aws-lambda": "^8.10.59",
-    "@types/node": "^13.13.14",
+    "@types/node": "^13.13.15",
     "@types/request": "^2.48.4",
-    "aarts-eb-types": "^0.2.26",
-    "aarts-handler": "^0.3.13",
-    "aarts-types": "^0.2.26",
-    "aws-sdk": "^2.713.0",
-    "typescript": "^3.9.6"
+    "aarts-eb-types": "^0.2.28",
+    "aarts-handler": "^0.3.14",
+    "aarts-types": "^0.2.28",
+    "aws-sdk": "^2.720.0",
+    "typescript": "^3.9.7"
   },
   "scripts": {
     "build_win": "npm run clean_win && tsc && copy package.json .\\dist",

@@ -3,7 +3,7 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { TransactWriteItemsInput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
 import { RefKey, DynamoItem, DomainItem } from './BaseItemManager';
-import { dynamoDbClient, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
+import { dynamoDbClient, versionString, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
 import { ppjson } from 'aarts-types/utils';
 
 export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
@@ -60,6 +60,23 @@ export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T
 
         return accum
     }, itemTransactWriteItemList)
+
+    if (item.procedure) {
+        allTransactWriteItemList.push({ // update procedures
+            Update: {
+                TableName: DB_NAME,
+                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                Key: Object.assign({
+                    id: { S: item.procedure },
+                    meta: { S: `${versionString(0)}|${item.procedure.substring(0, item.procedure.indexOf("|"))}` },
+                }),
+                UpdateExpression: `SET #processed_events = if_not_exists(#item_type, :zero) + :inc_one`,
+                ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+                ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+            }
+        })
+    }
+    
 
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,

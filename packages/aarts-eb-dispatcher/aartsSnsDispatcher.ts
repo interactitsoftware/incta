@@ -14,7 +14,7 @@ class aartsSnsDispatcher extends AartsEBUtil {
 		super()
 	}
 
-	public dispatch = async (event: AppSyncEvent, context: Context): Promise<any> => {
+	public dispatch = async (event: AppSyncEvent, context?: Context): Promise<any> => {
 		console.log('received event: ', event)
 		
 		const ringToken : string = this.uuid()
