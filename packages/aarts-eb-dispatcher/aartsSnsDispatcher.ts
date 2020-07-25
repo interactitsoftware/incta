@@ -15,6 +15,7 @@ class aartsSnsDispatcher extends AartsEBUtil {
 	}
 
 	public dispatch = async (event: AppSyncEvent, context?: Context): Promise<any> => {
+		// TODO if (process.env.SAM_LOCAL) { sh run-lambda.sh passing the payload; return}
 		console.log('received event: ', event)
 		
 		const ringToken : string = this.uuid()

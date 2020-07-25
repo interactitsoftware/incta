@@ -70,7 +70,7 @@ export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T
                     id: { S: item.procedure },
                     meta: { S: `${versionString(0)}|${item.procedure.substring(0, item.procedure.indexOf("|"))}` },
                 }),
-                UpdateExpression: `SET #processed_events = if_not_exists(#item_type, :zero) + :inc_one`,
+                UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
                 ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
                 ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
             }
