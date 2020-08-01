@@ -246,7 +246,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 throw new Error(`PK is mandatory when querying`)
             }
             // check for proper value on available GSIs
-            if (!!inputQueryArg.ddbIndex && ["meta__smetadata",
+            if (!!inputQueryArg.ddbIndex && [
+                "meta__id",
+                "meta__smetadata",
                 "smetadata__meta",
                 "meta__nmetadata",
                 "nmetadata__meta",].indexOf(inputQueryArg.ddbIndex) < 0) {
@@ -490,6 +492,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 // throw new Error(`[${__type}:baseValidateCreate] {id, revisions} should not be present when creating item`)
                 delete arg.id; delete arg.revisions
             } else {
+                process.env.DEBUG && console.log("Using supplied ring token for item creation id: ", payload.ringToken)
+                arg["id"] = `${__type}|${payload.ringToken}` // USE THE RING TOKEN FROM THE EVENT TO ENFORCE IDEMPOTENCY on create events
                 arg["meta"] = `${versionString(0)}|${__type}`
                 arg["item_type"] = __type
             }
@@ -518,9 +522,11 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         const dynamoItems = []
         for (const arg of args.arguments) {
-            const asyncGenDomain = this.validateCreate(
-                Object.assign({}, new proto(), arg),
-                args.identity)
+            
+            const itemToCreate = Object.assign({}, new proto(), arg)
+            process.env.DEBUG && console.log("itemToCreate: ", ppjson(itemToCreate))
+
+            const asyncGenDomain = this.validateCreate(itemToCreate, args.identity)
             let processorDomain = await asyncGenDomain.next()
             do {
                 if (!processorDomain.done) {

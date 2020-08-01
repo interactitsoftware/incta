@@ -94,6 +94,8 @@ export const getBy_meta__nmetadata = (meta: string, nmetadata: number) => dynamo
 export const getBy_smetadata__meta = (meta: string, smetadata: string) => { }
 export const getBy_nmetadata__meta = (meta: string, smetadata: string) => { }
 
+// WARNING Do not excerpt more of the below "generic test bodies" like this.
+// Its is hard to read
 export const testInsertOneNonUniqueRefKey = async<T extends DynamoItem>(
     input: {
         dynamoItemCtor: AnyConstructor<T>,

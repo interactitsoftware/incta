@@ -42,17 +42,13 @@ export class _specs_AirplaneManager extends BaseDynamoItemManager<_specs_Airplan
             // TODO validate this samolet
             const errors: string[] = []
 
-            if (samolet.wing_length === 4) {
-                errors.push("wing_length: wing_length cannot be 4")
-                yield "wing_length: wing_length cannot be 4"
+            if (samolet.number_of_seats  && samolet.number_of_seats < 10) {
+                errors.push("wing_length: number_of_seats cannot be less than 10")
+                yield "wing_length: number_of_seats cannot be less than 10"
             }
-            if (samolet.wing_length <= 10) {
-                errors.push("wing_length: wing_length cannot be less or equal 10")
-                yield "wing_length: wing_length cannot be less or equal 10"
-            }
-            if (samolet.wing_length > 100) {
-                errors.push("wing_length: wing_length cannot be greater than 100")
-                yield "wing_length: wing_length cannot be greater than 100"
+            if (samolet.number_of_seats  && samolet.number_of_seats > 1000) {
+                errors.push("wing_length: wing_length cannot be greater than 1000")
+                yield "wing_length: wing_length cannot be greater than 1000"
             }
 
             if (errors.length > 0) {

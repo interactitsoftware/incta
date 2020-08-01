@@ -1,0 +1,88 @@
+Reading invoke payload from stdin (you can also pass it from file with --event)
+Invoking index.dispatcher (nodejs12.x)
+gepModules4042A4F9 is a local Layer in the template
+Building image...
+Requested to skip pulling images ...
+
+Mounting C:\Users\TechHuddle\Documents\gep\gep\dist as /var/task:ro,delegated inside runtime container
+[32mSTART RequestId: 38dbf5a3-bfec-1df2-d265-48992b0725e7 Version: $LATEST[0m
+2020-07-28T08:05:05.822Z	38dbf5a3-bfec-1df2-d265-48992b0725e7	INFO	generated ring token: 6ea1b5c5-cf46-4e30-a8f2-d4ce7e275112 for received event:  {
+  action: 'query',
+  item: 'some item defined in client app - not needed when querying',
+  arguments: {
+    pk: 'v_0|organization',
+    ddbIndex: 'meta__smetadata',
+    limit: 2,
+    paginationToken: null
+  },
+  identity: { username: 'akrsmv' }
+}
+2020-07-28T08:05:05.824Z	38dbf5a3-bfec-1df2-d265-48992b0725e7	INFO	{
+    "Records": [
+        {
+            "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
+            "receiptHandle": "MessageReceiptHandle",
+            "body": "{\"payload\":{\"arguments\":{\"pk\":\"v_0|organization\",\"ddbIndex\":\"meta__smetadata\",\"limit\":2,\"paginationToken\":null},\"identity\":{\"username\":\"akrsmv\"}}}",
+            "attributes": {
+                "ApproximateReceiveCount": "1",
+                "SentTimestamp": "1523232000000",
+                "SenderId": "123456789012",
+                "ApproximateFirstReceiveTimestamp": "1523232000001"
+            },
+            "messageAttributes": {
+                "eventSource": {
+                    "dataType": "String",
+                    "stringValue": "worker:input"
+                },
+                "action": {
+                    "dataType": "String",
+                    "stringValue": "query"
+                },
+                "item": {
+                    "dataType": "String",
+                    "stringValue": "some item defined in client app - not needed when querying"
+                },
+                "ringToken": {
+                    "dataType": "String",
+                    "stringValue": "6ea1b5c5-cf46-4e30-a8f2-d4ce7e275112"
+                }
+            },
+            "md5OfBody": "7b270e59b47ff90a553787216d55d91d",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",
+            "awsRegion": "us-east-1"
+        }
+    ]
+}
+2020-07-28T08:05:05.824Z	38dbf5a3-bfec-1df2-d265-48992b0725e7	INFO	AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER
+2020-07-28T08:05:05.824Z	38dbf5a3-bfec-1df2-d265-48992b0725e7	INFO	sqsEVENT simulated: {"Records":[{"messageId":"19dd0b57-b21e-4ac1-bd88-01bbb068cb78","receiptHandle":"MessageReceiptHandle","body":"{\"payload\":{\"arguments\":{\"pk\":\"v_0|organization\",\"ddbIndex\":\"meta__smetadata\",\"limit\":2,\"paginationToken\":null},\"identity\":{\"username\":\"akrsmv\"}}}","attributes":{"ApproximateReceiveCount":"1","SentTimestamp":"1523232000000","SenderId":"123456789012","ApproximateFirstReceiveTimestamp":"1523232000001"},"messageAttributes":{"eventSource":{"dataType":"String","stringValue":"worker:input"},"action":{"dataType":"String","stringValue":"query"},"item":{"dataType":"String","stringValue":"some item defined in client app - not needed when querying"},"ringToken":{"dataType":"String","stringValue":"6ea1b5c5-cf46-4e30-a8f2-d4ce7e275112"}},"md5OfBody":"7b270e59b47ff90a553787216d55d91d","eventSource":"aws:sqs","eventSourceARN":"arn:aws:sqs:us-east-1:123456789012:MyQueue","awsRegion":"us-east-1"}]}
+2020-07-28T08:05:07.866Z	38dbf5a3-bfec-1df2-d265-48992b0725e7	INFO	Tue Jul 28 2020 08:05:07 GMT+0000 (Coordinated Universal Time): retrying attempt:0. ERROR {
+    "message": "connect ECONNREFUSED 192.168.65.2:3001",
+    "errno": "ECONNREFUSED",
+    "code": "NetworkingError",
+    "syscall": "connect",
+    "address": "192.168.65.2",
+    "port": 3001,
+    "region": "ddblocal",
+    "hostname": "host.docker.internal",
+    "retryable": true,
+    "time": "2020-07-28T08:05:07.852Z"
+}
+2020-07-28T08:05:07.868Z	38dbf5a3-bfec-1df2-d265-48992b0725e7	INFO	Tue Jul 28 2020 08:05:07 GMT+0000 (Coordinated Universal Time): retrying attempt:1. ERROR {
+    "message": "connect ECONNREFUSED 192.168.65.2:3001",
+    "errno": "ECONNREFUSED",
+    "code": "NetworkingError",
+    "syscall": "connect",
+    "address": "192.168.65.2",
+    "port": 3001,
+    "region": "ddblocal",
+    "hostname": "host.docker.internal",
+    "retryable": true,
+    "time": "2020-07-28T08:05:07.868Z"
+}
+2020-07-28T08:05:09.876Z	38dbf5a3-bfec-1df2-d265-48992b0725e7	INFO	[AWS_SAM_LOCAL]: SNS DISPATCHER PROCESSED EVENT {"Records":[{"messageId":"19dd0b57-b21e-4ac1-bd88-01bbb068cb78","receiptHandle":"MessageReceiptHandle","body":"{\"payload\":{\"arguments\":{\"pk\":\"v_0|organization\",\"ddbIndex\":\"meta__smetadata\",\"limit\":2,\"paginationToken\":null},\"identity\":{\"username\":\"akrsmv\"}}}","attributes":{"ApproximateReceiveCount":"1","SentTimestamp":"1523232000000","SenderId":"123456789012","ApproximateFirstReceiveTimestamp":"1523232000001"},"messageAttributes":{"eventSource":{"dataType":"String","stringValue":"worker:input"},"action":{"dataType":"String","stringValue":"query"},"item":{"dataType":"String","stringValue":"some item defined in client app - not needed when querying"},"ringToken":{"dataType":"String","stringValue":"6ea1b5c5-cf46-4e30-a8f2-d4ce7e275112"}},"md5OfBody":"7b270e59b47ff90a553787216d55d91d","eventSource":"aws:sqs","eventSourceARN":"arn:aws:sqs:us-east-1:123456789012:MyQueue","awsRegion":"us-east-1"}]}
+2020-07-28T08:05:09.877Z	38dbf5a3-bfec-1df2-d265-48992b0725e7	ERROR	Invoke Error 	{"errorType":"NetworkingError","errorMessage":"connect ECONNREFUSED 192.168.65.2:3001","code":"NetworkingError","message":"connect ECONNREFUSED 192.168.65.2:3001","errno":"ECONNREFUSED","syscall":"connect","address":"192.168.65.2","port":3001,"region":"ddblocal","hostname":"host.docker.internal","retryable":true,"time":"2020-07-28T08:05:09.876Z","stack":["Error: connect ECONNREFUSED 192.168.65.2:3001","    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)"]}
+[32mEND RequestId: 38dbf5a3-bfec-1df2-d265-48992b0725e7[0m
+[32mREPORT RequestId: 38dbf5a3-bfec-1df2-d265-48992b0725e7	Init Duration: 768.75 ms	Duration: 4063.05 ms	Billed Duration: 4100 ms	Memory Size: 256 MB	Max Memory Used: 73 MB	[0m
+
+{"errorType":"NetworkingError","errorMessage":"connect ECONNREFUSED 192.168.65.2:3001"}

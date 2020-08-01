@@ -1,24 +1,26 @@
-# aarts-core
+# aarts
 Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage. It is modularized into npm packages, so client applications may focus only on domain logic. Please refer to the example-app in this repo 
+
+The code in this repo is for educational purposes only. Performance is always the highest prioirity, however due to the educational nature of the repo, there are aspects of the code not directly suitable for production use. (For example sending debug messages trough an sns topic, only to land in an SQS queue for visualizatoin, debugging and gaining knowledge on SQS-SNS subscribtion filters and DLQs)
+
+For using it in your business domain, you may fork the repo and tweak the logic to your needs, respecting the repository licence.
 
 # Features
 ## DynamoDB
 - [single table design](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html#bp-general-nosql-design-concepts) implementation
 - optimistic locking implementation
 - historical records of the items manipulations
-- aggregation record keeping totals of all domain items
+- aggregation record keeping totals of all domain items (Note - for educational purposes on dynamodb transactions! the Right way to implement this is via dynamo streams + AWS firehose)
 - [Unique constraints](https://aws.amazon.com/blogs/database/simulating-amazon-dynamodb-unique-constraints-using-transactions/)
 - Higher level item manager objects, which lay foundations on client domain logic plugging
 - Async generators, who can yield validation messages and return the actual result (if all validation/logic succeeded)
+
 ## Lambda
 - Domain Logic uploaded into a AWS Lambda Layer
 - SNS-SQS subscription for an event-bus async features
 - AppSync/GraphQL asynchronous notifications
 - Notifying for any errors via SNS topic
   
-## Final goal
-Implementing a simple interface will allow you to run your code in an aws lambda container, using the infinite-scaling dynamodb, as persistent storage. In the core version, there is only one lambda needed. Client (domain) code is deployed into a lambda layer, so the code for the lambda is really a tiny one, only serving as a dispatcher to different entry points into the client application. There is an option for introducing another lambda, `eventDispatcher`, which unlocks the event bus features and asynchronous notifications via AWS AppSync 
-- __TODO AppSync graphql schema exposing various business logic related queries, with resolvers translating to the Dispatcher/aarts-dynamodb language__
 ## initial conditions
 - You have a set of domain entities, a business context, with a controllers / repositories / etc, and probably with bunch of domain validators in fornt of any CRUD/RPC logic.
   OR

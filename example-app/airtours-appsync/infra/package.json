@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk-typescript",
-  "version": "0.1.15",
+  "version": "0.1.72",
   "bin": {
     "aws-cdk-typescript": "bin/aws-cdk-typescript.js"
   },
@@ -11,33 +11,33 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.22.0",
+    "@aws-cdk/assert": "^1.54.0",
     "@types/jest": "^24.9.1",
     "@types/node": "10.17.5",
-    "aws-cdk": "^1.22.0",
-    "jest": "^24.9.0",
-    "ts-jest": "^24.3.0",
-    "ts-node": "^8.6.2",
-    "typescript": "^3.7.5",
+    "aws-cdk": "^1.54.0",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.4",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7",
     "yaml-cfn": "^0.2.3"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^1.41.0",
-    "@aws-cdk/aws-apigateway": "^1.31.0",
-    "@aws-cdk/aws-appsync": "^1.31.0",
-    "@aws-cdk/aws-cloudformation": "^1.31.0",
-    "@aws-cdk/aws-cloudfront": "^1.31.0",
-    "@aws-cdk/aws-cognito": "^1.31.0",
-    "@aws-cdk/aws-dynamodb": "^1.31.0",
-    "@aws-cdk/aws-iam": "^1.31.0",
-    "@aws-cdk/aws-lambda": "^1.31.0",
-    "@aws-cdk/aws-lambda-event-sources": "^1.31.0",
-    "@aws-cdk/aws-s3": "^1.31.0",
-    "@aws-cdk/aws-s3-deployment": "^1.31.0",
-    "@aws-cdk/aws-s3-notifications": "^1.31.0",
-    "@aws-cdk/aws-sns": "^1.31.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.31.0",
-    "@aws-cdk/aws-sqs": "^1.31.0",
-    "@aws-cdk/core": "^1.31.0"
+    "@aws-cdk/assets": "^1.54.0",
+    "@aws-cdk/aws-apigateway": "^1.54.0",
+    "@aws-cdk/aws-appsync": "^1.54.0",
+    "@aws-cdk/aws-cloudformation": "^1.54.0",
+    "@aws-cdk/aws-cloudfront": "^1.54.0",
+    "@aws-cdk/aws-cognito": "^1.54.0",
+    "@aws-cdk/aws-dynamodb": "^1.54.0",
+    "@aws-cdk/aws-iam": "^1.54.0",
+    "@aws-cdk/aws-lambda": "^1.54.0",
+    "@aws-cdk/aws-lambda-event-sources": "^1.54.0",
+    "@aws-cdk/aws-s3": "^1.54.0",
+    "@aws-cdk/aws-s3-deployment": "^1.54.0",
+    "@aws-cdk/aws-s3-notifications": "^1.54.0",
+    "@aws-cdk/aws-sns": "^1.54.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.54.0",
+    "@aws-cdk/aws-sqs": "^1.54.0",
+    "@aws-cdk/core": "^1.54.0"
   }
 }

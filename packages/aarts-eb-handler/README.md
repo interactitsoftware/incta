@@ -1,0 +1,2 @@
+# TODOs
+- ensure (on which level?) that BaseItemManager is always registered under "BASE" in the domainItems lookup map - to support querying, and not to need to specify some particular item (as it anyways is not used, its just to reach a particular ItemManager's functionality. The thing is that query capabilities are on BaseItemManager level, thus all ItemManagers already have them. Its towards improving querying UX)

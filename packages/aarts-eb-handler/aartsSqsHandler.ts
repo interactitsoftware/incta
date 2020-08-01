@@ -24,7 +24,7 @@ export const handler = async (message: SQSEvent, context: Context): Promise<any>
 
 export class AartsSqsHandler extends AartsEBUtil {
 
-	async processPayload(input: AartsEvent, context: Context): Promise<any> {
+	async processPayload(input: AartsEvent, context?: Context): Promise<any> {
 
 		return new Promise(async (resolve: any, reject: any) => {
 

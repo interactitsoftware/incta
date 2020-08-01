@@ -175,20 +175,24 @@ export const transactUpdateItem = async <T extends DomainItem & DynamoItem>(exis
                     return accum
                 }, []))
 
-    if (itemUpdates.procedure) {
-        allTransactWriteItemList.push({ // update procedures
-            Update: {
-                TableName: DB_NAME,
-                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-                Key: Object.assign({
-                    id: { S: itemUpdates.procedure },
-                    meta: { S: `${versionString(0)}|${itemUpdates.procedure.substring(0, itemUpdates.procedure.indexOf("|"))}` },
-                }),
-                UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
-                ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
-                ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
-            }
-        })
+    // TODO TO BE EXCERPTED INTO A SEPARATE dynamodb-streams-firehose module
+    // too much transaction conflicts may occur, if lots of items created/updated
+    if (process.env.PERFORM_AGGREGATIONS) {
+        if (itemUpdates.procedure) {
+            allTransactWriteItemList.push({ // update procedures
+                Update: {
+                    TableName: DB_NAME,
+                    ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                    Key: Object.assign({
+                        id: { S: itemUpdates.procedure },
+                        meta: { S: `${versionString(0)}|${itemUpdates.procedure.substring(0, itemUpdates.procedure.indexOf("|"))}` },
+                    }),
+                    UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
+                    ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+                    ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+                }
+            })
+        }
     }
 
     const params: TransactWriteItemsInput = {

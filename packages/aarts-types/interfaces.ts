@@ -15,6 +15,11 @@ export interface AartsMeta {
 export interface AartsPayload {
     arguments: any,
     identity: any,
+    
+    // needed also here, as item manager processor operate only with AartsPayload objects, i.e no AartsMeta there
+    // used to construct the guid part of a dynamo item's id, when (only!) creating items
+    // this ensures idempotency, and mitigates dublicating messages for create, to result in doubling items 
+    ringToken?: string | undefined
 }
 
 export interface DdbQueryInput {

@@ -8,7 +8,7 @@ import { ppjson } from 'aarts-types/utils';
 
 export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
     process.env.DEBUG && console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
-    
+
     const ditem = toAttributeMap(item)
 
     const itemTransactWriteItemList: TransactWriteItemList = [
@@ -16,24 +16,12 @@ export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T
             Put: {
                 TableName: DB_NAME,
                 ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-                Item: ditem
-            }
-        },
-        { // update aggregations
-            Update: {
-                TableName: DB_NAME,
-                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-                Key: Object.assign({
-                    id: { S: "aggregations" },
-                    meta: { S: `totals` },
-                }),
-                UpdateExpression: `SET #item_type = if_not_exists(#item_type, :zero) + :inc_one`,
-                ExpressionAttributeNames: { [`#item_type`]: item.item_type },
-                ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+                Item: ditem,
+                ConditionExpression: "attribute_not_exists(id) and attribute_not_exists(meta)"
             }
         }
     ]
-    
+
     // build all updates by also examining refkeys
     const allTransactWriteItemList = Object.keys(ditem).reduce<TransactWriteItem[]>((accum, key) => {
         if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && !!item[key]) {
@@ -61,22 +49,38 @@ export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T
         return accum
     }, itemTransactWriteItemList)
 
-    if (item.procedure) {
-        allTransactWriteItemList.push({ // update procedures
+    // TODO BE EXCERPTED INTO A SEPARATE dynamodb-streams-firehose module
+    // too much transaction conflicts may occur, if lots of items created/updated
+    if (process.env.PERFORM_AGGREGATIONS) {
+        allTransactWriteItemList.push({ // update aggregations
             Update: {
                 TableName: DB_NAME,
                 ReturnValuesOnConditionCheckFailure: "ALL_OLD",
                 Key: Object.assign({
-                    id: { S: item.procedure },
-                    meta: { S: `${versionString(0)}|${item.procedure.substring(0, item.procedure.indexOf("|"))}` },
+                    id: { S: "aggregations" },
+                    meta: { S: `totals` },
                 }),
-                UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
-                ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+                UpdateExpression: `SET #item_type = if_not_exists(#item_type, :zero) + :inc_one`,
+                ExpressionAttributeNames: { [`#item_type`]: item.item_type },
                 ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
             }
         })
+        if (item.procedure) {
+            allTransactWriteItemList.push({ // update procedures
+                Update: {
+                    TableName: DB_NAME,
+                    ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                    Key: Object.assign({
+                        id: { S: item.procedure },
+                        meta: { S: `${versionString(0)}|${item.procedure.substring(0, item.procedure.indexOf("|"))}` },
+                    }),
+                    UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
+                    ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+                    ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+                }
+            })
+        }
     }
-    
 
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,

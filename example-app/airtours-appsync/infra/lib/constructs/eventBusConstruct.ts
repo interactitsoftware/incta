@@ -44,7 +44,11 @@ export class EventBusConstruct extends cdk.Construct {
             timeout: cdk.Duration.seconds(100),
             environment: {  }, //"ENV_ONE": "ENV_ONE_VALUE", "ENV_TWO": "ENV_TWO_VALUE"
             layers: [props.nodeModulesLayer],
-            retryAttempts: 2
+            
+            // IMPORTANT we dont want retry on a dispatcher level, reties should be only on sqs handler level
+            // because if dispatcher reties, it will generate new ringToken, which may result in duplicate items, 
+            // out of single create events (which got failed, and retried)
+            retryAttempts: 0
         })
         this.grantAccess(this.eventDispatcher)
 
@@ -57,7 +61,8 @@ export class EventBusConstruct extends cdk.Construct {
             timeout: cdk.Duration.seconds(100),
             environment: {  }, //"ENV_ONE": "ENV_ONE_VALUE", "ENV_TWO": "ENV_TWO_VALUE"
             layers: [props.nodeModulesLayer],
-            retryAttempts: 2
+            
+            retryAttempts: 0
         })
         this.grantAccess(this.eventDispatcherStressTester)
     }

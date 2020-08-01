@@ -1,3 +1,7 @@
+/**
+ * Converts an AppSyncEvent message an SQS received message for a sqs handler lambda.
+ * Expects a file path holding the AppSyncEvent contents
+ */
 import {exec}  from 'child_process'
 import { prepareForDispatch } from './prepareForDispatch';
 
@@ -7,7 +11,7 @@ export const samLocalSimulateSQSHandler = async (testEvent: string) => new Promi
     exec(cmd, {}, function (err, sqsEventTemplate, stderr) {
         if (err) return reject(stderr);
         // note this script works with relative paths, according to the aarts context in which its called. corresponding folders should exeist
-        const simulatedPayload = prepareForDispatch(require(`${testEvent}`), "myFakeLocalCorrelationToken")
+        const simulatedPayload = prepareForDispatch(require(`${testEvent}`), `${Date.now()}_${Math.random()*1000000}`)
         const sqsTemplate = JSON.parse(sqsEventTemplate)
 
         sqsTemplate.Records[0].body = simulatedPayload.Message

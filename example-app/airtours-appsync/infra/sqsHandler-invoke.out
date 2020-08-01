@@ -1,0 +1,225 @@
+Reading invoke payload from stdin (you can also pass it from file with --event)
+Invoking index.handler (nodejs12.x)
+gepModules4042A4F9 is a local Layer in the template
+Building image...
+Requested to skip pulling images ...
+
+Mounting C:\Users\TechHuddle\Documents\gep\gep\dist as /var/task:ro,delegated inside runtime container
+[32mSTART RequestId: b4a2d2c8-273e-1b66-fd59-65aa3a381e77 Version: $LATEST[0m
+2020-07-28T11:28:05.748Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	received SQS message:  {
+    "Records": [
+        {
+            "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
+            "receiptHandle": "MessageReceiptHandle",
+            "body": "{\"payload\":{\"arguments\":{\"pk\":\"v_0|organization\",\"ddbIndex\":\"meta__id\",\"limit\":2,\"paginationToken\":{\"meta\":\"v_0|organization\",\"id\":\"organization|1595935340812_255001.23693954136\"}},\"identity\":{\"username\":\"akrsmv\"}}}",
+            "attributes": {
+                "ApproximateReceiveCount": "1",
+                "SentTimestamp": "1523232000000",
+                "SenderId": "123456789012",
+                "ApproximateFirstReceiveTimestamp": "1523232000001"
+            },
+            "messageAttributes": {
+                "eventSource": {
+                    "dataType": "String",
+                    "stringValue": "worker:input"
+                },
+                "action": {
+                    "dataType": "String",
+                    "stringValue": "query"
+                },
+                "item": {
+                    "dataType": "String",
+                    "stringValue": "organization"
+                },
+                "ringToken": {
+                    "dataType": "String",
+                    "stringValue": "1595935668520_742730.3238481662"
+                }
+            },
+            "md5OfBody": "7b270e59b47ff90a553787216d55d91d",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",
+            "awsRegion": "us-east-1"
+        }
+    ]
+}
+2020-07-28T11:28:05.751Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	parsed aartsEvent from SQS is  {
+  payload: {
+    arguments: {
+      pk: 'v_0|organization',
+      ddbIndex: 'meta__id',
+      limit: 2,
+      paginationToken: [Object]
+    },
+    identity: { username: 'akrsmv' }
+  },
+  meta: {
+    item: 'organization',
+    action: 'query',
+    ringToken: '1595935668520_742730.3238481662',
+    eventSource: 'worker:input'
+  }
+}
+2020-07-28T11:28:05.752Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	[organization:query]  {
+    "payload": {
+        "arguments": "[AartsHandler:processPayloadAsync] Will Invoke organization:query manager action"
+    },
+    "meta": {
+        "item": "organization",
+        "action": "query",
+        "ringToken": "1595935668520_742730.3238481662",
+        "eventSource": "worker:input"
+    }
+}
+2020-07-28T11:28:05.753Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[AartsHandler:processPayloadAsync] Will Invoke organization:query manager action"',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:query' },
+    action: { DataType: 'String', StringValue: 'query' },
+    item: { DataType: 'String', StringValue: 'organization' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1595935668520_742730.3238481662'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-07-28T11:28:05.753Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	query Received arguments:  {
+    "arguments": [
+        {
+            "pk": "v_0|organization",
+            "ddbIndex": "meta__id",
+            "limit": 2,
+            "paginationToken": {
+                "meta": "v_0|organization",
+                "id": "organization|1595935340812_255001.23693954136"
+            }
+        }
+    ],
+    "identity": {
+        "username": "akrsmv"
+    },
+    "ringToken": "1595935668520_742730.3238481662"
+}
+2020-07-28T11:28:05.753Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	[organization:query]  {
+    "payload": {
+        "arguments": "[organization:QUERY] Begin"
+    },
+    "meta": {
+        "item": "organization",
+        "action": "query",
+        "ringToken": "1595935668520_742730.3238481662",
+        "eventSource": "worker:input"
+    }
+}
+2020-07-28T11:28:05.754Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[organization:QUERY] Begin"',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:query' },
+    action: { DataType: 'String', StringValue: 'query' },
+    item: { DataType: 'String', StringValue: 'organization' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1595935668520_742730.3238481662'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-07-28T11:28:05.755Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	QUERIES ARE {"pk":"v_0|organization","ddbIndex":"meta__id","limit":2,"paginationToken":{"meta":"v_0|organization","id":"organization|1595935340812_255001.23693954136"},"primaryKeyName":"meta","rangeKeyName":"id"}
+2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	================================================
+2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dqueryKeys  { pk: { S: 'v_0|organization' } }
+2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	keyConditionExpression  #meta = :meta
+2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dfilter  undefined
+2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dfilterExpression  undefined
+2020-07-28T11:28:05.757Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dexpressionAttributeNames  { '#meta': 'meta' }
+2020-07-28T11:28:05.757Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dexpressionAttributeValues  { ':meta': { S: 'v_0|organization' } }
+2020-07-28T11:28:05.757Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	================================================
+2020-07-28T11:28:05.796Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	====DDB==== QueryOutput:  {
+  ConsumedCapacity: { TableName: 'TEST2', CapacityUnits: 0.5 },
+  ScannedCount: 1
+}
+2020-07-28T11:28:05.797Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	[organization:query]  {
+    "payload": {
+        "arguments": [
+            "[organization:QUERY] End"
+        ]
+    },
+    "meta": {
+        "item": "organization",
+        "action": "query",
+        "ringToken": "1595935668520_742730.3238481662",
+        "eventSource": "worker:input"
+    }
+}
+2020-07-28T11:28:05.797Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '["[organization:QUERY] End"]',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:query' },
+    action: { DataType: 'String', StringValue: 'query' },
+    item: { DataType: 'String', StringValue: 'organization' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1595935668520_742730.3238481662'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-07-28T11:28:05.797Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	[organization:query]  {
+    "payload": {
+        "arguments": {
+            "pk": "v_0|organization",
+            "ddbIndex": "meta__id",
+            "limit": 2,
+            "paginationToken": {
+                "meta": "v_0|organization",
+                "id": "organization|1595935340812_255001.23693954136"
+            },
+            "primaryKeyName": "meta",
+            "rangeKeyName": "id"
+        },
+        "identity": {
+            "username": "akrsmv"
+        }
+    },
+    "meta": {
+        "item": "organization",
+        "action": "query",
+        "ringToken": "1595935668520_742730.3238481662",
+        "eventSource": "worker:input"
+    },
+    "resultItems": {
+        "items": [
+            {
+                "date_updated": "2020-07-28T09:34:40.811Z",
+                "code": "tsorg",
+                "meta": "v_0|organization",
+                "item_type": "organization",
+                "date_created": "2020-07-28T09:34:40.811Z",
+                "name": "test_organization",
+                "revisions": 0,
+                "id": "organization|myFakeLocalCorrelationToken",
+                "type": "root",
+                "branch": "root"
+            }
+        ],
+        "lastEvaluatedKey": {},
+        "count": 1
+    }
+}
+2020-07-28T11:28:05.797Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '{"pk":"v_0|organization","ddbIndex":"meta__id","limit":2,"paginationToken":{"meta":"v_0|organization","id":"organization|1595935340812_255001.23693954136"},"primaryKeyName":"meta","rangeKeyName":"id"}',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:query' },
+    action: { DataType: 'String', StringValue: 'query' },
+    item: { DataType: 'String', StringValue: 'organization' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1595935668520_742730.3238481662'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+[32mEND RequestId: b4a2d2c8-273e-1b66-fd59-65aa3a381e77[0m
+[32mREPORT RequestId: b4a2d2c8-273e-1b66-fd59-65aa3a381e77	Init Duration: 735.87 ms	Duration: 55.00 ms	Billed Duration: 100 ms	Memory Size: 256 MB	Max Memory Used: 71 MB	[0m
+
+null

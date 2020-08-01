@@ -81,19 +81,6 @@ export const transactDeleteItem = async <T extends DomainItem & DynamoItem>(exis
                     }, {})
                 ),
             }
-        },
-        { // UPDATE aggregations
-            Update: {
-                TableName: DB_NAME,
-                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-                Key: Object.assign({
-                    id: { S: "aggregations" },
-                    meta: { S: `totals` },
-                }),
-                UpdateExpression: `SET #${existingItem.item_type} = #${existingItem.item_type} - :dec_one`,
-                ExpressionAttributeNames: { [`#${existingItem.item_type}`]: existingItem.item_type },
-                ExpressionAttributeValues: { ":dec_one": { "N": "1" } },
-            }
         }
     ]
     // build all updates by also examining refkeys
@@ -118,6 +105,26 @@ export const transactDeleteItem = async <T extends DomainItem & DynamoItem>(exis
         }
         return accum
     }, itemTransactWriteItemList)
+
+
+    // TODO BE EXCERPTED INTO A SEPARATE dynamodb-streams-firehose module
+    // too much transaction conflicts may occur, if lots of items created/updated
+    if (process.env.PERFORM_AGGREGATIONS) {
+        allTransactWriteItemList.push({ // UPDATE aggregations
+            Update: {
+                TableName: DB_NAME,
+                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+                Key: Object.assign({
+                    id: { S: "aggregations" },
+                    meta: { S: `totals` },
+                }),
+                UpdateExpression: `SET #${existingItem.item_type} = #${existingItem.item_type} - :dec_one`,
+                ExpressionAttributeNames: { [`#${existingItem.item_type}`]: existingItem.item_type },
+                ExpressionAttributeValues: { ":dec_one": { "N": "1" } },
+            }
+        })
+    }
+    
 
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,

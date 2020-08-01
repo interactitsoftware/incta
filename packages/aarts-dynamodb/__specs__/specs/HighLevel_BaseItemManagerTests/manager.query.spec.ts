@@ -93,18 +93,71 @@ describe('query spec', () => {
             return expect(queryProcessor1.value.arguments.count).toBe(4) // see test model below
         })
 
-        // test('query all items having particular string refkey value', async () => {
-        //     // get all airplanes with number_of_seats > 20
-        //     const high_volume_planes = await queryItems({
-        //         ddbIndex: "meta__smetadata",
-        //         pk: `${_specs_FlightItem.__type}}flight_code`,
-        //         range: "F13",
-        //         rangeKeyName: 'smetadata',
-        //         primaryKeyName: 'meta'
-        //     })
+        // get all flights to sofia
+        test('Emphasize that base manager can be used for queries - query all items having particular string refkey value - via BaseManager', async () => {
 
-        //     return expect(high_volume_planes.count).toBe(1) //see testmodel
-        // })
+            const queryManager = await domainAdapter.itemManagers["BASE"]
+            // get the sofia airport dynamo record
+            const queryGen = queryManager.query(
+                _specs_AirportItem.__type,
+                {
+                    arguments: [{
+                        ddbIndex: "meta__smetadata",
+                        primaryKeyName: "meta",
+                        rangeKeyName: "smetadata",
+                        pk: `${_specs_AirportItem.__type}}name`,
+                        range: "Sofia"
+                    }],
+                    identity: "akrsmv"
+                }
+            )
+
+            let queryProcessor = await queryGen.next()
+            do {
+                if (!queryProcessor.done) {
+                    queryProcessor = await queryGen.next()
+                }
+            } while (!queryProcessor.done)
+
+            // META: flight}to_airport; 
+            // SMETADATA: SOFIA AIRPORT's ID
+            const queryGen1 = queryManager.query(
+                _specs_AirportItem.__type,
+                {
+                    arguments: [{
+                        ddbIndex: "meta__smetadata",
+                        primaryKeyName: "meta",
+                        rangeKeyName: "smetadata",
+                        pk: `${_specs_FlightItem.__type}}to_airport`,
+                        range: queryProcessor.value.arguments.items && queryProcessor.value.arguments.items[0].id
+                    }],
+                    identity: "akrsmv"
+                }
+            )
+
+            let queryProcessor1 = await queryGen1.next()
+            do {
+                if (!queryProcessor1.done) {
+                    queryProcessor1 = await queryGen1.next()
+                }
+            } while (!queryProcessor1.done)
+
+
+            return expect(queryProcessor1.value.arguments.count).toBe(4) // see test model below
+        })
+
+        test('query all items having particular string refkey value', async () => {
+            // get a flight by flight_code
+            const flight_by_code = await queryItems({
+                ddbIndex: "meta__smetadata",
+                pk: `${_specs_FlightItem.__type}}flight_code`,
+                range: "F13",
+                rangeKeyName: 'smetadata',
+                primaryKeyName: 'meta'
+            })
+
+            return expect(flight_by_code.count).toBe(1) //see testmodel
+        })
     })
 
     // BASICALLY THE SAME FUNCTIONALITY TESTED AS IN LOW LEVEL QUERY TESTS, THIS TIME VIA A MANAGER AS SHOWN IN ABOVE TEST
