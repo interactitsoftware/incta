@@ -21,7 +21,7 @@
 - `./run-dynamodb-local.sh` 
 - `aws dynamodb create-table --cli-input-json file://local-dev-table-def.json --endpoint-url http://localhost:8000`
 ### Test the Setup
-- `run-lambda.sh inputHandler create-samolet` # this will run the lambda in a local aws lambda environment pointed to local dynamodb.
+- `run-lambda.sh inputHandler create-airplane` # this will run the lambda in a local aws lambda environment pointed to local dynamodb.
 
 ### Windows
 - clone repo

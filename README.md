@@ -5,6 +5,17 @@ The code in this repo is for educational purposes only. Performance is always th
 
 For using it in your business domain, you may fork the repo and tweak the logic to your needs, respecting the repository licence.
 
+This is a monorepo, home of multiple npm packages:
+- `aarts-types`
+- `aarts-dynamodb`
+- `aarts-handler`
+- `aarts-eb-types`
+- `aarts-eb-notifier`
+- `aarts-eb-handler`
+- `aarts-eb-dispatcher`
+
+It also hosts example apps with the intention to demonstrate how above npm packages can work toghether
+
 # Features
 ## DynamoDB
 - [single table design](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html#bp-general-nosql-design-concepts) implementation
