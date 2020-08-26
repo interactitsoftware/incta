@@ -4,7 +4,7 @@ Resources:
     Properties:
       Content:
         S3Bucket:
-          Ref: AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3Bucket6461BC0D
+          Ref: AssetParameters1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6S3Bucket19AA78CB
         S3Key:
           Fn::Join:
             - ""
@@ -12,12 +12,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3VersionKey11D3C3FE
+                      - Ref: AssetParameters1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6S3VersionKey7F7AC479
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3VersionKey11D3C3FE
+                      - Ref: AssetParameters1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6S3VersionKey7F7AC479
       CompatibleRuntimes:
         - nodejs12.x
       Description: A layer holding the libraries needed for the contracts-compliant domain adapter
@@ -317,7 +317,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60
+          Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3BucketE243A8E8
         S3Key:
           Fn::Join:
             - ""
@@ -325,12 +325,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
+                      - Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
+                      - Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A
       Handler: index.dispatcher
       Role:
         Fn::GetAtt:
@@ -361,7 +361,7 @@ Resources:
       FunctionName:
         Ref: EventsDispatcher09BE5065
       Qualifier: $LATEST
-      MaximumRetryAttempts: 2
+      MaximumRetryAttempts: 0
     Metadata:
       aws:cdk:path: AartsAllStack/Events/Dispatcher/EventInvokeConfig/Resource
   EventsDispatcherStressTesterServiceRole9FAB05F3:
@@ -406,7 +406,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60
+          Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3BucketE243A8E8
         S3Key:
           Fn::Join:
             - ""
@@ -414,12 +414,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
+                      - Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
+                      - Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A
       Handler: index.dispatcherTester
       Role:
         Fn::GetAtt:
@@ -450,42 +450,24 @@ Resources:
       FunctionName:
         Ref: EventsDispatcherStressTesterC8BE4BAF
       Qualifier: $LATEST
-      MaximumRetryAttempts: 2
+      MaximumRetryAttempts: 0
     Metadata:
       aws:cdk:path: AartsAllStack/Events/DispatcherStressTester/EventInvokeConfig/Resource
-  AuthUserPoolsmsRole664FB2D2:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Action: sts:AssumeRole
-            Condition:
-              StringEquals:
-                sts:ExternalId: AartsAllStackAuthUserPool7BFADCCE
-            Effect: Allow
-            Principal:
-              Service: cognito-idp.amazonaws.com
-        Version: "2012-10-17"
-      Policies:
-        - PolicyDocument:
-            Statement:
-              - Action: sns:Publish
-                Effect: Allow
-                Resource: "*"
-            Version: "2012-10-17"
-          PolicyName: sns-publish
-    Metadata:
-      aws:cdk:path: AartsAllStack/Auth/UserPool/smsRole/Resource
   AuthUserPool8115E87F:
     Type: AWS::Cognito::UserPool
     Properties:
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_phone_number
+            Priority: 1
+          - Name: verified_email
+            Priority: 2
       AdminCreateUserConfig:
         AllowAdminCreateUserOnly: true
       AutoVerifiedAttributes:
         - email
-      EmailVerificationMessage: Hello {username}, Your verification code is {####}
+      EmailVerificationMessage: The verification code to your new account is {####}
       EmailVerificationSubject: Verify your new account
-      LambdaConfig: {}
       Policies:
         PasswordPolicy:
           MinimumLength: 8
@@ -493,19 +475,13 @@ Resources:
           RequireNumbers: false
           RequireSymbols: false
           RequireUppercase: false
-      SmsConfiguration:
-        ExternalId: AartsAllStackAuthUserPool7BFADCCE
-        SnsCallerArn:
-          Fn::GetAtt:
-            - AuthUserPoolsmsRole664FB2D2
-            - Arn
       SmsVerificationMessage: The verification code to your new account is {####}
       UsernameAttributes:
         - email
       UserPoolName: airtours-appsyncUserPool
       VerificationMessageTemplate:
         DefaultEmailOption: CONFIRM_WITH_CODE
-        EmailMessage: Hello {username}, Your verification code is {####}
+        EmailMessage: The verification code to your new account is {####}
         EmailSubject: Verify your new account
         SmsMessage: The verification code to your new account is {####}
     Metadata:
@@ -515,8 +491,22 @@ Resources:
     Properties:
       UserPoolId:
         Ref: AuthUserPool8115E87F
+      AllowedOAuthFlows:
+        - implicit
+        - code
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - profile
+        - phone
+        - email
+        - openid
+        - aws.cognito.signin.user.admin
+      CallbackURLs:
+        - https://example.com
       ClientName: UserPoolClientName
       GenerateSecret: false
+      SupportedIdentityProviders:
+        - COGNITO
     Metadata:
       aws:cdk:path: AartsAllStack/Auth/UserPoolClient/Resource
   AuthIdentityPool12DFB5E1:
@@ -645,37 +635,41 @@ Resources:
         Fn::GetAtt:
           - AppSync04210623
           - ApiId
-      Definition: >2
+      Definition: >
         
 
-         schema {
-             query: Query
-             mutation: Mutation
-             subscription: Subscription
-         }
+        schema {
+            query: Query
+            mutation: Mutation
+            subscription: Subscription
+        }
 
-         type Mutation {
+
+        type Mutation {
             start(item: String!, payload: AWSJSON): AWSJSON
             create(item: String!, payload: AWSJSON): AWSJSON
             update(item: String!, payload: AWSJSON): AWSJSON
             delete(item: String!, payload: AWSJSON): AWSJSON
             notify(to: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
-         }
+        }
 
-         type Query {
+
+        type Query {
             get(item: String!, payload: AWSJSON): AWSJSON 
             list(item: String!, payload: AWSJSON): AWSJSON
-         }
+        }
 
-         type Subscription {
+
+        type Subscription {
             inbox(to: String!): Notification @aws_subscribe(mutations: ["notify"])
-         }
+        }
 
-         type Notification @aws_iam @aws_cognito_user_pools{
-        	from: String!
-        	to: String!
-        	body: String!
-        	sentAt: String!
+
+        type Notification @aws_iam @aws_cognito_user_pools{
+            from: String!
+            to: String!
+            body: String!
+            sentAt: String!
         }
     Metadata:
       aws:cdk:path: AartsAllStack/AppSync/AppSync/Schema
@@ -952,12 +946,13 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: airtours-appsyncNotifier
+      ReceiveMessageWaitTimeSeconds: 3
       RedrivePolicy:
         deadLetterTargetArn:
           Fn::GetAtt:
             - LocalNotifyDEADLETTER9A9C1FD7
             - Arn
-        maxReceiveCount: 1
+        maxReceiveCount: 10
       VisibilityTimeout: 180
     Metadata:
       aws:cdk:path: AartsAllStack/Local/Notify/Queue/Resource
@@ -1023,6 +1018,11 @@ Resources:
       PolicyDocument:
         Statement:
           - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
+          - Action:
               - sqs:ReceiveMessage
               - sqs:ChangeMessageVisibility
               - sqs:GetQueueUrl
@@ -1061,7 +1061,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60
+          Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3BucketE243A8E8
         S3Key:
           Fn::Join:
             - ""
@@ -1069,12 +1069,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
+                      - Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
+                      - Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A
       Handler: index.notifier
       Role:
         Fn::GetAtt:
@@ -1096,6 +1096,8 @@ Resources:
         - Ref: airtoursappsyncModulesBEED5E65
       MemorySize: 256
       Timeout: 30
+      TracingConfig:
+        Mode: Active
     DependsOn:
       - LocalNotifyWorkerServiceRoleDefaultPolicyEE3CB3C7
       - LocalNotifyWorkerServiceRole74450536
@@ -1134,12 +1136,13 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: airtours-appsyncHandler
+      ReceiveMessageWaitTimeSeconds: 3
       RedrivePolicy:
         deadLetterTargetArn:
           Fn::GetAtt:
             - airtoursappsyncHandlerDEADLETTER3BFB9F90
             - Arn
-        maxReceiveCount: 1
+        maxReceiveCount: 10
       VisibilityTimeout: 180
     Metadata:
       aws:cdk:path: AartsAllStack/airtours-appsyncHandler/Queue/Resource
@@ -1205,6 +1208,11 @@ Resources:
       PolicyDocument:
         Statement:
           - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
+          - Action:
               - sqs:ReceiveMessage
               - sqs:ChangeMessageVisibility
               - sqs:GetQueueUrl
@@ -1258,7 +1266,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60
+          Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3BucketE243A8E8
         S3Key:
           Fn::Join:
             - ""
@@ -1266,12 +1274,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
+                      - Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7
+                      - Ref: AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -1294,6 +1302,8 @@ Resources:
         - Ref: airtoursappsyncModulesBEED5E65
       MemorySize: 256
       Timeout: 30
+      TracingConfig:
+        Mode: Active
     DependsOn:
       - airtoursappsyncHandlerWorkerServiceRoleDefaultPolicy9FDE7918
       - airtoursappsyncHandlerWorkerServiceRole43C1DF31
@@ -1325,27 +1335,27 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Modules: aws-cdk=1.45.0,@aws-cdk/assets=1.31.0,@aws-cdk/aws-apigateway=1.31.0,@aws-cdk/aws-applicationautoscaling=1.31.0,@aws-cdk/aws-appsync=1.31.0,@aws-cdk/aws-autoscaling=1.31.0,@aws-cdk/aws-autoscaling-common=1.31.0,@aws-cdk/aws-autoscaling-hooktargets=1.31.0,@aws-cdk/aws-cloudformation=1.31.0,@aws-cdk/aws-cloudwatch=1.31.0,@aws-cdk/aws-cognito=1.31.0,@aws-cdk/aws-dynamodb=1.31.0,@aws-cdk/aws-ec2=1.31.0,@aws-cdk/aws-ecr=1.31.0,@aws-cdk/aws-ecr-assets=1.31.0,@aws-cdk/aws-ecs=1.31.0,@aws-cdk/aws-elasticloadbalancingv2=1.31.0,@aws-cdk/aws-events=1.31.0,@aws-cdk/aws-iam=1.31.0,@aws-cdk/aws-kms=1.31.0,@aws-cdk/aws-lambda=1.31.0,@aws-cdk/aws-lambda-event-sources=1.31.0,@aws-cdk/aws-logs=1.31.0,@aws-cdk/aws-s3=1.31.0,@aws-cdk/aws-s3-assets=1.31.0,@aws-cdk/aws-s3-notifications=1.31.0,@aws-cdk/aws-servicediscovery=1.31.0,@aws-cdk/aws-sns=1.31.0,@aws-cdk/aws-sns-subscriptions=1.31.0,@aws-cdk/aws-sqs=1.31.0,@aws-cdk/aws-ssm=1.31.0,@aws-cdk/aws-stepfunctions=1.31.0,@aws-cdk/aws-stepfunctions-tasks=1.31.0,@aws-cdk/cdk-assets-schema=1.41.0,@aws-cdk/cloud-assembly-schema=1.41.0,@aws-cdk/core=1.31.0,@aws-cdk/custom-resources=1.31.0,@aws-cdk/cx-api=1.31.0,@aws-cdk/region-info=1.31.0,jsii-runtime=node.js/v12.13.0
+      Modules: aws-cdk=1.59.0,@aws-cdk/assets=1.60.0,@aws-cdk/aws-apigateway=1.60.0,@aws-cdk/aws-applicationautoscaling=1.60.0,@aws-cdk/aws-appsync=1.60.0,@aws-cdk/aws-autoscaling-common=1.60.0,@aws-cdk/aws-cloudwatch=1.60.0,@aws-cdk/aws-codeguruprofiler=1.60.0,@aws-cdk/aws-cognito=1.60.0,@aws-cdk/aws-dynamodb=1.60.0,@aws-cdk/aws-ec2=1.60.0,@aws-cdk/aws-events=1.60.0,@aws-cdk/aws-iam=1.60.0,@aws-cdk/aws-kms=1.60.0,@aws-cdk/aws-lambda=1.60.0,@aws-cdk/aws-lambda-event-sources=1.60.0,@aws-cdk/aws-logs=1.60.0,@aws-cdk/aws-s3=1.60.0,@aws-cdk/aws-s3-assets=1.60.0,@aws-cdk/aws-s3-notifications=1.60.0,@aws-cdk/aws-sns=1.60.0,@aws-cdk/aws-sns-subscriptions=1.60.0,@aws-cdk/aws-sqs=1.60.0,@aws-cdk/aws-ssm=1.60.0,@aws-cdk/cloud-assembly-schema=1.60.0,@aws-cdk/core=1.60.0,@aws-cdk/custom-resources=1.60.0,@aws-cdk/cx-api=1.60.0,@aws-cdk/region-info=1.60.0,jsii-runtime=node.js/v12.13.0
     Condition: CDKMetadataAvailable
 Parameters:
-  AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3Bucket6461BC0D:
+  AssetParameters1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6S3Bucket19AA78CB:
     Type: String
-    Description: S3 bucket for asset "51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0a"
-  AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aS3VersionKey11D3C3FE:
+    Description: S3 bucket for asset "1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6"
+  AssetParameters1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6S3VersionKey7F7AC479:
     Type: String
-    Description: S3 key for asset version "51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0a"
-  AssetParameters51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0aArtifactHash1C1BBEF4:
+    Description: S3 key for asset version "1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6"
+  AssetParameters1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6ArtifactHashB74C8440:
     Type: String
-    Description: Artifact hash for asset "51488b3dc1b1f2a047a1e4ea0585495823a7e8ee051380df8836a748b3146b0a"
-  AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3Bucket14E97C60:
+    Description: Artifact hash for asset "1c176776d7602f58217c6d110f99b6c13929eafd4a3c9ed4e0c53ed10bc042f6"
+  AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3BucketE243A8E8:
     Type: String
-    Description: S3 bucket for asset "ec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555"
-  AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555S3VersionKeyE502E7B7:
+    Description: S3 bucket for asset "991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53da"
+  AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daS3VersionKey2A57D03A:
     Type: String
-    Description: S3 key for asset version "ec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555"
-  AssetParametersec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555ArtifactHash6221E2BB:
+    Description: S3 key for asset version "991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53da"
+  AssetParameters991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53daArtifactHash6CF0CE82:
     Type: String
-    Description: Artifact hash for asset "ec4f437103250788624911d14e3c54f0a447a5afd965b9d4a0d068fcac2ca555"
+    Description: Artifact hash for asset "991b6013c3484e436483ac86f213e936dc045ed859e4d485931618dd3add53da"
 Conditions:
   CDKMetadataAvailable:
     Fn::Or:

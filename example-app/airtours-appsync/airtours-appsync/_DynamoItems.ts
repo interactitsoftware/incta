@@ -26,8 +26,9 @@ export {
 // define two domain objects purely from this example app (demonstrate the whole steps needed)
 import { City } from "./items/City";  // the plain js objects (domain items)
 import { Pilot } from "./items/Pilot";
-import { TestDataGenerator } from "./procedures/TestDataGenerator";
+import { SingleLambdaTestDataGenerator } from "./procedures/TODO_SingleLambdaTestDataGenerator";
 import { EraseData } from "./procedures/EraseData";
+import { MultipleLambdaTestDataGenerator } from "./procedures/TODO_MultipleLambdaTestDataGenerator";
 
 export class CityItem extends DynamoItem(City, "city", [ // the dynamodb wrapper object that we deal with
     {key:"name"},
@@ -41,7 +42,12 @@ export class PilotItem extends DynamoItem(Pilot, "pilot", [ // the dynamodb wrap
 ]) { }  
 
 // --------------- procedures
-export class TestDataGeneratorItem extends DynamoItem(TestDataGenerator, "test_data_generator", [
+export class SingleLambdaTestDataGeneratorItem extends DynamoItem(SingleLambdaTestDataGenerator, "single_lambda_test_data_generator", [
+    {key: "start_date"},
+    {key: "end_date"},
+]) {}
+
+export class MultipleLambdaTestDataGeneratorItem extends DynamoItem(MultipleLambdaTestDataGenerator, "multiple_lambda_test_data_generator", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}

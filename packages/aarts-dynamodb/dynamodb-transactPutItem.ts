@@ -65,21 +65,6 @@ export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T
                 ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
             }
         })
-        if (item.procedure) {
-            allTransactWriteItemList.push({ // update procedures
-                Update: {
-                    TableName: DB_NAME,
-                    ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-                    Key: Object.assign({
-                        id: { S: item.procedure },
-                        meta: { S: `${versionString(0)}|${item.procedure.substring(0, item.procedure.indexOf("|"))}` },
-                    }),
-                    UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
-                    ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
-                    ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
-                }
-            })
-        }
     }
 
     const params: TransactWriteItemsInput = {

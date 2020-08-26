@@ -2,7 +2,7 @@ import { Context } from "aws-lambda";
 import AWS = require("aws-sdk");
 import { AartsEBUtil, AppSyncEvent } from "aarts-eb-types/aartsEBUtil"
 import { prepareForDispatch } from "./prepareForDispatch";
-import { samLocalSimulateSQSHandler } from "./samLocalSimulateHandlerFromContent";
+import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHandlerFromContent";
 
 /**
  * forwards to SNS, decorating with:
@@ -39,7 +39,7 @@ class aartsSnsDispatcher extends AartsEBUtil {
 
 	public async samLocalSupport_callSqsHandlerSynchronously(event: AppSyncEvent, ringToken: string) {
 		//used sam local runtime
-		const sqsEvent = await samLocalSimulateSQSHandler(JSON.stringify(event), ringToken);
+		const sqsEvent = await samLocalSimulateSQSHandlerFromContent(JSON.stringify(event), ringToken);
 		process.env.DEBUG && console.log("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
 		process.env.DEBUG && console.log("sqsEVENT simulated: " + sqsEvent)
 

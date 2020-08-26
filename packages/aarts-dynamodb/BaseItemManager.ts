@@ -199,17 +199,24 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             const procedureResult = await new proto(arg).start(__type, args)
 
-            process.env.DEBUG && (yield { arguments: `[${__type}:START] Procedure ended. Saving state.`, identity: undefined })
-
-            const asyncGenSave = this.save(__type, Object.assign({}, args, { arguments: [procedureResult] }))
-            let processorSave = await asyncGenSave.next()
-            do {
-                if (!processorSave.done) {
-                    // process.env.DEBUG && (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
-                    process.env.DEBUG && (yield { arguments: processorSave.value.arguments, identity: undefined })
-                    processorSave = await asyncGenSave.next()
-                }
-            } while (!processorSave.done)
+            process.env.DEBUG && (yield { arguments: `[${__type}:START] Procedure ended.`, identity: undefined })
+            //#region saving state
+            //TODO do we want to save state? what exactly are we saving?
+            // this is useful if you have a clear distinction between procedure and an item
+            // procedures should be started without a specific PK (calling dispatcher, not passing id/meta)
+            // which will always result in a new item being recorded - essentially a log of all procedure invocations
+            // turning it off for now, as this is not fully tested / designed
+           
+            // const asyncGenSave = this.save(__type, Object.assign({}, args, { arguments: [procedureResult] }))
+            // let processorSave = await asyncGenSave.next()
+            // do {
+            //     if (!processorSave.done) {
+            //         // process.env.DEBUG && (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
+            //         process.env.DEBUG && (yield { arguments: processorSave.value.arguments, identity: undefined })
+            //         processorSave = await asyncGenSave.next()
+            //     }
+            // } while (!processorSave.done)
+            //#endregion
         }
 
         return { arguments: dynamoItems, identity: args.identity }

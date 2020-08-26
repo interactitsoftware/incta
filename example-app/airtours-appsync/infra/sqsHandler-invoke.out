@@ -1,17 +1,17 @@
 Reading invoke payload from stdin (you can also pass it from file with --event)
 Invoking index.handler (nodejs12.x)
-gepModules4042A4F9 is a local Layer in the template
+airtoursappsyncModulesBEED5E65 is a local Layer in the template
 Building image...
 Requested to skip pulling images ...
 
-Mounting C:\Users\TechHuddle\Documents\gep\gep\dist as /var/task:ro,delegated inside runtime container
-[32mSTART RequestId: b4a2d2c8-273e-1b66-fd59-65aa3a381e77 Version: $LATEST[0m
-2020-07-28T11:28:05.748Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	received SQS message:  {
+Mounting C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync\dist as /var/task:ro,delegated inside runtime container
+[32mSTART RequestId: ff3d0c63-4c24-1dde-0959-602249cc6d2c Version: $LATEST[0m
+2020-08-25T07:47:47.062Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	received SQS message:  {
     "Records": [
         {
             "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
             "receiptHandle": "MessageReceiptHandle",
-            "body": "{\"payload\":{\"arguments\":{\"pk\":\"v_0|organization\",\"ddbIndex\":\"meta__id\",\"limit\":2,\"paginationToken\":{\"meta\":\"v_0|organization\",\"id\":\"organization|1595935340812_255001.23693954136\"}},\"identity\":{\"username\":\"akrsmv\"}}}",
+            "body": "{\"payload\":{\"arguments\":{},\"identity\":{\"username\":\"akrsmv\"}}}",
             "attributes": {
                 "ApproximateReceiveCount": "1",
                 "SentTimestamp": "1523232000000",
@@ -25,15 +25,15 @@ Mounting C:\Users\TechHuddle\Documents\gep\gep\dist as /var/task:ro,delegated in
                 },
                 "action": {
                     "dataType": "String",
-                    "stringValue": "query"
+                    "stringValue": "start"
                 },
                 "item": {
                     "dataType": "String",
-                    "stringValue": "organization"
+                    "stringValue": "test_data_generator"
                 },
                 "ringToken": {
                     "dataType": "String",
-                    "stringValue": "1595935668520_742730.3238481662"
+                    "stringValue": "1598341655415_449838.96741890785"
                 }
             },
             "md5OfBody": "7b270e59b47ff90a553787216d55d91d",
@@ -43,183 +43,273 @@ Mounting C:\Users\TechHuddle\Documents\gep\gep\dist as /var/task:ro,delegated in
         }
     ]
 }
-2020-07-28T11:28:05.751Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	parsed aartsEvent from SQS is  {
-  payload: {
-    arguments: {
-      pk: 'v_0|organization',
-      ddbIndex: 'meta__id',
-      limit: 2,
-      paginationToken: [Object]
-    },
-    identity: { username: 'akrsmv' }
-  },
+2020-08-25T07:47:47.066Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	parsed aartsEvent from SQS is  {
+  payload: { arguments: {}, identity: { username: 'akrsmv' } },
   meta: {
-    item: 'organization',
-    action: 'query',
-    ringToken: '1595935668520_742730.3238481662',
+    item: 'test_data_generator',
+    action: 'start',
+    ringToken: '1598341655415_449838.96741890785',
     eventSource: 'worker:input'
   }
 }
-2020-07-28T11:28:05.752Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	[organization:query]  {
+2020-08-25T07:47:47.066Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[test_data_generator:start]  {
     "payload": {
-        "arguments": "[AartsHandler:processPayloadAsync] Will Invoke organization:query manager action"
+        "arguments": "[AartsHandler:processPayloadAsync] Will Invoke test_data_generator:start manager action"
     },
     "meta": {
-        "item": "organization",
-        "action": "query",
-        "ringToken": "1595935668520_742730.3238481662",
+        "item": "test_data_generator",
+        "action": "start",
+        "ringToken": "1598341655415_449838.96741890785",
         "eventSource": "worker:input"
     }
 }
-2020-07-28T11:28:05.753Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	--->MOCK SNS/MESSAGE START {
-  Message: '"[AartsHandler:processPayloadAsync] Will Invoke organization:query manager action"',
+2020-08-25T07:47:47.067Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[AartsHandler:processPayloadAsync] Will Invoke test_data_generator:start manager action"',
   MessageAttributes: {
-    eventSource: { DataType: 'String', StringValue: 'worker:output:query' },
-    action: { DataType: 'String', StringValue: 'query' },
-    item: { DataType: 'String', StringValue: 'organization' },
+    eventSource: { DataType: 'String', StringValue: 'worker:output:start' },
+    action: { DataType: 'String', StringValue: 'start' },
+    item: { DataType: 'String', StringValue: 'test_data_generator' },
     ringToken: {
       DataType: 'String',
-      StringValue: '1595935668520_742730.3238481662'
+      StringValue: '1598341655415_449838.96741890785'
     }
   },
   TopicArn: 'EventsBus45DE4339'
 } <---MOCK SNS/MESSAGE END
-2020-07-28T11:28:05.753Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	query Received arguments:  {
-    "arguments": [
-        {
-            "pk": "v_0|organization",
-            "ddbIndex": "meta__id",
-            "limit": 2,
-            "paginationToken": {
-                "meta": "v_0|organization",
-                "id": "organization|1595935340812_255001.23693954136"
-            }
-        }
-    ],
-    "identity": {
-        "username": "akrsmv"
-    },
-    "ringToken": "1595935668520_742730.3238481662"
-}
-2020-07-28T11:28:05.753Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	[organization:query]  {
+2020-08-25T07:47:47.067Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[test_data_generator:start]  {
     "payload": {
-        "arguments": "[organization:QUERY] Begin"
+        "arguments": "[test_data_generator:CREATE] Begin CREATE. Doing a gate check of payload"
     },
     "meta": {
-        "item": "organization",
-        "action": "query",
-        "ringToken": "1595935668520_742730.3238481662",
+        "item": "test_data_generator",
+        "action": "start",
+        "ringToken": "1598341655415_449838.96741890785",
         "eventSource": "worker:input"
     }
 }
-2020-07-28T11:28:05.754Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	--->MOCK SNS/MESSAGE START {
-  Message: '"[organization:QUERY] Begin"',
+2020-08-25T07:47:47.068Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[test_data_generator:CREATE] Begin CREATE. Doing a gate check of payload"',
   MessageAttributes: {
-    eventSource: { DataType: 'String', StringValue: 'worker:output:query' },
-    action: { DataType: 'String', StringValue: 'query' },
-    item: { DataType: 'String', StringValue: 'organization' },
+    eventSource: { DataType: 'String', StringValue: 'worker:output:start' },
+    action: { DataType: 'String', StringValue: 'start' },
+    item: { DataType: 'String', StringValue: 'test_data_generator' },
     ringToken: {
       DataType: 'String',
-      StringValue: '1595935668520_742730.3238481662'
+      StringValue: '1598341655415_449838.96741890785'
     }
   },
   TopicArn: 'EventsBus45DE4339'
 } <---MOCK SNS/MESSAGE END
-2020-07-28T11:28:05.755Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	QUERIES ARE {"pk":"v_0|organization","ddbIndex":"meta__id","limit":2,"paginationToken":{"meta":"v_0|organization","id":"organization|1595935340812_255001.23693954136"},"primaryKeyName":"meta","rangeKeyName":"id"}
-2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	================================================
-2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dqueryKeys  { pk: { S: 'v_0|organization' } }
-2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	keyConditionExpression  #meta = :meta
-2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dfilter  undefined
-2020-07-28T11:28:05.756Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dfilterExpression  undefined
-2020-07-28T11:28:05.757Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dexpressionAttributeNames  { '#meta': 'meta' }
-2020-07-28T11:28:05.757Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	dexpressionAttributeValues  { ':meta': { S: 'v_0|organization' } }
-2020-07-28T11:28:05.757Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	================================================
-2020-07-28T11:28:05.796Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	====DDB==== QueryOutput:  {
-  ConsumedCapacity: { TableName: 'TEST2', CapacityUnits: 0.5 },
-  ScannedCount: 1
-}
-2020-07-28T11:28:05.797Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	[organization:query]  {
+2020-08-25T07:47:47.068Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[test_data_generator:start]  {
     "payload": {
-        "arguments": [
-            "[organization:QUERY] End"
-        ]
+        "arguments": "[test_data_generator:baseValidateStart] START. checking for mandatory item keys: {\n    \"arguments\": [\n        {}\n    ],\n    \"identity\": {\n        \"username\": \"akrsmv\"\n    },\n    \"ringToken\": \"1598341655415_449838.96741890785\"\n}"
     },
     "meta": {
-        "item": "organization",
-        "action": "query",
-        "ringToken": "1595935668520_742730.3238481662",
+        "item": "test_data_generator",
+        "action": "start",
+        "ringToken": "1598341655415_449838.96741890785",
         "eventSource": "worker:input"
     }
 }
-2020-07-28T11:28:05.797Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	--->MOCK SNS/MESSAGE START {
-  Message: '["[organization:QUERY] End"]',
+2020-08-25T07:47:47.068Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[test_data_generator:baseValidateStart] START. checking for mandatory item keys: {\\n    \\"arguments\\": [\\n        {}\\n    ],\\n    \\"identity\\": {\\n        \\"username\\": \\"akrsmv\\"\\n    },\\n    \\"ringToken\\": \\"1598341655415_449838.96741890785\\"\\n}"',
   MessageAttributes: {
-    eventSource: { DataType: 'String', StringValue: 'worker:output:query' },
-    action: { DataType: 'String', StringValue: 'query' },
-    item: { DataType: 'String', StringValue: 'organization' },
+    eventSource: { DataType: 'String', StringValue: 'worker:output:start' },
+    action: { DataType: 'String', StringValue: 'start' },
+    item: { DataType: 'String', StringValue: 'test_data_generator' },
     ringToken: {
       DataType: 'String',
-      StringValue: '1595935668520_742730.3238481662'
+      StringValue: '1598341655415_449838.96741890785'
     }
   },
   TopicArn: 'EventsBus45DE4339'
 } <---MOCK SNS/MESSAGE END
-2020-07-28T11:28:05.797Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	[organization:query]  {
+2020-08-25T07:47:47.069Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[test_data_generator:start]  {
     "payload": {
-        "arguments": {
-            "pk": "v_0|organization",
-            "ddbIndex": "meta__id",
-            "limit": 2,
-            "paginationToken": {
-                "meta": "v_0|organization",
-                "id": "organization|1595935340812_255001.23693954136"
-            },
-            "primaryKeyName": "meta",
-            "rangeKeyName": "id"
-        },
-        "identity": {
-            "username": "akrsmv"
-        }
+        "arguments": "[test_data_generator:START] Procedure applicable for Starting."
     },
     "meta": {
-        "item": "organization",
-        "action": "query",
-        "ringToken": "1595935668520_742730.3238481662",
+        "item": "test_data_generator",
+        "action": "start",
+        "ringToken": "1598341655415_449838.96741890785",
         "eventSource": "worker:input"
-    },
-    "resultItems": {
-        "items": [
-            {
-                "date_updated": "2020-07-28T09:34:40.811Z",
-                "code": "tsorg",
-                "meta": "v_0|organization",
-                "item_type": "organization",
-                "date_created": "2020-07-28T09:34:40.811Z",
-                "name": "test_organization",
-                "revisions": 0,
-                "id": "organization|myFakeLocalCorrelationToken",
-                "type": "root",
-                "branch": "root"
-            }
-        ],
-        "lastEvaluatedKey": {},
-        "count": 1
     }
 }
-2020-07-28T11:28:05.797Z	b4a2d2c8-273e-1b66-fd59-65aa3a381e77	INFO	--->MOCK SNS/MESSAGE START {
-  Message: '{"pk":"v_0|organization","ddbIndex":"meta__id","limit":2,"paginationToken":{"meta":"v_0|organization","id":"organization|1595935340812_255001.23693954136"},"primaryKeyName":"meta","rangeKeyName":"id"}',
+2020-08-25T07:47:47.069Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[test_data_generator:START] Procedure applicable for Starting."',
   MessageAttributes: {
-    eventSource: { DataType: 'String', StringValue: 'worker:output:query' },
-    action: { DataType: 'String', StringValue: 'query' },
-    item: { DataType: 'String', StringValue: 'organization' },
+    eventSource: { DataType: 'String', StringValue: 'worker:output:start' },
+    action: { DataType: 'String', StringValue: 'start' },
+    item: { DataType: 'String', StringValue: 'test_data_generator' },
     ringToken: {
       DataType: 'String',
-      StringValue: '1595935668520_742730.3238481662'
+      StringValue: '1598341655415_449838.96741890785'
     }
   },
   TopicArn: 'EventsBus45DE4339'
 } <---MOCK SNS/MESSAGE END
-[32mEND RequestId: b4a2d2c8-273e-1b66-fd59-65aa3a381e77[0m
-[32mREPORT RequestId: b4a2d2c8-273e-1b66-fd59-65aa3a381e77	Init Duration: 735.87 ms	Duration: 55.00 ms	Billed Duration: 100 ms	Memory Size: 256 MB	Max Memory Used: 71 MB	[0m
-
-null
+2020-08-25T07:47:47.070Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[country:create]  {
+    "payload": {
+        "arguments": "[AartsHandler:processPayloadAsync] Will Invoke country:create manager action"
+    },
+    "meta": {
+        "action": "create",
+        "item": "country",
+        "eventSource": "worker:input",
+        "ringToken": "1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858"
+    }
+}
+2020-08-25T07:47:47.070Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[AartsHandler:processPayloadAsync] Will Invoke country:create manager action"',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:create' },
+    action: { DataType: 'String', StringValue: 'create' },
+    item: { DataType: 'String', StringValue: 'country' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-08-25T07:47:47.071Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[country:create]  {
+    "payload": {
+        "arguments": "[country:CREATE] Begin CREATE. Doing a gate check of payload"
+    },
+    "meta": {
+        "action": "create",
+        "item": "country",
+        "eventSource": "worker:input",
+        "ringToken": "1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858"
+    }
+}
+2020-08-25T07:47:47.071Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[country:CREATE] Begin CREATE. Doing a gate check of payload"',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:create' },
+    action: { DataType: 'String', StringValue: 'create' },
+    item: { DataType: 'String', StringValue: 'country' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-08-25T07:47:47.071Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[country:create]  {
+    "payload": {
+        "arguments": "[country:baseValidateCreate] START. checking for mandatory item keys: {\n    \"arguments\": [\n        {\n            \"procedure\": \"test_data_generator|fc6f8627-d22d-4f85-8217-3afa9d46527c\",\n            \"name\": \"Bulgaria\",\n            \"currency\": \"BGN\",\n            \"code\": \"BG\"\n        }\n    ],\n    \"identity\": {\n        \"username\": \"akrsmv\"\n    },\n    \"ringToken\": \"1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858\"\n}"
+    },
+    "meta": {
+        "action": "create",
+        "item": "country",
+        "eventSource": "worker:input",
+        "ringToken": "1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858"
+    }
+}
+2020-08-25T07:47:47.072Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[country:baseValidateCreate] START. checking for mandatory item keys: {\\n    \\"arguments\\": [\\n        {\\n            \\"procedure\\": \\"test_data_generator|fc6f8627-d22d-4f85-8217-3afa9d46527c\\",\\n            \\"name\\": \\"Bulgaria\\",\\n            \\"currency\\": \\"BGN\\",\\n            \\"code\\": \\"BG\\"\\n        }\\n    ],\\n    \\"identity\\": {\\n        \\"username\\": \\"akrsmv\\"\\n    },\\n    \\"ringToken\\": \\"1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858\\"\\n}"',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:create' },
+    action: { DataType: 'String', StringValue: 'create' },
+    item: { DataType: 'String', StringValue: 'country' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-08-25T07:47:47.072Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	Using supplied ring token for item creation id:  1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858
+2020-08-25T07:47:47.072Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	itemToCreate:  {
+    "name": "Bulgaria",
+    "currency": "BGN",
+    "code": "BG",
+    "id": "country|1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858",
+    "meta": "v_0|country",
+    "item_type": "country",
+    "revisions": 0,
+    "date_created": "2020-08-25T07:47:47.072Z",
+    "date_updated": "2020-08-25T07:47:47.072Z",
+    "procedure": "test_data_generator|fc6f8627-d22d-4f85-8217-3afa9d46527c"
+}
+2020-08-25T07:47:47.072Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[country:create]  {
+    "payload": {
+        "arguments": "[country:CREATE] Item applicable for saving. END."
+    },
+    "meta": {
+        "action": "create",
+        "item": "country",
+        "eventSource": "worker:input",
+        "ringToken": "1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858"
+    }
+}
+2020-08-25T07:47:47.072Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[country:CREATE] Item applicable for saving. END."',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:create' },
+    action: { DataType: 'String', StringValue: 'create' },
+    item: { DataType: 'String', StringValue: 'country' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-08-25T07:47:47.073Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[country:create]  {
+    "payload": {
+        "arguments": "[country:SAVE] BEGIN"
+    },
+    "meta": {
+        "action": "create",
+        "item": "country",
+        "eventSource": "worker:input",
+        "ringToken": "1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858"
+    }
+}
+2020-08-25T07:47:47.073Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[country:SAVE] BEGIN"',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:create' },
+    action: { DataType: 'String', StringValue: 'create' },
+    item: { DataType: 'String', StringValue: 'country' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-08-25T07:47:47.073Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	[country:create]  {
+    "payload": {
+        "arguments": "[country:SAVE] Analyzing item refkeys, [\n    {\n        \"key\": \"name\",\n        \"unique\": true\n    }\n]"
+    },
+    "meta": {
+        "action": "create",
+        "item": "country",
+        "eventSource": "worker:input",
+        "ringToken": "1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858"
+    }
+}
+2020-08-25T07:47:47.073Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	--->MOCK SNS/MESSAGE START {
+  Message: '"[country:SAVE] Analyzing item refkeys, [\\n    {\\n        \\"key\\": \\"name\\",\\n        \\"unique\\": true\\n    }\\n]"',
+  MessageAttributes: {
+    eventSource: { DataType: 'String', StringValue: 'worker:output:create' },
+    action: { DataType: 'String', StringValue: 'create' },
+    item: { DataType: 'String', StringValue: 'country' },
+    ringToken: {
+      DataType: 'String',
+      StringValue: '1598341655415_449838.96741890785_8b00f899-e915-424c-a4ab-a6731f0c8858'
+    }
+  },
+  TopicArn: 'EventsBus45DE4339'
+} <---MOCK SNS/MESSAGE END
+2020-08-25T07:47:47.073Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	INFO	In transactPutItem. refkeys [
+    {
+        "key": "name",
+        "unique": true
+    }
+]
+2020-08-25T07:47:47.144Z	ff3d0c63-4c24-1dde-0959-602249cc6d2c	ERROR	Unhandled Promise Rejection 	{"errorType":"Runtime.UnhandledPromiseRejection","errorMessage":"Error: {\n    \"cancellationReasons\": [\n        {\n            \"Item\": {\n                \"meta\": {\n                    \"S\": \"Bulgaria\"\n                },\n                \"id\": {\n                    \"S\": \"uq|country}name\"\n                }\n            },\n            \"Code\": \"ConditionalCheckFailed\",\n            \"Message\": \"The conditional request failed\"\n        }\n    ],\n    \"err\": {\n        \"message\": \"Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed]\",\n        \"code\": \"TransactionCanceledException\",\n        \"time\": \"2020-08-25T07:47:47.140Z\",\n        \"requestId\": \"16b693fd-659f-4b8a-b671-536d620f93e8\",\n        \"statusCode\": 400,\n        \"retryable\": false,\n        \"retryDelay\": 6.623886567521664\n    }\n}","reason":{"errorType":"Error","errorMessage":"{\n    \"cancellationReasons\": [\n        {\n            \"Item\": {\n                \"meta\": {\n                    \"S\": \"Bulgaria\"\n                },\n                \"id\": {\n                    \"S\": \"uq|country}name\"\n                }\n            },\n            \"Code\": \"ConditionalCheckFailed\",\n            \"Message\": \"The conditional request failed\"\n        }\n    ],\n    \"err\": {\n        \"message\": \"Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed]\",\n        \"code\": \"TransactionCanceledException\",\n        \"time\": \"2020-08-25T07:47:47.140Z\",\n        \"requestId\": \"16b693fd-659f-4b8a-b671-536d620f93e8\",\n        \"statusCode\": 400,\n        \"retryable\": false,\n        \"retryDelay\": 6.623886567521664\n    }\n}","stack":["Error: {","    \"cancellationReasons\": [","        {","            \"Item\": {","                \"meta\": {","                    \"S\": \"Bulgaria\"","                },","                \"id\": {","                    \"S\": \"uq|country}name\"","                }","            },","            \"Code\": \"ConditionalCheckFailed\",","            \"Message\": \"The conditional request failed\"","        }","    ],","    \"err\": {","        \"message\": \"Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed]\",","        \"code\": \"TransactionCanceledException\",","        \"time\": \"2020-08-25T07:47:47.140Z\",","        \"requestId\": \"16b693fd-659f-4b8a-b671-536d620f93e8\",","        \"statusCode\": 400,","        \"retryable\": false,","        \"retryDelay\": 6.623886567521664","    }","}","    at Object.exports.ddbRequest (/opt/nodejs/node_modules/aarts-dynamodb/DynamoDbClient.js:72:15)","    at processTicksAndRejections (internal/process/task_queues.js:97:5)"]},"promise":{},"stack":["Runtime.UnhandledPromiseRejection: Error: {","    \"cancellationReasons\": [","        {","            \"Item\": {","                \"meta\": {","                    \"S\": \"Bulgaria\"","                },","                \"id\": {","                    \"S\": \"uq|country}name\"","                }","            },","            \"Code\": \"ConditionalCheckFailed\",","            \"Message\": \"The conditional request failed\"","        }","    ],","    \"err\": {","        \"message\": \"Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed]\",","        \"code\": \"TransactionCanceledException\",","        \"time\": \"2020-08-25T07:47:47.140Z\",","        \"requestId\": \"16b693fd-659f-4b8a-b671-536d620f93e8\",","        \"statusCode\": 400,","        \"retryable\": false,","        \"retryDelay\": 6.623886567521664","    }","}","    at process.<anonymous> (/var/runtime/index.js:35:15)","    at process.emit (events.js:315:20)","    at process.EventEmitter.emit (domain.js:482:12)","    at processPromiseRejections (internal/process/promises.js:209:33)","    at processTicksAndRejections (internal/process/task_queues.js:98:32)"]}
+Function 'airtoursappsyncHandlerWorker3259AE92' timed out after 30 seconds

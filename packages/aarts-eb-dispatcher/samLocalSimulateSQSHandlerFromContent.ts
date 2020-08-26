@@ -7,7 +7,7 @@
  */
 import { prepareForDispatch } from './prepareForDispatch';
 
-export const samLocalSimulateSQSHandler = async (testEvent: string, ringToken: string) : Promise<string> => new Promise((resolve, reject) => {
+export const samLocalSimulateSQSHandlerFromContent = async (testEvent: string, ringToken: string) : Promise<string> => new Promise((resolve, reject) => {
 
   // note this script works with relative paths, according to the aarts context in which its called. corresponding folders should exeist
   const simulatedPayload = prepareForDispatch(JSON.parse(testEvent), ringToken)

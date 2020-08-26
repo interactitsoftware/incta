@@ -27,38 +27,7 @@ export class AppSyncConstruct extends cdk.Construct {
 
         this.graphQLApi = new appsync.GraphQLApi(this, 'AppSync', {
             name: `${props.clientAppName}AppSync`,
-            schemaDefinition: `
-
- schema {
-     query: Query
-     mutation: Mutation
-     subscription: Subscription
- }
-
- type Mutation {
-    start(item: String!, payload: AWSJSON): AWSJSON
-    create(item: String!, payload: AWSJSON): AWSJSON
-    update(item: String!, payload: AWSJSON): AWSJSON
-    delete(item: String!, payload: AWSJSON): AWSJSON
-    notify(to: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
- }
-
- type Query {
-    get(item: String!, payload: AWSJSON): AWSJSON 
-    list(item: String!, payload: AWSJSON): AWSJSON
- }
-
- type Subscription {
-    inbox(to: String!): Notification @aws_subscribe(mutations: ["notify"])
- }
-
- type Notification @aws_iam @aws_cognito_user_pools{
-	from: String!
-	to: String!
-	body: String!
-	sentAt: String!
-}
-`,
+            schemaDefinition: appsync.SchemaDefinition.CODE,
 
             authorizationConfig: {
                 defaultAuthorization: {
@@ -78,6 +47,39 @@ export class AppSyncConstruct extends cdk.Construct {
                 ]
             }
         });
+
+        this.graphQLApi.schema.definition = `
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
+
+type Mutation {
+    start(item: String!, payload: AWSJSON): AWSJSON
+    create(item: String!, payload: AWSJSON): AWSJSON
+    update(item: String!, payload: AWSJSON): AWSJSON
+    delete(item: String!, payload: AWSJSON): AWSJSON
+    notify(to: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
+}
+
+type Query {
+    get(item: String!, payload: AWSJSON): AWSJSON 
+    list(item: String!, payload: AWSJSON): AWSJSON
+}
+
+type Subscription {
+    inbox(to: String!): Notification @aws_subscribe(mutations: ["notify"])
+}
+
+type Notification @aws_iam @aws_cognito_user_pools{
+    from: String!
+    to: String!
+    body: String!
+    sentAt: String!
+}
+`
         // // below code:
         // ((this.graphQLApi.node.defaultChild as CfnGraphQLApi).additionalAuthenticationProviders as Array<CfnGraphQLApi.AdditionalAuthenticationProviderProperty>).push({
         //     authenticationType: 'AWS_IAM',

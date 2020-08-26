@@ -11,10 +11,11 @@ import { AnyConstructor } from "aarts-types/Mixin"
 import {
     AirplaneItem, CountryItem, CityItem, PilotItem, AirportItem,
     AirplaneManifacturerItem, AirplaneModelItem, FlightItem,
-    TouristItem, DataImportProcedure, TestDataGeneratorItem, EraseDataItem
+    TouristItem, DataImportProcedure, MultipleLambdaTestDataGeneratorItem, SingleLambdaTestDataGeneratorItem, EraseDataItem
 } from "./_DynamoItems"
 import { EraseDataManager } from "./procedures/EraseData"
-import { TestDataGeneratorManager } from "./procedures/TestDataGenerator"
+import { SingleLambdaTestDataGeneratorManager } from "./procedures/TODO_SingleLambdaTestDataGenerator"
+import { MultipleLambdaTestDataGeneratorManager } from "./procedures/TODO_MultipleLambdaTestDataGenerator"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -27,7 +28,8 @@ allItems.set(TouristItem.__type, TouristItem)
 allItems.set(CityItem.__type, CityItem)
 allItems.set(PilotItem.__type, PilotItem)
 allItems.set(DataImportProcedure.__type, DataImportProcedure)
-allItems.set(TestDataGeneratorItem.__type, TestDataGeneratorItem)
+allItems.set(SingleLambdaTestDataGeneratorItem.__type, SingleLambdaTestDataGeneratorItem)
+allItems.set(MultipleLambdaTestDataGeneratorItem.__type, MultipleLambdaTestDataGeneratorItem)
 allItems.set(EraseDataItem.__type, EraseDataItem)
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
@@ -47,7 +49,8 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
         [PilotItem.__type]: new BaseDynamoItemManager(allItems),
 
         // procedures
-        [TestDataGeneratorItem.__type]: new TestDataGeneratorManager(allItems),
+        [SingleLambdaTestDataGeneratorItem.__type]: new SingleLambdaTestDataGeneratorManager(allItems),
+        [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
         [EraseDataItem.__type]: new EraseDataManager(allItems)
     }
 }

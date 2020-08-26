@@ -1,6 +1,15 @@
+/**
+ * 
+ * make this lambda only creating items from within itself / no other events for create fired
+ * 
+ * REMOVE THE CONCEPT OF PROCEDURE, and INSTEAD ADD POSSIBILITY FOR PASSING CORRELATION TOKEN TO SNS DISPATCHER 
+ * I.E NOT ALWAYS THE DISPATCHER TO CREATE A NEW CORRELATION TOKEN, BUT ONLY IF ITS NOT PRESENT
+ * DISABLE SAVING OF PROCEDURES
+ */
+
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { TestDataGeneratorItem, AirportItem, CountryItem } from "../_DynamoItems"
+import { SingleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
@@ -8,7 +17,7 @@ import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import * as idGenUtil from 'aarts-types/utils'
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 
-export class TestDataGenerator {
+export class SingleLambdaTestDataGenerator {
 
     public total_events: number = 0
     public succsess?: number
@@ -176,7 +185,7 @@ export class TestDataGenerator {
     }
 
     /**
-     * Not calling another lambda, but directly triggering the domain logic (we access to it already!)
+     * Not calling another lambda, but directly triggering the domain logic (we have access to it already!)
      * @param name 
      * @param currency 
      * @param code 
@@ -207,7 +216,7 @@ export class TestDataGenerator {
      * Asynchronously creating a country - passing through dispatcher lambda (because we are publishing to SNS here), TODO should we do this at all ?
      * Why not again calling a (same?) domain handler (still, there are the options of calling synchronously or asynchronously on the service object level!)
      * Left like this for example and reference
-     * NOTE that each airport will be now created in the context of a new ring token. There is still the procedure id though, by which we can reference
+     * NOTE that each item created from here will be now created in the context of a new ring token. There is still the procedure id though, by which we can reference
      * @param name name of airport
      * @param country id of country the airport is located
      * @param airport_size square kilometers of the airport
@@ -280,12 +289,12 @@ export class TestDataGenerator {
     }
 }
 
-export class TestDataGeneratorManager extends BaseDynamoItemManager<TestDataGeneratorItem> {
+export class SingleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<SingleLambdaTestDataGeneratorItem> {
 
-    async *validateStart(proc: TestDataGeneratorItem, identity: IIdentity): AsyncGenerator<string, TestDataGeneratorItem, undefined> {
+    async *validateStart(proc: SingleLambdaTestDataGeneratorItem, identity: IIdentity): AsyncGenerator<string, SingleLambdaTestDataGeneratorItem, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
-        return proc // do nothing for now
+        return proc
     }
 
 }
