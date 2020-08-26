@@ -1,9 +1,8 @@
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { TestDataGeneratorItem, EraseDataItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
-import { Context } from "aws-lambda";
+import { EraseDataItem } from "../_DynamoItems";
 
 export class EraseData {
 

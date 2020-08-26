@@ -147,5 +147,5 @@ export const seedAirtoursData = async () : Promise<number> => {
       await transactPutItem(new _specs_TouristItem({ flight: flight_pt_sf.id, airplane: plane_mc21_reg111.id, from_airport: ru_airport_pt.id, to_airport: bg_airport_sf.id, from_country: ru_country.id, to_country: bg_country.id }))
     }
 
-    return 469; // (test) count nr of items inserted
+    return 439; // (test) count nr of items inserted
   }

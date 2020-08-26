@@ -14,8 +14,8 @@ import {
     TouristItem, DataImportProcedure, MultipleLambdaTestDataGeneratorItem, SingleLambdaTestDataGeneratorItem, EraseDataItem
 } from "./_DynamoItems"
 import { EraseDataManager } from "./procedures/EraseData"
-import { SingleLambdaTestDataGeneratorManager } from "./procedures/TODO_SingleLambdaTestDataGenerator"
-import { MultipleLambdaTestDataGeneratorManager } from "./procedures/TODO_MultipleLambdaTestDataGenerator"
+import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
+import { MultipleLambdaTestDataGeneratorManager } from "./procedures/MultipleLambdaTestDataGenerator"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -45,9 +45,9 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
         [DataImportProcedure.__type]: new BaseDynamoItemManager(allItems),
 
         //defined here
+        //items
         [CityItem.__type]: new BaseDynamoItemManager(allItems),
         [PilotItem.__type]: new BaseDynamoItemManager(allItems),
-
         // procedures
         [SingleLambdaTestDataGeneratorItem.__type]: new SingleLambdaTestDataGeneratorManager(allItems),
         [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),

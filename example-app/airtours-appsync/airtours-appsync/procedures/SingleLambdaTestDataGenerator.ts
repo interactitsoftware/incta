@@ -57,8 +57,8 @@ export class SingleLambdaTestDataGenerator {
 
         // 5 airplanes - by 2 different manifacturers, of 3 different models
         // the manifacturers
-        const boeing = await this.createItem(args.ringToken as string, domainHandler,_specs_AirplaneManifacturerItem.__type, { name: "Boeing", country: us_country.id })
-        const irkut = await this.createItem(args.ringToken as string, domainHandler,_specs_AirplaneManifacturerItem.__type, { name: "Irkut", country: ru_country.id })
+        const boeing = await this.createItem(args.ringToken as string, domainHandler, _specs_AirplaneManifacturerItem.__type, { name: "Boeing", country: us_country.id })
+        const irkut = await this.createItem(args.ringToken as string, domainHandler, _specs_AirplaneManifacturerItem.__type, { name: "Irkut", country: ru_country.id })
         // the models
         const model_787 = await this.createItem(args.ringToken as string, domainHandler, _specs_AirplaneModelItem.__type, { name: "Boeing 787", country: us_country.id, manifacturer: boeing.id })
         const model_mc21 = await this.createItem(args.ringToken as string, domainHandler, _specs_AirplaneModelItem.__type, { name: "MC-21", country: ru_country.id, manifacturer: irkut.id })
@@ -101,85 +101,87 @@ export class SingleLambdaTestDataGenerator {
         // // many tourists
         // //flight_sf_mw
         for (let i = 0; i < 2; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_sf_mw.id, airplane: plane_mc21_reg111.id, from_airport: bg_airport_sf.id, to_airport: ru_airport_mw.id, from_country: bg_country.id, to_country: ru_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_sf_mw.id, airplane: plane_mc21_reg111.id, from_airport: bg_airport_sf.id, to_airport: ru_airport_mw.id, from_country: bg_country.id, to_country: ru_country.id })
         }
         //flight_sf_bj
         for (let i = 0; i < 30; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_sf_bj.id, airplane: plane_tu144_reg333.id, from_airport: bg_airport_sf.id, to_airport: ch_airport_bj.id, from_country: bg_country.id, to_country: ch_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_sf_bj.id, airplane: plane_tu144_reg333.id, from_airport: bg_airport_sf.id, to_airport: ch_airport_bj.id, from_country: bg_country.id, to_country: ch_country.id })
         }
         //flight_sf_mw1
         for (let i = 0; i < 40; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_sf_mw1.id, airplane: plane_tu144_reg222.id, from_airport: bg_airport_sf.id, to_airport: ru_airport_mw.id, from_country: bg_country.id, to_country: ru_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_sf_mw1.id, airplane: plane_tu144_reg222.id, from_airport: bg_airport_sf.id, to_airport: ru_airport_mw.id, from_country: bg_country.id, to_country: ru_country.id })
         }
         //flight_bj_mw
         for (let i = 0; i < 50; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_bj_mw.id, airplane: plane_mc21_reg111.id, from_airport: ch_airport_bj.id, to_airport: ru_airport_mw.id, from_country: ch_country.id, to_country: ru_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_bj_mw.id, airplane: plane_mc21_reg111.id, from_airport: ch_airport_bj.id, to_airport: ru_airport_mw.id, from_country: ch_country.id, to_country: ru_country.id })
         }
         //flight_bj_ke
         for (let i = 0; i < 10; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_bj_ke.id, airplane: plane_tu144_reg333.id, from_airport: ch_airport_bj.id, to_airport: us_airport_ke.id, from_country: ch_country.id, to_country: us_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_bj_ke.id, airplane: plane_tu144_reg333.id, from_airport: ch_airport_bj.id, to_airport: us_airport_ke.id, from_country: ch_country.id, to_country: us_country.id })
         }
         //flight_bj_ke1
         for (let i = 0; i < 15; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_bj_ke1.id, airplane: plane_b787_reg444.id, from_airport: ch_airport_bj.id, to_airport: us_airport_ke.id, from_country: ch_country.id, to_country: us_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_bj_ke1.id, airplane: plane_b787_reg444.id, from_airport: ch_airport_bj.id, to_airport: us_airport_ke.id, from_country: ch_country.id, to_country: us_country.id })
         }
         //flight_bj_sy
         for (let i = 0; i < 20; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_bj_sy.id, airplane: plane_b787_reg444.id, from_airport: ch_airport_bj.id, to_airport: au_airport_sy.id, from_country: ch_country.id, to_country: au_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_bj_sy.id, airplane: plane_b787_reg444.id, from_airport: ch_airport_bj.id, to_airport: au_airport_sy.id, from_country: ch_country.id, to_country: au_country.id })
         }
         //flight_mw_ke
         for (let i = 0; i < 40; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_mw_ke.id, airplane: plane_mc21_reg111.id, from_airport: ru_airport_mw.id, to_airport: us_airport_ke.id, from_country: ru_country.id, to_country: us_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_mw_ke.id, airplane: plane_mc21_reg111.id, from_airport: ru_airport_mw.id, to_airport: us_airport_ke.id, from_country: ru_country.id, to_country: us_country.id })
         }
         //flight_mw_sf
         for (let i = 0; i < 30; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_mw_sf.id, airplane: plane_tu144_reg222.id, from_airport: ru_airport_mw.id, to_airport: bg_airport_sf.id, from_country: ru_country.id, to_country: bg_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_mw_sf.id, airplane: plane_tu144_reg222.id, from_airport: ru_airport_mw.id, to_airport: bg_airport_sf.id, from_country: ru_country.id, to_country: bg_country.id })
         }
         //flight_mw_pt
         for (let i = 0; i < 20; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_mw_pt.id, airplane: plane_b787_reg555.id, from_airport: ru_airport_mw.id, to_airport: ru_airport_pt.id, from_country: ru_country.id, to_country: ru_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_mw_pt.id, airplane: plane_b787_reg555.id, from_airport: ru_airport_mw.id, to_airport: ru_airport_pt.id, from_country: ru_country.id, to_country: ru_country.id })
         }
         //flight_sy_bj
         for (let i = 0; i < 1; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_sy_bj.id, airplane: plane_b787_reg444.id, from_airport: au_airport_sy.id, to_airport: ch_airport_bj.id, from_country: au_country.id, to_country: ch_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_sy_bj.id, airplane: plane_b787_reg444.id, from_airport: au_airport_sy.id, to_airport: ch_airport_bj.id, from_country: au_country.id, to_country: ch_country.id })
         }
         //flight_sy_ln
         for (let i = 0; i < 5; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_sy_ln.id, airplane: plane_mc21_reg111.id, from_airport: au_airport_sy.id, to_airport: uk_airport_ln.id, from_country: au_country.id, to_country: uk_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_sy_ln.id, airplane: plane_mc21_reg111.id, from_airport: au_airport_sy.id, to_airport: uk_airport_ln.id, from_country: au_country.id, to_country: uk_country.id })
         }
         //flight_sy_ke
         for (let i = 0; i < 9; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_sy_ke.id, airplane: plane_tu144_reg333.id, from_airport: au_airport_sy.id, to_airport: us_airport_ke.id, from_country: au_country.id, to_country: us_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_sy_ke.id, airplane: plane_tu144_reg333.id, from_airport: au_airport_sy.id, to_airport: us_airport_ke.id, from_country: au_country.id, to_country: us_country.id })
         }
         //flight_sr_sf
         for (let i = 0; i < 4; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_sr_sf.id, airplane: plane_mc21_reg111.id, from_airport: sr_airport_bg.id, to_airport: bg_airport_sf.id, from_country: sr_country.id, to_country: bg_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_sr_sf.id, airplane: plane_mc21_reg111.id, from_airport: sr_airport_bg.id, to_airport: bg_airport_sf.id, from_country: sr_country.id, to_country: bg_country.id })
         }
         //flight_sr_ke
         for (let i = 0; i < 7; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_sr_ke.id, airplane: plane_tu144_reg333.id, from_airport: sr_airport_bg.id, to_airport: us_airport_ke.id, from_country: sr_country.id, to_country: us_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_sr_ke.id, airplane: plane_tu144_reg333.id, from_airport: sr_airport_bg.id, to_airport: us_airport_ke.id, from_country: sr_country.id, to_country: us_country.id })
         }
         //flight_ke_sf
         for (let i = 0; i < 11; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_ke_sf.id, airplane: plane_tu144_reg222.id, from_airport: us_airport_ke.id, to_airport: bg_airport_sf.id, from_country: us_country.id, to_country: bg_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_ke_sf.id, airplane: plane_tu144_reg222.id, from_airport: us_airport_ke.id, to_airport: bg_airport_sf.id, from_country: us_country.id, to_country: bg_country.id })
         }
         //flight_ke_mw
         for (let i = 0; i < 66; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_ke_mw.id, airplane: plane_tu144_reg222.id, from_airport: us_airport_ke.id, to_airport: ru_airport_mw.id, from_country: us_country.id, to_country: ru_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_ke_mw.id, airplane: plane_tu144_reg222.id, from_airport: us_airport_ke.id, to_airport: ru_airport_mw.id, from_country: us_country.id, to_country: ru_country.id })
         }
         //flight_ke_mw1
         for (let i = 0; i < 2; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_ke_mw1.id, airplane: plane_mc21_reg111.id, from_airport: us_airport_ke.id, to_airport: ru_airport_mw.id, from_country: us_country.id, to_country: ru_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_ke_mw1.id, airplane: plane_mc21_reg111.id, from_airport: us_airport_ke.id, to_airport: ru_airport_mw.id, from_country: us_country.id, to_country: ru_country.id })
         }
 
         //flight_pt_mw
         for (let i = 0; i < 10; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_pt_mw.id, airplane: plane_tu144_reg333.id, from_airport: ru_airport_pt.id, to_airport: ru_airport_mw.id, from_country: ru_country.id, to_country: ru_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_pt_mw.id, airplane: plane_tu144_reg333.id, from_airport: ru_airport_pt.id, to_airport: ru_airport_mw.id, from_country: ru_country.id, to_country: ru_country.id })
         }
         //flight_pt_sf
         for (let i = 0; i < 20; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, { flight: flight_pt_sf.id, airplane: plane_mc21_reg111.id, from_airport: ru_airport_pt.id, to_airport: bg_airport_sf.id, from_country: ru_country.id, to_country: bg_country.id })
+            await this.createItem(args.ringToken as string, domainHandler, _specs_TouristItem.__type, { flight: flight_pt_sf.id, airplane: plane_mc21_reg111.id, from_airport: ru_airport_pt.id, to_airport: bg_airport_sf.id, from_country: ru_country.id, to_country: bg_country.id })
         }
+        
+        //439 count nr of items inserted
 
         return this;
     }

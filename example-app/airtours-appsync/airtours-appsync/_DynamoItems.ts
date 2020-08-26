@@ -1,6 +1,5 @@
 import { DynamoItem } from "aarts-dynamodb/BaseItemManager";
 
-
 import {
     _specs_AirplaneItem as AirplaneItem,
     _specs_AirplaneManifacturerItem as AirplaneManifacturerItem,
@@ -26,9 +25,9 @@ export {
 // define two domain objects purely from this example app (demonstrate the whole steps needed)
 import { City } from "./items/City";  // the plain js objects (domain items)
 import { Pilot } from "./items/Pilot";
-import { SingleLambdaTestDataGenerator } from "./procedures/TODO_SingleLambdaTestDataGenerator";
+import { SingleLambdaTestDataGenerator } from "./procedures/SingleLambdaTestDataGenerator";
 import { EraseData } from "./procedures/EraseData";
-import { MultipleLambdaTestDataGenerator } from "./procedures/TODO_MultipleLambdaTestDataGenerator";
+import { MultipleLambdaTestDataGenerator } from "./procedures/MultipleLambdaTestDataGenerator";
 
 export class CityItem extends DynamoItem(City, "city", [ // the dynamodb wrapper object that we deal with
     {key:"name"},

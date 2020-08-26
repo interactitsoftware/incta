@@ -206,7 +206,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             // procedures should be started without a specific PK (calling dispatcher, not passing id/meta)
             // which will always result in a new item being recorded - essentially a log of all procedure invocations
             // turning it off for now, as this is not fully tested / designed
-           
+            // as to the procedureResult - whatever needs to be saved it should be done inside the start method of the item (i.e in the procedure itself)
+
             // const asyncGenSave = this.save(__type, Object.assign({}, args, { arguments: [procedureResult] }))
             // let processorSave = await asyncGenSave.next()
             // do {
