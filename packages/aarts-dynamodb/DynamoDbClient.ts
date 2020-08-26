@@ -94,6 +94,10 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
     ): Promise<TransactWriteItemsOutput> => {
         let cancellationReasons:{Item:any, Code:string, Message:string}[] = []
 
+        request.on('error', (response) => {
+            console.error(`Error calling dynamo: ${ppjson(response)}`);
+        });
+        
         request.on('extractError', (response) => {
             try {
                 cancellationReasons = JSON.parse(response.httpResponse.body.toString()).CancellationReasons;
