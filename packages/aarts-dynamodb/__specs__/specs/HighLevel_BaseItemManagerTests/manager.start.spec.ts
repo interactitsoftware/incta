@@ -20,8 +20,17 @@ describe('manager.start.spec', () => {
       for await (let dataImporterResult of await domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
         _specs_DataImporterItem.__type,
         {
-          arguments: domainItem,
-          identity: "akrsmv"
+          payload:{
+            arguments: domainItem,
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
+          
         }
       )){}
     }
@@ -37,8 +46,17 @@ describe('manager.start.spec', () => {
       for await (let dataImporterResult of await domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
         _specs_DataImporterItem.__type,
         {
-          arguments: [domainItem, domainItem],
-          identity: "akrsmv"
+          payload: {
+            arguments: [domainItem, domainItem],
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
+          
         }
       )){}
     }
@@ -52,8 +70,17 @@ describe('manager.start.spec', () => {
     const createGenerator = domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
       _specs_DataImporterItem.__type,
       {
-        arguments: [domainItem],
+        payload: {
+          arguments: [domainItem],
         identity: "akrsmv"
+        },
+        meta: {
+          item: "notneededfortest",
+          action: "query",
+          eventSource: "notneededfortest",
+          ringToken: "notneededfortest"
+        }
+        
       }
     )
     let processorCreate = await createGenerator.next()

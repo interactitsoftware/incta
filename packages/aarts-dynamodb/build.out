@@ -1,0 +1,583 @@
+
+> aarts-dynamodb@0.4.85 build C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-dynamodb
+> tsc && cp package.json README.md test-model.svg ./dist
+
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts(92,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts(99,33): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts(126,51): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts(133,45): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts(133,74): error TS2339: Property 'revisions' does not exist on type '_specs_Airport'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts(14,23): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts(15,22): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts(21,46): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts(22,45): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_AirportItem>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(16,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(22,32): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(23,34): error TS2339: Property 'meta' does not exist on type '_specs_Airplane'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(24,39): error TS2339: Property 'revisions' does not exist on type '_specs_Airplane'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(51,81): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(61,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(70,32): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(71,34): error TS2339: Property 'meta' does not exist on type '_specs_Airplane'.
+__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts(72,39): error TS2339: Property 'revisions' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/create.unique.number.refkey.spec.ts(16,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/create.unique.number.refkey.spec.ts(22,70): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/create.unique.number.refkey.spec.ts(24,70): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/create.unique.number.refkey.spec.ts(33,41): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/create.unique.string.refkey.spec.ts(19,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/create.unique.string.refkey.spec.ts(25,70): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/create.unique.string.refkey.spec.ts(27,70): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/create.unique.string.refkey.spec.ts(36,41): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/delete.spec.ts(17,27): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/delete.spec.ts(23,51): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(24,27): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(25,27): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(26,27): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(27,27): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(28,27): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(39,90): error TS2339: Property 'number_of_seats' does not exist on type 'DynamoItem<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(40,90): error TS2339: Property 'number_of_seats' does not exist on type 'DynamoItem<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(41,89): error TS2339: Property 'airport_size' does not exist on type 'DynamoItem<object>'.
+__specs__/specs/LowLevel_transactXYZTests/get.spec.ts(42,89): error TS2339: Property 'airport_size' does not exist on type 'DynamoItem<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(17,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(19,32): error TS2345: Argument of type '_specs_Airplane' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_Airplane' is missing the following properties from type 'DynamoItem<AnyConstructor<object>>.DynamoItem': id, meta, item_type, revisions, and 2 more.
+__specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(20,26): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(21,28): error TS2339: Property 'meta' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(22,33): error TS2339: Property 'revisions' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(31,83): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.remove.refkey.spec.ts(17,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.remove.refkey.spec.ts(19,47): error TS2345: Argument of type '_specs_Airplane' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_Airplane' is not assignable to type 'DynamoItem<AnyConstructor<object>>.DynamoItem'.
+__specs__/specs/LowLevel_transactXYZTests/update.remove.refkey.spec.ts(20,26): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.remove.refkey.spec.ts(21,28): error TS2339: Property 'meta' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.remove.refkey.spec.ts(22,33): error TS2339: Property 'revisions' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(18,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(20,51): error TS2345: Argument of type '_specs_Flight' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_Flight' is missing the following properties from type 'DynamoItem<AnyConstructor<object>>.DynamoItem': id, meta, item_type, revisions, and 2 more.
+__specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(21,26): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(22,28): error TS2339: Property 'meta' does not exist on type '_specs_Flight'.
+__specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(23,33): error TS2339: Property 'revisions' does not exist on type '_specs_Flight'.
+__specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(32,81): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_FlightItem>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(17,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(19,32): error TS2345: Argument of type '_specs_Airplane' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_Airplane' is not assignable to type 'DynamoItem<AnyConstructor<object>>.DynamoItem'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(20,26): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(21,28): error TS2339: Property 'meta' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(22,33): error TS2339: Property 'revisions' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(27,58): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(30,72): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(32,72): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(41,27): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(45,27): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts(47,38): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(17,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(19,32): error TS2345: Argument of type '_specs_Airplane' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_Airplane' is not assignable to type 'DynamoItem<AnyConstructor<object>>.DynamoItem'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(20,26): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(21,28): error TS2339: Property 'meta' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(22,33): error TS2339: Property 'revisions' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(28,58): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(31,72): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(33,72): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneItem>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(42,27): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(46,27): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts(48,44): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/itemManagersMap.ts(19,49): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testmodel/itemManagersMap.ts(29,47): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testmodel/testDataSeeder.ts(6,46): error TS2345: Argument of type '_specs_CountryItem' is not assignable to parameter of type 'DynamoItem<_specs_Country>'.
+  Type '_specs_CountryItem' is not assignable to type 'AnyConstructor<object>'.
+    Type '_specs_CountryItem' provides no match for the signature 'new (...input: any[]): object'.
+__specs__/testmodel/testDataSeeder.ts(7,46): error TS2345: Argument of type '_specs_CountryItem' is not assignable to parameter of type 'DynamoItem<_specs_Country>'.
+  Type '_specs_CountryItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(8,46): error TS2345: Argument of type '_specs_CountryItem' is not assignable to parameter of type 'DynamoItem<_specs_Country>'.
+  Type '_specs_CountryItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(9,46): error TS2345: Argument of type '_specs_CountryItem' is not assignable to parameter of type 'DynamoItem<_specs_Country>'.
+  Type '_specs_CountryItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(10,46): error TS2345: Argument of type '_specs_CountryItem' is not assignable to parameter of type 'DynamoItem<_specs_Country>'.
+  Type '_specs_CountryItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(11,46): error TS2345: Argument of type '_specs_CountryItem' is not assignable to parameter of type 'DynamoItem<_specs_Country>'.
+  Type '_specs_CountryItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(12,46): error TS2345: Argument of type '_specs_CountryItem' is not assignable to parameter of type 'DynamoItem<_specs_Country>'.
+  Type '_specs_CountryItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(14,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+    Type '_specs_AirportItem' provides no match for the signature 'new (...input: any[]): object'.
+__specs__/testmodel/testDataSeeder.ts(14,109): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(15,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(15,111): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(16,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(16,112): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(17,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(17,111): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(18,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(18,110): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(19,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(19,110): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(20,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(20,110): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(21,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(21,110): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(22,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(22,118): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(23,49): error TS2345: Argument of type '_specs_AirportItem' is not assignable to parameter of type 'DynamoItem<_specs_Airport>'.
+  Type '_specs_AirportItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(23,112): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(26,42): error TS2345: Argument of type '_specs_AirplaneManifacturerItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneManifacturer>'.
+  Type '_specs_AirplaneManifacturerItem' is not assignable to type 'AnyConstructor<object>'.
+    Type '_specs_AirplaneManifacturerItem' provides no match for the signature 'new (...input: any[]): object'.
+__specs__/testmodel/testDataSeeder.ts(26,116): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(27,41): error TS2345: Argument of type '_specs_AirplaneManifacturerItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneManifacturer>'.
+  Type '_specs_AirplaneManifacturerItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(27,114): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(29,45): error TS2345: Argument of type '_specs_AirplaneModelItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneModel>'.
+  Type '_specs_AirplaneModelItem' is not assignable to type 'AnyConstructor<object>'.
+    Type '_specs_AirplaneModelItem' provides no match for the signature 'new (...input: any[]): object'.
+__specs__/testmodel/testDataSeeder.ts(29,116): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(29,141): error TS2339: Property 'id' does not exist on type '_specs_AirplaneManifacturer'.
+__specs__/testmodel/testDataSeeder.ts(30,46): error TS2345: Argument of type '_specs_AirplaneModelItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneModel>'.
+  Type '_specs_AirplaneModelItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(30,112): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(30,136): error TS2339: Property 'id' does not exist on type '_specs_AirplaneManifacturer'.
+__specs__/testmodel/testDataSeeder.ts(31,47): error TS2345: Argument of type '_specs_AirplaneModelItem' is not assignable to parameter of type 'DynamoItem<_specs_AirplaneModel>'.
+  Type '_specs_AirplaneModelItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(31,114): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(31,138): error TS2339: Property 'id' does not exist on type '_specs_AirplaneManifacturer'.
+__specs__/testmodel/testDataSeeder.ts(33,53): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+    Type '_specs_AirplaneItem' provides no match for the signature 'new (...input: any[]): object'.
+__specs__/testmodel/testDataSeeder.ts(33,162): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(33,186): error TS2339: Property 'id' does not exist on type '_specs_AirplaneManifacturer'.
+__specs__/testmodel/testDataSeeder.ts(33,208): error TS2339: Property 'id' does not exist on type '_specs_AirplaneModel'.
+__specs__/testmodel/testDataSeeder.ts(34,54): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(34,163): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(34,187): error TS2339: Property 'id' does not exist on type '_specs_AirplaneManifacturer'.
+__specs__/testmodel/testDataSeeder.ts(34,210): error TS2339: Property 'id' does not exist on type '_specs_AirplaneModel'.
+__specs__/testmodel/testDataSeeder.ts(35,54): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(35,163): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(35,187): error TS2339: Property 'id' does not exist on type '_specs_AirplaneManifacturer'.
+__specs__/testmodel/testDataSeeder.ts(35,210): error TS2339: Property 'id' does not exist on type '_specs_AirplaneModel'.
+__specs__/testmodel/testDataSeeder.ts(36,53): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(36,162): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(36,187): error TS2339: Property 'id' does not exist on type '_specs_AirplaneManifacturer'.
+__specs__/testmodel/testDataSeeder.ts(36,208): error TS2339: Property 'id' does not exist on type '_specs_AirplaneModel'.
+__specs__/testmodel/testDataSeeder.ts(37,53): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
+  Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(37,163): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(37,188): error TS2339: Property 'id' does not exist on type '_specs_AirplaneManifacturer'.
+__specs__/testmodel/testDataSeeder.ts(37,209): error TS2339: Property 'id' does not exist on type '_specs_AirplaneModel'.
+__specs__/testmodel/testDataSeeder.ts(40,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+    Type '_specs_FlightItem' provides no match for the signature 'new (...input: any[]): object'.
+__specs__/testmodel/testDataSeeder.ts(40,166): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(40,198): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(40,228): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(40,257): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(40,284): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(41,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(41,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(41,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(41,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(41,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(41,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(42,49): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(42,168): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(42,200): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(42,230): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(42,259): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(42,286): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(44,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(44,166): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(44,198): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(44,228): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(44,257): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(44,284): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(45,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(45,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(45,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(45,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(45,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(45,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(46,49): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(46,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(46,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(46,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(46,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(46,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(47,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(47,166): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(47,198): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(47,228): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(47,257): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(47,284): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(49,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(49,166): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(49,198): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(49,228): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(49,257): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(49,284): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(50,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(50,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(50,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(50,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(50,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(50,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(51,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(51,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(51,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(51,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(51,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(51,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(53,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(53,166): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(53,198): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(53,228): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(53,257): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(53,284): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(54,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(54,166): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(54,198): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(54,228): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(54,257): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(54,284): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(55,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(55,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(55,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(55,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(55,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(55,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(57,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(57,166): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(57,198): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(57,228): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(57,257): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(57,284): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(58,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(58,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(58,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(58,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(58,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(58,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(60,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(60,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(60,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(60,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(60,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(60,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(61,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(61,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(61,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(61,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(61,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(61,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(62,49): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(62,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(62,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(62,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(62,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(62,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(64,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(64,167): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(64,199): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(64,229): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(64,258): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(64,285): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(65,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
+  Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(65,166): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(65,198): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(65,228): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(65,257): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(65,284): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(70,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+    Type '_specs_TouristItem' provides no match for the signature 'new (...input: any[]): object'.
+__specs__/testmodel/testDataSeeder.ts(70,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(70,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(70,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(70,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(70,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(70,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(74,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(74,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(74,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(74,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(74,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(74,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(74,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(78,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(78,76): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(78,109): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(78,141): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(78,171): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(78,200): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(78,227): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(82,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(82,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(82,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(82,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(82,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(82,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(82,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(86,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(86,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(86,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(86,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(86,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(86,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(86,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(90,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(90,76): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(90,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(90,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(90,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(90,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(90,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(94,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(94,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(94,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(94,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(94,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(94,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(94,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(98,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(98,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(98,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(98,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(98,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(98,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(98,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(102,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(102,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(102,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(102,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(102,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(102,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(102,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(106,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(106,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(106,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(106,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(106,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(106,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(106,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(110,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(110,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(110,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(110,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(110,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(110,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(110,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(114,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(114,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(114,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(114,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(114,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(114,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(114,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(118,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(118,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(118,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(118,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(118,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(118,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(118,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(122,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(122,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(122,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(122,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(122,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(122,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(122,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(126,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(126,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(126,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(126,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(126,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(126,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(126,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(130,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(130,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(130,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(130,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(130,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(130,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(130,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(134,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(134,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(134,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(134,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(134,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(134,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(134,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(138,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(138,76): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(138,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(138,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(138,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(138,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(138,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(143,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(143,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(143,108): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(143,140): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(143,170): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(143,199): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(143,226): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(147,29): error TS2345: Argument of type '_specs_TouristItem' is not assignable to parameter of type 'DynamoItem<_specs_TouristItem>'.
+  Type '_specs_TouristItem' is not assignable to type 'AnyConstructor<object>'.
+__specs__/testmodel/testDataSeeder.ts(147,75): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
+__specs__/testmodel/testDataSeeder.ts(147,107): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
+__specs__/testmodel/testDataSeeder.ts(147,139): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(147,169): error TS2339: Property 'id' does not exist on type '_specs_Airport'.
+__specs__/testmodel/testDataSeeder.ts(147,198): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testmodel/testDataSeeder.ts(147,225): error TS2339: Property 'id' does not exist on type '_specs_Country'.
+__specs__/testutils.ts(17,59): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testutils.ts(21,18): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testutils.ts(22,22): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testutils.ts(31,40): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testutils.ts(36,25): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testutils.ts(40,30): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testutils.ts(44,30): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testutils.ts(99,61): error TS2314: Generic type 'DynamoItem' requires 1 type argument(s).
+__specs__/testutils.ts(104,29): error TS2344: Type 'T' does not satisfy the constraint 'object'.
+__specs__/testutils.ts(111,42): error TS2345: Argument of type 'T & { [x: string]: string | number; }' is not assignable to parameter of type 'DynamoItem<object>'.
+  Type 'T & { [x: string]: string | number; }' is not assignable to type 'DynamoItem<AnyConstructor<object>>.DynamoItem'.
+__specs__/testutils.ts(118,82): error TS2345: Argument of type 'T & { [x: string]: string | number; }' is not assignable to parameter of type 'DynamoItem<T & { [x: string]: string | number; }>'.
+  Type 'T & { [x: string]: string | number; }' is not assignable to type 'DynamoItem<AnyConstructor<object>>.DynamoItem'.
+BaseItemManager.ts(52,27): error TS2322: Type 'RefKey<InstanceType<T>>[] | { key: "ringToken"; }[]' is not assignable to type 'RefKey<InstanceType<T>>[]'.
+  Type '{ key: "ringToken"; }[]' is not assignable to type 'RefKey<InstanceType<T>>[]'.
+    Type '{ key: "ringToken"; }' is not assignable to type 'RefKey<InstanceType<T>>'.
+      Types of property 'key' are incompatible.
+        Type '"ringToken"' is not assignable to type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
+BaseItemManager.ts(52,84): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(...items: ConcatArray<RefKey<InstanceType<T>>>[]): RefKey<InstanceType<T>>[] | undefined', gave the following error.
+    Type '"ringToken"' is not assignable to type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
+  Overload 2 of 2, '(...items: (RefKey<InstanceType<T>> | ConcatArray<RefKey<InstanceType<T>>>)[]): RefKey<InstanceType<T>>[] | undefined', gave the following error.
+    Type '"ringToken"' is not assignable to type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
+BaseItemManager.ts(146,58): error TS2339: Property 'start' does not exist on type 'DynamoItem<T>'.
+BaseItemManager.ts(374,22): error TS2339: Property 'id' does not exist on type 'T'.
+BaseItemManager.ts(375,39): error TS2339: Property 'id' does not exist on type 'T'.
+BaseItemManager.ts(375,77): error TS2339: Property 'id' does not exist on type 'T'.
+BaseItemManager.ts(375,95): error TS2339: Property 'id' does not exist on type 'T'.
+BaseItemManager.ts(377,69): error TS2339: Property 'id' does not exist on type 'T'.
+BaseItemManager.ts(377,86): error TS2339: Property 'meta' does not exist on type 'T'.
+BaseItemManager.ts(578,80): error TS2339: Property '__refkeys' does not exist on type 'DynamoItem<T>'.
+BaseItemManager.ts(597,66): error TS2339: Property '__refkeys' does not exist on type 'DynamoItem<T>'.
+dynamodb-transactDeleteItem.ts(88,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactDeleteItem.ts(97,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactDeleteItem.ts(100,95): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+dynamodb-transactPutItem.ts(27,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactPutItem.ts(27,85): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+dynamodb-transactPutItem.ts(36,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactPutItem.ts(36,85): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+dynamodb-transactPutItem.ts(37,94): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+dynamodb-transactUpdateItem.ts(17,53): error TS2339: Property 'id' does not exist on type 'Partial<T>'.
+dynamodb-transactUpdateItem.ts(17,82): error TS2339: Property 'meta' does not exist on type 'Partial<T>'.
+dynamodb-transactUpdateItem.ts(113,91): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactUpdateItem.ts(144,107): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+dynamodb-transactUpdateItem.ts(153,108): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Partial<T>'.
+  No index signature with a parameter of type 'string' was found on type 'Partial<T>'.
+dynamodb-transactUpdateItem.ts(165,82): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactUpdateItem.ts(185,24): error TS2339: Property 'revisions' does not exist on type 'Partial<T>'.
+dynamodb-transactUpdateItem.ts(190,46): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Partial<T>'.
+  No index signature with a parameter of type 'string' was found on type 'Partial<T>'.
+DynamoDbClient.ts(46,27): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+DynamoDbClient.ts(46,52): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+DynamoDbClient.ts(47,27): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+DynamoDbClient.ts(47,52): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
+  No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.

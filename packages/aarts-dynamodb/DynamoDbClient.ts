@@ -34,11 +34,11 @@ export function removeEmpty(obj: Record<string, any>): object {
 export const versionString = (nr: number) => `v_${nr}`
 export const deletedVersionString = (nr: number) => `d_${nr}`
 
-export const uniqueitemrefkeyid = (item: DynamoItem, key: string) => `uq|${item.item_type}}${key}`
+export const uniqueitemrefkeyid = <T extends DynamoItem>(item: T, key: string) => `uq|${item.item_type}}${key}`
 
-export const refkeyitemmeta = (item: DynamoItem, key: string) => `${item.item_type}}${key}`
-// export const refkeyitemtype = (item: DynamoItem, key: string) => `ref_key|${item.item_type}}${key}`
-export const refkeyitem = (item: DynamoItem, key: string) => Object.assign(
+export const refkeyitemmeta = <T extends DynamoItem>(item: T, key: string) => `${item.item_type}}${key}`
+// export const refkeyitemtype = <T extends DynamoItem>(item: DynamoItem, key: string) => `ref_key|${item.item_type}}${key}`
+export const refkeyitem = <T extends DynamoItem>(item: T, key: string) => Object.assign(
     {},
     item,
     {

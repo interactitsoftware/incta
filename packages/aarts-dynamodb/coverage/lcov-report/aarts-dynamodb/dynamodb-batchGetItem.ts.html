@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.18% </span>
+                <span class="strong">90.91% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/11</span>
+                <span class='fraction'>10/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">90% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/10</span>
+                <span class='fraction'>9/10</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -98,28 +98,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict'
 // TODO keys (id / meta) as separate params, and a string for the update expression?
@@ -127,14 +127,14 @@
 import { AWSError } from 'aws-sdk'
 import { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMap } from 'aws-sdk/clients/dynamodb'
 import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME } from './DynamoDbClient';
-import { DynamoItemKey, ExistingDynamoItem, DynamoItem } from './BaseItemManager';
+import { DynamoItem } from './BaseItemManager';
 &nbsp;
-export const batchGetItem = <span class="fstat-no" title="function not covered" >(i</span>tems: {id:string, meta:string}[]): Promise&lt;DynamoItem[]&gt; =&gt; 
-<span class="cstat-no" title="statement not covered" >    new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; </span>
+export const batchGetItem = &lt;T extends DynamoItem&gt;(items: {id:string, meta:string}[]): Promise&lt;T[]&gt; =&gt; 
+    new Promise((resolve, reject) =&gt; 
 {
-    const keys: AttributeMap[] = <span class="cstat-no" title="statement not covered" >toAttributeMapArray(items.map(<span class="fstat-no" title="function not covered" >i </span>=&gt; {<span class="cstat-no" title="statement not covered" >return {id:i.id, meta:i.meta}})</span>)</span>
+    const keys: AttributeMap[] = toAttributeMapArray(items.map(i =&gt; {return {id:i.id, meta:i.meta}}))
 &nbsp;
-    const params: BatchGetItemInput = <span class="cstat-no" title="statement not covered" >{</span>
+    const params: BatchGetItemInput = {
         RequestItems: {
             [DB_NAME]: {
                 Keys: keys
@@ -144,14 +144,14 @@ export const batchGetItem = <span class="fstat-no" title="function not covered" 
     }
 &nbsp;
     // write item to the database
-<span class="cstat-no" title="statement not covered" >    dynamoDbClient.batchGetItem(params, <span class="fstat-no" title="function not covered" >(e</span>rror: AWSError, result: BatchGetItemOutput) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        if (error) {</span>
+    dynamoDbClient.batchGetItem(params, (error: AWSError, result: BatchGetItemOutput) =&gt; {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (error) {
 <span class="cstat-no" title="statement not covered" >            return reject(error)</span>
         }
-<span class="cstat-no" title="statement not covered" >        process.env.DEBUG &amp;&amp; console.log("====DDB==== BatchGetItemOutput: ", result)</span>
+        process.env.DEBUG &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >console.log("====DDB==== BatchGetItemOutput: ", result)</span>
         
         // create a response
-<span class="cstat-no" title="statement not covered" >        return resolve(fromAttributeMapArray((result.Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[])</span>
+        return resolve(fromAttributeMapArray((result.Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as T[])
     })
 })</pre></td></tr></table></pre>
 
@@ -160,7 +160,7 @@ export const batchGetItem = <span class="fstat-no" title="function not covered" 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Aug 20 2020 11:22:38 GMT+0300 (Eastern European Summer Time)
+                at Sun Sep 06 2020 14:19:05 GMT+0300 (Eastern European Summer Time)
             </div>
         </div>
         <script src="../prettify.js"></script>

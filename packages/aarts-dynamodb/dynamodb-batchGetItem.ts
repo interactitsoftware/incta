@@ -4,9 +4,9 @@
 import { AWSError } from 'aws-sdk'
 import { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMap } from 'aws-sdk/clients/dynamodb'
 import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME } from './DynamoDbClient';
-import { DynamoItemKey, ExistingDynamoItem, DynamoItem } from './BaseItemManager';
+import { DynamoItem } from './BaseItemManager';
 
-export const batchGetItem = (items: {id:string, meta:string}[]): Promise<DynamoItem[]> => 
+export const batchGetItem = <T extends DynamoItem>(items: {id:string, meta:string}[]): Promise<T[]> => 
     new Promise((resolve, reject) => 
 {
     const keys: AttributeMap[] = toAttributeMapArray(items.map(i => {return {id:i.id, meta:i.meta}}))
@@ -28,6 +28,6 @@ export const batchGetItem = (items: {id:string, meta:string}[]): Promise<DynamoI
         process.env.DEBUG && console.log("====DDB==== BatchGetItemOutput: ", result)
         
         // create a response
-        return resolve(fromAttributeMapArray((result.Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[])
+        return resolve(fromAttributeMapArray((result.Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as T[])
     })
 })

@@ -23,10 +23,19 @@ describe('query spec', () => {
             const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
                 _specs_AirportItem.__type,
                 {
-                    arguments: {
+                    payload: {
+                        arguments: {
 
+                        },
+                        identity: "akrsmv"
                     },
-                    identity: "akrsmv"
+                    meta: {
+                        item: "notneededfortest",
+                        action: "query",
+                        eventSource: "notneededfortest",
+                        ringToken: "notneededfortest"
+                    }
+
                 }
             )
             const willFailBecauseArgsNoArray = async () => {
@@ -48,14 +57,23 @@ describe('query spec', () => {
             const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
                 _specs_AirportItem.__type,
                 {
-                    arguments: [{
-                        ddbIndex: "meta__smetadata",
-                        primaryKeyName: "meta",
-                        rangeKeyName: "smetadata",
-                        pk: `${_specs_AirportItem.__type}}name`,
-                        range: "Sofia"
-                    }],
-                    identity: "akrsmv"
+                    payload: {
+                        arguments: [{
+                            ddbIndex: "meta__smetadata",
+                            primaryKeyName: "meta",
+                            rangeKeyName: "smetadata",
+                            pk: `${_specs_AirportItem.__type}}name`,
+                            range: "Sofia"
+                        }],
+                        identity: "akrsmv"
+                    },
+                    meta: {
+                        item: "notneededfortest",
+                        action: "query",
+                        eventSource: "notneededfortest",
+                        ringToken: "notneededfortest"
+                    }
+
                 }
             )
 
@@ -66,19 +84,32 @@ describe('query spec', () => {
                 }
             } while (!queryProcessor.done)
 
+            console.log("=============================================")
+            console.log(queryProcessor.value)
+            console.log("=============================================")
+
             // META: flight}to_airport; 
             // SMETADATA: SOFIA AIRPORT's ID
             const queryGen1 = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
                 _specs_AirportItem.__type,
                 {
-                    arguments: [{
-                        ddbIndex: "meta__smetadata",
-                        primaryKeyName: "meta",
-                        rangeKeyName: "smetadata",
-                        pk: `${_specs_FlightItem.__type}}to_airport`,
-                        range: queryProcessor.value.arguments.items && queryProcessor.value.arguments.items[0].id
-                    }],
-                    identity: "akrsmv"
+                    payload:{
+                        arguments: [{
+                            ddbIndex: "meta__smetadata",
+                            primaryKeyName: "meta",
+                            rangeKeyName: "smetadata",
+                            pk: `${_specs_FlightItem.__type}}to_airport`,
+                            range: queryProcessor.value.arguments.items && queryProcessor.value.arguments.items[0].id
+                        }],
+                        identity: "akrsmv"
+                    },
+                    meta: {
+                      item: "notneededfortest",
+                      action: "query",
+                      eventSource: "notneededfortest",
+                      ringToken: "notneededfortest"
+                    }
+                    
                 }
             )
 
@@ -101,14 +132,23 @@ describe('query spec', () => {
             const queryGen = queryManager.query(
                 _specs_AirportItem.__type,
                 {
-                    arguments: [{
-                        ddbIndex: "meta__smetadata",
-                        primaryKeyName: "meta",
-                        rangeKeyName: "smetadata",
-                        pk: `${_specs_AirportItem.__type}}name`,
-                        range: "Sofia"
-                    }],
-                    identity: "akrsmv"
+                    payload: {
+                        arguments: [{
+                            ddbIndex: "meta__smetadata",
+                            primaryKeyName: "meta",
+                            rangeKeyName: "smetadata",
+                            pk: `${_specs_AirportItem.__type}}name`,
+                            range: "Sofia"
+                        }],
+                        identity: "akrsmv"
+                    },
+                    meta: {
+                      item: "notneededfortest",
+                      action: "query",
+                      eventSource: "notneededfortest",
+                      ringToken: "notneededfortest"
+                    }
+                    
                 }
             )
 
@@ -124,14 +164,23 @@ describe('query spec', () => {
             const queryGen1 = queryManager.query(
                 _specs_AirportItem.__type,
                 {
-                    arguments: [{
-                        ddbIndex: "meta__smetadata",
-                        primaryKeyName: "meta",
-                        rangeKeyName: "smetadata",
-                        pk: `${_specs_FlightItem.__type}}to_airport`,
-                        range: queryProcessor.value.arguments.items && queryProcessor.value.arguments.items[0].id
-                    }],
-                    identity: "akrsmv"
+                    payload: {
+                        arguments: [{
+                            ddbIndex: "meta__smetadata",
+                            primaryKeyName: "meta",
+                            rangeKeyName: "smetadata",
+                            pk: `${_specs_FlightItem.__type}}to_airport`,
+                            range: queryProcessor.value.arguments.items && queryProcessor.value.arguments.items[0].id
+                        }],
+                        identity: "akrsmv"
+                    },
+                    meta: {
+                      item: "notneededfortest",
+                      action: "query",
+                      eventSource: "notneededfortest",
+                      ringToken: "notneededfortest"
+                    }
+                    
                 }
             )
 

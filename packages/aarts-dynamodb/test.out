@@ -1,0 +1,61 @@
+
+> aarts-dynamodb@0.4.101 test C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-dynamodb
+> jest --runInBand "query.spec"
+
+PASS __specs__/specs/LowLevel_transactXYZTests/query.spec.ts (58.994 s)
+PASS __specs__/specs/HighLevel_BaseItemManagerTests/manager.query.spec.ts (53.876 s)
+  ● Console
+
+    console.log
+      =============================================
+
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.query.spec.ts:87:21)
+          at runMicrotasks (<anonymous>)
+
+    console.log
+      {
+        arguments: { items: [ [Object] ], lastEvaluatedKey: {}, count: 1 },
+        identity: 'akrsmv'
+      }
+
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.query.spec.ts:88:21)
+          at runMicrotasks (<anonymous>)
+
+    console.log
+      =============================================
+
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.query.spec.ts:89:21)
+          at runMicrotasks (<anonymous>)
+
+------------------------------------|---------|----------|---------|---------|----------------------------------------------------
+File                                | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                  
+------------------------------------|---------|----------|---------|---------|----------------------------------------------------
+All files                           |   49.04 |    21.65 |   34.62 |   48.88 |                                                    
+ aarts-dynamodb                     |   34.88 |    22.29 |   35.48 |   34.83 |                                                    
+  BaseItemManager.ts                |   23.36 |    13.43 |   32.14 |    23.7 | 73-144,170,175,184,191-192,219-220,231-232,250-602 
+  DynamoDbClient.ts                 |   72.92 |    46.15 |   57.14 |   71.79 | 52-57,76-80,98,102-106,113-114                     
+  dynamodb-batchGetItem.ts          |   18.18 |        0 |       0 |      20 | 10-31                                              
+  dynamodb-queryItems.ts            |   93.48 |       70 |     100 |   93.33 | 36,94-95                                           
+  dynamodb-transactDeleteItem.ts    |    6.82 |        0 |       0 |    8.11 | 13-139                                             
+  dynamodb-transactPutItem.ts       |     100 |    82.35 |     100 |     100 | 11,55-80                                           
+  dynamodb-transactUpdateItem.ts    |    4.41 |        0 |       0 |    4.92 | 13-194                                             
+ aarts-dynamodb/__specs__           |   41.27 |       40 |    9.52 |   49.06 |                                                    
+  testutils.ts                      |   41.27 |       40 |    9.52 |   49.06 | 11-18,24-29,33-35,38-39,42-43,46-47,108-127        
+ aarts-dynamodb/__specs__/testmodel |    81.6 |        0 |    62.5 |   79.69 |                                                    
+  Airplane.ts                       |      36 |        0 |      60 |      36 | 41-66                                              
+  Airport.ts                        |   21.05 |        0 |   33.33 |   21.05 | 30-54                                              
+  Country.ts                        |     100 |      100 |     100 |     100 |                                                    
+  DataImporter.ts                   |      20 |      100 |       0 |      20 | 19-31                                              
+  Flight.ts                         |     100 |      100 |     100 |     100 |                                                    
+  Nomenclature.ts                   |     100 |      100 |     100 |     100 |                                                    
+  Tourist.ts                        |     100 |      100 |     100 |     100 |                                                    
+  _DynamoItems.ts                   |     100 |      100 |     100 |     100 |                                                    
+  itemManagersMap.ts                |     100 |      100 |     100 |     100 |                                                    
+  testDataSeeder.ts                 |     100 |      100 |     100 |     100 |                                                    
+------------------------------------|---------|----------|---------|---------|----------------------------------------------------
+
+Test Suites: 2 passed, 2 total
+Tests:       14 passed, 14 total
+Snapshots:   0 total
+Time:        114.575 s
+Ran all test suites matching /query.spec/i.

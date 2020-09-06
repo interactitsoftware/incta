@@ -11,11 +11,18 @@ import { AnyConstructor } from "aarts-types/Mixin"
 import {
     AirplaneItem, CountryItem, CityItem, PilotItem, AirportItem,
     AirplaneManifacturerItem, AirplaneModelItem, FlightItem,
-    TouristItem, DataImportProcedure, MultipleLambdaTestDataGeneratorItem, SingleLambdaTestDataGeneratorItem, EraseDataItem
+    TouristItem, DataImportProcedure,
+    MultipleLambdaTestDataGeneratorItem,
+    SingleLambdaTestDataGeneratorItem,
+    EraseDataItem,
+    IdmptSingleLambdaTestDataGeneratorItem,
+    IdmptMultipleLambdaTestDataGeneratorItem
 } from "./_DynamoItems"
 import { EraseDataManager } from "./procedures/EraseData"
 import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
 import { MultipleLambdaTestDataGeneratorManager } from "./procedures/MultipleLambdaTestDataGenerator"
+import { IdmptSingleLambdaTestDataGeneratorManager } from "./procedures/IdmptSingleLambdaTestDataGenerator"
+import { IdmptMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptMultipleLambdaTestDataGenerator"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -30,6 +37,8 @@ allItems.set(PilotItem.__type, PilotItem)
 allItems.set(DataImportProcedure.__type, DataImportProcedure)
 allItems.set(SingleLambdaTestDataGeneratorItem.__type, SingleLambdaTestDataGeneratorItem)
 allItems.set(MultipleLambdaTestDataGeneratorItem.__type, MultipleLambdaTestDataGeneratorItem)
+allItems.set(IdmptSingleLambdaTestDataGeneratorItem.__type, IdmptSingleLambdaTestDataGeneratorItem)
+allItems.set(IdmptMultipleLambdaTestDataGeneratorItem.__type, IdmptMultipleLambdaTestDataGeneratorItem)
 allItems.set(EraseDataItem.__type, EraseDataItem)
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
@@ -50,6 +59,8 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
         [PilotItem.__type]: new BaseDynamoItemManager(allItems),
         // procedures
         [SingleLambdaTestDataGeneratorItem.__type]: new SingleLambdaTestDataGeneratorManager(allItems),
+        [IdmptSingleLambdaTestDataGeneratorItem.__type]: new IdmptSingleLambdaTestDataGeneratorManager(allItems),
+        [IdmptMultipleLambdaTestDataGeneratorItem.__type]: new IdmptMultipleLambdaTestDataGeneratorManager(allItems),
         [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
         [EraseDataItem.__type]: new EraseDataManager(allItems)
     }

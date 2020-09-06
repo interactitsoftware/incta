@@ -25,9 +25,12 @@ export {
 // define two domain objects purely from this example app (demonstrate the whole steps needed)
 import { City } from "./items/City";  // the plain js objects (domain items)
 import { Pilot } from "./items/Pilot";
+// define procedures - i.e normal dynamo items, which have their managers implementing the start method 
 import { SingleLambdaTestDataGenerator } from "./procedures/SingleLambdaTestDataGenerator";
+import { IdmptSingleLambdaTestDataGenerator } from "./procedures/IdmptSingleLambdaTestDataGenerator";
 import { EraseData } from "./procedures/EraseData";
 import { MultipleLambdaTestDataGenerator } from "./procedures/MultipleLambdaTestDataGenerator";
+import { IdmptMultipleLambdaTestDataGenerator } from "./procedures/IdmptMultipleLambdaTestDataGenerator";
 
 export class CityItem extends DynamoItem(City, "city", [ // the dynamodb wrapper object that we deal with
     {key:"name"},
@@ -40,8 +43,19 @@ export class PilotItem extends DynamoItem(Pilot, "pilot", [ // the dynamodb wrap
     {key: "country", ref:"country"}
 ]) { }  
 
-// --------------- procedures
+// --------------- procedures, warning: concept of persisting procedures is excerpted from aarts-dynamodb and if needed, shoud be implemented here
+// i.e for now such procedure entities will not go into dynamo, they are used only to trigger their start method
 export class SingleLambdaTestDataGeneratorItem extends DynamoItem(SingleLambdaTestDataGenerator, "single_lambda_test_data_generator", [
+    {key: "start_date"},
+    {key: "end_date"},
+]) {}
+
+export class IdmptSingleLambdaTestDataGeneratorItem extends DynamoItem(IdmptSingleLambdaTestDataGenerator, "idmpt_single_lambda_test_data_generator", [
+    {key: "start_date"},
+    {key: "end_date"},
+]) {}
+
+export class IdmptMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptMultipleLambdaTestDataGenerator, "idmpt_multiple_lambda_test_data_generator", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}

@@ -20,23 +20,23 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
     public readonly notifierFunctionConstruct: WorkerConstruct
     constructor(scope: Construct, id: string, props: AppSyncLocalDatasourceConstructProps) {
         super(scope, id)
-        
-//#region LOCAL DATASOURCE
-const localCfnDS = new CfnDataSource(this, `LocalDS`, {
 
-    apiId: props.appSyncConstruct.graphQLApi.apiId,
-    name: 'echo',
-    type: 'NONE',
-    description: 'loopback datasource',
-});
+        //#region LOCAL DATASOURCE
+        const localCfnDS = new CfnDataSource(this, `LocalDS`, {
 
-const notifyLocalResolver = new Resolver(this, `LocalResolver`, {
+            apiId: props.appSyncConstruct.graphQLApi.apiId,
+            name: 'echo',
+            type: 'NONE',
+            description: 'loopback datasource',
+        });
 
-    api: props.appSyncConstruct.graphQLApi,
-    fieldName: 'notify',
-    typeName: 'Mutation',
-    requestMappingTemplate: MappingTemplate.fromString(
-`{
+        const notifyLocalResolver = new Resolver(this, `LocalResolver`, {
+
+            api: props.appSyncConstruct.graphQLApi,
+            fieldName: 'notify',
+            typeName: 'Mutation',
+            requestMappingTemplate: MappingTemplate.fromString(
+                `{
 "version": "2017-02-28",
 "payload": {
 "body": "$util.escapeJavaScript(\${context.arguments.body})",
@@ -45,26 +45,27 @@ const notifyLocalResolver = new Resolver(this, `LocalResolver`, {
 "sentAt": "$util.time.nowISO8601()"
 }
 }`),
-    responseMappingTemplate: MappingTemplate.fromString("$util.toJson($ctx.result)"),
-});
-(notifyLocalResolver.node.defaultChild as CfnResolver).dataSourceName = localCfnDS.name
+            responseMappingTemplate: MappingTemplate.fromString("$util.toJson($ctx.result)"),
+        });
+        (notifyLocalResolver.node.defaultChild as CfnResolver).dataSourceName = localCfnDS.name
+        notifyLocalResolver.node.addDependency(localCfnDS);
 
-    this.notifierFunctionConstruct = new WorkerConstruct(this, "Notify", {
-        workerName: `${props.clientAppName}Notifier`,
-        functionTimeout: Duration.seconds(30),
-        functionHandler: "index.notifier",
-        functionImplementationPath: join("..", props.clientAppName, "dist"),
-        functionRuntime: Runtime.NODEJS_12_X,
-        eventBusConstruct: props.eventBusConstruct,
-        eventSource: "worker:output",
-        layers: [props.nodeModulesLayer]
-    });
+        this.notifierFunctionConstruct = new WorkerConstruct(this, "Notify", {
+            workerName: `${props.clientAppName}Notifier`,
+            functionTimeout: Duration.seconds(30),
+            functionHandler: "index.notifier",
+            functionImplementationPath: join("..", props.clientAppName, "dist"),
+            functionRuntime: Runtime.NODEJS_12_X,
+            eventBusConstruct: props.eventBusConstruct,
+            eventSource: "worker:output",
+            layers: [props.nodeModulesLayer]
+        });
 
-    this.notifierFunctionConstruct.function.addEnvironment(ENV_VARS__APPSYNC_ENDPOINT_URL, props.appSyncConstruct.graphQLApi.graphQlUrl);
-    this.notifierFunctionConstruct.function.addToRolePolicy(new PolicyStatement ({
-        actions: ["appsync:GraphQL"],
-        effect: Effect.ALLOW,
-        resources: [ `${props.appSyncConstruct.graphQLApi.arn}/types/Mutation/fields/notify` ]
-    }));
+        this.notifierFunctionConstruct.function.addEnvironment(ENV_VARS__APPSYNC_ENDPOINT_URL, props.appSyncConstruct.graphQLApi.graphqlUrl);
+        this.notifierFunctionConstruct.function.addToRolePolicy(new PolicyStatement({
+            actions: ["appsync:GraphQL"],
+            effect: Effect.ALLOW,
+            resources: [`${props.appSyncConstruct.graphQLApi.arn}/types/Mutation/fields/notify`]
+        }));
     }
 }

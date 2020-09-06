@@ -20,8 +20,16 @@ describe('manager.delete.spec', () => {
       for await (let planeCreated of await domainAdapter.itemManagers[_specs_AirportItem.__type].delete(
         _specs_AirportItem.__type,
         {
-          arguments: {},
-          identity: "akrsmv"
+          payload: {
+            arguments: {},
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
         }
       )) { }
     }
@@ -36,8 +44,16 @@ describe('manager.delete.spec', () => {
       for await (let planeCreated of await domainAdapter.itemManagers[_specs_AirportItem.__type].delete(
         _specs_AirportItem.__type,
         {
-          arguments: [{}, {}],
-          identity: "akrsmv"
+          payload: {
+            arguments: [{}, {}],
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
         }
       )) { }
     }
@@ -53,8 +69,17 @@ describe('manager.delete.spec', () => {
       for await (let planeCreated of await domainAdapter.itemManagers[_specs_AirportItem.__type].delete(
         _specs_AirportItem.__type,
         {
-          arguments: [{ id: "id without proper revisions will fail" }],
-          identity: "akrsmv"
+          payload: {
+            arguments: [{ id: "id without proper revisions will fail" }],
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
+
         }
       )) { }
     }
@@ -69,11 +94,20 @@ describe('manager.delete.spec', () => {
       for await (let planeCreated of await domainAdapter.itemManagers[_specs_AirportItem.__type].delete(
         _specs_AirportItem.__type,
         {
-          arguments: [{
-            id: arrangedItem1.id,
-            revisions: 15
-          }],
-          identity: "akrsmv"
+          payload: {
+            arguments: [{
+              id: arrangedItem1.id,
+              revisions: 15
+            }],
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
+
         }
       )) { }
     }
@@ -88,12 +122,24 @@ describe('manager.delete.spec', () => {
       done()
     })
     test('delete a previously created item', async () => {
+      //arrange
       const arrangedItem2 = await transactPutItem(new _specs_AirportItem({ airport_size: 20, name: "Sofia" }), _specs_AirportItem.__refkeys)
+      
+      // act
       const deleteGenerator = domainAdapter.itemManagers[_specs_AirportItem.__type].delete(
         _specs_AirportItem.__type,
         {
-          arguments: [{ id: arrangedItem2.id, revisions: arrangedItem2.revisions }], // the only two needed keys for a delete
-          identity: "akrsmv"
+          payload: {
+            arguments: [{ id: arrangedItem2.id, revisions: arrangedItem2.revisions }], // the only two needed keys for a delete
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
+          
         }
       )
       let processorDelete = await deleteGenerator.next()
@@ -102,7 +148,7 @@ describe('manager.delete.spec', () => {
           processorDelete = await deleteGenerator.next()
         }
       } while (!processorDelete.done)
-  
+
       //assert all items deleted
       const allItemsAfterDelete: ScanOutput = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
       const aggregationsAfterDelete = allItemsAfterDelete.Items?.filter(i => i.id.S === "aggregations")[0]

@@ -29,13 +29,16 @@ export class WorkerConstruct extends Construct {
         super(scope, id);
 
         const functionQueue = new Queue(this, "Queue", {
-            visibilityTimeout: Duration.seconds(6 * props.functionTimeout.toSeconds()),
+            // as per best practices from AWS visibilityTimeout is suggesteed 6 times lambda timeout
+            // however we reduce to only 1.5 the lambda timeout, as we do not have retries in the lambda
+            visibilityTimeout: Duration.seconds(1.5 * props.functionTimeout.toSeconds()),
             receiveMessageWaitTime: Duration.seconds(3), // long polling for events
             queueName: `${props.workerName}`,
-            deadLetterQueue: { // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
+            // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
+            deadLetterQueue: { 
                 maxReceiveCount: 10,
-                queue: new Queue(this, "DEADLETTER", {
-                    queueName: `${props.workerName}-DEADLETTER`
+                queue: new Queue(this, "DEADLETTER-SQS", {
+                    queueName: `${props.workerName}-DEADLETTER-SQS`
                 }),
             }
         })
@@ -62,23 +65,27 @@ export class WorkerConstruct extends Construct {
             functionName: `${props.workerName}`,
             tracing: Tracing.ACTIVE,
 
-            // DLQ enabled on a Queue level, not here, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
-            // deadLetterQueueEnabled: true,
-            // deadLetterQueue: new Queue(this, "DEADLETTER"),
+            // DLQ enabled on a Queue level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
+            // but lambda is also setup to have its own DLQ, according to this article: https://aws.amazon.com/blogs/compute/designing-durable-serverless-apps-with-dlqs-for-amazon-sns-amazon-sqs-aws-lambda/
+            // so far testing it, lambda's DLQ never gets used, only the SQS DLQ
 
             environment: props.envVars,
 
             events: [new SqsEventSource(functionQueue,
                 {
-                    batchSize: 10
+                    batchSize: 1
                 })
             ],
             // unlike the dispatcher who must not have retries
             // workers must have retries - to tackle dynamo scaling events or transaction conflicting events
             // or any other application specific situations resulting in error
-            // WARNING make sure domain logic is idempotent
-            retryAttempts: 2,
-
+            
+            // WARNING 1) make sure domain logic is idempotent
+            retryAttempts: 0, // WARNING 2) with SQS event source for the lambda, and a DLQ attached there, retries are actually controlled via the maxReceiveCount above
+            deadLetterQueueEnabled: true,
+            deadLetterQueue: new Queue(this, "DEADLETTER-LAMBDA", {
+                queueName: `${props.workerName}-DEADLETTER-LAMBDA`
+            }),
             reservedConcurrentExecutions: props.reservedConcurrentExecutions,
             layers: props.layers
         })

@@ -1,5 +1,5 @@
 import { seedAirtoursData } from "./testDataSeeder"
-import { AartsPayload } from "aarts-types/interfaces"
+import { AartsEvent } from "aarts-types/interfaces"
 
 export class _specs_DataImporter {
     constructor(...args: any[]) {
@@ -15,7 +15,7 @@ export class _specs_DataImporter {
         // },{}))
     }
 
-    public async start(__type: string, args: AartsPayload): Promise<_specs_DataImporter>{
+    public async start(__type: string, args: AartsEvent): Promise<_specs_DataImporter>{
         this.date_started = new Date().toISOString()
 
         try {

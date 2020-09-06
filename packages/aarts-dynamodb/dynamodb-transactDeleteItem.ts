@@ -1,14 +1,15 @@
 'use strict'
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
-import { DynamoDB, AWSError } from 'aws-sdk'
+import { DynamoDB } from 'aws-sdk'
 import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { ExistingDynamoItem, DynamoItem, RefKey, DomainItem } from './BaseItemManager';
+import { DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, deletedVersionString, ddbRequest } from './DynamoDbClient';
 import { ppjson } from 'aarts-types/utils';
+import { RefKey } from './interfaces';
 
 
-export const transactDeleteItem = async <T extends DomainItem & DynamoItem>(existingItem: T, __item_refkeys: RefKey<T>[]): Promise<T> => {
+export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, __item_refkeys: RefKey<T>[]): Promise<T> => {
     let itemUpdates = { id: existingItem.id, meta: existingItem.meta } //i.e all items are to be updated, when deleting
 
     const drevisionsUpdates = toAttributeMap(

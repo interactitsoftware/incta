@@ -1,4 +1,4 @@
-import { BaseDynamoItemManager } from "../../BaseItemManager"
+import { BaseDynamoItemManager, DynamoItem } from "../../BaseItemManager"
 import { _specs_AirportItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
 
@@ -17,9 +17,12 @@ export class _specs_Airport {
         // },{}))
     }
 
-    public airport_size: number = 100
+    public airport_size: number = 11
     public country?: string
+    public branch?: string
+    public type?: string
     public name?: string
+    public code?: string
 }
 
 export class _specs_AirportManager extends BaseDynamoItemManager<_specs_AirportItem> {

@@ -2,13 +2,13 @@
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { AWSError } from 'aws-sdk'
-import DynamoDB, { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMap, AttributeValue } from 'aws-sdk/clients/dynamodb'
-import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME, toAttributeMap, fromAttributeMap, versionString } from './DynamoDbClient';
-import { DynamoItemKey, ExistingDynamoItem, DynamoItem } from './BaseItemManager';
-import { DdbQueryInput, DdbQueryOutput, DdbItemKey } from 'aarts-types/interfaces';
+import DynamoDB, { AttributeMap, AttributeValue } from 'aws-sdk/clients/dynamodb'
+import { dynamoDbClient, fromAttributeMapArray, DB_NAME, toAttributeMap, fromAttributeMap, versionString } from './DynamoDbClient';
+import { DynamoItem } from './BaseItemManager';
+import { DdbQueryInput, DdbQueryOutput, DdbGSIItemKey } from './interfaces';
 
 
-export const queryItems = <T extends DdbQueryInput>(ddbQueryPayload: T): Promise<DdbQueryOutput> => 
+export const queryItems = <T extends DdbQueryInput, TResult extends DynamoItem>(ddbQueryPayload: T): Promise<DdbQueryOutput<TResult>> => 
     new Promise((resolve, reject) => {
     
         const dqueryKeys = toAttributeMap({
@@ -76,10 +76,6 @@ export const queryItems = <T extends DdbQueryInput>(ddbQueryPayload: T): Promise
         process.env.DEBUG && console.log("dexpressionAttributeValues ", dexpressionAttributeValues)
         process.env.DEBUG && console.log("================================================")
         
-        
-        
-
-
         const params: DynamoDB.QueryInput = {
         TableName: DB_NAME,
         IndexName: ddbQueryPayload.ddbIndex,
@@ -99,8 +95,8 @@ export const queryItems = <T extends DdbQueryInput>(ddbQueryPayload: T): Promise
             return reject(error)
         }
 
-        process.env.DEBUG && console.log("====DDB==== QueryOutput: ", {ConsumedCapacity: result.ConsumedCapacity, ScannedCount: result.ScannedCount})
+        process.env.DEBUG && console.log("====DDB==== QueryOutput: ", {Items: result.Items, Count: result.Count, ConsumedCapacity: result.ConsumedCapacity, ScannedCount: result.ScannedCount})
 
-        return resolve({items: fromAttributeMapArray(result.Items as AttributeMap[]), lastEvaluatedKey: fromAttributeMap<DdbItemKey>(result.LastEvaluatedKey as DynamoDB.Key), count: result.Count})
+        return resolve({items: (fromAttributeMapArray(result.Items as AttributeMap[]) as TResult[]), lastEvaluatedKey: fromAttributeMap<DdbGSIItemKey>(result.LastEvaluatedKey as DynamoDB.Key), count: result.Count})
     })
 })

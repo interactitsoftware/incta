@@ -28,7 +28,7 @@ export class EventBusConstruct extends cdk.Construct {
 
         //#region test queue consuming all the messages
         var testQueue = new sqs.Queue(this, "TESTQUEUE", {
-            retentionPeriod: Duration.minutes(30)
+            retentionPeriod: Duration.hours(48)
         });
         this.eventBus.addSubscription(new snsSubs.SqsSubscription(testQueue, {
             rawMessageDelivery: true
@@ -41,7 +41,7 @@ export class EventBusConstruct extends cdk.Construct {
             code: Code.fromAsset(join("..", props.clientAppName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: 'index.dispatcher',
             memorySize: 256,
-            timeout: cdk.Duration.seconds(100),
+            timeout: cdk.Duration.seconds(10),
             environment: {  }, //"ENV_ONE": "ENV_ONE_VALUE", "ENV_TWO": "ENV_TWO_VALUE"
             layers: [props.nodeModulesLayer],
             

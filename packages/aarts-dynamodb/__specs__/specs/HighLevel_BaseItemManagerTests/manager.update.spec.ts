@@ -15,14 +15,24 @@ describe('manager.update.spec', () => {
 
     return await transactPutItem(airplane, _specs_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
-      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type, {
-        arguments: [{ // update arranged item
-          id: arrangedItem.id,
-          meta: arrangedItem.meta,
-          revisions: arrangedItem.revisions,
-          number_of_seats: 13
-        }],
-        identity: "akrsmv"
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type, 
+        {
+          payload: {
+            arguments: [{ // update arranged item
+              id: arrangedItem.id,
+              meta: arrangedItem.meta,
+              revisions: arrangedItem.revisions,
+              number_of_seats: 13
+            }],
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
+        
       })
 
       let updateProcessor = await updateGen.next()
@@ -53,15 +63,25 @@ describe('manager.update.spec', () => {
       const allBeforeUpdate = await queryForId(airplane.id)
       expect(allBeforeUpdate.length).toBe(3) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats
       
-      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type, {
-        arguments: [{ // update arranged item
-          id: arrangedItem.id,
-          meta: arrangedItem.meta,
-          revisions: arrangedItem.revisions,
-          //@ts-ignore
-          number_of_seats: "__del__"
-        }],
-        identity: "akrsmv"
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type, 
+        {
+          payload: {
+            arguments: [{ // update arranged item
+              id: arrangedItem.id,
+              meta: arrangedItem.meta,
+              revisions: arrangedItem.revisions,
+              //@ts-ignore
+              number_of_seats: "__del__"
+            }],
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
+        
       })
 
       let updateProcessor = await updateGen.next()

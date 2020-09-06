@@ -12,7 +12,9 @@ export class _specs_Tourist {
         //     return accum
         // },{}))
     }
-
+    public fname: string = ""
+    public lname: string = ""
+    public iban: string = ""
     public airplane: string = ""
     public flight: string = ""
     public from_airport: string = ""

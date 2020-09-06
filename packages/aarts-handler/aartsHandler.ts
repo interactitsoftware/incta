@@ -1,5 +1,5 @@
 import { Context } from "aws-lambda"
-import { IItemManager, AartsPayload, AartsEvent } from "aarts-types/interfaces"
+import { IItemManager, AartsEvent } from "aarts-types/interfaces"
 import { ppjson } from "aarts-types/utils"
 
 export const handler = async (input: AartsEvent, context: Context): Promise<any> => {
@@ -32,10 +32,12 @@ export async function* processPayloadAsync(input: AartsEvent): AsyncGenerator<Aa
 
 	const domainArguments = Array.isArray(input.payload.arguments) ? input.payload.arguments : [input.payload.arguments]
 
-	const payloadsArray = {
-		arguments: domainArguments,
-		identity: input.payload.identity,
-		ringToken: input.meta.ringToken
+	const payloadsArray : AartsEvent = {
+		payload: {
+			arguments: domainArguments,
+			identity: input.payload.identity
+		},
+		meta: input.meta
 	}
 
 	process.env.DEBUG && (yield Object.assign({}, input, { payload: { arguments: `[AartsHandler:processPayloadAsync] Will Invoke ${input.meta.item}:${input.meta.action} manager action` } }))

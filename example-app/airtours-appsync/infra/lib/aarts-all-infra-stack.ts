@@ -59,7 +59,7 @@ export class AartsAllInfraStack extends Stack {
 
     const workerInputHandler = new WorkerConstruct(this, `${clientAppName}Handler`, {
       workerName: `${clientAppName}Handler`,
-      functionTimeout: Duration.seconds(30),
+      functionTimeout: Duration.seconds(10),
       functionHandler: "index.handler",
       functionImplementationPath: join("..", clientAppName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,

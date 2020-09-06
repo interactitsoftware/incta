@@ -149,7 +149,7 @@ describe('query spec', () => {
         ddbIndex: "smetadata__meta",
         primaryKeyName: "smetadata",
         rangeKeyName: "meta",
-        pk: airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].id
+        pk: (airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].id) as string
       })
 
       expect(all_items_relating_to_airplane_555.count).toBe(1) // so airplane 555 flew only once, see test model 
@@ -168,7 +168,7 @@ describe('query spec', () => {
         ddbIndex: "smetadata__meta",
         primaryKeyName: "smetadata",
         rangeKeyName: "meta",
-        pk: airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].id
+        pk: (airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].id) as string
       })
 
       expect(all_items_relating_to_airplane_444.count).toBe(7) // so airplane 111 had 7 flights 

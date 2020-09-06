@@ -1,0 +1,244 @@
+/c/Users/TechHuddle/Documents/aarts-all/example-app/airtours-appsync/infra/../../..
+------------------------------------------------
+AARTS_TYPES
+------------------------------------------------
+v0.2.87
+
+> aarts-types@0.2.87 build_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-types
+> npm run clean_lin && tsc && cp package.json ./dist
+
+
+> aarts-types@0.2.87 clean_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-types
+> rm -fr ./dist
+
++ aarts-types@0.2.87
+------------------------------------------------
+AARTS_EB_TYPES
+------------------------------------------------
++ aarts-types@0.2.87
+updated 1 package and audited 18 packages in 1.909s
+found 0 vulnerabilities
+
+v0.2.87
+
+> aarts-eb-types@0.2.87 build_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-types
+> npm run clean_lin && tsc && cp package.json ./dist
+
+
+> aarts-eb-types@0.2.87 clean_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-types
+> rm -fr ./dist
+
++ aarts-eb-types@0.2.87
+------------------------------------------------
+AARTS_HANDLER
+------------------------------------------------
++ aarts-types@0.2.87
+updated 1 package and audited 27 packages in 0.508s
+found 0 vulnerabilities
+
+v0.3.74
+
+> aarts-handler@0.3.74 build_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-handler
+> npm run clean_lin && tsc && cp package.json ./dist
+
+
+> aarts-handler@0.3.74 clean_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-handler
+> rm -fr ./dist
+
++ aarts-handler@0.3.74
+------------------------------------------------
+AARTS_EB_HANDLER
+------------------------------------------------
++ aarts-types@0.2.87
++ aarts-handler@0.3.74
++ aarts-eb-types@0.2.87
+updated 3 packages and audited 32 packages in 1.997s
+found 0 vulnerabilities
+
+v0.3.74
+
+> aarts-eb-handler@0.3.74 build_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-handler
+> npm run clean_lin && tsc && cp package.json ./dist
+
+
+> aarts-eb-handler@0.3.74 clean_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-handler
+> rm -fr ./dist
+
++ aarts-eb-handler@0.3.74
+------------------------------------------------
+AARTS_EB_DISPATCHER
+------------------------------------------------
++ aarts-eb-types@0.2.87
+updated 2 packages and audited 30 packages in 0.511s
+found 0 vulnerabilities
+
+v1.0.73
+
+> aarts-eb-dispatcher@1.0.73 build_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-dispatcher
+> npm run clean_lin && tsc && cp package.json ./dist
+
+
+> aarts-eb-dispatcher@1.0.73 clean_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-dispatcher
+> rm -fr ./dist
+
++ aarts-eb-dispatcher@1.0.73
+------------------------------------------------
+AARTS_EB_DISPATCHER_TESTER
+------------------------------------------------
++ aarts-eb-types@0.2.87
+updated 2 packages and audited 30 packages in 1.115s
+found 0 vulnerabilities
+
+v1.0.74
+
+> aarts-eb-dispatcher-tester@1.0.74 build_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-dispatcher-tester
+> npm run clean_lin && tsc && cp package.json ./dist
+
+
+> aarts-eb-dispatcher-tester@1.0.74 clean_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-dispatcher-tester
+> rm -fr ./dist
+
++ aarts-eb-dispatcher-tester@1.0.74
+------------------------------------------------
+AARTS_DYNAMODB
+------------------------------------------------
++ aarts-types@0.2.87
+updated 1 package and audited 641 packages in 3.866s
+found 0 vulnerabilities
+
+v0.4.80
+
+> aarts-dynamodb@0.4.80 build_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-dynamodb
+> npm run clean_lin && tsc && cp package.json README.md test-model.svg ./dist
+
+
+> aarts-dynamodb@0.4.80 clean_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-dynamodb
+> rm -fr ./dist
+
++ aarts-dynamodb@0.4.80
+------------------------------------------------
+AARTS_EB_NOTIFIER
+------------------------------------------------
+v0.0.76
+
+> aarts-eb-notifier@0.0.76 build_lin C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-eb-notifier
+> tsc
+
+node_modules/apollo-link-http/lib/httpLink.d.ts(9,17): error TS2304: Cannot find name 'GlobalFetch'.
++ aarts-eb-notifier@0.0.76
+------------------------------------------------
+AARTS_EXAMPLE
+------------------------------------------------
++ aarts-handler@0.3.74
++ aarts-dynamodb@0.4.80
+removed 1 package, updated 3 packages and audited 30 packages in 2.951s
+found 0 vulnerabilities
+
+v0.0.73
+
+> airtours-aarts-example@0.0.73 build_lin C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours\airtours
+> npm run clean_lin && tsc && cp package.json ./dist
+
+
+> airtours-aarts-example@0.0.73 clean_lin C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours\airtours
+> rm -fr ./dist
+
+------------------------------------------------
+AARTS_EXAMPLE_INFRA
+------------------------------------------------
+v0.1.71
+
+> aws-cdk-typescript@0.1.71 build C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours\infra
+> tsc
+
+------------------------------------------------
+AARTS_EXAMPLE_APPSYNC
+------------------------------------------------
++ aarts-eb-types@0.2.87
++ aarts-dynamodb@0.4.80
++ aarts-eb-handler@0.3.74
++ aarts-eb-dispatcher-tester@1.0.74
++ aarts-eb-dispatcher@1.0.73
+removed 3 packages, updated 7 packages and audited 96 packages in 2.361s
+found 2 low severity vulnerabilities
+  run `npm audit fix` to fix them, or `npm audit` for details
+v0.0.108
+
+> touristart@0.0.108 build_lin C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync
+> npm run clean_lin && tsc && cp package.json ./dist
+
+
+> touristart@0.0.108 clean_lin C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\airtours-appsync
+> rm -fr ./dist
+
+procedures/IdmptSingleLambdaTestDataGenerator.ts(32,13): error TS2322: Type '({ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>)[]' is not assignable to type '{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>'.
+  Type '({ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>)[]' is missing the following properties from type '{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; }': id, meta, item_type, revisions, and 2 more.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(90,51): error TS8020: JSDoc types can only be used inside documentation comments.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(199,83): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(200,85): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(201,86): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(202,85): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(203,84): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(204,84): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(205,84): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(206,84): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(207,92): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(208,86): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(252,82): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(253,80): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(263,76): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(264,72): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(265,74): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(280,127): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(281,128): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(282,128): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(283,127): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(284,128): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(306,245): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(306,279): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(307,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(307,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(308,247): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(308,281): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(310,245): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(310,279): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(311,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(311,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(312,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(312,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(313,245): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(313,279): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(315,245): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(315,279): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(316,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(316,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(317,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(317,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(319,245): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(319,279): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(320,245): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(320,279): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(321,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(321,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(323,245): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(323,279): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(324,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(324,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(326,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(326,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(327,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(327,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(328,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(328,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(330,246): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(330,280): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(331,245): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+procedures/IdmptSingleLambdaTestDataGenerator.ts(331,279): error TS2339: Property 'id' does not exist on type 'Promise<{ [x: string]: any; id: string; meta: string; item_type: string; item_state?: string | undefined; state_history?: Record<number, string> | undefined; revisions: number; checksum?: string | undefined; ... 4 more ...; ringToken?: string | undefined; } & Record<...>>'.
+------------------------------------------------
+AARTS_EXAMPLE_APPSYNC_INFRA
+------------------------------------------------
+v0.1.107
+
+> aws-cdk-typescript@0.1.107 build C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\infra
+> tsc
+

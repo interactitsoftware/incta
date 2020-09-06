@@ -2,11 +2,12 @@
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { TransactWriteItemsInput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { RefKey, DynamoItem, DomainItem } from './BaseItemManager';
-import { dynamoDbClient, versionString, DB_NAME, toAttributeMap, removeEmpty, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
+import { DynamoItem } from './BaseItemManager';
+import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
 import { ppjson } from 'aarts-types/utils';
+import { RefKey } from './interfaces';
 
-export const transactPutItem = async <T extends DomainItem & DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
+export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
     process.env.DEBUG && console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
 
     const ditem = toAttributeMap(item)

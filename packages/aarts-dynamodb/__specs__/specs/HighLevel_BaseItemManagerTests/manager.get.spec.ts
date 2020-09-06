@@ -1,5 +1,7 @@
-import { _specs_AirplaneItem, /**XXX_specs_AirplaneRefkeys */ 
-_specs_AirportItem} from "../../testmodel/_DynamoItems"
+import {
+  _specs_AirplaneItem, /**XXX_specs_AirplaneRefkeys */
+  _specs_AirportItem
+} from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../../testutils"
 import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
@@ -9,25 +11,34 @@ import { domainAdapter } from "../../testmodel/itemManagersMap"
 import { CognitoIdentity } from "aws-sdk"
 import { DynamoItem } from "../../../BaseItemManager"
 
-let arrangedAirplane:DynamoItem
+let arrangedAirplane: DynamoItem
 let arrangedAirport: DynamoItem
 
 describe('manager.get.spec', () => {
 
-  beforeAll(async (done) => { 
+  beforeAll(async (done) => {
     await clearDynamo();
-    arrangedAirplane = await transactPutItem(new _specs_AirplaneItem({reg_uq_str: "nomer5"}))
-    arrangedAirport = await transactPutItem(new _specs_AirportItem({airport_size: 20}))
-    done() 
+    arrangedAirplane = await transactPutItem(new _specs_AirplaneItem({ reg_uq_str: "nomer5" }))
+    arrangedAirport = await transactPutItem(new _specs_AirportItem({ airport_size: 20 }))
+    done()
   })
 
   test('get 2 items of different type via single call to manager', async () => {
-    
+
     // you can get items of different types, no matter the particular item manager you call
-    const getGenerator = await domainAdapter.itemManagers[_specs_AirportItem.__type].get("doesnt matter here",{
-      arguments:[{id:arrangedAirplane.id}, {id:arrangedAirport.id}],
-      identity:"akrsmv"
-    })
+    const getGenerator = await domainAdapter.itemManagers[_specs_AirportItem.__type].get("doesnt matter here",
+      {
+        payload: {
+          arguments: [{ id: arrangedAirplane.id }, { id: arrangedAirport.id }],
+          identity: "akrsmv"
+        },
+        meta: {
+          item: "notneededfortest",
+          action: "query",
+          eventSource: "notneededfortest",
+          ringToken: "notneededfortest"
+        }
+      })
 
     let processorGet = await getGenerator.next()
     do {
@@ -44,14 +55,23 @@ describe('manager.get.spec', () => {
   })
 
   test('will throw if payload arguments is not an array', async () => {
-    
+
     // you can get items of different types, no matter the particular item manager you call
-    
+
     const callWithPayloadNotArray = async () => {
-      for await (let a of domainAdapter.itemManagers[_specs_AirportItem.__type].get("doesnt matter here",{
-        arguments:{id:arrangedAirplane.id},
-        identity:"akrsmv"
-      })) return a
+      for await (let a of domainAdapter.itemManagers[_specs_AirportItem.__type].get("doesnt matter here",
+        {
+          payload: {
+            arguments: { id: arrangedAirplane.id },
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
+        })) return a
     }
 
     expect(callWithPayloadNotArray).rejects.toThrow(/is not an array\!/)

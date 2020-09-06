@@ -19,10 +19,18 @@ describe('manager.create.spec', () => {
       for await (let planeCreated of await domainAdapter.itemManagers[_specs_AirplaneItem.__type].create(
         _specs_AirplaneItem.__type,
         {
-          arguments: domainItem,
-          identity: "akrsmv"
+          payload: {
+            arguments: domainItem,
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
         }
-      )){}
+      )) { }
     }
 
     return expect(callWithPayloadNotArray).rejects.toThrow(/is not an array\!/)
@@ -36,10 +44,18 @@ describe('manager.create.spec', () => {
       for await (let planeCreated of await domainAdapter.itemManagers[_specs_AirplaneItem.__type].create(
         _specs_AirplaneItem.__type,
         {
-          arguments: [domainItem, domainItem],
-          identity: "akrsmv"
+          payload: {
+            arguments: [domainItem, domainItem],
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "notneededfortest"
+          }
         }
-      )){}
+      )) { }
     }
 
     return expect(callWithPayloadNotArray).rejects.toThrow(/excedes the max arguments array length constraint\(1\)/)
@@ -51,8 +67,17 @@ describe('manager.create.spec', () => {
     const createGenerator = domainAdapter.itemManagers[_specs_AirplaneItem.__type].create(
       _specs_AirplaneItem.__type,
       {
-        arguments: [domainItem],
-        identity: "akrsmv"
+        payload: {
+          arguments: [domainItem],
+          identity: "akrsmv"
+        },
+        meta: {
+          item: "notneededfortest",
+          action: "query",
+          eventSource: "notneededfortest",
+          ringToken: "notneededfortest"
+        }
+        
       }
     )
     let processorCreate = await createGenerator.next()
@@ -61,7 +86,7 @@ describe('manager.create.spec', () => {
         processorCreate = await createGenerator.next()
       }
     } while (!processorCreate.done)
-    
+
 
     //@ts-ignore
     expect(processorCreate.value.arguments.length).toBe(1)
@@ -70,7 +95,7 @@ describe('manager.create.spec', () => {
     expect(processorCreate.value.arguments[0].reg_uq_number).toBe(5)
 
     //assert all items created
-    const allItems:ScanOutput = await dynamoDbClient.scan({TableName: DB_NAME}).promise()
+    const allItems: ScanOutput = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
     const aggregations = allItems.Items?.filter(i => i.id.S === "aggregations")[0]
     expect(aggregations).toHaveProperty(_specs_AirplaneItem.__type)
     expect(aggregations && aggregations[_specs_AirplaneItem.__type].N).toBe("1")
