@@ -8,7 +8,7 @@ export const handler = async (input: AartsEvent, context: Context): Promise<any>
 	return await processPayload(input, context)
 }
 
-export async function processPayload(input: AartsEvent, context: Context): Promise<any> {
+export async function processPayload(input: AartsEvent, context?: Context): Promise<any> {
 
 	return new Promise(async (resolve: any, reject: any) => {
 
@@ -32,7 +32,7 @@ export async function* processPayloadAsync(input: AartsEvent): AsyncGenerator<Aa
 
 	const domainArguments = Array.isArray(input.payload.arguments) ? input.payload.arguments : [input.payload.arguments]
 
-	const payloadsArray : AartsEvent = {
+	const payloadsArray: AartsEvent = {
 		payload: {
 			arguments: domainArguments,
 			identity: input.payload.identity
@@ -44,7 +44,10 @@ export async function* processPayloadAsync(input: AartsEvent): AsyncGenerator<Aa
 
 	let resultItems = []
 	// try {
-	const manager = global.domainAdapter.itemManagers[input.meta.item] as unknown as IItemManager<object>;
+	const manager = input.meta.action === "query" ?
+		Object.values(global.domainAdapter.itemManagers)[0] as unknown as IItemManager<object>
+		:
+		global.domainAdapter.itemManagers[input.meta.item] as unknown as IItemManager<object>;
 	if (!manager) {
 		return Object.assign({}, input,
 			{

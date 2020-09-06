@@ -4,6 +4,7 @@ import * as idGenUtil from 'aarts-types/utils'
 export interface AppSyncEvent {
     action: string,
     item: string,
+    ringToken?: string,
     arguments: any,
     identity: any
 }

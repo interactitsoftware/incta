@@ -35,7 +35,8 @@ export class AartsAllInfraStack extends Stack {
 
     const eventBusConstruct = new EventBusConstruct(this, `Events`, {
       clientAppName,
-      nodeModulesLayer
+      nodeModulesLayer,
+      dynamoDbConstruct,
     })
     const cognitoConstruct = new CognitoConstruct(this, `Auth`, {clientAppName});
     const appSyncConstruct = new AppSyncConstruct(this, `AppSync`, {

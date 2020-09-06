@@ -3,6 +3,7 @@ import AWS = require("aws-sdk");
 import { AartsEBUtil, AppSyncEvent } from "aarts-eb-types/aartsEBUtil"
 import { prepareForDispatch } from "./prepareForDispatch";
 import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHandlerFromContent";
+import { processPayload } from "aarts-handler/aartsHandler"
 
 /**
  * forwards to SNS, decorating with:
@@ -18,8 +19,35 @@ class aartsSnsDispatcher extends AartsEBUtil {
 
 	public dispatch = async (event: AppSyncEvent, context?: Context): Promise<any> => {
 
-		const ringToken: string = this.uuid()
-		console.log('generated ring token: ' + ringToken + ' for received event: ', event)
+		const ringToken : string = !!event.ringToken && event.ringToken !== "undefined" ? event.ringToken : this.uuid()
+		if (!!event.ringToken && event.ringToken !== "undefined") {
+			console.log('generated ring token: ' + ringToken + ' for received event: ', event)
+		} else {
+			console.log('using already present ring token:  ' + ringToken + ' for received event: ', event)
+		}
+
+		if (event.action === "query") {
+			console.log('dispatching directly to handler, skipping SNS publishing')
+			return {
+				statusCode: 200,
+				body: await processPayload({
+					meta: {
+						ringToken: ringToken,
+						eventSource: `worker:input`,
+						action: 'query',
+						item:''
+					},
+					payload: {
+						arguments: {
+							...(event.arguments),
+							ringToken
+						},
+						identity: event.identity
+					}
+				}, context)
+			}
+		}
+
 
 		if (!process.env["AWS_SAM_LOCAL"]) {
 			// used runtime in aws

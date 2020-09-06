@@ -21,7 +21,7 @@ export const prepareForDispatch = (event: {
 			},
 			"ringToken": {
 				DataType: 'String',
-			StringValue: ringToken
+				StringValue: ringToken
 			}
 		}
 	}

@@ -8,10 +8,12 @@ import { Duration } from '@aws-cdk/core'
 import { join } from 'path';
 import { LayerVersion, Code } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
+import { DynamoDBConstruct } from './dynamoDbConstruct';
 
 export interface EventBusConstructProps {
     clientAppName: string,
-    nodeModulesLayer: LayerVersion
+    nodeModulesLayer: LayerVersion,
+    dynamoDbConstruct: DynamoDBConstruct
 }
 
 export class EventBusConstruct extends cdk.Construct {
@@ -51,6 +53,7 @@ export class EventBusConstruct extends cdk.Construct {
             retryAttempts: 0
         })
         this.grantAccess(this.eventDispatcher)
+        props.dynamoDbConstruct.grantAccess(this.eventDispatcher)
 
         this.eventDispatcherStressTester = new lambda.Function(this, "DispatcherStressTester", {
             runtime: lambda.Runtime.NODEJS_12_X,
@@ -65,6 +68,7 @@ export class EventBusConstruct extends cdk.Construct {
             retryAttempts: 0
         })
         this.grantAccess(this.eventDispatcherStressTester)
+        props.dynamoDbConstruct.grantAccess(this.eventDispatcherStressTester)
     }
 
     grantAccess(lambdaFunction: lambda.Function) {
