@@ -255,7 +255,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param payload 
      */
     async *baseValidateDelete(__type: string, payload: AartsPayload<T>): AsyncGenerator<string, AartsPayload<T>, undefined> {
-        process.env.DEBUG && (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
+        process.env.DEBUG && (yield `[${__type}:baseValidateDelete] checking for mandatory item keys`)
 
         if (payload.arguments.constructor !== Array) {
             throw new Error(`[${__type}:baseValidateDelete] Payload is not an array!`)
@@ -404,7 +404,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param __type gate checks for CREATE
      * @param payload 
      */
-    async *baseValidateCreate(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload<T>, undefined> {
+    async *baseValidateCreate(__type: string, payload: AartsPayload<T>): AsyncGenerator<string, AartsPayload<T>, undefined> {
         process.env.DEBUG && (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))
 
         if (payload.arguments.constructor !== Array) {
@@ -495,7 +495,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param __type gate checks for Update
      * @param payload 
      */
-    async *baseValidateUpdate(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload<T>, undefined> {
+    async *baseValidateUpdate(__type: string, payload: AartsPayload<T>): AsyncGenerator<string, AartsPayload<T>, undefined> {
         process.env.DEBUG && (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
         if (payload.arguments.constructor !== Array) {

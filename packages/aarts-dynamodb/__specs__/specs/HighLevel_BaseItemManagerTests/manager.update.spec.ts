@@ -54,7 +54,7 @@ describe('manager.update.spec', () => {
         .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripNmetadata()._obj)
     })
   })
-  test.only('update remove refkey', async () => {
+  test('update remove refkey', async () => {
 
     const airplane = new _specs_AirplaneItem({number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
 

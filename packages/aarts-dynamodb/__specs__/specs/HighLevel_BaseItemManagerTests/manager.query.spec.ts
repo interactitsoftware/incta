@@ -84,10 +84,6 @@ describe('query spec', () => {
                 }
             } while (!queryProcessor.done)
 
-            console.log("=============================================")
-            console.log(queryProcessor.value)
-            console.log("=============================================")
-
             // META: flight}to_airport; 
             // SMETADATA: SOFIA AIRPORT's ID
             const queryGen1 = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
