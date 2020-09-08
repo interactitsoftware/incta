@@ -69,7 +69,3 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
 global.domainAdapter = new DomainAdapter()
 
 export { dispatcher, dispatcherTester, handler, notifier }
-
-// console.log("fixing a DEBUG issue") // on windows(?), somewhere DEBUG sys var gets reset to undefined, thus DEBUGGER is used to backup 
-// in AWS there is no need for it. If you want to deug there - just add DEBUG=1 sys env var 
-process.env.DEBUG = process.env.DEBUGGER

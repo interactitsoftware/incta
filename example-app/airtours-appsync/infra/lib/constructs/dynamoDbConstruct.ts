@@ -23,11 +23,11 @@ export class DynamoDBConstruct extends cdk.Construct {
         partitionKey: { name: "id", type: AttributeType.STRING },
         sortKey: { name: "meta", type: AttributeType.STRING },
 
-        billingMode: BillingMode.PROVISIONED,
-        readCapacity: 1,
-        writeCapacity: 1,
+        // billingMode: BillingMode.PROVISIONED,
+        // readCapacity: 1,
+        // writeCapacity: 1,
 
-        // billingMode: BillingMode.PAY_PER_REQUEST,
+        billingMode: BillingMode.PAY_PER_REQUEST,
 
         stream: StreamViewType.NEW_AND_OLD_IMAGES,
         removalPolicy: RemovalPolicy.DESTROY // TODO think for prod and later RETAINing of real data
@@ -38,8 +38,8 @@ export class DynamoDBConstruct extends cdk.Construct {
         partitionKey: { name: "meta", type: AttributeType.STRING },
         sortKey: { name: "smetadata", type: AttributeType.STRING },
         projectionType: ProjectionType.ALL,
-        readCapacity: 1,
-        writeCapacity: 1
+        // readCapacity: 1,
+        // writeCapacity: 1,
       })
 
       table.addGlobalSecondaryIndex({
@@ -47,8 +47,8 @@ export class DynamoDBConstruct extends cdk.Construct {
         partitionKey: { name: "meta", type: AttributeType.STRING },
         sortKey: { name: "nmetadata", type: AttributeType.NUMBER },
         projectionType: ProjectionType.ALL,
-        readCapacity: 1,
-        writeCapacity: 1
+        // readCapacity: 1,
+        // writeCapacity: 1,
       })
 
       table.addGlobalSecondaryIndex({
@@ -56,8 +56,8 @@ export class DynamoDBConstruct extends cdk.Construct {
         partitionKey: { name: "smetadata", type: AttributeType.STRING },
         sortKey: { name: "meta", type: AttributeType.STRING },
         projectionType: ProjectionType.ALL,
-        readCapacity: 1,
-        writeCapacity: 1
+        // readCapacity: 1,
+        // writeCapacity: 1,
       })
 
       table.addGlobalSecondaryIndex({
@@ -65,8 +65,8 @@ export class DynamoDBConstruct extends cdk.Construct {
         partitionKey: { name: "nmetadata", type: AttributeType.NUMBER },
         sortKey: { name: "meta", type: AttributeType.STRING },
         projectionType: ProjectionType.ALL,
-        readCapacity: 1,
-        writeCapacity: 1
+        // readCapacity: 1,
+        // writeCapacity: 1,
       })
 
       table.addGlobalSecondaryIndex({
@@ -74,8 +74,8 @@ export class DynamoDBConstruct extends cdk.Construct {
         partitionKey: { name: "meta", type: AttributeType.STRING },
         sortKey: { name: "id", type: AttributeType.STRING },
         projectionType: ProjectionType.ALL,
-        readCapacity: 1,
-        writeCapacity: 1
+        // readCapacity: 1,
+        // writeCapacity: 1,
       })
 
       return table;

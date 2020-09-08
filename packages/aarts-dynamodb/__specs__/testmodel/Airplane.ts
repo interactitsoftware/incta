@@ -1,15 +1,41 @@
-import { _specs_Nomenclature } from "./Nomenclature"
 import { BaseDynamoItemManager } from "../../BaseItemManager"
 import { _specs_AirportItem, _specs_AirplaneItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
 import { ppjson } from "aarts-types/utils"
 
-export class _specs_AirplaneModel extends _specs_Nomenclature { 
+export class _specs_AirplaneModel { 
+    constructor(...args: any[]) {
+        // client domain items left with a requirement to have a rest constructor,
+        // however below code is executed already on a DynamoItem level,
+        // and having it here again will cause a nested object with same props
+        
+        // Object.assign(this, args.reduce((accum, arg)=>{
+        //     Object.keys(arg).forEach(k => {
+        //         accum[k] = arg[k]
+        //     })
+        //     return accum
+        // },{}))
+    }
     public manifacturer:string = "unknown"
+    public country?:string
+    public name?:string
 }
 
-export class _specs_AirplaneManifacturer extends _specs_Nomenclature { 
-    public country: string = "unknown"
+export class _specs_AirplaneManifacturer { 
+    constructor(...args: any[]) {
+        // client domain items left with a requirement to have a rest constructor,
+        // however below code is executed already on a DynamoItem level,
+        // and having it here again will cause a nested object with same props
+        
+        // Object.assign(this, args.reduce((accum, arg)=>{
+        //     Object.keys(arg).forEach(k => {
+        //         accum[k] = arg[k]
+        //     })
+        //     return accum
+        // },{}))
+    }
+    public country?:string
+    public name?:string
 }
 
 export class _specs_Airplane {

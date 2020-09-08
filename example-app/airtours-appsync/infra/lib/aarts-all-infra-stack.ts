@@ -60,14 +60,14 @@ export class AartsAllInfraStack extends Stack {
 
     const workerInputHandler = new WorkerConstruct(this, `${clientAppName}Handler`, {
       workerName: `${clientAppName}Handler`,
-      functionTimeout: Duration.seconds(10),
+      functionTimeout: Duration.minutes(10),
       functionHandler: "index.handler",
       functionImplementationPath: join("..", clientAppName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
       eventSource: "worker:input",
-      // envVars: {"DEBUG":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
+      // envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
       layers: [
         nodeModulesLayer
       ]

@@ -21,9 +21,9 @@ class aartsSnsDispatcher extends AartsEBUtil {
 
 		const ringToken : string = !!event.ringToken && event.ringToken !== "undefined" ? event.ringToken : this.uuid()
 		if (!!event.ringToken && event.ringToken !== "undefined") {
-			console.log('generated ring token: ' + ringToken + ' for received event: ', event)
-		} else {
 			console.log('using already present ring token:  ' + ringToken + ' for received event: ', event)
+		} else {
+			console.log('generated ring token: ' + ringToken + ' for received event: ', event)
 		}
 
 		if (event.action === "query") {
@@ -68,8 +68,8 @@ class aartsSnsDispatcher extends AartsEBUtil {
 	public async samLocalSupport_callSqsHandlerSynchronously(event: AppSyncEvent, ringToken: string) {
 		//used sam local runtime
 		const sqsEvent = await samLocalSimulateSQSHandlerFromContent(JSON.stringify(event), ringToken);
-		process.env.DEBUG && console.log("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
-		process.env.DEBUG && console.log("sqsEVENT simulated: " + sqsEvent)
+		!process.env.DEBUGGER || console.log("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
+		!process.env.DEBUGGER || console.log("sqsEVENT simulated: " + sqsEvent)
 
 		// only run inside local lambda runner
 		// Note the endpoint name
@@ -83,7 +83,7 @@ class aartsSnsDispatcher extends AartsEBUtil {
 			maxRetries: 2,
 			retryDelayOptions: {
 				customBackoff: (retryCount: number, err) => {
-					process.env.DEBUG && console.log(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+					!process.env.DEBUGGER || console.log(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
 					// expecting to retry
 					// 1st attempt: 110 ms
 					// 2nd attempt: 200 ms

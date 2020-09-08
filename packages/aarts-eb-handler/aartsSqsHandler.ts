@@ -5,7 +5,7 @@ import { processPayloadAsync } from 'aarts-handler/aartsHandler'
 import { AartsEBUtil } from 'aarts-eb-types/aartsEBUtil'
 
 export const handler = async (message: SQSEvent, context: Context): Promise<any> => {
-	process.env.DEBUG && console.log('received SQS message: ', ppjson(message))
+	!process.env.DEBUGGER || console.log('received SQS message: ', ppjson(message))
 	for (const record of message.Records) {
 		const aartsEvent = Object.assign(JSON.parse(record.body),
 			{
@@ -17,7 +17,7 @@ export const handler = async (message: SQSEvent, context: Context): Promise<any>
 
 				}
 			})
-		process.env.DEBUG && console.log('parsed aartsEvent from SQS is ', aartsEvent)
+		!process.env.DEBUGGER || console.log('parsed aartsEvent from SQS is ', aartsEvent)
 		await new AartsSqsHandler().processPayload(aartsEvent, context)
 	}
 }
@@ -34,7 +34,7 @@ export class AartsSqsHandler extends AartsEBUtil {
 			do {
 				if (!processor.done) {
 					processor = await asyncGen.next()
-					process.env.DEBUG && console.log(`[${input.meta.item}:${input.meta.action}] `, ppjson(processor.value))
+					!process.env.DEBUGGER || console.log(`[${input.meta.item}:${input.meta.action}] `, ppjson(processor.value))
 					await this.publish(this.preparePublishInput(processor.value));
 				}
 			} while (!processor.done)

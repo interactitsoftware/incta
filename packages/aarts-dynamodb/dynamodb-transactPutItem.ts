@@ -8,7 +8,7 @@ import { ppjson } from 'aarts-types/utils';
 import { RefKey } from './interfaces';
 
 export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
-    process.env.DEBUG && console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
+    !process.env.DEBUGGER || console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
 
     const ditem = toAttributeMap(item)
 
@@ -77,6 +77,6 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
 
     // write item to the database
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    process.env.DEBUG && console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    !process.env.DEBUGGER || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
     return item
 }

@@ -11,7 +11,12 @@ We have to recall that this is a generic library, so query and access patterns a
 The various copies of the most recent item's version are always maintained consistent with the original (v_0) item by employing per item transactions.
 Using thransactions on an item level, requires us to define a higher level unit of work, "procedure" - a procedure will be comprosed of multiple events for CRUD over items, and should be eventually consistent - ensured by the client application logic. Aarts-dynamodb will only take care of registering events comming from different procedures (will perform base aggregations)
 
-If we go back to that remark* above, about the joins and partitions: Yes on the main table, one can say there are no "rds joins" possible, because of the partitions structure etc. However, lets see what happens on the GSI level: When the client applications define their owns keys of interest (aka refkeys), `aarts-dynamodb` will ensure those keys are present in corresponding GSI fields (meta/smetadata or meta/nmetadata). So, actually, "rds joins" __are implemented on a GSI level__.
+If we go back to that remark* above, about the joins and partitions: Yes, on the main table, one can say there are no "rds joins" possible, because of the partitions structure etc. However, lets see what happens on the GSI level: When the client applications define their own keys of interest (aka refkeys), `aarts-dynamodb` will ensure those keys are present in corresponding GSI fields (meta/smetadata or meta/nmetadata). So, actually, "rds joins" __are implemented on a GSI level__.
+
+## From generic library to optimized for custom needs
+
+It is important to note the expensiveness of this library, in terms of dynamo RCUs and WCUs. The value of this library is that with 5 GSIs in total, one can define an entity, with up to 20 foreign keys.
+All this definitions are happening very easy, on the application level. However in order to achieve this, however, when inserting an entity, there will be +2 more WCU used for each FK defined (transactional write of the copied entity). Because of the easyness of defining and low time for development, this library is very useful for designing and testing different data models and identifying/optimizing query patterns needed for an application. However, once those are identified, one can replace the enourmous copying of items (consuming WCU/RCU), and instead of relying on the 5 generic GSI, define his own. Then, copying is not done via writing completley separate dynamo item, but only copying the item's identified keys into respective GSI keys
 
 ## Refkeys
 

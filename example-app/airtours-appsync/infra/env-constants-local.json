@@ -1,6 +1,5 @@
 {
     "Parameters": {
-        "DEBUG": "1",
         "DEBUGGER": "1",
         "PERFORM_AGGREGATIONS": "1",
         "AWS_SAM_LOCAL": "1",

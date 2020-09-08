@@ -3,6 +3,6 @@
         "AWS_SAM_LOCAL": "1",
         "DB_NAME": "ITEMS",
         "DDB_LOCAL_URL": "http://dynamodb:8000",
-        "DEBUG": "1"
+        "DEBUGGER": "1"
     }
 }

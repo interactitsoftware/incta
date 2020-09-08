@@ -5,7 +5,7 @@ import { AartsEvent, IIdentity } from "aarts-types/interfaces";
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
 import { EraseDataItem } from "../_DynamoItems";
-import { WriteRequest } from "aws-sdk/clients/dynamodb";
+import { WriteRequest, ScanOutput, AttributeMap } from "aws-sdk/clients/dynamodb";
 
 export class EraseData {
 
@@ -40,18 +40,18 @@ export class EraseDataManager extends BaseDynamoItemManager<EraseDataItem> {
 }
 
 const clearDynamo = async () => {
-    let scanResult
+    let scanResult : ScanOutput = {}
     do {
-        let scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
-        const items = scanResult.Items && chunks(scanResult.Items, 25)
-        if (items) {
+        scanResult = await dynamoDbClient.scan({ TableName: DB_NAME, ExclusiveStartKey: scanResult.LastEvaluatedKey}).promise()
+        let items = scanResult.Items && chunks(scanResult.Items, 25)
+        if (items && items.length > 0) {
             for (const chunk of items) {
                 await dynamoDbClient.batchWriteItem({
                     RequestItems: {
                         [DB_NAME]: chunk.reduce<WriteRequest[]>((accum, item) => {
                             accum.push({
                                 DeleteRequest: {
-                                    Key: { id: { S: item.id.S }, meta: { S: item.meta.S } }
+                                    Key: { id: { S: item["id"].S }, meta: { S: item["meta"].S } }
                                 }
                             })
                             return accum
@@ -60,8 +60,5 @@ const clearDynamo = async () => {
                 }).promise()
             }
         }
-
-        scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
-
     } while (scanResult && scanResult.LastEvaluatedKey)
 }

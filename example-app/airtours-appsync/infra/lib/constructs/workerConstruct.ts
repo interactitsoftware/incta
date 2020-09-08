@@ -36,7 +36,7 @@ export class WorkerConstruct extends Construct {
             queueName: `${props.workerName}`,
             // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
             deadLetterQueue: { 
-                maxReceiveCount: 10,
+                maxReceiveCount: 1,
                 queue: new Queue(this, "DEADLETTER-SQS", {
                     queueName: `${props.workerName}-DEADLETTER-SQS`
                 }),

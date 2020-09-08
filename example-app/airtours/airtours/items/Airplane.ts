@@ -23,7 +23,7 @@ export class Airplane {
 
 export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
     async *validateCreate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<string, AirplaneItem, undefined> {
-        process.env.DEBUG && (yield `[airplaneManager/validateCreate]: BEGIN validateCreate method`)
+        !process.env.DEBUGGER || (yield `[airplaneManager/validateCreate]: BEGIN validateCreate method`)
             // example domain validations
             const errors: string[] = []
 
@@ -52,7 +52,7 @@ export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
     }
 
     async *validateUpdate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<string, AirplaneItem, undefined> {
-            process.env.DEBUG && (yield "AirplaneItem validator validating " + ppjson(airplane))
+            !process.env.DEBUGGER || (yield "AirplaneItem validator validating " + ppjson(airplane))
             return airplane
     }
 

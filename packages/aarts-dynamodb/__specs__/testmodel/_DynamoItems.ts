@@ -12,6 +12,7 @@ export class _specs_FlightItem extends DynamoItem(_specs_Flight, "flight", [
     {key: "from_airport", ref:"airport"},
     {key: "to_airport", ref:"airport"},
     {key: "tourist_season"}, // although not pointing to other type, we still want to query by it
+    {key: "duration_hours"}, // although not pointing to other type, we still want to query by it
     {key: "from_country", ref: "country"},
     {key: "to_country", ref: "country"},
 ]) { }
@@ -53,12 +54,13 @@ export class _specs_CountryItem extends DynamoItem(_specs_Country, "country", [
 ]) { }
 
 export class _specs_AirplaneModelItem extends DynamoItem(_specs_AirplaneModel, "airplane_model", [
-    {key: "name", ref: "unique"},
+    {key: "name", unique: true},
     {key: "manifacturer", ref: "manifacturer"},
+    {key: "country", ref: "country"},
 ]) { }
 
 export class _specs_AirplaneManifacturerItem extends DynamoItem(_specs_AirplaneManifacturer, "airplane_manifacturer", [
-    {key: "name", ref: "unique"},
+    {key: "name", unique: true},
     {key: "country", ref: "country"},
 ]) { }
 

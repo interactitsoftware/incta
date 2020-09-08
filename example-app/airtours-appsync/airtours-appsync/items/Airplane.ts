@@ -8,9 +8,8 @@ import {_specs_AirplaneItem as AirplaneItem} from "aarts-dynamodb/__specs__/test
 // Although we are reusing dynamoitem definition from the __specs__ we are redefining the manager for that object here
 export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
     async *validateCreate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<string, AirplaneItem, undefined> {
-        console.log("111 DEBUG is " + process.env.DEBUG);
-        console.log("DB_NAME is " + process.env.DB_NAME);
-        process.env.DEBUG && (yield `[airplaneManager/validateCreate]: BEGIN validateCreate method`)
+
+        !process.env.DEBUGGER || (yield `[airplaneManager/validateCreate]: BEGIN validateCreate method`)
             // example domain validations
             const errors: string[] = []
 
@@ -32,14 +31,14 @@ export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
                 console.log('INVALID airplane: ', errors)
                 throw new Error(errors.join(";;"))
             } else {
-                yield `[airplaneManager/validateCreate]: END successful`
+                !process.env.DEBUGGER || (yield `[airplaneManager/validateCreate]: END successful`)
                 console.log('valid airplane', airplane)
                 return airplane
             }
     }
 
     async *validateUpdate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<string, AirplaneItem, undefined> {
-            process.env.DEBUG && (yield "AirplaneItem validator validating " + ppjson(airplane))
+            !process.env.DEBUGGER || (yield "AirplaneItem validator validating " + ppjson(airplane))
             return airplane
     }
 

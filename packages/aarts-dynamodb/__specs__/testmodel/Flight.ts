@@ -20,8 +20,7 @@ export class _specs_Flight {
     public from_country?: string
     public to_country?: string
     public flight_code?: string 
-    //-- rest of keys
-    public durration_hours?: number
+    public duration_hours?: number
     public tourist_season?: string
 
 

@@ -8,6 +8,35 @@
 }
 
 {
+  "action": "start",
+  "item": "airtours_test_data_importer",
+  "arguments": {},
+  "identity": {
+    "username": "akrsmv"
+  }
+}
+
+{
+  "action": "start",
+  "item": "idmpt_multiple_lambda_test_data_generator",
+  "ringToken": "22997aaf-5981-42fa-a728-626b96942614",
+  "arguments": {},
+  "identity": {
+    "username": "akrsmv"
+  }
+}
+
+{
+  "action": "start",
+  "item": "idmpt_single_lambda_test_data_generator",
+  "ringToken": "22997aaf-5981-42fa-a728-626b96942614",
+  "arguments": {},
+  "identity": {
+    "username": "akrsmv"
+  }
+}
+
+{
   "action": "create",
   "item": "tourist",
   "arguments": {
@@ -18,15 +47,6 @@
     "from_country": "usa",
     "to_country": "germany"
   },
-  "identity": {
-    "username": "akrsmv"
-  }
-}
-
-{
-  "action": "start",
-  "item": "multiple_lambda_test_data_generator",
-  "arguments": {},
   "identity": {
     "username": "akrsmv"
   }
@@ -52,18 +72,18 @@
     }
 }
 
-****************************
-* 3 refs, 1 UQ, 4 TOTAL
-****************************
+************************************************************************
+* 1 3 refs, 1 UQ ref, + v_0 + ringToken = 6 TOTAL for 1 item; 7 Country items: 42 items TOTAL
+************************************************************************
 export class _specs_CountryItem extends DynamoItem(_specs_Country, "country", [
     {key: "name", unique: true},
     {key: "currency"},
     {key: "code"}
 ]) { }
 
-****************************
-* 6 refs, 1 UQ, 7 TOTAL
-****************************
+************************************************************************
+* 6 refs, 1 UQ ref, + v_0 + ringToken = 9 TOTAL for 1 item; 10 Airport items: 90 items TOTAL
+************************************************************************
 export class _specs_AirportItem extends DynamoItem(_specs_Airport, "airport", [
     {key: "name", unique: true},
     {key: "country", ref: "country"},
@@ -73,41 +93,26 @@ export class _specs_AirportItem extends DynamoItem(_specs_Airport, "airport", [
 	{key: "type"},
 ]) { }
 
+************************************************************************
+* 2 refs, 1 UQ ref, + v_0 + ringToken = 5 TOTAL for 1 item; 2 AirplaneManifacturer items: 10 items TOTAL
+************************************************************************
+export class _specs_AirplaneManifacturerItem extends DynamoItem(_specs_AirplaneManifacturer, "airplane_manifacturer", [
+    {key: "name", ref: "unique"},
+    {key: "country", ref: "country"}
+]) { }
 
+************************************************************************
+* 3 refs, 1 UQ ref, + v_0 + ringToken = 6 TOTAL for 1 item; 3 AirplaneModel items: 18 items TOTAL
+************************************************************************
+export class _specs_AirplaneModelItem extends DynamoItem(_specs_AirplaneModel, "airplane_model", [
+    {key: "name", ref: "unique"},
+    {key: "manifacturer", ref: "manifacturer"},
+    {key: "country", ref: "country"},
+]) { }
 
-
-
-****************************
-* 7 refs, 1 UQ, 8 TOTAL
-****************************
-export class _specs_FlightItem extends DynamoItem(_specs_Flight, "flight", [
-    {key: "flight_code", unique:true},
-    {key: "airplane", ref:"airplane"},
-    {key: "from_airport", ref:"airport"},
-    {key: "to_airport", ref:"airport"},
-    {key: "tourist_season"}, // although not pointing to other type, we still want to query by it
-    {key: "from_country", ref: "country"},
-    {key: "to_country", ref: "country"}]) { }
-
-
-****************************
-* 10 refs, 1 UQ, 11 TOTAL
-****************************
-export class _specs_TouristItem extends DynamoItem(_specs_Tourist, "tourist", [
-    {key: "iban", unique:true},
-    {key: "fname"},
-    {key: "lname"},
-    {key: "iban"},
-    {key: "airplane", ref:"airplane"},
-    {key: "from_airport", ref:"airport"},
-    {key: "to_airport", ref:"airport"},
-    {key: "flight", ref: "flight"}, 
-    {key: "from_country", ref: "country"},
-    {key: "to_country", ref: "country"}]) { }
-
-****************************
-* 5 refs, 1 UQ, 6 TOTAL
-****************************
+************************************************************************
+* 5 refs, 2 UQ refs, + v_0 + ringToken = 9 TOTAL for 1 item; 5 Airplane items: 45 items TOTAL
+************************************************************************
 export class _specs_AirplaneItem extends DynamoItem(_specs_Airplane, "airplane", [
     {key: "reg_uq_str", unique: true},
     {key: "reg_uq_number", unique: true},
@@ -117,21 +122,48 @@ export class _specs_AirplaneItem extends DynamoItem(_specs_Airplane, "airplane",
 ]) { }
 
 
-
-
-
-****************************
-* 2 refs, 1 UQ, 3 TOTAL
-****************************
-export class _specs_AirplaneModelItem extends DynamoItem(_specs_AirplaneModel, "airplane_model", [
-    {key: "name", ref: "unique"},
-    {key: "manifacturer", ref: "manifacturer"}
+************************************************************************
+* 8 refs, 1 UQ ref, + v_0 + ringToken = 11 TOTAL for 1 item; 20 Flight items: 220 items TOTAL
+************************************************************************
+export class _specs_FlightItem extends DynamoItem(_specs_Flight, "flight", [
+    {key: "flight_code", unique:true},
+    {key: "airplane", ref:"airplane"},
+    {key: "from_airport", ref:"airport"},
+    {key: "to_airport", ref:"airport"},
+    {key: "tourist_season"}, // although not pointing to other type, we still want to query by it
+    {key: "duration_hours"}, // although not pointing to other type, we still want to query by it
+    {key: "from_country", ref: "country"},
+    {key: "to_country", ref: "country"},
 ]) { }
+======
+47 v_0 items (i.e unique, separate entities)
+======
+425 dynamo records in total (i.e the unique items + all their copies, facilitating FKs/queries)
+======
+************************************************************************
+* 9 refs, 1 UQ ref, + v_0 + ringToken = 12 TOTAL for 1 item; 200 Tourist items: 2400 items TOTAL
+************************************************************************
+export class _specs_TouristItem extends DynamoItem(_specs_Tourist, "tourist", [
+    {key: "iban", unique:true},
+    {key: "fname"},
+    {key: "lname"},
+    {key: "airplane", ref:"airplane"},
+    {key: "from_airport", ref:"airport"},
+    {key: "to_airport", ref:"airport"},
+    {key: "flight", ref: "flight"}, 
+    {key: "from_country", ref: "country"},
+    {key: "to_country", ref: "country"}]) { }
+======
+425 + 2400 = 2825 dynamo records in total
+======
 
-****************************
-* 2 refs, 1 UQ, 3 TOTAL
-****************************
-export class _specs_AirplaneManifacturerItem extends DynamoItem(_specs_AirplaneManifacturer, "airplane_manifacturer", [
-    {key: "name", ref: "unique"},
-    {key: "country", ref: "country"}
-]) { }
+total amount of events in the TEST queue:
+-----------------------------------------------
+single_lambda_test_data_generator:
+---
+when DEBUG and DEBUGGER env vars are missing: 1993
+when only DEBUG env var is set to 1: 1993
+when only DEBUGGER env var is set to 0: 1993
+when only DEBUGGER env var is set to 1: 1993
+
+

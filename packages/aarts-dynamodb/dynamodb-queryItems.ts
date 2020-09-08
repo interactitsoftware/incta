@@ -67,14 +67,14 @@ export const queryItems = <T extends DdbQueryInput, TResult extends DynamoItem>(
                 },{}))
         }
         
-        process.env.DEBUG && console.log("================================================")
-        process.env.DEBUG && console.log("dqueryKeys ", dqueryKeys)
-        process.env.DEBUG && console.log("keyConditionExpression ", dkeyConditionExpression)
-        process.env.DEBUG && console.log("dfilter ", dfilter)
-        process.env.DEBUG && console.log("dfilterExpression ", dfilterExpression)
-        process.env.DEBUG && console.log("dexpressionAttributeNames ", dexpressionAttributeNames)
-        process.env.DEBUG && console.log("dexpressionAttributeValues ", dexpressionAttributeValues)
-        process.env.DEBUG && console.log("================================================")
+        !process.env.DEBUGGER || console.log("================================================")
+        !process.env.DEBUGGER || console.log("dqueryKeys ", dqueryKeys)
+        !process.env.DEBUGGER || console.log("keyConditionExpression ", dkeyConditionExpression)
+        !process.env.DEBUGGER || console.log("dfilter ", dfilter)
+        !process.env.DEBUGGER || console.log("dfilterExpression ", dfilterExpression)
+        !process.env.DEBUGGER || console.log("dexpressionAttributeNames ", dexpressionAttributeNames)
+        !process.env.DEBUGGER || console.log("dexpressionAttributeValues ", dexpressionAttributeValues)
+        !process.env.DEBUGGER || console.log("================================================")
         
         const params: DynamoDB.QueryInput = {
         TableName: DB_NAME,
@@ -95,7 +95,7 @@ export const queryItems = <T extends DdbQueryInput, TResult extends DynamoItem>(
             return reject(error)
         }
 
-        process.env.DEBUG && console.log("====DDB==== QueryOutput: ", {Items: result.Items, Count: result.Count, ConsumedCapacity: result.ConsumedCapacity, ScannedCount: result.ScannedCount})
+        !process.env.DEBUGGER || console.log("====DDB==== QueryOutput: ", { Count: result.Count, ConsumedCapacity: result.ConsumedCapacity, ScannedCount: result.ScannedCount})
 
         return resolve({items: (fromAttributeMapArray(result.Items as AttributeMap[]) as TResult[]), lastEvaluatedKey: fromAttributeMap<DdbGSIItemKey>(result.LastEvaluatedKey as DynamoDB.Key), count: result.Count})
     })
