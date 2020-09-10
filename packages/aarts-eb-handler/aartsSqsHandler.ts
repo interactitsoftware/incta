@@ -7,7 +7,7 @@ import { AartsEBUtil } from 'aarts-eb-types/aartsEBUtil'
 export const handler = async (message: SQSEvent, context: Context): Promise<any> => {
 	!process.env.DEBUGGER || console.log('received SQS message: ', ppjson(message))
 	for (const record of message.Records) {
-		const aartsEvent = Object.assign(JSON.parse(record.body),
+		const aartsEvent : AartsEvent = Object.assign(JSON.parse(record.body),
 			{
 				meta: {
 					item: record.messageAttributes["item"].stringValue as string,
@@ -18,6 +18,7 @@ export const handler = async (message: SQSEvent, context: Context): Promise<any>
 				}
 			})
 		!process.env.DEBUGGER || console.log('parsed aartsEvent from SQS is ', aartsEvent)
+		process.env.ringToken = aartsEvent.meta.ringToken
 		await new AartsSqsHandler().processPayload(aartsEvent, context)
 	}
 }
@@ -26,7 +27,7 @@ export class AartsSqsHandler extends AartsEBUtil {
 
 	async processPayload(input: AartsEvent, context?: Context): Promise<any> {
 
-		return new Promise(async (resolve: any, reject: any) => {
+		// return new Promise(async (resolve: any, reject: any) => {
 
 			const asyncGen = processPayloadAsync(input)
 
@@ -39,8 +40,10 @@ export class AartsSqsHandler extends AartsEBUtil {
 				}
 			} while (!processor.done)
 
-			resolve(processor.value)
-		})
+			return processor.value
+
+		// 	resolve(processor.value)
+		// })
 	}
 	private preparePublishInput = (processedBusEvent: AartsEvent): AWS.SNS.PublishInput => {
 		return {

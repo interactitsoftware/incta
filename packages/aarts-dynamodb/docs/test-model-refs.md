@@ -159,13 +159,29 @@ export class _specs_TouristItem extends DynamoItem(_specs_Tourist, "tourist", [
 
 total amount of events in the TEST queue:
 -----------------------------------------------
-single_lambda_test_data_generator:
----
+single_lambda_test_data_generator(with TOTAL_TOURISTS=200):
+-----------------------------------------------
 when DEBUGGER env var is set to 0 or missing: 1
 when DEBUGGER env var is set to 1: 1993
----
+
+benchmarks:
+inserting 2000 tourists: 116959.78 ms
+inserting 2000 tourists: 108315.75 ms
+
+inserting 20000 tourists 600100.42 ms HIT 10 min timeout, inserted 150473 EXPEXTED 240425
+inserting 20000 tourists 600100 ms HIT 10 min timeout, inserted 160277 EXPEXTED 240425
+-------------------------------------------
+-------------------------------------------
+
+-----------------------------------------------
 multiple_lambda_test_data_generator(with TOTAL_TOURISTS=200, i.e 200 events more):
----
+-----------------------------------------------
 when DEBUGGER env var is set to 0 or missing: 201
 when DEBUGGER env var is set to 1: 2193
 
+benchmarks:
+inserting 2000 tourists: 116959.78 ms
+inserting 2000 tourists: 108315.75 ms
+
+1 try: inserting 20000 tourists xyz ms HIT 10 min timeout ON THE procedure start - because of await on publish msgs. 20k publishes took more than 10 mins + insert of 425 records above. inserted 167753 EXPEXTED 240425 BUT received msgs(13945) in SQS match because: 167753(total inserted recs in dynamo)-425(those for airports etc)=167328(records for toursists only). 167328/12(dynamo records per tourist)=13944 WHICH is equal to 13945-1(amount of messages received in SQS for tourist:create) (from the procedure start event)
+2 try: inserting 20000 tourists xyz ms HIT 10 min timeout ON THE procedure start - because of await on publish msgs. 20k publishes took more than 10 mins + insert of 425 records above. iserted 166673 ...^^ as above ^^...

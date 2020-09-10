@@ -4,13 +4,13 @@ import { ppjson } from "aarts-types/utils"
 
 export const handler = async (input: AartsEvent, context: Context): Promise<any> => {
 	!process.env.DEBUGGER || console.log('received AartsEvent: ', input)
-
+	process.env.ringToken = input.meta.ringToken
 	return await processPayload(input, context)
 }
 
 export async function processPayload(input: AartsEvent, context?: Context): Promise<any> {
 
-	return new Promise(async (resolve: any, reject: any) => {
+	// return new Promise(async (resolve: any, reject: any) => {
 
 		const asyncGen = processPayloadAsync(input)
 
@@ -22,8 +22,9 @@ export async function processPayload(input: AartsEvent, context?: Context): Prom
 			}
 		} while (!processor.done)
 
-		resolve(processor.value)
-	})
+		return processor.value
+	// 	resolve(processor.value)
+	// })
 }
 
 export async function* processPayloadAsync(input: AartsEvent): AsyncGenerator<AartsEvent, AartsEvent, undefined> {

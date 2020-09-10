@@ -1,5 +1,6 @@
 import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
 import { IIdentity } from "aarts-types/interfaces";
+import { loginfo } from "aarts-eb-types/aartsEBUtil"
 
 // using the one from the aarts-dynamodb/__specs__
 import {_specs_AirportItem as AirportItem} from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
@@ -26,7 +27,7 @@ export class AirportManager extends BaseDynamoItemManager<AirportItem> {
                 console.log('INVALID airport: ', errors)
                 throw new Error(errors.join("; "))
             } else {
-                console.log('valid airport', airport)
+                loginfo('valid airport','aaAA', airport, {tralala: "123"}, 5, [1,2,3,'create something'])
                 return airport
             }
     }

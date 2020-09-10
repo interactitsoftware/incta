@@ -1,6 +1,8 @@
 import * as AWS from "aws-sdk";
 import * as idGenUtil from 'aarts-types/utils'
 
+export const loginfo = idGenUtil.loginfo 
+
 export interface AppSyncEvent {
     action: string,
     item: string,

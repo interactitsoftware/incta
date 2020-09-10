@@ -25,24 +25,23 @@ export const chunks = <T>(arr: Array<T>, size: number): Array<Array<T>> => {
 
 export const ppjson = (json: Record<string, any> | undefined): string => JSON.stringify(json, null, 4)
 
-export const info = (message: any, messageSource?: string) => {
-    if (typeof message === 'object' && message !== null) {
-        console.log({ messageSource, message, ringToken: process.env.ringToken })
-    } else {
-        let obj
-        try {
-            obj = JSON.parse(message);
-            console.log({ messageSource, message: obj, ringToken: process.env.ringToken })
-        } catch (e) {
-            console.log({ messageSource, message, ringToken: process.env.ringToken })
-        }
-    }
+/**
+ * Appends sourceRingToken, which is the ringToken of the current process. 
+ * Attempts to parse any json strings passed for ease of cloudwatch queries
+ * @param message 
+ * @param obj 
+ */
+export const loginfo = (message: string, ...input: any[]) => {
+    console.log(Object.assign({ 
+        ringTokenSource: process.env.ringToken, message 
+    }, 
+    ...input))
 }
 
-export const debug = (message: any) => {
-    !process.env.DEBUGGER || info(message)
+export const logdebug = (message: any) => {
+    !process.env.DEBUGGER || loginfo(message)
 }
 
-export const ifDebug = (func : Function) => {
+export const ifDebugger = (func: Function) => {
     !process.env.DEBUGGER || func()
 }
