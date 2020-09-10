@@ -154,16 +154,18 @@ export class _specs_TouristItem extends DynamoItem(_specs_Tourist, "tourist", [
     {key: "from_country", ref: "country"},
     {key: "to_country", ref: "country"}]) { }
 ======
-425 + 2400 = 2825 dynamo records in total
+425 + 2400 = 2825 dynamo records in total (when TOTAL_TOURISTS=200)
 ======
 
 total amount of events in the TEST queue:
 -----------------------------------------------
 single_lambda_test_data_generator:
 ---
-when DEBUG and DEBUGGER env vars are missing: 1993
-when only DEBUG env var is set to 1: 1993
-when only DEBUGGER env var is set to 0: 1993
-when only DEBUGGER env var is set to 1: 1993
-
+when DEBUGGER env var is set to 0 or missing: 1
+when DEBUGGER env var is set to 1: 1993
+---
+multiple_lambda_test_data_generator(with TOTAL_TOURISTS=200, i.e 200 events more):
+---
+when DEBUGGER env var is set to 0 or missing: 201
+when DEBUGGER env var is set to 1: 2193
 

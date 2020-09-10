@@ -19,49 +19,45 @@ class aartsSnsDispatcher extends AartsEBUtil {
 
 	public dispatch = async (event: AppSyncEvent, context?: Context): Promise<any> => {
 
-		const ringToken : string = !!event.ringToken && event.ringToken !== "undefined" ? event.ringToken : this.uuid()
-		if (!!event.ringToken && event.ringToken !== "undefined") {
+		const ringToken: string = event.ringToken || this.uuid()
+		// log the ringToken
+		if (!!event.ringToken) {
 			console.log('using already present ring token:  ' + ringToken + ' for received event: ', event)
 		} else {
 			console.log('generated ring token: ' + ringToken + ' for received event: ', event)
 		}
 
+		let result
 		if (event.action === "query") {
 			console.log('dispatching directly to handler, skipping SNS publishing')
-			return {
-				statusCode: 200,
-				body: await processPayload({
-					meta: {
-						ringToken: ringToken,
-						eventSource: `worker:input`,
-						action: 'query',
-						item:''
-					},
-					payload: {
-						arguments: {
-							...(event.arguments),
-							ringToken
-						},
-						identity: event.identity
-					}
-				}, context)
-			}
+			result = await processPayload({
+				meta: {
+					ringToken: ringToken,
+					eventSource: `worker:input`,
+					action: 'query',
+					item: ''
+				},
+				payload: {
+					arguments: event.arguments,
+					identity: event.identity
+				}
+			}, context)
 		}
 
 
 		if (!process.env["AWS_SAM_LOCAL"]) {
 			// used runtime in aws
 			const publishInput: AWS.SNS.PublishInput = prepareForDispatch(event, ringToken)
-			await this.publish(publishInput)
+			result = await this.publish(publishInput)
 			// PROD runtime execution ends here
 
 		} else {
-			this.samLocalSupport_callSqsHandlerSynchronously(event, ringToken)
+			result = await this.samLocalSupport_callSqsHandlerSynchronously(event, ringToken)
 		}
 
 		return {
 			statusCode: 200,
-			body: { ...event.arguments, ringToken }
+			body: { result, ringToken }
 		}
 	}
 

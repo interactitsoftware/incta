@@ -23,4 +23,26 @@ export const chunks = <T>(arr: Array<T>, size: number): Array<Array<T>> => {
     return chunked_arr;
 }
 
-export const ppjson = (json: Record<string, any>|undefined): string => JSON.stringify(json, null, 4)
+export const ppjson = (json: Record<string, any> | undefined): string => JSON.stringify(json, null, 4)
+
+export const info = (message: any, messageSource?: string) => {
+    if (typeof message === 'object' && message !== null) {
+        console.log({ messageSource, message, ringToken: process.env.ringToken })
+    } else {
+        let obj
+        try {
+            obj = JSON.parse(message);
+            console.log({ messageSource, message: obj, ringToken: process.env.ringToken })
+        } catch (e) {
+            console.log({ messageSource, message, ringToken: process.env.ringToken })
+        }
+    }
+}
+
+export const debug = (message: any) => {
+    !process.env.DEBUGGER || info(message)
+}
+
+export const ifDebug = (func : Function) => {
+    !process.env.DEBUGGER || func()
+}

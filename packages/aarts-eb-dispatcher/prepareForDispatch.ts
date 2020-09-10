@@ -4,8 +4,8 @@ export const prepareForDispatch = (event: {
     arguments: any,
     identity: any
 }, ringToken: string) => {
-	return {
-		Message: JSON.stringify({payload: {arguments: {...(event.arguments), ringToken}, identity: event.identity}}),
+	const a = {
+		Message: JSON.stringify({payload: {arguments: event.arguments, identity: event.identity}}),
 		MessageAttributes: {
 			"eventSource": {
 				DataType: 'String',
@@ -25,4 +25,5 @@ export const prepareForDispatch = (event: {
 			}
 		}
 	}
+	return a
 }

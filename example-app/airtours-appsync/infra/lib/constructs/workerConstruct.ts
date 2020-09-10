@@ -32,7 +32,7 @@ export class WorkerConstruct extends Construct {
             // as per best practices from AWS visibilityTimeout is suggesteed 6 times lambda timeout
             // however we reduce to only 1.5 the lambda timeout, as we do not have retries in the lambda
             visibilityTimeout: Duration.seconds(1.5 * props.functionTimeout.toSeconds()),
-            receiveMessageWaitTime: Duration.seconds(3), // long polling for events
+            // receiveMessageWaitTime: Duration.seconds(3), // long polling for events
             queueName: `${props.workerName}`,
             // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
             deadLetterQueue: { 

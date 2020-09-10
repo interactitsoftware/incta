@@ -23,8 +23,8 @@ export class MultipleLambdaTestDataGenerator {
     public start_date?: number
     public end_date?: number
 
-    private publishAndRegister(event: AppSyncEvent) {
-        dispatcher(event)
+    private async publishAndRegister(event: AppSyncEvent) {
+        await dispatcher(event)
         this.total_events++
     }
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
@@ -132,33 +132,33 @@ export class MultipleLambdaTestDataGenerator {
 
         const flight_pt_mw = { tourist_season: "2021/Q3", duration_hours: 5, flight_code: "F19", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id }
         const flight_pt_sf = { tourist_season: "2021/Q3", duration_hours: 7, flight_code: "F20", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id }
-        
-        const dynamo_flight_sf_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sf_mw )
-        const dynamo_flight_sf_bj = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sf_bj )
-        const dynamo_flight_sf_mw1 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type,flight_sf_mw1 )
 
-        const dynamo_flight_bj_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_bj_mw )
-        const dynamo_flight_bj_ke = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_bj_ke )
-        const dynamo_flight_bj_ke1 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type,flight_bj_ke1 )
-        const dynamo_flight_bj_sy = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_bj_sy )
+        const dynamo_flight_sf_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sf_mw)
+        const dynamo_flight_sf_bj = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sf_bj)
+        const dynamo_flight_sf_mw1 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sf_mw1)
 
-        const dynamo_flight_mw_ke = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_mw_ke )
-        const dynamo_flight_mw_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_mw_sf )
-        const dynamo_flight_mw_pt = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_mw_pt )
+        const dynamo_flight_bj_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_bj_mw)
+        const dynamo_flight_bj_ke = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_bj_ke)
+        const dynamo_flight_bj_ke1 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_bj_ke1)
+        const dynamo_flight_bj_sy = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_bj_sy)
 
-        const dynamo_flight_sy_bj = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sy_bj )
-        const dynamo_flight_sy_ln = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sy_ln )
-        const dynamo_flight_sy_ke = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sy_ke )
+        const dynamo_flight_mw_ke = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_mw_ke)
+        const dynamo_flight_mw_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_mw_sf)
+        const dynamo_flight_mw_pt = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_mw_pt)
 
-        const dynamo_flight_sr_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sr_sf )
-        const dynamo_flight_sr_ke = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sr_ke )
+        const dynamo_flight_sy_bj = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sy_bj)
+        const dynamo_flight_sy_ln = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sy_ln)
+        const dynamo_flight_sy_ke = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sy_ke)
 
-        const dynamo_flight_ke_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_ke_sf )
-        const dynamo_flight_ke_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_ke_mw )
-        const dynamo_flight_ke_mw1 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type,flight_ke_mw1)
+        const dynamo_flight_sr_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sr_sf)
+        const dynamo_flight_sr_ke = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sr_ke)
 
-        const dynamo_flight_pt_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_pt_mw )
-        const dynamo_flight_pt_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_pt_sf )
+        const dynamo_flight_ke_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_ke_sf)
+        const dynamo_flight_ke_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_ke_mw)
+        const dynamo_flight_ke_mw1 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_ke_mw1)
+
+        const dynamo_flight_pt_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_pt_mw)
+        const dynamo_flight_pt_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_pt_sf)
 
 
         const totalTouristsToAdd = Number(process.env.TOTAL_TOURISTS) || 0
@@ -167,7 +167,7 @@ export class MultipleLambdaTestDataGenerator {
         // //flight_sf_mw
         const namesLenght = names.length
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sf_mw.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -176,7 +176,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_sf_bj
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sf_bj.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -185,7 +185,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_sf_mw1
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sf_mw1.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -194,7 +194,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_bj_mw
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_bj_mw.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -203,7 +203,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_bj_ke
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_bj_ke.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -212,7 +212,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_bj_ke1
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_bj_ke1.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -221,7 +221,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_bj_sy
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_bj_sy.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -230,7 +230,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_mw_ke
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_mw_ke.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -239,7 +239,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_mw_sf
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_mw_sf.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -248,7 +248,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_mw_pt
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_mw_pt.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -257,7 +257,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_sy_bj
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sy_bj.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -266,7 +266,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_sy_ln
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sy_ln.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -275,7 +275,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_sy_ke
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sy_ke.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -284,7 +284,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_sr_sf
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sr_sf.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -293,7 +293,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_sr_ke
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sr_ke.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -302,7 +302,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_ke_sf
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_ke_sf.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -311,7 +311,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_ke_mw
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_ke_mw.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -320,7 +320,7 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_ke_mw1
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_ke_mw1.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -330,7 +330,7 @@ export class MultipleLambdaTestDataGenerator {
 
         //flight_pt_mw
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type, {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_pt_mw.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
@@ -339,13 +339,12 @@ export class MultipleLambdaTestDataGenerator {
         }
         //flight_pt_sf
         for (let i = 0; i < touristsPerFlight; i++) {
-            this.createItemByPublishingToSns(_specs_TouristItem.__type,
-                {
-                    iban: `${dynamo_flight_pt_sf.flight_code}:${i}`,
-                    fname: names[~~(Math.random() * namesLenght)],
-                    lname: names[~~(Math.random() * namesLenght)],
-                    flight: dynamo_flight_pt_sf.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id
-                })
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_pt_sf.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_pt_sf.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id
+            })
         }
 
         return this;
@@ -359,7 +358,7 @@ export class MultipleLambdaTestDataGenerator {
      * @param parentRingToken 
      * @param domainHandler 
      */
-    private async createItem(parentRingToken: string, domainHandler: AartsSqsHandler, __type: string, itemBody: Record<string,any>) {
+    private async createItem(ringToken: string, domainHandler: AartsSqsHandler, __type: string, itemBody: Record<string, any>) {
         return (await domainHandler.processPayload({
             "payload": {
                 "arguments": {
@@ -374,7 +373,7 @@ export class MultipleLambdaTestDataGenerator {
                 "action": "create",
                 "item": __type,
                 "eventSource": "worker:input",
-                "ringToken": parentRingToken + "_"+ idGenUtil.uuid()
+                "ringToken": ringToken
             }
         })).resultItems[0]
     }
@@ -388,10 +387,11 @@ export class MultipleLambdaTestDataGenerator {
      * @param country id of country the airport is located
      * @param airport_size square kilometers of the airport
      */
-    private createItemByPublishingToSns(__type: string, itemBody: Record<string, any>) {
-        this.publishAndRegister({
+    private async createItemByPublishingToSns(ringToken: string, __type: string, itemBody: Record<string, any>) {
+        await this.publishAndRegister({
             "action": "create",
             "item": __type,
+            "ringToken": ringToken,
             "arguments": {
                 "procedure": (this as DynamoItem).id,
                 ...itemBody

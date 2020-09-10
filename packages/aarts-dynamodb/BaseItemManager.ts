@@ -254,27 +254,28 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param __type gate checks for Update
      * @param payload 
      */
-    async *baseValidateDelete(__type: string, payload: AartsPayload<T>): AsyncGenerator<string, AartsPayload<T>, undefined> {
+    async *baseValidateDelete(__type: string, event: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateDelete] checking for mandatory item keys`)
 
-        if (payload.arguments.constructor !== Array) {
+        if (event.payload.arguments.constructor !== Array) {
             throw new Error(`[${__type}:baseValidateDelete] Payload is not an array!`)
         }
 
-        if (payload.arguments.length > 1) {
+        if (event.payload.arguments.length > 1) {
             throw new Error(`[${__type}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(1)`)
         }
 
-        for (const arg of payload.arguments) {
+        for (const arg of event.payload.arguments) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
                 throw new Error("id and revisions keys is mandatory when deleting")
             } else {
                 arg["meta"] = `${versionString(0)}|${__type}`
+                arg["ringToken"] = event.meta.ringToken
             }
         }
 
-        return payload
+        return event.payload
     }
 
     /**
@@ -285,7 +286,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *delete(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload<T>, AartsPayload<T>, undefined> {
         yield { arguments: `[${__type}:DELETE] BEGIN delete method. Doing a gate check of payload`, identity: undefined }
 
-        for await (const baseValidateResult of this.baseValidateDelete(__type, args.payload)) {
+        for await (const baseValidateResult of this.baseValidateDelete(__type, args)) {
             yield { arguments: baseValidateResult, identity: undefined }
         }
 
@@ -404,18 +405,18 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param __type gate checks for CREATE
      * @param payload 
      */
-    async *baseValidateCreate(__type: string, payload: AartsPayload<T>): AsyncGenerator<string, AartsPayload<T>, undefined> {
-        !process.env.DEBUGGER || (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(payload))
+    async *baseValidateCreate(__type: string, event: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
+        !process.env.DEBUGGER || (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(event))
 
-        if (payload.arguments.constructor !== Array) {
+        if (event.payload.arguments.constructor !== Array) {
             throw new Error(`[${__type}:baseValidateCreate] Payload is not an array!`)
         }
 
-        if (payload.arguments.length > 1) {
+        if (event.payload.arguments.length > 1) {
             throw new Error(`[${__type}:baseValidateCreate] excedes the max arguments array length constraint(1)`)
         }
 
-        for (const arg of payload.arguments) {
+        for (const arg of event.payload.arguments) {
             if ("id" in arg || "revisions" in arg) {
                 // throw new Error(`[${__type}:baseValidateCreate] {id, revisions} should not be present when creating item`)
                 delete arg.id; delete arg.revisions
@@ -424,10 +425,11 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 // arg["id"] = `${__type}|${payload.ringToken}` NOPE ! dont do that // USE THE RING TOKEN FROM THE EVENT TO ENFORCE IDEMPOTENCY on create events
                 arg["meta"] = `${versionString(0)}|${__type}`
                 arg["item_type"] = __type
+                arg["ringToken"] = event.meta.ringToken
             }
         }
 
-        return payload as AartsPayload<T>
+        return event.payload as AartsPayload<T>
     }
     /**
      * making use of dynamodb transactWriteItems, making a put requests for each element from incomming arguments array
@@ -438,7 +440,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         // console.log('Received arguments: ', args)
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:CREATE] Begin create method. Doing a gate check of payload`, identity: undefined })
 
-        for await (const baseValidateResult of this.baseValidateCreate(__type, args.payload)) {
+        for await (const baseValidateResult of this.baseValidateCreate(__type, args)) {
             yield { arguments: baseValidateResult, identity: undefined }
         }
 
@@ -495,28 +497,29 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param __type gate checks for Update
      * @param payload 
      */
-    async *baseValidateUpdate(__type: string, payload: AartsPayload<T>): AsyncGenerator<string, AartsPayload<T>, undefined> {
+    async *baseValidateUpdate(__type: string, event: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
-        if (payload.arguments.constructor !== Array) {
+        if (event.payload.arguments.constructor !== Array) {
             throw new Error(`[${__type}:baseValidateStart] Payload is not an array!`)
         }
 
-        if (payload.arguments.length > 1) {
+        if (event.payload.arguments.length > 1) {
             throw new Error(`[${__type}:baseValidateUpdate] Payload excedes the max arguments array length constraint(1)`)
         }
 
-        for (const arg of payload.arguments) {
+        for (const arg of event.payload.arguments) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
                 throw new Error("{id, revisions} keys are mandatory when updating")
             } else {
                 arg["meta"] = `${versionString(0)}|${__type}`
                 arg["item_type"] = __type
+                arg["ringToken"] = event.meta.ringToken
             }
         }
 
-        return payload as AartsPayload<T>
+        return event.payload as AartsPayload<T>
     }
 
     /**
@@ -527,7 +530,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *update(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload<T>, AartsPayload<T>, undefined> {
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:UPDATE] BEGIN update method. Doing a gate check of payload`, identity: undefined })
 
-        for await (const baseValidateResult of this.baseValidateUpdate(__type, args.payload)) {
+        for await (const baseValidateResult of this.baseValidateUpdate(__type, args)) {
             yield { arguments: baseValidateResult, identity: undefined }
         }
 
