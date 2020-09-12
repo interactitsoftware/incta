@@ -201,5 +201,6 @@ INTERESTING FACT: when in insights after above two tries, searched for "Error ca
 4 try inserting 20000 THROTHLING THE LAMBDA TO 25 - ZERO failed events EXPECTED=ACTUAL. 240425 items inserted in less then 5 minutes.  45300 ms Memory Size: 256 MB Max Memory Used: 159 MB
 
 5 try inserting 40000 THROTHLING THE LAMBDA to 25: AS EXPECTED 480425 items inserted, 1601 total events (and also lambda executions): 89800 ms Memory Size: 256 MB Max Memory Used: 144 MB Init Duration: 755.66 ms
-(after one day passed, probably dynamo autoscaling decreased?)
-6 try inserting 40000 THROTLUNG LAMBDA 25, ACTUAL 479825, i.e 600 missing
+
+6 try 40000, throtling 25: lambda for procedure start: 94100 ms Memory Size: 256 MB Max Memory Used: 145. failed events 17=17 TIMED OUT ERRORS FOR THE SHORT WORKER. TOTAL INSERTED 478025 - which stands for 39800 tourists inserted, i.e 200 were missing, because of the short lambda time out. 
+7 try 40000, throtling 25, SHORT LAMBDA TIMEOUT INCREASED FROM 10s to 30s, AGAIN 8 failed messages ==> in high load the congestion should be handled by retries ==> idepmpotency => thus simple idempotency in transactional context ==> single transaction to dynamo per event 

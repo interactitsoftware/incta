@@ -14,12 +14,12 @@ import { AppSyncLocalDatasourceConstruct } from './constructs/AppSyncLocalDataso
 import { AppSyncLambdaDataSourceConstruct } from './constructs/appSyncLambdaDataSourceConstruct';
 import { WorkerConstruct } from './constructs/workerConstruct';
 
+export const clientAppDirName = __dirname.split(sep).reverse()[2]
+export const clientAppName = process.env.CLIENT_APP_NAME || clientAppDirName
 
 export class AartsAllInfraStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
-
-    const clientAppName = __dirname.split(sep).reverse()[2]
 
     const nodeModulesLayer = new LayerVersion(this, clientAppName + 'Modules', {
       code: Code.fromAsset(join("node-modules-layer"), { exclude: [
@@ -29,18 +29,16 @@ export class AartsAllInfraStack extends Stack {
       description: 'A layer holding the libraries needed for the contracts-compliant domain adapter',
     });
 
-    const s3Construct = new S3Construct(this, `Buckets`, { clientAppName })
+    const s3Construct = new S3Construct(this, `Buckets`, { })
 
-    const dynamoDbConstruct = new DynamoDBConstruct(this, 'DB', { clientAppName })
+    const dynamoDbConstruct = new DynamoDBConstruct(this, 'DB', { })
 
     const eventBusConstruct = new EventBusConstruct(this, `Events`, {
-      clientAppName,
       nodeModulesLayer,
       dynamoDbConstruct,
     })
-    const cognitoConstruct = new CognitoConstruct(this, `Auth`, {clientAppName});
+    const cognitoConstruct = new CognitoConstruct(this, `Auth`, { });
     const appSyncConstruct = new AppSyncConstruct(this, `AppSync`, {
-      clientAppName,
       cognitoConstruct: cognitoConstruct
     })
 
@@ -52,21 +50,35 @@ export class AartsAllInfraStack extends Stack {
     })
 
     const appSyncLocalDatasourceConstruct = new AppSyncLocalDatasourceConstruct(this, "Local", {
-      clientAppName,
       eventBusConstruct: eventBusConstruct,
       appSyncConstruct: appSyncConstruct,
       nodeModulesLayer
     })
 
-    const workerInputHandler = new WorkerConstruct(this, `${clientAppName}Handler`, {
-      workerName: `${clientAppName}Handler`,
-      functionTimeout: Duration.minutes(10),
+    const workerInputHandlerShort = new WorkerConstruct(this, `${clientAppName}HandlerShort`, {
+      workerName: `${clientAppName}HandlerShort`,
+      functionTimeout: Duration.seconds(30),
       functionHandler: "index.handler",
-      functionImplementationPath: join("..", clientAppName, "dist"),
+      functionImplementationPath: join("..", clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
-      eventSource: "worker:input",
+      eventSource: "worker:input:s",
+      // envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
+      layers: [
+        nodeModulesLayer
+      ]
+    });
+
+    const workerInputHandlerLong = new WorkerConstruct(this, `${clientAppName}HandlerLong`, {
+      workerName: `${clientAppName}HandlerLong`,
+      functionTimeout: Duration.minutes(10),
+      functionHandler: "index.handler",
+      functionImplementationPath: join("..", clientAppDirName, "dist"),
+      functionRuntime: Runtime.NODEJS_12_X,
+      eventBusConstruct: eventBusConstruct,
+      dynamoDbConstruct: dynamoDbConstruct,
+      eventSource: "worker:input:l",
       // envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
       layers: [
         nodeModulesLayer

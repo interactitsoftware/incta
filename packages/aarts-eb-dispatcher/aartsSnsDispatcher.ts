@@ -1,9 +1,9 @@
 import { Context } from "aws-lambda";
 import AWS = require("aws-sdk");
 import { AartsEBUtil, AppSyncEvent } from "aarts-eb-types/aartsEBUtil"
-import { prepareForDispatch } from "./prepareForDispatch";
 import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHandlerFromContent";
 import { processPayload } from "aarts-handler/aartsHandler"
+import {prepareAppSyncEventForDispatch} from "aarts-eb-types/prepareAppSyncEventForDispatch"
 
 /**
  * forwards to SNS, decorating with:
@@ -47,7 +47,7 @@ class aartsSnsDispatcher extends AartsEBUtil {
 
 		if (!process.env["AWS_SAM_LOCAL"]) {
 			// used runtime in aws
-			const publishInput: AWS.SNS.PublishInput = prepareForDispatch(event, ringToken)
+			const publishInput: AWS.SNS.PublishInput = prepareAppSyncEventForDispatch(event, ringToken)
 			result = await this.publish(publishInput)
 			// PROD runtime execution ends here
 

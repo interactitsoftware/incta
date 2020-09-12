@@ -10,10 +10,9 @@ import { WorkerConstruct } from './workerConstruct';
 import { Duration } from '@aws-cdk/core';
 import { isObject } from 'util';
 import { fstat } from 'fs';
+import { clientAppName } from "../aarts-all-infra-stack"
 
 export interface AppSyncConstructProps {
-
-    clientAppName: string
     cognitoConstruct: CognitoConstruct
 }
 
@@ -25,7 +24,7 @@ export class AppSyncConstruct extends cdk.Construct {
         super(scope, id)
 
         this.graphQLApi = new GraphqlApi(this, 'AppSync', {
-            name: `${props.clientAppName}AppSync`,
+            name: `${clientAppName}AppSync`,
 
             authorizationConfig: {
                 defaultAuthorization: {

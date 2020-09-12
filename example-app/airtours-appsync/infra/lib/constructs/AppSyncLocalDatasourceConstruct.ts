@@ -7,11 +7,11 @@ import { join } from 'path';
 import { WorkerConstruct } from './workerConstruct';
 import { ENV_VARS__APPSYNC_ENDPOINT_URL } from '../../env-constants';
 import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
+import { clientAppName, clientAppDirName } from "../aarts-all-infra-stack"
 
 export interface AppSyncLocalDatasourceConstructProps {
     appSyncConstruct: AppSyncConstruct
     eventBusConstruct: EventBusConstruct
-    clientAppName: string
     nodeModulesLayer: LayerVersion
 }
 
@@ -51,10 +51,10 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
         notifyLocalResolver.node.addDependency(localCfnDS);
 
         this.notifierFunctionConstruct = new WorkerConstruct(this, "Notify", {
-            workerName: `${props.clientAppName}Notifier`,
+            workerName: `${clientAppName}Notifier`,
             functionTimeout: Duration.seconds(30),
             functionHandler: "index.notifier",
-            functionImplementationPath: join("..", props.clientAppName, "dist"),
+            functionImplementationPath: join("..", clientAppDirName, "dist"),
             functionRuntime: Runtime.NODEJS_12_X,
             eventBusConstruct: props.eventBusConstruct,
             eventSource: "worker:output",

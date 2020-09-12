@@ -4,7 +4,9 @@ export type IItemManagerKeys = keyof IItemManager<any>
 
 export interface AartsEvent {
 	payload: AartsPayload
-	meta: AartsMeta
+    meta: AartsMeta
+    resultType?: "output" | "input" | undefined,
+    taskType?: "s" | "l" | undefined,
 }
 export interface AartsMeta {
     item: string,

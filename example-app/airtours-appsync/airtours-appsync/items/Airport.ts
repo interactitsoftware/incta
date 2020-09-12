@@ -27,6 +27,7 @@ export class AirportManager extends BaseDynamoItemManager<AirportItem> {
                 console.log('INVALID airport: ', errors)
                 throw new Error(errors.join("; "))
             } else {
+                yield "Voila! A valid airport!"
                 loginfo('valid airport','aaAA', airport, {tralala: "123"}, 5, [1,2,3,'create something'])
                 return airport
             }

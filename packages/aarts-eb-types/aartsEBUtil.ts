@@ -8,7 +8,9 @@ export interface AppSyncEvent {
     item: string,
     ringToken?: string,
     arguments: any,
-    identity: any
+    identity: any,
+	taskType?: "l" | "s" | undefined
+	messageType?: "input" | "output" | undefined
 }
 const localMockSNSFile = class {
     static publish(publishInput: AWS.SNS.PublishInput, cb: Function) {

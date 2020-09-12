@@ -4,10 +4,9 @@ import { Function } from '@aws-cdk/aws-lambda'
 import { BillingMode, AttributeType, StreamViewType, ProjectionType, CfnTable, Table } from '@aws-cdk/aws-dynamodb';
 import { RemovalPolicy } from '@aws-cdk/core';
 import { ENV_VARS__DB_NAME, ENV_VARS__TEST_DB_NAME, ENV_VARS__DB_ENDPOINT } from '../../env-constants';
+import { clientAppName } from "../aarts-all-infra-stack"
 
-export interface DynamoDBConstructProps {
-  clientAppName: string
-}
+export interface DynamoDBConstructProps { }
 export class DynamoDBConstruct extends cdk.Construct {
 
   public readonly table: dynamodb.Table;
@@ -18,8 +17,8 @@ export class DynamoDBConstruct extends cdk.Construct {
     super(scope, id);
 
     const createTable = (isTestTable?: boolean) => {
-      const table = new Table(this, `${isTestTable ? `TEST${props.clientAppName}` : props.clientAppName}`, {
-        tableName: `${isTestTable ? `TEST${props.clientAppName}` : props.clientAppName}`,
+      const table = new Table(this, `${isTestTable ? `TEST${clientAppName}` : clientAppName}`, {
+        tableName: `${isTestTable ? `TEST${clientAppName}` : clientAppName}`,
         partitionKey: { name: "id", type: AttributeType.STRING },
         sortKey: { name: "meta", type: AttributeType.STRING },
 

@@ -1,10 +1,9 @@
 import cdk = require('@aws-cdk/core');
 import cognito = require('@aws-cdk/aws-cognito');
 import iam = require('@aws-cdk/aws-iam');
+import { clientAppName } from "../aarts-all-infra-stack"
 
-export interface CognitoConstructProps {
-    clientAppName: string
-}
+export interface CognitoConstructProps { }
 // based on https://stackoverflow.com/questions/55784746/how-to-create-cognito-identitypool-with-cognito-userpool-as-one-of-the-authentic
 export class CognitoConstruct extends cdk.Construct {
 
@@ -15,14 +14,13 @@ export class CognitoConstruct extends cdk.Construct {
         super(scope, id);
 
         const userPool = new cognito.UserPool(this, `UserPool`, {
-            userPoolName: `${props.clientAppName}UserPool`,
+            userPoolName: `${clientAppName}UserPool`,
             autoVerify: { email: true},
-            userVerification: {
-
-            },
+            userVerification: { },
             signInAliases: {
                 email: true
-            }
+            },
+            signInCaseSensitive: true
         })
         const cfnUserPool = userPool.node.defaultChild as cognito.CfnUserPool;
         cfnUserPool.policies = {
@@ -37,7 +35,8 @@ export class CognitoConstruct extends cdk.Construct {
         const userPoolClient = new cognito.UserPoolClient(this, `UserPoolClient`, {
             generateSecret: false,
             userPool: userPool,
-            userPoolClientName: `UserPoolClientName`
+            userPoolClientName: `UserPoolClientName`,
+            preventUserExistenceErrors: true
         });
         const identityPool = new cognito.CfnIdentityPool(this, `IdentityPool`, {
             allowUnauthenticatedIdentities: false,

@@ -5,12 +5,13 @@
  *  when its running in the context of a sam local docker container (where sam is not present)
  * 
  */
-import { prepareForDispatch } from './prepareForDispatch';
+
+import { prepareAppSyncEventForDispatch } from "aarts-eb-types/prepareAppSyncEventForDispatch";
 
 export const samLocalSimulateSQSHandlerFromContent = async (testEvent: string, ringToken: string) : Promise<string> => new Promise((resolve, reject) => {
 
   // note this script works with relative paths, according to the aarts context in which its called. corresponding folders should exeist
-  const simulatedPayload = prepareForDispatch(JSON.parse(testEvent), ringToken)
+  const simulatedPayload = prepareAppSyncEventForDispatch(JSON.parse(testEvent), ringToken)
   const sqsTemplate = JSON.parse(
 `{
   "Records": [

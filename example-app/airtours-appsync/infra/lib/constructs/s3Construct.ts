@@ -1,9 +1,8 @@
 import cdk = require('@aws-cdk/core')
 import s3 = require('@aws-cdk/aws-s3')
+import { clientAppName } from "../aarts-all-infra-stack"
 
-export interface S3ConstructProps {
-    clientAppName : string
-}
+export interface S3ConstructProps { }
 
 export class S3Construct extends cdk.Construct {
 
@@ -14,7 +13,7 @@ export class S3Construct extends cdk.Construct {
         super(scope, id);
 
         this.operationsBucket = new s3.Bucket(this, `OperationsBucket`, {
-            bucketName: `${props.clientAppName.toLowerCase()}-operations-bucket`,
+            bucketName: `${clientAppName.toLowerCase()}-operations-bucket`,
             removalPolicy: cdk.RemovalPolicy.DESTROY,
             cors: [
                 {
@@ -39,7 +38,7 @@ export class S3Construct extends cdk.Construct {
         })
 
         this.resourceBucket = new s3.Bucket(this, `ResourceBucket`, {
-            bucketName: `${props.clientAppName.toLowerCase()}-resource-bucket`,
+            bucketName: `${clientAppName.toLowerCase()}-resource-bucket`,
             removalPolicy: cdk.RemovalPolicy.DESTROY,
         })
     }

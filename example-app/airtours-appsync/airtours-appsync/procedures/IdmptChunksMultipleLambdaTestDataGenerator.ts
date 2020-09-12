@@ -26,7 +26,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
     private async publishAndRegister(event: AppSyncEvent) {
         this.tourist_payloads.push(event.arguments)
 
-        if (this.tourist_payloads.length === 25) {
+        if (this.tourist_payloads.length ===  Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
             await dispatcher(Object.assign(event, { arguments: this.tourist_payloads }))
             this.tourist_payloads = []
         }
@@ -690,7 +690,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
                 })
         }
 
-        // finally, send any payloads left out of the chunking by 25 
+        // finally, send any payloads left out of the chunking by  Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25) 
         if (this.tourist_payloads.length > 0) {
             await dispatcher({
                 "action": "create",
