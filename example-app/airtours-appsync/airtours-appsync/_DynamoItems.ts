@@ -31,6 +31,7 @@ import { IdmptSingleLambdaTestDataGenerator } from "./procedures/IdmptSingleLamb
 import { EraseData } from "./procedures/EraseData";
 import { MultipleLambdaTestDataGenerator } from "./procedures/MultipleLambdaTestDataGenerator";
 import { IdmptMultipleLambdaTestDataGenerator } from "./procedures/IdmptMultipleLambdaTestDataGenerator";
+import { IdmptChunksMultipleLambdaTestDataGenerator } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator";
 
 export class CityItem extends DynamoItem(City, "city", [ // the dynamodb wrapper object that we deal with
     {key:"name"},
@@ -56,6 +57,11 @@ export class IdmptSingleLambdaTestDataGeneratorItem extends DynamoItem(IdmptSing
 ]) {}
 
 export class IdmptMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptMultipleLambdaTestDataGenerator, "idmpt_multiple_lambda_test_data_generator", [
+    {key: "start_date"},
+    {key: "end_date"},
+]) {}
+
+export class IdmptChunksMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptChunksMultipleLambdaTestDataGenerator, "idmpt_chunks_multiple_lambda_test_data_generator", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}

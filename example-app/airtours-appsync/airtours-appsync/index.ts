@@ -16,13 +16,16 @@ import {
     SingleLambdaTestDataGeneratorItem,
     EraseDataItem,
     IdmptSingleLambdaTestDataGeneratorItem,
-    IdmptMultipleLambdaTestDataGeneratorItem
+    IdmptMultipleLambdaTestDataGeneratorItem,
+    IdmptChunksMultipleLambdaTestDataGeneratorItem
 } from "./_DynamoItems"
 import { EraseDataManager } from "./procedures/EraseData"
 import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
 import { MultipleLambdaTestDataGeneratorManager } from "./procedures/MultipleLambdaTestDataGenerator"
 import { IdmptSingleLambdaTestDataGeneratorManager } from "./procedures/IdmptSingleLambdaTestDataGenerator"
 import { IdmptMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptMultipleLambdaTestDataGenerator"
+import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator"
+import AWS from "aws-sdk"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -39,6 +42,7 @@ allItems.set(SingleLambdaTestDataGeneratorItem.__type, SingleLambdaTestDataGener
 allItems.set(MultipleLambdaTestDataGeneratorItem.__type, MultipleLambdaTestDataGeneratorItem)
 allItems.set(IdmptSingleLambdaTestDataGeneratorItem.__type, IdmptSingleLambdaTestDataGeneratorItem)
 allItems.set(IdmptMultipleLambdaTestDataGeneratorItem.__type, IdmptMultipleLambdaTestDataGeneratorItem)
+allItems.set(IdmptChunksMultipleLambdaTestDataGeneratorItem.__type, IdmptChunksMultipleLambdaTestDataGeneratorItem)
 allItems.set(EraseDataItem.__type, EraseDataItem)
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
@@ -61,6 +65,7 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
         [SingleLambdaTestDataGeneratorItem.__type]: new SingleLambdaTestDataGeneratorManager(allItems),
         [IdmptSingleLambdaTestDataGeneratorItem.__type]: new IdmptSingleLambdaTestDataGeneratorManager(allItems),
         [IdmptMultipleLambdaTestDataGeneratorItem.__type]: new IdmptMultipleLambdaTestDataGeneratorManager(allItems),
+        [IdmptChunksMultipleLambdaTestDataGeneratorItem.__type]: new IdmptChunksMultipleLambdaTestDataGeneratorManager(allItems),
         [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
         [EraseDataItem.__type]: new EraseDataManager(allItems)
     }

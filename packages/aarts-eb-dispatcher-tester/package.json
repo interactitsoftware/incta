@@ -1,14 +1,14 @@
 {
   "name": "aarts-eb-dispatcher-tester",
-  "version": "1.0.126",
+  "version": "1.0.127",
   "description": "In a loop it dispatches events to bus, decorating them with a client token.",
   "main": "./dist/eventDispatcherStressTester.js",
   "dependencies": {
     "@types/aws-lambda": "^8.10.62",
-    "@types/node": "^13.13.17",
+    "@types/node": "^13.13.18",
     "@types/request": "^2.48.4",
-    "aarts-eb-types": "^0.2.141",
-    "aws-sdk": "^2.749.0",
+    "aarts-eb-types": "^0.2.142",
+    "aws-sdk": "^2.750.0",
     "typescript": "^3.9.7"
   },
   "devDependencies": {},

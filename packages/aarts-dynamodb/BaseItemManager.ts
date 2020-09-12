@@ -80,8 +80,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[${__type}:baseValidateStart] Payload is not an array!`)
         }
 
-        if (payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateStart] excedes the max arguments array length constraint(1)`)
+        if (payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
+            throw new Error(`[${__type}:baseValidateStart] excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
         }
 
         return payload
@@ -166,8 +166,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[baseValidateQuery] Query args is not an array!`)
         }
 
-        if (args.length > 1) {
-            throw new Error(`[baseValidateQuery] Query args array excedes the max arguments array length currently supported(1)`)
+        if (args.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
+            throw new Error(`[baseValidateQuery] Query args array excedes the max arguments array length currently supported(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
         }
 
         return args.reduce<DdbQueryInput[]>((accum, inputQueryArg) => {
@@ -261,8 +261,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[${__type}:baseValidateDelete] Payload is not an array!`)
         }
 
-        if (event.payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(1)`)
+        if (event.payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
+            throw new Error(`[${__type}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
         }
 
         for (const arg of event.payload.arguments) {
@@ -412,8 +412,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[${__type}:baseValidateCreate] Payload is not an array!`)
         }
 
-        if (event.payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateCreate] excedes the max arguments array length constraint(1)`)
+        if (event.payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
+            throw new Error(`[${__type}:baseValidateCreate] excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
         }
 
         for (const arg of event.payload.arguments) {
@@ -504,8 +504,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[${__type}:baseValidateStart] Payload is not an array!`)
         }
 
-        if (event.payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateUpdate] Payload excedes the max arguments array length constraint(1)`)
+        if (event.payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
+            throw new Error(`[${__type}:baseValidateUpdate] Payload excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
         }
 
         for (const arg of event.payload.arguments) {
