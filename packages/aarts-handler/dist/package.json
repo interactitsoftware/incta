@@ -1,14 +1,14 @@
 {
   "name": "aarts-handler",
-  "version": "0.3.128",
+  "version": "0.3.129",
   "description": "dispatches actions to item managers",
   "main": "./dist/aartsHandler.js",
   "dependencies": {
     "@types/aws-lambda": "^8.10.62",
-    "@types/node": "^13.13.18",
+    "@types/node": "^13.13.19",
     "@types/request": "^2.48.4",
-    "aarts-types": "^0.2.143",
-    "aws-sdk": "^2.750.0",
+    "aarts-types": "^0.2.144",
+    "aws-sdk": "^2.751.0",
     "typescript": "^3.9.7"
   },
   "scripts": {

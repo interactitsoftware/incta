@@ -198,6 +198,8 @@ benchmarks:
 2 try: inserting 20000 - each event contains 25 payloads ==> start procedure lambda finished successfuly in: 47400 ms Memory Size: 256 MB Max Memory Used: 159 MB. EXPECTED 20000/25=800 TOTAL events and 240425 TOTAL records. ACTUAL 237353 records. 237353-425=236928 divided by 12 = 19744 tourists inserted. ACTUAL TOTAL events: 801 (1 for the initial procedure start). FAILED events = 24 which is 24*25(the chunk size, i.e tourists to be inserted in one event)=600 SHOULD HAVE BEEN LEFT NOT INSERTED. HOWEVER WE SEE that total 19744 was inserted. 20000 - 19744 = 256 which is LESS than expected(600). 1975-1116=859 -> the only reasonable explanation for this is that some of the FAILED events actually did have some of their 25 transactions passing, but not all of them passed.
 INTERESTING FACT: when in insights after above two tries, searched for "Error calling dynamo" and got 103 ERRORs about dynamo autoscaling, please try again later. 79+24=103 ! So the sum of failed events from above two tries, equaled exactly the number of errors and they all were about scaling
 3 try inserting 20000 THROTHLING THE LAMBDA TO 50 - 9 failed events, total errors about scaling rised to 112 = > 103+9 = 112
-4 try inserting 20000 THROTHLING THE LAMBDA TO 25 - ZERO failed events EXPECTED=ACTUAL. 240425 items inserted in less then 5 minutes: 45300 ms Memory Size: 256 MB Max Memory Used: 159 MB
+4 try inserting 20000 THROTHLING THE LAMBDA TO 25 - ZERO failed events EXPECTED=ACTUAL. 240425 items inserted in less then 5 minutes.  45300 ms Memory Size: 256 MB Max Memory Used: 159 MB
 
-5 try inserting 40000 THROTHLING THE LAMBDA to 25: AS EXPECTED 480425 items inserted. 89800 ms Memory Size: 256 MB Max Memory Used: 144 MB Init Duration: 755.66 ms
+5 try inserting 40000 THROTHLING THE LAMBDA to 25: AS EXPECTED 480425 items inserted, 1601 total events (and also lambda executions): 89800 ms Memory Size: 256 MB Max Memory Used: 144 MB Init Duration: 755.66 ms
+(after one day passed, probably dynamo autoscaling decreased?)
+6 try inserting 40000 THROTLUNG LAMBDA 25, ACTUAL 479825, i.e 600 missing
