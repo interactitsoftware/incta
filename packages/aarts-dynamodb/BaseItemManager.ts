@@ -76,18 +76,13 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateStart(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateStart] START. checking for mandatory item keys: ` + ppjson(payload))
 
-        if (payload.arguments.constructor !== Array) {
-            throw new Error(`[${__type}:baseValidateStart] Payload is not an array!`)
-        }
-
-        if (payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
-            throw new Error(`[${__type}:baseValidateStart] excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
+        if (!Array.isArray(payload.arguments) || payload.arguments.length > 1) {
+            throw new Error(`[${__type}:baseValidateStart] Payload is not a single element array! ${ppjson(payload.arguments)}`)
         }
 
         return payload
     }
-    // TODO not implemented yet
-    // TODO to initiate the start method of some domain procedure, following some standard contract, with a hirsotry record in dynamo of its execution
+
     async *start(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload<T>, AartsPayload<T>, undefined> {
         // console.log('Received arguments: ', args)
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:START] Begin start method. Doing a gate check of payload`, identity: undefined })
@@ -162,12 +157,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      */
     async *baseValidateQuery(args: DdbQueryInput[], identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
 
-        if (args.constructor !== Array) {
-            throw new Error(`[baseValidateQuery] Query args is not an array!`)
-        }
-
-        if (args.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
-            throw new Error(`[baseValidateQuery] Query args array excedes the max arguments array length currently supported(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
+        if (!Array.isArray(args) || args.length > 1) {
+            throw new Error(`[baseValidateQuery] Payload is not a single element array! ${ppjson(args)}`)
         }
 
         return args.reduce<DdbQueryInput[]>((accum, inputQueryArg) => {
@@ -257,12 +248,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateDelete(__type: string, event: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateDelete] checking for mandatory item keys`)
 
-        if (event.payload.arguments.constructor !== Array) {
-            throw new Error(`[${__type}:baseValidateDelete] Payload is not an array!`)
-        }
-
-        if (event.payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
-            throw new Error(`[${__type}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
+        if ( !Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
+            throw new Error(`[${__type}:baseValidateDelete] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
         for (const arg of event.payload.arguments) {
@@ -342,9 +329,10 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param identity 
      */
     async *baseValidateGet(args: DynamoItem[], identity: IIdentity): AsyncGenerator<string, DdbTableItemKey[], undefined> {
-        if (args.constructor !== Array) {
-            throw new Error(`[baseValidateGet] Payload is not an array!`)
+        if (!Array.isArray(args) || args.length > 1) {
+            throw new Error(`[baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
         }
+
         return args.reduce<DdbTableItemKey[]>((accum, item) => {
             if (item.id) {
                 accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
@@ -408,13 +396,10 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateCreate(__type: string, event: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(event))
 
-        if (event.payload.arguments.constructor !== Array) {
-            throw new Error(`[${__type}:baseValidateCreate] Payload is not an array!`)
+        if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
+            throw new Error(`[${__type}:baseValidateCreate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
-        if (event.payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
-            throw new Error(`[${__type}:baseValidateCreate] excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
-        }
 
         for (const arg of event.payload.arguments) {
             if ("id" in arg || "revisions" in arg) {
@@ -458,10 +443,11 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             const asyncGenDomain = this.validateCreate(itemToCreate, args.payload.identity)
             let processorDomain = await asyncGenDomain.next()
+            yield { arguments: `[${__type}:validateCreate] ${processorDomain.value}`, identity: undefined }
             do {
                 if (!processorDomain.done) {
-                    yield { arguments: `[${__type}:validateCreate] ${processorDomain.value}`, identity: undefined }
                     processorDomain = await asyncGenDomain.next()
+                    yield { arguments: `[${__type}:validateCreate] ${processorDomain.value}`, identity: undefined }
                 }
             } while (!processorDomain.done)
             dynamoItems.push(processorDomain.value)
@@ -500,12 +486,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateUpdate(__type: string, event: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
-        if (event.payload.arguments.constructor !== Array) {
-            throw new Error(`[${__type}:baseValidateStart] Payload is not an array!`)
-        }
-
-        if (event.payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
-            throw new Error(`[${__type}:baseValidateUpdate] Payload excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
+        if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
+            throw new Error(`[${__type}:baseValidateUpdate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
         for (const arg of event.payload.arguments) {

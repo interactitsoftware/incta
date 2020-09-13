@@ -25,12 +25,32 @@ export class EventBusConstruct extends cdk.Construct {
         super(scope, id);
         this.eventBus = new sns.Topic(this, 'Bus')
 
-        //#region test queue consuming all the messages
-        var testQueue = new sqs.Queue(this, "TESTQUEUE", {
+        //#region test queues consuming all the messages
+        var testOutputQueue = new sqs.Queue(this, "TESTOUTPUTQUEUE", {
             retentionPeriod: Duration.hours(48)
         });
-        this.eventBus.addSubscription(new snsSubs.SqsSubscription(testQueue, {
-            rawMessageDelivery: true
+        this.eventBus.addSubscription(new snsSubs.SqsSubscription(testOutputQueue, {
+            rawMessageDelivery: true,
+            filterPolicy: {
+                eventSource: {
+                    conditions: [
+                        { prefix: "worker:output" }
+                    ]
+                }
+            }
+        }));
+        var testInputQueue = new sqs.Queue(this, "TESTINPUTQUEUE", {
+            retentionPeriod: Duration.hours(48)
+        });
+        this.eventBus.addSubscription(new snsSubs.SqsSubscription(testInputQueue, {
+            rawMessageDelivery: true,
+            filterPolicy: {
+                eventSource: {
+                    conditions: [
+                        { prefix: "worker:input" }
+                    ]
+                }
+            }
         }));
         //#endregion
 

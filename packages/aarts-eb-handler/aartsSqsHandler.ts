@@ -19,7 +19,7 @@ export const handler = async (message: SQSEvent, context: Context): Promise<any>
 
 				}
 			})
-		!process.env.DEBUGGER || console.log('parsed aartsEvent from SQS is ', aartsEvent)
+		!process.env.DEBUGGER || console.log('parsed aartsEvent from SQS is ', ppjson(aartsEvent))
 		process.env.ringToken = aartsEvent.meta.ringToken
 		await new AartsSqsHandler().processPayload(aartsEvent, context)
 	}
@@ -32,6 +32,7 @@ export class AartsSqsHandler extends AartsEBUtil {
 		const asyncGen = processPayloadAsync(input)
 
 		let processor = await asyncGen.next()
+		await this.publish(prepareAartsEventForDispatch(processor.value))
 		do {
 			if (!processor.done) {
 				processor = await asyncGen.next()

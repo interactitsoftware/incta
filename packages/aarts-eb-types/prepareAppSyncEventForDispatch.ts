@@ -7,7 +7,7 @@ export const prepareAppSyncEventForDispatch = (event: AppSyncEvent, ringToken: s
 			"eventSource": {
 				DataType: 'String',
 				// defaults should be fire an "input", with "s" worker type;
-				StringValue: `worker:${event.messageType === "output" ? "output" : "input"}:${event.taskType === "l"? "l" : "s"}`
+				StringValue: `worker:${event.eventType === "output" ? "output" : "input"}:${event.jobType === "long"? "long" : "short"}`
 			},
 			"action": {
 				DataType: 'String',

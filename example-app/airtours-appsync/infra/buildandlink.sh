@@ -64,18 +64,6 @@ npm publish -m "dev update"
 # npm link
 
 echo ------------------------------------------------
-echo           AARTS_EB_DISPATCHER_TESTER
-echo ------------------------------------------------
-cd $AARTS_HOME/packages/aarts-eb-dispatcher-tester
-# npm link aarts-eb-types
-npm update
-npm version patch
-npm run build_lin
-cd dist
-npm publish -m "dev update"
-# npm link
-
-echo ------------------------------------------------
 echo            AARTS_DYNAMODB
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-dynamodb

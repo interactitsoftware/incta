@@ -57,13 +57,13 @@ export class AartsAllInfraStack extends Stack {
 
     const workerInputHandlerShort = new WorkerConstruct(this, `${clientAppName}HandlerShort`, {
       workerName: `${clientAppName}HandlerShort`,
-      functionTimeout: Duration.seconds(30),
+      functionTimeout: Duration.seconds(10),
       functionHandler: "index.handler",
       functionImplementationPath: join("..", clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
-      eventSource: "worker:input:s",
+      eventSource: "worker:input:short",
       // envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
       layers: [
         nodeModulesLayer
@@ -78,7 +78,7 @@ export class AartsAllInfraStack extends Stack {
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
-      eventSource: "worker:input:l",
+      eventSource: "worker:input:long",
       // envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
       layers: [
         nodeModulesLayer

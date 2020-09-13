@@ -3,10 +3,10 @@ export type IIdentity = any
 export type IItemManagerKeys = keyof IItemManager<any>
 
 export interface AartsEvent {
-	payload: AartsPayload
-    meta: AartsMeta
-    resultType?: "output" | "input" | undefined,
-    taskType?: "s" | "l" | undefined,
+    payload: AartsPayload;
+    meta: AartsMeta;
+    eventType?: "output" | "input" | undefined;
+    jobType?: "short" | "long" | undefined;
 }
 export interface AartsMeta {
     item: string,
