@@ -27,13 +27,16 @@ describe('get', () => {
     await transactPutItem(airport, _specs_AirportItem.__refkeys)
     await transactPutItem(airport2, _specs_AirportItem.__refkeys)
 
-    const getResult = await batchGetItem([
-      {id:airplane.id, meta: airplane.meta},
-      {id:airplane2.id, meta: airplane2.meta},
-      {id:airport.id, meta: airport.meta},
-      {id:airport2.id, meta: airport2.meta},
-      {id:"some not existing", meta: "some not existing"}
-    ])
+    const getResult = await batchGetItem({
+      loadPeersLevel: 0,
+      pks: [
+        {id:airplane.id, meta: airplane.meta},
+        {id:airplane2.id, meta: airplane2.meta},
+        {id:airport.id, meta: airport.meta},
+        {id:airport2.id, meta: airport2.meta},
+        {id:"some not existing", meta: "some not existing"}
+      ]
+    })
 
     expect(getResult.length).toBe(4)
     expect(getResult.filter(r=>r.item_type === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 11).length).toBe(1)

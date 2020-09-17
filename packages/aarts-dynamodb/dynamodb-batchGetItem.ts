@@ -1,15 +1,18 @@
 'use strict'
-// TODO keys (id / meta) as separate params, and a string for the update expression?
-// https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
-import { AWSError } from 'aws-sdk'
-import { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMap } from 'aws-sdk/clients/dynamodb'
-import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME } from './DynamoDbClient';
-import { DynamoItem } from './BaseItemManager';
 
-export const batchGetItem = <T extends DynamoItem>(items: {id:string, meta:string}[]): Promise<T[]> => 
-    new Promise((resolve, reject) => 
-{
-    const keys: AttributeMap[] = toAttributeMapArray(items.map(i => {return {id:i.id, meta:i.meta}}))
+import { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMap } from 'aws-sdk/clients/dynamodb'
+import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME, versionString, ddbRequest } from './DynamoDbClient';
+import { DynamoItem } from './BaseItemManager';
+import { MixinConstructor } from 'aarts-types/Mixin';
+import { DdbGetInput, RefKey } from './interfaces';
+import { ppjson } from 'aarts-utils/utils';
+
+export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Promise<T[]> => {
+    const keys: AttributeMap[] = toAttributeMapArray(args.pks.map(i => { return { id: i.id, meta: i.meta } }))
+
+    if (args.loadPeersLevel === undefined) {
+        args.loadPeersLevel = 1 // default behaviour, load 1 levels of refs
+    }
 
     const params: BatchGetItemInput = {
         RequestItems: {
@@ -17,17 +20,46 @@ export const batchGetItem = <T extends DynamoItem>(items: {id:string, meta:strin
                 Keys: keys
             }
         },
-        ReturnConsumedCapacity: 'TOTAL', 
+        ReturnConsumedCapacity: 'TOTAL',
     }
 
-    // write item to the database
-    dynamoDbClient.batchGetItem(params, (error: AWSError, result: BatchGetItemOutput) => {
-        if (error) {
-            return reject(error)
+    const result = await ddbRequest(dynamoDbClient.batchGetItem(params))
+    !process.env.DEBUGGER || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+
+    let resultItems = fromAttributeMapArray(((result as BatchGetItemOutput).Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[]
+
+    if (args.loadPeersLevel !== 0) {
+        for (let resultItem of resultItems) {
+            await populateRefKeys(resultItem, args.loadPeersLevel, args.peersPropsToLoad)
         }
-        !process.env.DEBUGGER || console.log("====DDB==== BatchGetItemOutput: ", result)
-        
-        // create a response
-        return resolve(fromAttributeMapArray((result.Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as T[])
+    }
+
+    return resultItems as T[]
+    
+}
+
+export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: number, peersPropsToLoad?: string[] | undefined) => {
+    if (loadPeersLevel === 0) return
+    
+    const __type = (resultItem as unknown as DynamoItem).item_type as string
+    const __refkeysToItems = (((global.domainAdapter.lookupItems as unknown) as Map<string, MixinConstructor<typeof DynamoItem>>).get(__type)?.__refkeys as RefKey<Record<string, any>>[]).filter(k => !!k.ref && (peersPropsToLoad === undefined || peersPropsToLoad.indexOf(k.key) > -1))
+    const keysToLoad = __refkeysToItems.reduce<{key: string, pk: { id: string, meta: string }}[]>((accum, i) => {
+        if (Object.keys(resultItem).indexOf(i.key) > -1 ) {
+            accum.push({key:i.key,pk: { id: resultItem[i.key], meta: `${versionString(0)}|${resultItem[i.key].substr(0, resultItem[i.key].indexOf("|"))}` }})
+            return accum
+        }
+        return accum
+    }, [])
+    
+    if (keysToLoad.length === 0) return 
+
+    const loadedItemsFromKeys = await batchGetItem({
+        pks: keysToLoad.map(k => k.pk),
+        loadPeersLevel: --loadPeersLevel,
+        peersPropsToLoad
     })
-})
+
+    for (const refKeyToItem of keysToLoad) {
+        resultItem[refKeyToItem.key] = loadedItemsFromKeys.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
+    }
+}

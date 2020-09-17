@@ -1,6 +1,6 @@
 import { Context, SQSEvent } from "aws-lambda"
 import { AartsEvent, IItemManagerKeys } from "aarts-types/interfaces"
-import { ppjson } from "aarts-types/utils"
+import { logdebug, ppjson } from "aarts-utils/utils"
 import { processPayloadAsync } from 'aarts-handler/aartsHandler'
 import { AartsEBUtil } from 'aarts-eb-types/aartsEBUtil'
 import { prepareAartsEventForDispatch } from 'aarts-eb-types/prepareAartsEventForDispatch'
@@ -21,7 +21,7 @@ export const handler = async (message: SQSEvent, context: Context): Promise<any>
 			})
 		!process.env.DEBUGGER || console.log('parsed aartsEvent from SQS is ', ppjson(aartsEvent))
 		process.env.ringToken = aartsEvent.meta.ringToken
-		await new AartsSqsHandler().processPayload(aartsEvent, context)
+		return await new AartsSqsHandler().processPayload(aartsEvent, context)
 	}
 }
 
@@ -41,6 +41,9 @@ export class AartsSqsHandler extends AartsEBUtil {
 
 			}
 		} while (!processor.done)
+
+		// logdebug() todouse it
+		console.log("returning from AartsSQSHandler.processPayload " +  ppjson(processor.value))
 
 		return processor.value
 	}

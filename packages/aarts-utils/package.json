@@ -1,7 +1,7 @@
 {
-  "name": "aarts-types",
+  "name": "aarts-utils",
   "version": "0.2.206",
-  "description": "base types for aarts - aws lambda/dynamodb transactional support",
+  "description": "utility functions used by aarts libraries",
   "main": "./dist",
   "types": "./dist/index.d.ts",
   "repository": {

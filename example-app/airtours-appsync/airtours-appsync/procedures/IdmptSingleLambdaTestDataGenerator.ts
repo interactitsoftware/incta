@@ -14,7 +14,7 @@ import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
 import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
-import * as idGenUtil from 'aarts-types/utils'
+import * as idGenUtil from 'aarts-utils/utils'
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { names } from "./random-names/names";
 

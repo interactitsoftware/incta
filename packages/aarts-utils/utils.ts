@@ -38,8 +38,8 @@ export const loginfo = (message: string, ...input: any[]) => {
     ...input))
 }
 
-export const logdebug = (message: any) => {
-    !process.env.DEBUGGER || loginfo(message)
+export const logdebug = (message: any, ...input: any[]) => {
+    !process.env.DEBUGGER || loginfo(message, input)
 }
 
 export const ifDebugger = (func: Function) => {

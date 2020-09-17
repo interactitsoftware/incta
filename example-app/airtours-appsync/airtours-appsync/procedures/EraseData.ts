@@ -1,5 +1,5 @@
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
-import { chunks } from "aarts-types/utils"
+import { chunks } from "aarts-utils/utils"
 import { dynamoDbClient, DB_NAME } from "aarts-dynamodb/DynamoDbClient"
 import { AartsEvent, IIdentity } from "aarts-types/interfaces";
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"

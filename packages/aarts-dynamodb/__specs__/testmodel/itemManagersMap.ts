@@ -27,6 +27,7 @@ allItems.set(_specs_TouristItem.__type, _specs_TouristItem)
 allItems.set(_specs_DataImporterItem.__type, _specs_DataImporterItem)
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
+    public lookupItems = allItems
     public itemManagers = {
         "BASE": new BaseDynamoItemManager(allItems),
         [_specs_AirplaneItem.__type]: new _specs_AirplaneManager(allItems),

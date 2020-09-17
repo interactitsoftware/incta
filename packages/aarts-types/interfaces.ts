@@ -1,3 +1,4 @@
+import { AnyConstructor, MixinConstructor } from "./Mixin"
 
 export type IIdentity = any
 export type IItemManagerKeys = keyof IItemManager<any>
@@ -16,11 +17,13 @@ export interface AartsMeta {
 }
 
 export interface AartsPayload<T = any> {
-    arguments: any;
-    identity: any;
+    arguments: any
+    identity: any
     resultItems?: T[]
+    selectionSetList?: string
 }
 export interface IDomainAdapter<BASE_ITEM> {
+    lookupItems: Map<string, AnyConstructor<BASE_ITEM>>
     itemManagers: { [key: string]: IItemManager<BASE_ITEM> }
 }
 

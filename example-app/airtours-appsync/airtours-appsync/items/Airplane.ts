@@ -1,6 +1,6 @@
 import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
 import { IIdentity } from "aarts-types/interfaces"
-import { ppjson } from "aarts-types/utils"
+import { ppjson } from "aarts-utils/utils"
 
 // using the one from the aarts-dynamodb/__specs__
 import {_specs_AirplaneItem as AirplaneItem} from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"

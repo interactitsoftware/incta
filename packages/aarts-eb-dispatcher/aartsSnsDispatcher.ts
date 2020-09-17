@@ -4,6 +4,7 @@ import { AartsEBUtil, AppSyncEvent } from "aarts-eb-types/aartsEBUtil"
 import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHandlerFromContent";
 import { processPayload } from "aarts-handler/aartsHandler"
 import {prepareAppSyncEventForDispatch} from "aarts-eb-types/prepareAppSyncEventForDispatch"
+import { logdebug, loginfo } from "aarts-utils/utils";
 
 /**
  * forwards to SNS, decorating with:
@@ -22,30 +23,28 @@ class aartsSnsDispatcher extends AartsEBUtil {
 		const ringToken: string = event.ringToken || this.uuid()
 		// log the ringToken
 		if (!!event.ringToken) {
-			console.log('using already present ring token:  ' + ringToken + ' for received event: ', event)
+			logdebug(`using already present ring token:  ${ringToken} for received event ${event}`)
 		} else {
-			console.log('generated ring token: ' + ringToken + ' for received event: ', event)
+			logdebug(`generated ring token: ${ringToken} for received event: ${event}`)
 		}
 
 		let result
-		if (event.action === "query") {
-			console.log('dispatching directly to handler, skipping SNS publishing')
+		if (event.action === "query" || event.action === "get") {
+			logdebug('dispatching directly to handler, skipping SNS publishing')
 			result = await processPayload({
 				meta: {
 					ringToken: ringToken,
-					eventSource: `worker:input`,
-					action: 'query',
-					item: ''
+					eventSource: `worker:${event.eventType === "output"?event.eventType:"input"}:${event.jobType}`,
+					action: event.action,
+					item: event.item
 				},
 				payload: {
 					arguments: event.arguments,
-					identity: event.identity
+					identity: event.identity,
+					selectionSetList: event.selectionSetList
 				}
 			}, context)
-		}
-
-
-		if (!process.env["AWS_SAM_LOCAL"]) {
+		} else if (!process.env["AWS_SAM_LOCAL"]) {
 			// used runtime in aws
 			const publishInput: AWS.SNS.PublishInput = prepareAppSyncEventForDispatch(event, ringToken)
 			result = await this.publish(publishInput)

@@ -1,6 +1,4 @@
 node_modules
-libs-lambda-layer
-dist
 *.js
 *.d.ts
 *.d.ts.map

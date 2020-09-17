@@ -1,5 +1,5 @@
 import * as AWS from "aws-sdk";
-import * as idGenUtil from 'aarts-types/utils'
+import * as idGenUtil from 'aarts-utils/utils'
 
 export const loginfo = idGenUtil.loginfo 
 
@@ -10,7 +10,8 @@ export interface AppSyncEvent {
     arguments: any,
     identity: any,
 	jobType?: "long" | "short" | undefined
-	eventType?: "input" | "output" | undefined
+    eventType?: "input" | "output" | undefined
+    selectionSetList?: string | undefined
 }
 const localMockSNSFile = class {
     static publish(publishInput: AWS.SNS.PublishInput, cb: Function) {

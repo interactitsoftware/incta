@@ -59,15 +59,15 @@ schema {
 
 type Mutation {
     start(item: String!, payload: AWSJSON): AWSJSON
-    create(item: String!, payload: AWSJSON): AWSJSON
-    update(item: String!, payload: AWSJSON): AWSJSON
-    delete(item: String!, payload: AWSJSON): AWSJSON
+    create(item: String!, payload: AWSJSON!): AWSJSON
+    update(item: String!, payload: AWSJSON!): AWSJSON
+    delete(item: String!, payload: AWSJSON!): AWSJSON
     notify(to: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
 }
 
 type Query {
-    get(item: String!, payload: AWSJSON): AWSJSON 
-    list(item: String!, payload: AWSJSON): AWSJSON
+    get(item: String, payload: AWSJSON!): AWSJSON 
+    query(item: String, payload: AWSJSON!): AWSJSON
 }
 
 type Subscription {

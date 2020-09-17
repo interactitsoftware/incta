@@ -5,9 +5,9 @@ import { transactPutItem } from "./dynamodb-transactPutItem";
 import { queryItems } from "./dynamodb-queryItems";
 import { transactDeleteItem } from "./dynamodb-transactDeleteItem";
 import { AnyConstructor, Mixin, MixinConstructor } from "aarts-types/Mixin"
-import { uuid, ppjson } from "aarts-types/utils"
+import { uuid, ppjson } from "aarts-utils/utils"
 import { AartsEvent, AartsPayload, IIdentity, IItemManager } from "aarts-types/interfaces"
-import { DdbQueryInput, RefKey, IBaseDynamoItemProps, IProcedure, DdbTableItemKey, DomainItem } from "./interfaces";
+import { DdbQueryInput, RefKey, IBaseDynamoItemProps, IProcedure, DdbTableItemKey, DomainItem, DdbGetInput } from "./interfaces";
 
 
 export const DynamoItem =
@@ -161,6 +161,10 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[baseValidateQuery] Payload is not a single element array! ${ppjson(args)}`)
         }
 
+        if (!args[0].limit || args[0].limit > 50) {
+            args[0].limit = 50
+        }
+
         return args.reduce<DdbQueryInput[]>((accum, inputQueryArg) => {
             if (!inputQueryArg.pk) {
                 throw new Error(`PK is mandatory when querying`)
@@ -187,7 +191,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             return accum
         }, [])[0] // TODO query only by one input at a time refactor
     }
-    // TODO to return paged results
+
     /**
      * PK
      * RANGE
@@ -248,7 +252,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateDelete(__type: string, event: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateDelete] checking for mandatory item keys`)
 
-        if ( !Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
+        if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
             throw new Error(`[${__type}:baseValidateDelete] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
@@ -320,7 +324,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      * @param identity 
      */
-    async *validateGet(args: DdbTableItemKey[], identity: IIdentity): AsyncGenerator<string, DdbTableItemKey[], undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
     /**
@@ -328,19 +332,22 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args holds get checkins, transforming incomming args for dynamodb getItem
      * @param identity 
      */
-    async *baseValidateGet(args: DynamoItem[], identity: IIdentity): AsyncGenerator<string, DdbTableItemKey[], undefined> {
+    async *baseValidateGet(args: DdbGetInput[], identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
+        
         if (!Array.isArray(args) || args.length > 1) {
             throw new Error(`[baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
         }
 
-        return args.reduce<DdbTableItemKey[]>((accum, item) => {
-            if (item.id) {
-                accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
-            } else {
-                throw new Error(`invalid ID keys passed. id: ${item.id} meta: ${item.meta}`)
-            }
-            return accum
-        }, [])
+        return Object.assign(args[0], {
+            pks: args[0].pks.reduce<DdbTableItemKey[]>((accum, item) => {
+                if (item.id) {
+                    accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
+                } else {
+                    throw new Error(`invalid ID keys passed. id: ${item.id} meta: ${item.meta}`)
+                }
+                return accum
+            }, [])
+        })
     }
     /**
      * making use of dynamodb batchGetItems

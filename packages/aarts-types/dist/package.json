@@ -1,6 +1,6 @@
 {
   "name": "aarts-types",
-  "version": "0.2.165",
+  "version": "0.2.206",
   "description": "base types for aarts - aws lambda/dynamodb transactional support",
   "main": "./dist",
   "types": "./dist/index.d.ts",
@@ -9,7 +9,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^14.10.1",
+    "@types/node": "^14.10.3",
     "typescript": "^3.9.7"
   },
   "scripts": {

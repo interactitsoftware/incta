@@ -1,8 +1,0 @@
-{
-    "Parameters": {
-        "AWS_SAM_LOCAL": "1",
-        "DB_NAME": "ITEMS",
-        "DDB_LOCAL_URL": "http://dynamodb:8000",
-        "DEBUGGER": "1"
-    }
-}

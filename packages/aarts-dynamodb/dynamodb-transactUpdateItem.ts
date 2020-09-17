@@ -5,7 +5,7 @@ import { DynamoDB } from 'aws-sdk'
 import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList, AttributeMap } from 'aws-sdk/clients/dynamodb'
 import { DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, refkeyitemmeta, ddbRequest } from './DynamoDbClient';
-import { ppjson } from 'aarts-types/utils';
+import { ppjson } from 'aarts-utils/utils';
 import { RefKey } from './interfaces';
 
 

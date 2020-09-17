@@ -1,8 +1,7 @@
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
-import { DomainItem } from "aarts-dynamodb/interfaces"
 import { AartsEvent, IIdentity } from "aarts-types/interfaces";
-import { IdmptMultipleLambdaTestDataGeneratorItem, AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem } from "../_DynamoItems"
+import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
@@ -11,7 +10,7 @@ import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_Airpl
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
 import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
 import { names } from "./random-names/names";
-import { chunks } from "aarts-types/utils";
+import { chunks } from "aarts-utils/utils";
 export class IdmptChunksMultipleLambdaTestDataGenerator {
 
     public total_events: number = 0
@@ -502,7 +501,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
         // many tourists
         // //flight_sf_mw
         const namesLenght = names.length
-        for (let i = 0; i < Number(process.env.TOTAL_TOURISTS) || 0; i++) {
+        for (let i = 0; i < Number(process.env.TOTAL_TOURISTS || 0) ; i++) {
             await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sf_mw.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],

@@ -1,7 +1,7 @@
 import { BaseDynamoItemManager } from "../../BaseItemManager"
 import { _specs_AirportItem, _specs_AirplaneItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
-import { ppjson } from "aarts-types/utils"
+import { ppjson } from "aarts-utils/utils"
 
 export class _specs_AirplaneModel { 
     constructor(...args: any[]) {

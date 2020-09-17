@@ -6,7 +6,7 @@ import { handler as notifier } from "aarts-eb-notifier/aartsAppsyncNotifier"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { handler as dispatcherTester } from "aarts-eb-dispatcher-tester/aartsDispatcherStressTester"
 import { IDomainAdapter } from "aarts-types/interfaces"
-import { AnyConstructor } from "aarts-types/Mixin"
+import { AnyConstructor, MixinConstructor } from "aarts-types/Mixin"
 
 import {
     AirplaneItem, CountryItem, CityItem, PilotItem, AirportItem,
@@ -46,6 +46,7 @@ allItems.set(IdmptChunksMultipleLambdaTestDataGeneratorItem.__type, IdmptChunksM
 allItems.set(EraseDataItem.__type, EraseDataItem)
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
+    public lookupItems = allItems
     public itemManagers = {
         // lib from specs test model
         [AirplaneItem.__type]: new AirplaneManager(allItems),

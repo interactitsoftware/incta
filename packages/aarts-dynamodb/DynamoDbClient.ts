@@ -1,8 +1,8 @@
 import { DynamoDB, AWSError } from 'aws-sdk'
 import { Request } from 'aws-sdk/lib/request'
-import { AttributeMap, TransactWriteItemsInput, TransactWriteItemsOutput } from 'aws-sdk/clients/dynamodb';
+import { AttributeMap, BatchGetItemOutput, QueryOutput, TransactWriteItemsInput, TransactWriteItemsOutput } from 'aws-sdk/clients/dynamodb';
 import { DynamoItem } from './BaseItemManager';
-import { ppjson } from 'aarts-types/utils';
+import { ppjson } from 'aarts-utils/utils';
 
 export const offline_options = {
     region: 'ddblocal',
@@ -90,8 +90,8 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
     }, [])
 
     export const ddbRequest = async (
-        request: Request<TransactWriteItemsOutput, AWSError>,
-    ): Promise<TransactWriteItemsOutput> => {
+        request: Request<TransactWriteItemsOutput | BatchGetItemOutput | QueryOutput, AWSError>,
+    ): Promise<TransactWriteItemsOutput | BatchGetItemOutput | QueryOutput> => {
         let cancellationReasons:{Item:any, Code:string, Message:string}[] = []
 
         request.on('error', (response) => {

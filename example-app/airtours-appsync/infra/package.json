@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk-typescript",
-  "version": "0.1.271",
+  "version": "0.1.323",
   "bin": {
     "aws-cdk-typescript": "bin/aws-cdk-typescript.js"
   },
@@ -11,10 +11,10 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.62.0",
+    "@aws-cdk/assert": "^1.63.0",
     "@types/jest": "^24.9.1",
     "@types/node": "10.17.5",
-    "aws-cdk": "^1.62.0",
+    "aws-cdk": "^1.63.0",
     "jest": "^26.4.2",
     "ts-jest": "^26.3.0",
     "ts-node": "^8.10.2",
@@ -22,22 +22,22 @@
     "yaml-cfn": "^0.2.3"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^1.62.0",
-    "@aws-cdk/aws-apigateway": "^1.62.0",
-    "@aws-cdk/aws-appsync": "^1.62.0",
-    "@aws-cdk/aws-cloudformation": "^1.62.0",
-    "@aws-cdk/aws-cloudfront": "^1.62.0",
-    "@aws-cdk/aws-cognito": "^1.62.0",
-    "@aws-cdk/aws-dynamodb": "^1.62.0",
-    "@aws-cdk/aws-iam": "^1.62.0",
-    "@aws-cdk/aws-lambda": "^1.62.0",
-    "@aws-cdk/aws-lambda-event-sources": "^1.62.0",
-    "@aws-cdk/aws-s3": "^1.62.0",
-    "@aws-cdk/aws-s3-deployment": "^1.62.0",
-    "@aws-cdk/aws-s3-notifications": "^1.62.0",
-    "@aws-cdk/aws-sns": "^1.62.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.62.0",
-    "@aws-cdk/aws-sqs": "^1.62.0",
-    "@aws-cdk/core": "^1.62.0"
+    "@aws-cdk/assets": "^1.63.0",
+    "@aws-cdk/aws-apigateway": "^1.63.0",
+    "@aws-cdk/aws-appsync": "^1.63.0",
+    "@aws-cdk/aws-cloudformation": "^1.63.0",
+    "@aws-cdk/aws-cloudfront": "^1.63.0",
+    "@aws-cdk/aws-cognito": "^1.63.0",
+    "@aws-cdk/aws-dynamodb": "^1.63.0",
+    "@aws-cdk/aws-iam": "^1.63.0",
+    "@aws-cdk/aws-lambda": "^1.63.0",
+    "@aws-cdk/aws-lambda-event-sources": "^1.63.0",
+    "@aws-cdk/aws-s3": "^1.63.0",
+    "@aws-cdk/aws-s3-deployment": "^1.63.0",
+    "@aws-cdk/aws-s3-notifications": "^1.63.0",
+    "@aws-cdk/aws-sns": "^1.63.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.63.0",
+    "@aws-cdk/aws-sqs": "^1.63.0",
+    "@aws-cdk/core": "^1.63.0"
   }
 }

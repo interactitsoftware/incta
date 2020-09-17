@@ -4,7 +4,7 @@
 import { TransactWriteItemsInput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
 import { DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
-import { ppjson } from 'aarts-types/utils';
+import { ppjson } from 'aarts-utils/utils';
 import { RefKey } from './interfaces';
 
 export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {

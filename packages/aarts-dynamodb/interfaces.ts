@@ -2,7 +2,7 @@ import { AartsEvent } from "aarts-types/interfaces";
 
 export interface DdbTableItemKey {
     id: string
-    meta: string
+    meta?: string
 }
 export interface DdbGSIItemKey { id: string, meta: string, smetadata?: string, nmetadata?: number }
 
@@ -28,20 +28,29 @@ export interface DdbQueryOutput<T> {
     count?: number,
     lastEvaluatedKey: DdbGSIItemKey
 }
-export interface DdbQueryInput {
-    pk: string | number,
-    range?: string | number | {min:string|number, max:string|number},
-    primaryKeyName: string,
-    rangeKeyName: string,
-    ddbIndex: string,
+export interface DdbQueryInput extends DdbLoadPeersInput{
+    pk: string | number
+    range?: string | number | {min:string|number, max:string|number}
+    primaryKeyName: string
+    rangeKeyName: string
+    ddbIndex: string
     filter?: {
-        key: string,
-        predicate: string,
+        key: string
+        predicate: string
         value: string | number
     }[],
-    limit?: number,
+    limit?: number
     paginationToken?: DdbGSIItemKey
 } 
+
+export interface DdbGetInput extends DdbLoadPeersInput{
+    pks: DdbTableItemKey[]
+}
+
+export interface DdbLoadPeersInput {
+    loadPeersLevel?: number
+    peersPropsToLoad?: string[]
+}
 
 export interface IProcedure<T> {
     start(__type: string, args: AartsEvent) : T
