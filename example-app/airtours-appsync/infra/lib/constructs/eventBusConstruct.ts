@@ -39,15 +39,28 @@ export class EventBusConstruct extends cdk.Construct {
                 }
             }
         }));
-        var testInputQueue = new sqs.Queue(this, "TESTINPUTQUEUE", {
+        var testInputShortQueue = new sqs.Queue(this, "TESTINPUTSHORTQUEUE", {
             retentionPeriod: Duration.hours(48)
         });
-        this.eventBus.addSubscription(new snsSubs.SqsSubscription(testInputQueue, {
+        this.eventBus.addSubscription(new snsSubs.SqsSubscription(testInputShortQueue, {
             rawMessageDelivery: true,
             filterPolicy: {
                 eventSource: {
                     conditions: [
-                        { prefix: "worker:input" }
+                        { prefix: "worker:input:short" }
+                    ]
+                }
+            }
+        }));
+        var testInputLongQueue = new sqs.Queue(this, "TESTINPUTLONGQUEUE", {
+            retentionPeriod: Duration.hours(48)
+        });
+        this.eventBus.addSubscription(new snsSubs.SqsSubscription(testInputLongQueue, {
+            rawMessageDelivery: true,
+            filterPolicy: {
+                eventSource: {
+                    conditions: [
+                        { prefix: "worker:input:long" }
                     ]
                 }
             }
