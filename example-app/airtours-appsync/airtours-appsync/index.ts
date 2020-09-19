@@ -17,7 +17,7 @@ import {
     EraseDataItem,
     IdmptSingleLambdaTestDataGeneratorItem,
     IdmptMultipleLambdaTestDataGeneratorItem,
-    IdmptChunksMultipleLambdaTestDataGeneratorItem
+    IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem
 } from "./_DynamoItems"
 import { EraseDataManager } from "./procedures/EraseData"
 import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
@@ -26,6 +26,7 @@ import { IdmptSingleLambdaTestDataGeneratorManager } from "./procedures/IdmptSin
 import { IdmptMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptMultipleLambdaTestDataGenerator"
 import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator"
 import AWS from "aws-sdk"
+import { CreateTouristByPublishingEventManager } from "./procedures/CreateTouristByPublishingEvent"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -43,6 +44,7 @@ allItems.set(MultipleLambdaTestDataGeneratorItem.__type, MultipleLambdaTestDataG
 allItems.set(IdmptSingleLambdaTestDataGeneratorItem.__type, IdmptSingleLambdaTestDataGeneratorItem)
 allItems.set(IdmptMultipleLambdaTestDataGeneratorItem.__type, IdmptMultipleLambdaTestDataGeneratorItem)
 allItems.set(IdmptChunksMultipleLambdaTestDataGeneratorItem.__type, IdmptChunksMultipleLambdaTestDataGeneratorItem)
+allItems.set(CreateTouristByPublishingEventItem.__type, CreateTouristByPublishingEventItem)
 allItems.set(EraseDataItem.__type, EraseDataItem)
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
@@ -68,6 +70,7 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
         [IdmptMultipleLambdaTestDataGeneratorItem.__type]: new IdmptMultipleLambdaTestDataGeneratorManager(allItems),
         [IdmptChunksMultipleLambdaTestDataGeneratorItem.__type]: new IdmptChunksMultipleLambdaTestDataGeneratorManager(allItems),
         [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
+        [CreateTouristByPublishingEventItem.__type]: new CreateTouristByPublishingEventManager(allItems),
         [EraseDataItem.__type]: new EraseDataManager(allItems)
     }
 }

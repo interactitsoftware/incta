@@ -81,11 +81,14 @@ export class WorkerConstruct extends Construct {
             // or any other application specific situations resulting in error
             
             // WARNING 1) make sure domain logic is idempotent
-            retryAttempts: 0, // WARNING 2) with SQS event source for the lambda, and a DLQ attached there, retries are actually controlled via the maxReceiveCount above
-            deadLetterQueueEnabled: true,
-            deadLetterQueue: new Queue(this, "DEADLETTER-LAMBDA", {
-                queueName: `${props.workerName}-DEADLETTER-LAMBDA`
-            }),
+            retryAttempts: 0, // WARNING 2) with SQS event source for the lambda, retries are actually controlled via the maxReceiveCount above, 
+            // and a DLQ attached there, will be used only if the lambda is called asynchronously (--invocation-type=Event)
+            // disabling it for now, as within aarts framework lambdas are not expected to be called outside the SNS-SQS topology
+            // deadLetterQueueEnabled: true,
+            // deadLetterQueue: new Queue(this, "DEADLETTER-LAMBDA", {
+            //     queueName: `${props.workerName}-DEADLETTER-LAMBDA`
+            // }),
+
             reservedConcurrentExecutions: props.reservedConcurrentExecutions,
             layers: props.layers
         })

@@ -1,7 +1,7 @@
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { chunks } from "aarts-utils/utils"
 import { dynamoDbClient, DB_NAME } from "aarts-dynamodb/DynamoDbClient"
-import { AartsEvent, IIdentity } from "aarts-types/interfaces";
+import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
 import { EraseDataItem } from "../_DynamoItems";
@@ -31,7 +31,7 @@ export class EraseData {
 
 export class EraseDataManager extends BaseDynamoItemManager<EraseDataItem> {
 
-    async *validateStart(proc: EraseDataItem, identity: IIdentity): AsyncGenerator<string, EraseDataItem, undefined> {
+    async *validateStart(proc: AartsPayload<EraseDataItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         return proc // do nothing for now

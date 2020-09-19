@@ -32,6 +32,7 @@ import { EraseData } from "./procedures/EraseData";
 import { MultipleLambdaTestDataGenerator } from "./procedures/MultipleLambdaTestDataGenerator";
 import { IdmptMultipleLambdaTestDataGenerator } from "./procedures/IdmptMultipleLambdaTestDataGenerator";
 import { IdmptChunksMultipleLambdaTestDataGenerator } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator";
+import { CreateTouristByPublishingEvent } from "./procedures/CreateTouristByPublishingEvent";
 
 export class CityItem extends DynamoItem(City, "city", [ // the dynamodb wrapper object that we deal with
     {key:"name"},
@@ -46,32 +47,37 @@ export class PilotItem extends DynamoItem(Pilot, "pilot", [ // the dynamodb wrap
 
 // --------------- procedures, warning: concept of persisting procedures is excerpted from aarts-dynamodb and if needed, shoud be implemented here
 // i.e for now such procedure entities will not go into dynamo, they are used only to trigger their start method
-export class SingleLambdaTestDataGeneratorItem extends DynamoItem(SingleLambdaTestDataGenerator, "single_lambda_test_data_generator", [
+export class SingleLambdaTestDataGeneratorItem extends DynamoItem(SingleLambdaTestDataGenerator, "proc_single_lambda_test_data_generator", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class IdmptSingleLambdaTestDataGeneratorItem extends DynamoItem(IdmptSingleLambdaTestDataGenerator, "idmpt_single_lambda_test_data_generator", [
+export class IdmptSingleLambdaTestDataGeneratorItem extends DynamoItem(IdmptSingleLambdaTestDataGenerator, "proc_idmpt_single_lambda_test_data_generator", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class IdmptMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptMultipleLambdaTestDataGenerator, "idmpt_multiple_lambda_test_data_generator", [
+export class IdmptMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptMultipleLambdaTestDataGenerator, "proc_idmpt_multiple_lambda_test_data_generator", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class IdmptChunksMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptChunksMultipleLambdaTestDataGenerator, "idmpt_chunks_multiple_lambda_test_data_generator", [
+export class IdmptChunksMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptChunksMultipleLambdaTestDataGenerator, "proc_idmpt_chunks_multiple_lambda_test_data_generator", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class MultipleLambdaTestDataGeneratorItem extends DynamoItem(MultipleLambdaTestDataGenerator, "multiple_lambda_test_data_generator", [
+export class MultipleLambdaTestDataGeneratorItem extends DynamoItem(MultipleLambdaTestDataGenerator, "proc_multiple_lambda_test_data_generator", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class EraseDataItem extends DynamoItem(EraseData, "erase_data", [
+export class CreateTouristByPublishingEventItem extends DynamoItem(CreateTouristByPublishingEvent, "proc_create_tourists", [
+    {key: "start_date"},
+    {key: "end_date"},
+]) {}
+
+export class EraseDataItem extends DynamoItem(EraseData, "proc_erase_data", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}

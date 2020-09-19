@@ -1,6 +1,6 @@
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
-import { AartsEvent, IIdentity } from "aarts-types/interfaces";
+import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
@@ -11,19 +11,33 @@ import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
 import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
 import { names } from "./random-names/names";
 import { chunks } from "aarts-utils/utils";
+
+const tourist_payloads: any[] = []
+
+/**
+ * This is a combined experiment of both creating items from within the procedure and also by publishing to SNS
+ * 
+ * The  *idmpt* part - it has to do with the loading of items already created *BY THIS SAME PROCEDURE*. I.t this is an experiment where retrying the same lambda will still operate. 
+ * Because items created from here (the 47 in total airplane, country etc.. ) also have unique keys, if some other procedure (with *DIFFERENT* ringToken) creates them the idmpt part is not working, as we load all the items by ringToken
+ * 
+ * The *chunks* part - it has to do with sending the events in batches of 25 (configurable) so that more events could be sent from within one lambda. Later each chunk (array of events) is further split into single events and again published
+ * It is adding on top of the idmpt-multiple experiment where we see there is a pretty low upper limit of events that could be published in 20 minutes (the long worker lambda timeout)
+ */
+
 export class IdmptChunksMultipleLambdaTestDataGenerator {
 
-    public total_events: number = 0
+    public total_events: number = 47
+    public processed_events: number = 0
     public succsess?: number
     public error?: number
-    public processed_events?: boolean
     public start_date?: number
     public end_date?: number
 
-    private tourist_payloads: any[] = []
+    public touristsToCreate?: number
+    public on_finish?: string[] = ['proc_produce_tourists_csv','proc_send_welcome_email']
 
-    private async publishAndRegister(event: AppSyncEvent) {
-        this.tourist_payloads.push(event.arguments)
+    private async registerForPublishing(event: AppSyncEvent) {
+        tourist_payloads.push(event.arguments)
         this.total_events++
     }
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
@@ -41,6 +55,8 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
         processedItems: DynamoItem[]) {
         const processedItem = processedItems && processedItems.filter(i => i[uqKeyTocheck] === itemBody[uqKeyTocheck])
         if (processedItem && processedItem.length > 0) {
+            // reduce the total_events expected as this item was already present and we will not issue a tx for it
+            --this.total_events
             return (processedItem[0] as unknown) as DynamoItem
         } else {
             return (await domainHandler.processPayload({
@@ -496,200 +512,208 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
 
-        const totalTouristsToAdd = Number(process.env.TOTAL_TOURISTS) || 0
+        const totalTouristsToAdd = Number(this.touristsToCreate || 0)
+        this.total_events += 12 * totalTouristsToAdd
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
+        const namesLenght = names.length
         // many tourists
         // //flight_sf_mw
-        const namesLenght = names.length
-        for (let i = 0; i < Number(process.env.TOTAL_TOURISTS || 0) ; i++) {
+        for (let i = 0; i < touristsPerFlight; i++) {
             await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
                 iban: `${dynamo_flight_sf_mw.flight_code}:${i}`,
                 fname: names[~~(Math.random() * namesLenght)],
                 lname: names[~~(Math.random() * namesLenght)],
-                flight: dynamo_flight_sf_mw.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_bg_country.id, to_country: dynamo_ru_country.id
+                flight: dynamo_flight_sf_mw.id,
+                airplane: dynamo_plane_mc21_reg111.id,
+                from_airport: dynamo_bg_airport_sf.id,
+                to_airport: dynamo_ru_airport_mw.id,
+                from_country: dynamo_bg_country.id,
+                to_country: dynamo_ru_country.id
             })
         }
-        // //flight_sf_bj
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_sf_bj.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_sf_bj.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ch_airport_bj.id, from_country: dynamo_bg_country.id, to_country: dynamo_ch_country.id
-        //     })
-        // }
-        // //flight_sf_mw1
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_sf_mw1.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_sf_mw1.id, airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_bg_country.id, to_country: dynamo_ru_country.id
-        //     })
-        // }
-        // //flight_bj_mw
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_bj_mw.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_bj_mw.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ch_country.id, to_country: dynamo_ru_country.id
-        //     })
-        // }
-        // //flight_bj_ke
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_bj_ke.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_bj_ke.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ch_country.id, to_country: dynamo_us_country.id
-        //     })
-        // }
-        // //flight_bj_ke1
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_bj_ke1.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_bj_ke1.id, airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ch_country.id, to_country: dynamo_us_country.id
-        //     })
-        // }
-        // //flight_bj_sy
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_bj_sy.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_bj_sy.id, airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_au_airport_sy.id, from_country: dynamo_ch_country.id, to_country: dynamo_au_country.id
-        //     })
-        // }
-        // //flight_mw_ke
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_mw_ke.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_mw_ke.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ru_country.id, to_country: dynamo_us_country.id
-        //     })
-        // }
-        // //flight_mw_sf
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_mw_sf.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_mw_sf.id, airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id
-        //     })
-        // }
-        // //flight_mw_pt
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_mw_pt.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_mw_pt.id, airplane: dynamo_plane_b787_reg555.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_ru_airport_pt.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id
-        //     })
-        // }
-        // //flight_sy_bj
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_sy_bj.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_sy_bj.id, airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_ch_airport_bj.id, from_country: dynamo_au_country.id, to_country: dynamo_ch_country.id
-        //     })
-        // }
-        // //flight_sy_ln
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_sy_ln.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_sy_ln.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_uk_airport_ln.id, from_country: dynamo_au_country.id, to_country: dynamo_uk_country.id
-        //     })
-        // }
-        // //flight_sy_ke
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_sy_ke.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_sy_ke.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_au_country.id, to_country: dynamo_us_country.id
-        //     })
-        // }
-        // //flight_sr_sf
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_sr_sf.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_sr_sf.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_sr_airport_bg.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_sr_country.id, to_country: dynamo_bg_country.id
-        //     })
-        // }
-        // //flight_sr_ke
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_sr_ke.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_sr_ke.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_sr_airport_bg.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_sr_country.id, to_country: dynamo_us_country.id
-        //     })
-        // }
-        // //flight_ke_sf
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_ke_sf.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_ke_sf.id, airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_us_country.id, to_country: dynamo_bg_country.id
-        //     })
-        // }
-        // //flight_ke_mw
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_ke_mw.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_ke_mw.id, airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_us_country.id, to_country: dynamo_ru_country.id
-        //     })
-        // }
-        // //flight_ke_mw1
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_ke_mw1.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_ke_mw1.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_us_country.id, to_country: dynamo_ru_country.id
-        //     })
-        // }
+        //flight_sf_bj
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_sf_bj.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_sf_bj.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ch_airport_bj.id, from_country: dynamo_bg_country.id, to_country: dynamo_ch_country.id
+            })
+        }
+        //flight_sf_mw1
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_sf_mw1.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_sf_mw1.id, airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_bg_country.id, to_country: dynamo_ru_country.id
+            })
+        }
+        //flight_bj_mw
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_bj_mw.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_bj_mw.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ch_country.id, to_country: dynamo_ru_country.id
+            })
+        }
+        //flight_bj_ke
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_bj_ke.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_bj_ke.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ch_country.id, to_country: dynamo_us_country.id
+            })
+        }
+        //flight_bj_ke1
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_bj_ke1.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_bj_ke1.id, airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ch_country.id, to_country: dynamo_us_country.id
+            })
+        }
+        //flight_bj_sy
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_bj_sy.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_bj_sy.id, airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_au_airport_sy.id, from_country: dynamo_ch_country.id, to_country: dynamo_au_country.id
+            })
+        }
+        //flight_mw_ke
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_mw_ke.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_mw_ke.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ru_country.id, to_country: dynamo_us_country.id
+            })
+        }
+        //flight_mw_sf
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_mw_sf.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_mw_sf.id, airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id
+            })
+        }
+        //flight_mw_pt
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_mw_pt.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_mw_pt.id, airplane: dynamo_plane_b787_reg555.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_ru_airport_pt.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id
+            })
+        }
+        //flight_sy_bj
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_sy_bj.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_sy_bj.id, airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_ch_airport_bj.id, from_country: dynamo_au_country.id, to_country: dynamo_ch_country.id
+            })
+        }
+        //flight_sy_ln
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_sy_ln.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_sy_ln.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_uk_airport_ln.id, from_country: dynamo_au_country.id, to_country: dynamo_uk_country.id
+            })
+        }
+        //flight_sy_ke
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_sy_ke.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_sy_ke.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_au_country.id, to_country: dynamo_us_country.id
+            })
+        }
+        //flight_sr_sf
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_sr_sf.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_sr_sf.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_sr_airport_bg.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_sr_country.id, to_country: dynamo_bg_country.id
+            })
+        }
+        //flight_sr_ke
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_sr_ke.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_sr_ke.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_sr_airport_bg.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_sr_country.id, to_country: dynamo_us_country.id
+            })
+        }
+        //flight_ke_sf
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_ke_sf.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_ke_sf.id, airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_us_country.id, to_country: dynamo_bg_country.id
+            })
+        }
+        //flight_ke_mw
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_ke_mw.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_ke_mw.id, airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_us_country.id, to_country: dynamo_ru_country.id
+            })
+        }
+        //flight_ke_mw1
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_ke_mw1.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_ke_mw1.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_us_country.id, to_country: dynamo_ru_country.id
+            })
+        }
 
-        // //flight_pt_mw
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
-        //         iban: `${dynamo_flight_pt_mw.flight_code}:${i}`,
-        //         fname: names[~~(Math.random() * namesLenght)],
-        //         lname: names[~~(Math.random() * namesLenght)],
-        //         flight: dynamo_flight_pt_mw.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id
-        //     })
-        // }
-        // //flight_pt_sf
-        // for (let i = 0; i < touristsPerFlight; i++) {
-        //     await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type,
-        //         {
-        //             iban: `${dynamo_flight_pt_sf.flight_code}:${i}`,
-        //             fname: names[~~(Math.random() * namesLenght)],
-        //             lname: names[~~(Math.random() * namesLenght)],
-        //             flight: dynamo_flight_pt_sf.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id
-        //         })
-        // }
+        //flight_pt_mw
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type, {
+                iban: `${dynamo_flight_pt_mw.flight_code}:${i}`,
+                fname: names[~~(Math.random() * namesLenght)],
+                lname: names[~~(Math.random() * namesLenght)],
+                flight: dynamo_flight_pt_mw.id, airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id
+            })
+        }
+        //flight_pt_sf
+        for (let i = 0; i < touristsPerFlight; i++) {
+            await this.createItemByPublishingToSns(args.meta.ringToken as string, _specs_TouristItem.__type,
+                {
+                    iban: `${dynamo_flight_pt_sf.flight_code}:${i}`,
+                    fname: names[~~(Math.random() * namesLenght)],
+                    lname: names[~~(Math.random() * namesLenght)],
+                    flight: dynamo_flight_pt_sf.id, airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id
+                })
+        }
 
-        if (this.tourist_payloads.length > 0) {
-            for (const chunk of chunks(this.tourist_payloads, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))){
+        // we want to send all events, chunked into 25, that is why we only send them once all events are registered
+        if (tourist_payloads.length > 0) {
+            this.total_events = tourist_payloads.length
+            for (const chunk of chunks(tourist_payloads, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
                 await dispatcher({
                     "action": "create",
                     "item": _specs_TouristItem.__type,
                     "ringToken": args.meta.ringToken as string,
-                    "jobType":"long",
+                    "jobType": "long",
                     "arguments": chunk,
                     "identity": {
                         "username": "akrsmv"
@@ -698,7 +722,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
             }
         }
 
-        return this;
+        return this
     }
 
     /**
@@ -711,7 +735,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
      * @param airport_size square kilometers of the airport
      */
     private async createItemByPublishingToSns(ringToken: string, __type: string, itemBody: Record<string, any>) {
-        await this.publishAndRegister({
+        await this.registerForPublishing({
             "action": "create",
             "item": __type,
             "ringToken": ringToken,
@@ -781,7 +805,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
 
 export class IdmptChunksMultipleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<IdmptChunksMultipleLambdaTestDataGeneratorItem> {
 
-    async *validateStart(proc: IdmptChunksMultipleLambdaTestDataGeneratorItem, identity: IIdentity): AsyncGenerator<string, IdmptChunksMultipleLambdaTestDataGeneratorItem, undefined> {
+    async *validateStart(proc: AartsPayload<IdmptChunksMultipleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         return proc

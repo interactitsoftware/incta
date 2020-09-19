@@ -10,6 +10,16 @@ import { RefKey } from './interfaces';
 
 
 export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, itemUpdates: Partial<T>, __item_refkeys: RefKey<T>[]): Promise<T> => {
+    // --> check for any refs loaded and unload them before updating starts
+    Object.assign(itemUpdates, Object.keys(itemUpdates).reduce<Record<string, string>>((accum, key) => {
+        if (__item_refkeys.filter(k => !k.unique && !!k.ref).map(k => k.key).indexOf(key) > -1 && typeof itemUpdates[key] !== undefined && typeof itemUpdates[key] !== 'string') {
+            accum[key] = (itemUpdates as T)[key].id 
+        }
+        return accum
+    }, {}))
+    console.log("======================== ",  itemUpdates)
+    // <-- 
+    
     const drevisionsUpdates = toAttributeMap(
         { "inc_revision": 1, "start_revision": 0 })
     const ditemUpdates: DynamoDB.AttributeMap = toAttributeMap(
@@ -111,13 +121,13 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     const allTransactWriteItemList =
         itemTransactWriteItemList.concat(
             Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
+                !process.env.DEBUGGER || console.log(`[Update, examining refkeys of ${existingItem.item_type}] analysing key: ${key}`);
                 const isRefKey = __item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1
                 const isUniqueRefKey = isRefKey && __item_refkeys.filter(r => r.key === key)[0].unique === true
                 if (isRefKey && (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")) { // changed/added ones
                     !process.env.DEBUGGER || console.log(`refkey ${key} marked for create`)
                     const dmetadataupdateExpressionNames: Record<AttributeName, AttributeName> = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
                     const dmetadataupdateExpressionValues: Record<AttributeName, AttributeValue> = "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] }
-
                     accum.push({
                         Update: {
                             ConditionExpression: `#revisions = :revisions`,
@@ -148,7 +158,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                             }
                         })
                     }
-                    if (ditemUpdates[key].S !== "__del__") {
+                    if (ditemUpdates[key] && ditemUpdates[key].S !== "__del__") {
                         accum.push({
                             Put: {
                                 Item: toAttributeMap({ id: `uq|${existingItem.item_type}}${key}`, meta: `${itemUpdates[key]}` }),
@@ -186,6 +196,21 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     delete itemUpdates.revisions
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
     !process.env.DEBUGGER || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+
+    // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
+    if (!!itemUpdates["procedure"]) {
+        const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
+            TableName: DB_NAME,
+            Key: Object.assign({
+                id: { S: itemUpdates["procedure"] },
+                meta: { S: `${versionString(0)}|${itemUpdates["procedure"].substr(0, itemUpdates["procedure"].indexOf("|"))}`},
+            }),
+            UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
+            ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+            ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+        }))
+        !process.env.DEBUGGER || console.log("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
+    }
 
     return Object.assign(existingItem,
         Object.keys(itemUpdates).filter(k => itemUpdates[k] === "__del__")

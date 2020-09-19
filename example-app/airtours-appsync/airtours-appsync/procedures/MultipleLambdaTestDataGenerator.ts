@@ -4,7 +4,7 @@
  */
 
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
-import { AartsEvent, IIdentity } from "aarts-types/interfaces";
+import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { MultipleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
@@ -16,12 +16,15 @@ import { names } from "./random-names/names";
 
 export class MultipleLambdaTestDataGenerator {
 
-    public total_events: number = 0
+    public total_events: number = 47
+    public processed_events: number = 0
     public succsess?: number
     public error?: number
-    public processed_events?: boolean
     public start_date?: number
     public end_date?: number
+
+    public touristsToCreate?:number
+    public on_finish?: string[] = ['proc_produce_tourists_csv','proc_send_welcome_email']
 
     private async publishAndRegister(event: AppSyncEvent) {
         await dispatcher(event)
@@ -160,8 +163,9 @@ export class MultipleLambdaTestDataGenerator {
         const dynamo_flight_pt_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_pt_mw)
         const dynamo_flight_pt_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_pt_sf)
 
-
-        const totalTouristsToAdd = Number(process.env.TOTAL_TOURISTS) || 0
+        
+        const totalTouristsToAdd = Number(this.touristsToCreate || 0)
+        this.total_events += 12 * totalTouristsToAdd
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
         // many tourists
         // //flight_sf_mw
@@ -458,7 +462,7 @@ export class MultipleLambdaTestDataGenerator {
 
 export class MultipleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<MultipleLambdaTestDataGeneratorItem> {
 
-    async *validateStart(proc: MultipleLambdaTestDataGeneratorItem, identity: IIdentity): AsyncGenerator<string, MultipleLambdaTestDataGeneratorItem, undefined> {
+    async *validateStart(proc: AartsPayload<MultipleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         return proc

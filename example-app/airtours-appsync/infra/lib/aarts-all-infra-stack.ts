@@ -1,4 +1,4 @@
-import { Code, Runtime, Function, LayerVersion } from '@aws-cdk/aws-lambda';
+import { Code, Runtime, Function, LayerVersion, StartingPosition } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
 import { join } from 'path';
 import { Duration, RemovalPolicy, App, StackProps, Stack } from '@aws-cdk/core';
@@ -13,6 +13,7 @@ import { AppSyncConstruct } from './constructs/appSyncConstruct';
 import { AppSyncLocalDatasourceConstruct } from './constructs/AppSyncLocalDatasourceConstruct';
 import { AartsResolver, AppSyncLambdaDataSourceConstruct } from './constructs/appSyncLambdaDataSourceConstruct';
 import { WorkerConstruct } from './constructs/workerConstruct';
+import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 export const clientAppDirName = __dirname.split(sep).reverse()[2]
 export const clientAppName = process.env.CLIENT_APP_NAME || clientAppDirName
@@ -64,6 +65,15 @@ export class AartsAllInfraStack extends Stack {
       appSyncConstruct: appSyncConstruct,
       nodeModulesLayer
     })
+
+    eventBusConstruct.eventDispatcher.addEventSource(new DynamoEventSource(dynamoDbConstruct.table, 
+      { 
+        startingPosition: StartingPosition.LATEST,
+        batchSize: 10,
+        bisectBatchOnError: true,
+        parallelizationFactor: 10,
+        maxBatchingWindow: Duration.seconds(10)
+      }))
 
     const workerInputHandlerShort = new WorkerConstruct(this, `${clientAppName}HandlerShort`, {
       workerName: `${clientAppName}HandlerShort`,

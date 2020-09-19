@@ -3,7 +3,7 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { TransactWriteItemsInput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
 import { DynamoItem } from './BaseItemManager';
-import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
+import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest, versionString } from './DynamoDbClient';
 import { ppjson } from 'aarts-utils/utils';
 import { RefKey } from './interfaces';
 
@@ -78,5 +78,21 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     // write item to the database
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
     !process.env.DEBUGGER || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+
+    // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
+    if (!!item["procedure"]) {
+        const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
+            TableName: DB_NAME,
+            Key: Object.assign({
+                id: { S: item["procedure"] },
+                meta: { S: `${versionString(0)}|${item["procedure"].substr(0, item["procedure"].indexOf("|"))}`},
+            }),
+            UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
+            ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+            ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+        }))
+        !process.env.DEBUGGER || console.log("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
+    }
+    
     return item
 }

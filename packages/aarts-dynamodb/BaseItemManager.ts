@@ -24,7 +24,7 @@ export const DynamoItem =
             }
 
             public static __type: string = t
-            public static __refkeys: RefKey<InstanceType<T>>[] = refkeys?.concat([{ key: "ringToken" }]) || [{ key: "ringToken" }]
+            public static __refkeys: RefKey<InstanceType<T>>[] = refkeys?.concat([{ key: "ringToken" },{ key: "procedure" }]) || [{ key: "ringToken" },{ key: "procedure" }]
 
             public id: string = `${t}|${uuid()}`
             public meta: string = `${versionString(0)}|${t}`
@@ -47,7 +47,7 @@ export const DynamoItem =
             /**
              * id of last event that modified the record
              */
-            public ringToken?: string
+            public ringToken?: string = process.env.ringToken
         }
 
         return DynamoItem
@@ -69,25 +69,28 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      * @param identity 
      */
-    async *validateStart(item: T, identity: IIdentity): AsyncGenerator<string, T, undefined> {
-        return item
+    async *validateStart(payload: AartsPayload<T>): AsyncGenerator<string, AartsPayload, undefined> {
+        return payload
     }
 
-    async *baseValidateStart(__type: string, payload: AartsPayload): AsyncGenerator<string, AartsPayload, undefined> {
-        !process.env.DEBUGGER || (yield `[${__type}:baseValidateStart] START. checking for mandatory item keys: ` + ppjson(payload))
+    async *baseValidateStart(__type: string, args: AartsEvent): AsyncGenerator<string, AartsPayload, undefined> {
+        !process.env.DEBUGGER || (yield `[${__type}:baseValidateStart] START. checking for mandatory item keys: ` + ppjson(args.payload))
 
-        if (!Array.isArray(payload.arguments) || payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateStart] Payload is not a single element array! ${ppjson(payload.arguments)}`)
+        if (!Array.isArray(args.payload.arguments) || args.payload.arguments.length > 1) {
+            throw new Error(`[${__type}:baseValidateStart] Payload is not a single element array! ${ppjson(args.payload.arguments)}`)
         }
 
-        return payload
+        // TODO excerpt seting up the procedure object and assigning the ringToken in here, not in the start method as it is now
+
+        args.payload.arguments[0]["ringToken"] = args.meta.ringToken
+        return args.payload
     }
 
     async *start(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload<T>, AartsPayload<T>, undefined> {
         // console.log('Received arguments: ', args)
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:START] Begin start method. Doing a gate check of payload`, identity: undefined })
 
-        for await (const baseValidateResult of this.baseValidateStart(__type, args.payload)) {
+        for await (const baseValidateResult of this.baseValidateStart(__type, args)) {
             yield { arguments: baseValidateResult, identity: undefined }
         }
 
@@ -100,8 +103,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const dynamoItems = []
         for (const arg of args.payload.arguments) {
             const asyncGenDomain = this.validateStart(
-                Object.assign({}, new proto(), arg),
-                args.payload.identity)
+                Object.assign({}, args.payload, {arguments: { ...arg, ringToken: process.env.ringToken }, identity: args.payload.identity}))
             let processorDomain = await asyncGenDomain.next()
             do {
                 if (!processorDomain.done) {
@@ -124,15 +126,15 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             // turning it off for now, as this is not fully tested / designed
             // as to the procedureResult - whatever needs to be saved it should be done inside the start method of the item (i.e in the procedure itself)
 
-            // const asyncGenSave = this.save(__type, Object.assign({}, args, { arguments: [procedureResult] }))
-            // let processorSave = await asyncGenSave.next()
-            // do {
-            //     if (!processorSave.done) {
-            //         // !process.env.DEBUGGER || (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
-            //         !process.env.DEBUGGER || (yield { arguments: processorSave.value.arguments, identity: undefined })
-            //         processorSave = await asyncGenSave.next()
-            //     }
-            // } while (!processorSave.done)
+            const asyncGenSave = this.save(__type, Object.assign({}, args.payload, { arguments: [procedureResult] }))
+            let processorSave = await asyncGenSave.next()
+            do {
+                if (!processorSave.done) {
+                    // !process.env.DEBUGGER || (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
+                    !process.env.DEBUGGER || (yield { arguments: processorSave.value.arguments, identity: undefined })
+                    processorSave = await asyncGenSave.next()
+                }
+            } while (!processorSave.done)
             //#endregion
         }
 
@@ -524,7 +526,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         }
 
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:UPDATE] Loading requested items`, identity: undefined })
-        const dynamoExistingItems = await batchGetItem(args.payload.arguments);
+        const dynamoExistingItems = await batchGetItem({loadPeersLevel: 0, pks: args.payload.arguments});
         // console.log("result from batch get", JSON.stringify(dynamoExistingItems))
         if (dynamoExistingItems.length !== args.payload.arguments.length) {
             throw new Error(`[${__type}:UPDATE] Unable to locate items corresponding to requested id(s)`)

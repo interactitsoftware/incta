@@ -3,7 +3,7 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { populateRefKeys } from './dynamodb-batchGetItem'
 import DynamoDB, { AttributeMap, AttributeValue, QueryOutput } from 'aws-sdk/clients/dynamodb'
-import { dynamoDbClient, fromAttributeMapArray, DB_NAME, toAttributeMap, fromAttributeMap, versionString, ddbRequest } from './DynamoDbClient';
+import { dynamoDbClient, fromAttributeMapArray, DB_NAME, toAttributeMap, fromAttributeMap, ddbRequest } from './DynamoDbClient';
 import { DynamoItem } from './BaseItemManager';
 import { DdbQueryInput, DdbQueryOutput, DdbGSIItemKey, RefKey } from './interfaces';
 import { ppjson } from 'aarts-utils/utils';
@@ -11,7 +11,7 @@ import { ppjson } from 'aarts-utils/utils';
 export const queryItems = async <T extends DdbQueryInput, TResult extends DynamoItem>(ddbQueryPayload: T): Promise<DdbQueryOutput<TResult>> => {
 
     if (ddbQueryPayload.loadPeersLevel === undefined) {
-        ddbQueryPayload.loadPeersLevel = 1 // default behaviour, load 1 levels of refs
+        ddbQueryPayload.loadPeersLevel = 0 // default behaviour, do not load peers if not requested
     }
 
     const dqueryKeys = toAttributeMap({

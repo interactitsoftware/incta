@@ -11,7 +11,7 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
     const keys: AttributeMap[] = toAttributeMapArray(args.pks.map(i => { return { id: i.id, meta: i.meta } }))
 
     if (args.loadPeersLevel === undefined) {
-        args.loadPeersLevel = 1 // default behaviour, load 1 levels of refs
+        args.loadPeersLevel = 0 // default behaviour, do not load peers if not requested
     }
 
     const params: BatchGetItemInput = {

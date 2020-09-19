@@ -1,10 +1,10 @@
-import { Context } from "aws-lambda";
+import { Context, DynamoDBStreamEvent } from "aws-lambda";
 import AWS = require("aws-sdk");
 import { AartsEBUtil, AppSyncEvent } from "aarts-eb-types/aartsEBUtil"
 import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHandlerFromContent";
 import { processPayload } from "aarts-handler/aartsHandler"
-import {prepareAppSyncEventForDispatch} from "aarts-eb-types/prepareAppSyncEventForDispatch"
-import { logdebug, loginfo } from "aarts-utils/utils";
+import { prepareAppSyncEventForDispatch } from "aarts-eb-types/prepareAppSyncEventForDispatch"
+import { logdebug, loginfo, ppjson } from "aarts-utils/utils";
 
 /**
  * forwards to SNS, decorating with:
@@ -18,15 +18,19 @@ class aartsSnsDispatcher extends AartsEBUtil {
 		super()
 	}
 
-	public dispatch = async (event: AppSyncEvent, context?: Context): Promise<any> => {
+	private async processDynamoDBStreamEvent(event: DynamoDBStreamEvent, context?: Context) {
+		let result = "A dynamo sream event "
 
-		const ringToken: string = event.ringToken || this.uuid()
-		// log the ringToken
-		if (!!event.ringToken) {
-			logdebug(`using already present ring token:  ${ringToken} for received event ${event}`)
-		} else {
-			logdebug(`generated ring token: ${ringToken} for received event: ${event}`)
+		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY")) {
+			if ((rec.dynamodb?.Keys as {id:{S:string}, meta:{S:string}}).id.S.startsWith("proc_") ) {
+				console.log("IT IS ABOUT A PROCEDURE")
+				result += "AND IT IS ABOUT A PROCEDURE"
+			}
 		}
+		return result
+	}
+
+	private async processAppSyncEvent(event: AppSyncEvent, ringToken: string, context?: Context) {
 
 		let result
 		if (event.action === "query" || event.action === "get") {
@@ -54,6 +58,25 @@ class aartsSnsDispatcher extends AartsEBUtil {
 			result = await this.samLocalSupport_callSqsHandlerSynchronously(event, ringToken)
 		}
 
+		return result
+	}
+	public dispatch = async (event: AppSyncEvent | DynamoDBStreamEvent, context?: Context): Promise<any> => {
+		const ringToken: string = (event as {ringToken: string}).ringToken || this.uuid()
+		// log the ringToken
+		if (!!(event as {ringToken: string}).ringToken) {
+			logdebug(`using already present ring token:  ${ringToken} for received event ${ppjson(event)}`)
+		} else {
+			logdebug(`generated ring token: ${ringToken} for received event: ${ppjson(event)}`)
+		}
+
+		let result
+		if (!!(event as AppSyncEvent).action) {
+			result = await this.processAppSyncEvent(event as AppSyncEvent, ringToken, context)
+		} else {
+			//assume a dynamodb stream event
+			result = await this.processDynamoDBStreamEvent(event as DynamoDBStreamEvent, context)
+		}
+		
 		return {
 			statusCode: 200,
 			body: { result, ringToken }

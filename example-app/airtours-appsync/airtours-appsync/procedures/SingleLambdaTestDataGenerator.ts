@@ -8,10 +8,8 @@
  */
 
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
-import { AartsEvent, IIdentity } from "aarts-types/interfaces";
+import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { SingleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../_DynamoItems"
-import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
-import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
 import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import * as idGenUtil from 'aarts-utils/utils'
@@ -20,17 +18,17 @@ import { names } from "./random-names/names";
 
 export class SingleLambdaTestDataGenerator {
 
-    public total_events: number = 0
+
+    public total_events: number = 47
+    public processed_events: number = 0
     public succsess?: number
     public error?: number
-    public processed_events?: boolean
     public start_date?: number
     public end_date?: number
 
-    private publishAndRegister(event: AppSyncEvent) {
-        dispatcher(event)
-        this.total_events++
-    }
+    public touristsToCreate?:number
+    public on_finish?: string[] = ['proc_produce_tourists_csv','proc_send_welcome_email']
+
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
         return {
             ...args,
@@ -38,6 +36,8 @@ export class SingleLambdaTestDataGenerator {
         }
     }
     public async start(__type: string, args: AartsEvent) {
+        this.start_date = Date.now()
+        
         const domainHandler = new AartsSqsHandler()
         this.start_date = Date.now()
         // 7 countries
@@ -164,7 +164,9 @@ export class SingleLambdaTestDataGenerator {
         const dynamo_flight_pt_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_pt_mw )
         const dynamo_flight_pt_sf = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_pt_sf )
 
-        const totalTouristsToAdd = Number(process.env.TOTAL_TOURISTS) || 0
+        
+        const totalTouristsToAdd = Number(this.touristsToCreate || 0) 
+        this.total_events += 12 * totalTouristsToAdd
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
         // many tourists
         const namesLenght = names.length
@@ -530,7 +532,7 @@ export class SingleLambdaTestDataGenerator {
                 })
         }
         
-        return this;
+        return this
     }
 
     /**
@@ -561,29 +563,7 @@ export class SingleLambdaTestDataGenerator {
         })).resultItems[0]
     }
 
-    /**
-     * Asynchronously creating a country - passing through dispatcher lambda (because we are publishing to SNS here), TODO should we do this at all ?
-     * Why not again calling a (same?) domain handler (still, there are the options of calling synchronously or asynchronously on the service object level!)
-     * Left like this for example and reference
-     * NOTE that each item created from here will be now created in the context of a new ring token. There is still the procedure id though, by which we can reference
-     * @param name name of airport
-     * @param country id of country the airport is located
-     * @param airport_size square kilometers of the airport
-     */
-    private createItemByPublishingToSns(__type: string, itemBody: Record<string, any>) {
-        this.publishAndRegister({
-            "action": "create",
-            "item": __type,
-            "arguments": {
-                "procedure": (this as DynamoItem).id,
-                ...itemBody
-            },
-            "identity": {
-                "username": "akrsmv"
-            }
-        })
-    }
-
+   
     /**
      * this is an attempt to call another lambda. However we need to define it first as right now its not very comfortable calling the domain logic like this
      * WE NEED a lambda which handler is accepting AartsEvent (i.e backed by AartsHandler)
@@ -640,7 +620,7 @@ export class SingleLambdaTestDataGenerator {
 
 export class SingleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<SingleLambdaTestDataGeneratorItem> {
 
-    async *validateStart(proc: SingleLambdaTestDataGeneratorItem, identity: IIdentity): AsyncGenerator<string, SingleLambdaTestDataGeneratorItem, undefined> {
+    async *validateStart(proc: AartsPayload<SingleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         return proc
