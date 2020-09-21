@@ -7,7 +7,7 @@ import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManage
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { MultipleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
-import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
+import { AppSyncEvent, loginfo } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
 import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import * as idGenUtil from 'aarts-utils/utils'
@@ -28,13 +28,15 @@ export class MultipleLambdaTestDataGenerator {
 
     private async publishAndRegister(event: AppSyncEvent) {
         await dispatcher(event)
-        this.total_events++
     }
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
         return {
             ...args,
             "branch": `${parentbranch ? parentbranch + "#" : ""}${args.code}-${args.type}`
         }
+    }
+    constructor () {
+        this.total_events = 47 + (this.touristsToCreate || 0)
     }
     public async start(__type: string, args: AartsEvent) {
         const domainHandler = new AartsSqsHandler()
@@ -165,7 +167,6 @@ export class MultipleLambdaTestDataGenerator {
 
         
         const totalTouristsToAdd = Number(this.touristsToCreate || 0)
-        this.total_events += 12 * totalTouristsToAdd
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
         // many tourists
         // //flight_sf_mw
@@ -425,7 +426,7 @@ export class MultipleLambdaTestDataGenerator {
             retryDelayOptions: {
                 //TODO figure out good enough backoff function
                 customBackoff: (retryCount: number, err) => {
-                    !process.env.DEBUGGER || console.log(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
                     // expecting to retry
                     // 1st attempt: 110 ms
                     // 2nd attempt: 200 ms
@@ -465,6 +466,7 @@ export class MultipleLambdaTestDataGeneratorManager extends BaseDynamoItemManage
     async *validateStart(proc: AartsPayload<MultipleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
+        proc.arguments.total_events = 47 + (proc.arguments.touristsToCreate || 0)
         return proc
     }
 

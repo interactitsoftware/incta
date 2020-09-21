@@ -1,9 +1,9 @@
 import { Context } from "aws-lambda"
 import { IItemManager, AartsEvent } from "aarts-types/interfaces"
-import { ppjson } from "aarts-utils/utils"
+import { ppjson, loginfo } from "aarts-utils/utils"
 
 export const handler = async (evnt: AartsEvent, context: Context): Promise<any> => {
-	!process.env.DEBUGGER || console.log('received AartsEvent: ', evnt)
+	!process.env.DEBUGGER || loginfo('received AartsEvent: ', evnt)
 	process.env.ringToken = evnt.meta.ringToken
 	return await processPayload(evnt, context)
 }
@@ -15,7 +15,7 @@ export async function processPayload(evnt: AartsEvent, context?: Context): Promi
 	do {
 		if (!processor.done) {
 			processor = await asyncGen.next()
-			!process.env.DEBUGGER || console.log(`[${evnt.meta.item}:${evnt.meta.action}] `, ppjson(processor.value))
+			!process.env.DEBUGGER || loginfo(`[${evnt.meta.item}:${evnt.meta.action}] `, ppjson(processor.value))
 		}
 	} while (!processor.done)
 

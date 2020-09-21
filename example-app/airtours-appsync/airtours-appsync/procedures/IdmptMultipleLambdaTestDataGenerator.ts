@@ -4,7 +4,7 @@ import { DomainItem } from "aarts-dynamodb/interfaces"
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { IdmptMultipleLambdaTestDataGeneratorItem, AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
-import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
+import { AppSyncEvent, loginfo } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
 import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
@@ -14,7 +14,7 @@ import { names } from "./random-names/names";
 
 export class IdmptMultipleLambdaTestDataGenerator {
 
-    public total_events: number = 47
+    public total_events: number = 0
     public processed_events: number = 0
     public succsess?: number
     public error?: number
@@ -26,7 +26,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
     private async publishAndRegister(event: AppSyncEvent) {
         await dispatcher(event)
-        this.total_events++
     }
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
         return {
@@ -49,7 +48,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
                 "payload": {
                     "arguments": {
                         ...itemBody,
-                        ringToken
+                        procedure: (this as DynamoItem).id
 
                     },
                     "identity": {
@@ -65,6 +64,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
             })).resultItems[0]
         }
     }
+
     public async start(__type: string, args: AartsEvent) {
         const domainHandler = new AartsSqsHandler()
         this.start_date = Date.now()
@@ -499,7 +499,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
             (alreadyProcessed.items as DynamoItem[]))
 
         const totalTouristsToAdd = Number(this.touristsToCreate || 0)
-        this.total_events += 12 * totalTouristsToAdd
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
         // many tourists
         // //flight_sf_mw
@@ -686,7 +685,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
                 })
         }
 
-        return this;
+        return this
     }
 
     /**
@@ -732,7 +731,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
             retryDelayOptions: {
                 //TODO figure out good enough backoff function
                 customBackoff: (retryCount: number, err) => {
-                    !process.env.DEBUGGER || console.log(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
                     // expecting to retry
                     // 1st attempt: 110 ms
                     // 2nd attempt: 200 ms
@@ -772,6 +771,7 @@ export class IdmptMultipleLambdaTestDataGeneratorManager extends BaseDynamoItemM
     async *validateStart(proc: AartsPayload<IdmptMultipleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
+        proc.arguments.total_events = 47 + (proc.arguments.touristsToCreate || 0)
         return proc
     }
 

@@ -4,7 +4,8 @@ import { AartsEBUtil, AppSyncEvent } from "aarts-eb-types/aartsEBUtil"
 import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHandlerFromContent";
 import { processPayload } from "aarts-handler/aartsHandler"
 import { prepareAppSyncEventForDispatch } from "aarts-eb-types/prepareAppSyncEventForDispatch"
-import { logdebug, loginfo, ppjson } from "aarts-utils/utils";
+import { loginfo, ppjson } from "aarts-utils/utils";
+import { IItemManagerCallback } from "aarts-types/interfaces";
 
 /**
  * forwards to SNS, decorating with:
@@ -18,15 +19,21 @@ class aartsSnsDispatcher extends AartsEBUtil {
 		super()
 	}
 
-	private async processDynamoDBStreamEvent(event: DynamoDBStreamEvent, context?: Context) {
-		let result = "A dynamo sream event "
+	private async processDynamoDBStreamEvent(event: DynamoDBStreamEvent) {
+		let result = {}
 
-		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY")) {
-			if ((rec.dynamodb?.Keys as {id:{S:string}, meta:{S:string}}).id.S.startsWith("proc_") ) {
-				console.log("IT IS ABOUT A PROCEDURE")
-				result += "AND IT IS ABOUT A PROCEDURE"
-			}
+		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY" && (record.dynamodb?.NewImage as {meta:{S:string}})["meta"].S.startsWith(`v_0`))) {
+			const item = `${(rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.substr(0, (rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.indexOf("|"))}`
+			const itemManagerCallback = global.domainAdapter.itemManagers[item] as unknown as IItemManagerCallback<object>;
+			await itemManagerCallback._onUpdate(item, rec.dynamodb)
 		}
+
+		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT" && (record.dynamodb?.NewImage as {meta:{S:string}})["meta"].S.startsWith(`v_0`))) {
+			const item = `${(rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.substr(0, (rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.indexOf("|"))}`
+			const itemManagerCallback = global.domainAdapter.itemManagers[item] as unknown as IItemManagerCallback<object>;
+			await itemManagerCallback._onCreate(item, rec.dynamodb)
+		}
+
 		return result
 	}
 
@@ -34,11 +41,11 @@ class aartsSnsDispatcher extends AartsEBUtil {
 
 		let result
 		if (event.action === "query" || event.action === "get") {
-			logdebug('dispatching directly to handler, skipping SNS publishing')
+			!process.env.DEBUGGER || loginfo('dispatching directly to handler, skipping SNS publishing')
 			result = await processPayload({
 				meta: {
 					ringToken: ringToken,
-					eventSource: `worker:${event.eventType === "output"?event.eventType:"input"}:${event.jobType}`,
+					eventSource: `worker:${event.eventType === "output" ? event.eventType : "input"}:${event.jobType}`,
 					action: event.action,
 					item: event.item
 				},
@@ -60,13 +67,14 @@ class aartsSnsDispatcher extends AartsEBUtil {
 
 		return result
 	}
+
 	public dispatch = async (event: AppSyncEvent | DynamoDBStreamEvent, context?: Context): Promise<any> => {
-		const ringToken: string = (event as {ringToken: string}).ringToken || this.uuid()
+		const ringToken: string = (event as { ringToken: string }).ringToken || this.uuid()
 		// log the ringToken
-		if (!!(event as {ringToken: string}).ringToken) {
-			logdebug(`using already present ring token:  ${ringToken} for received event ${ppjson(event)}`)
+		if (!!(event as { ringToken: string }).ringToken) {
+			!process.env.DEBUGGER || loginfo(`using already present ring token:  ${ringToken} for received event ${ppjson(event)}`)
 		} else {
-			logdebug(`generated ring token: ${ringToken} for received event: ${ppjson(event)}`)
+			!process.env.DEBUGGER || loginfo(`generated ring token: ${ringToken} for received event: ${ppjson(event)}`)
 		}
 
 		let result
@@ -74,9 +82,9 @@ class aartsSnsDispatcher extends AartsEBUtil {
 			result = await this.processAppSyncEvent(event as AppSyncEvent, ringToken, context)
 		} else {
 			//assume a dynamodb stream event
-			result = await this.processDynamoDBStreamEvent(event as DynamoDBStreamEvent, context)
+			result = await this.processDynamoDBStreamEvent(event as DynamoDBStreamEvent)
 		}
-		
+
 		return {
 			statusCode: 200,
 			body: { result, ringToken }
@@ -86,8 +94,8 @@ class aartsSnsDispatcher extends AartsEBUtil {
 	public async samLocalSupport_callSqsHandlerSynchronously(event: AppSyncEvent, ringToken: string) {
 		//used sam local runtime
 		const sqsEvent = await samLocalSimulateSQSHandlerFromContent(JSON.stringify(event), ringToken);
-		!process.env.DEBUGGER || console.log("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
-		!process.env.DEBUGGER || console.log("sqsEVENT simulated: " + sqsEvent)
+		!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
+		!process.env.DEBUGGER || loginfo("sqsEVENT simulated: " + sqsEvent)
 
 		// only run inside local lambda runner
 		// Note the endpoint name
@@ -101,7 +109,7 @@ class aartsSnsDispatcher extends AartsEBUtil {
 			maxRetries: 2,
 			retryDelayOptions: {
 				customBackoff: (retryCount: number, err) => {
-					!process.env.DEBUGGER || console.log(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+					!process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
 					// expecting to retry
 					// 1st attempt: 110 ms
 					// 2nd attempt: 200 ms

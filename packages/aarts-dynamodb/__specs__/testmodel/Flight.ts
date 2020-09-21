@@ -22,6 +22,8 @@ export class _specs_Flight {
     public flight_code?: string 
     public duration_hours?: number
     public tourist_season?: string
+    public price_1st_class?: number
+    public price_2nd_class?: number
 
 
 }

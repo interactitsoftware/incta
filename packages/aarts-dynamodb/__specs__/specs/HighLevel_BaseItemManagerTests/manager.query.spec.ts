@@ -47,7 +47,7 @@ describe('query spec', () => {
                 } while (!queryProcessor.done)
             }
 
-            expect(willFailBecauseArgsNoArray).rejects.toThrow(/Query args is not an array!/)
+            expect(willFailBecauseArgsNoArray).rejects.toThrow(/\[baseValidateQuery\] Payload is not a single element array! \{\}/)
         })
 
         // get all flights to sofia

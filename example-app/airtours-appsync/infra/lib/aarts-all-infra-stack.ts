@@ -84,7 +84,8 @@ export class AartsAllInfraStack extends Stack {
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
       eventSource: "worker:input:short",
-      // envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
+      sqsRetries: 3,
+      envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
       layers: [
         nodeModulesLayer
       ]
@@ -99,7 +100,8 @@ export class AartsAllInfraStack extends Stack {
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
       eventSource: "worker:input:long",
-      // envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
+      sqsRetries: 1,
+      envVars: {"DEBUGGER":"1"}, // avoid inducing aws costs by redundantly printing a lot. If needed add it from aws console
       layers: [
         nodeModulesLayer
       ]

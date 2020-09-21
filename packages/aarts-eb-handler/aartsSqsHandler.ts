@@ -1,13 +1,13 @@
 import { Context, SQSEvent } from "aws-lambda"
 import { AartsEvent, IItemManagerKeys } from "aarts-types/interfaces"
-import { logdebug, ppjson } from "aarts-utils/utils"
+import { loginfo, ppjson } from "aarts-utils/utils"
 import { processPayloadAsync } from 'aarts-handler/aartsHandler'
 import { AartsEBUtil } from 'aarts-eb-types/aartsEBUtil'
 import { prepareAartsEventForDispatch } from 'aarts-eb-types/prepareAartsEventForDispatch'
 
 
 export const handler = async (message: SQSEvent, context: Context): Promise<any> => {
-	!process.env.DEBUGGER || console.log('received SQS message: ', ppjson(message))
+	!process.env.DEBUGGER || loginfo('received SQS message: ', ppjson(message))
 	for (const record of message.Records) {
 		const aartsEvent: AartsEvent = Object.assign(JSON.parse(record.body),
 			{
@@ -19,7 +19,7 @@ export const handler = async (message: SQSEvent, context: Context): Promise<any>
 
 				}
 			})
-		!process.env.DEBUGGER || console.log('parsed aartsEvent from SQS is ', ppjson(aartsEvent))
+		!process.env.DEBUGGER || loginfo('parsed aartsEvent from SQS is ', ppjson(aartsEvent))
 		process.env.ringToken = aartsEvent.meta.ringToken
 		return await new AartsSqsHandler().processPayload(aartsEvent, context)
 	}
@@ -36,14 +36,13 @@ export class AartsSqsHandler extends AartsEBUtil {
 		do {
 			if (!processor.done) {
 				processor = await asyncGen.next()
-				!process.env.DEBUGGER || console.log(`[${input.meta.item}:${input.meta.action}] `, ppjson(processor.value))
+				!process.env.DEBUGGER || loginfo(`[${input.meta.item}:${input.meta.action}] `, ppjson(processor.value))
 				await this.publish(prepareAartsEventForDispatch(processor.value))
 
 			}
 		} while (!processor.done)
 
-		// logdebug() todouse it
-		console.log("returning from AartsSQSHandler.processPayload " +  ppjson(processor.value))
+		!process.env.DEBUGGER || loginfo("returning from AartsSQSHandler.processPayload " +  ppjson(processor.value))
 
 		return processor.value
 	}

@@ -58,6 +58,7 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
             functionRuntime: Runtime.NODEJS_12_X,
             eventBusConstruct: props.eventBusConstruct,
             eventSource: "worker:output",
+            sqsRetries: 1,
             layers: [props.nodeModulesLayer]
         });
 

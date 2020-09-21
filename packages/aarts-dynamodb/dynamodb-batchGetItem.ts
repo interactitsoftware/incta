@@ -5,7 +5,7 @@ import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME, ve
 import { DynamoItem } from './BaseItemManager';
 import { MixinConstructor } from 'aarts-types/Mixin';
 import { DdbGetInput, RefKey } from './interfaces';
-import { ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson } from 'aarts-utils/utils';
 
 export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Promise<T[]> => {
     const keys: AttributeMap[] = toAttributeMapArray(args.pks.map(i => { return { id: i.id, meta: i.meta } }))
@@ -24,7 +24,7 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
     }
 
     const result = await ddbRequest(dynamoDbClient.batchGetItem(params))
-    !process.env.DEBUGGER || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
 
     let resultItems = fromAttributeMapArray(((result as BatchGetItemOutput).Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[]
 

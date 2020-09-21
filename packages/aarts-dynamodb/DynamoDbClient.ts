@@ -1,6 +1,6 @@
 import { DynamoDB, AWSError } from 'aws-sdk'
 import { Request } from 'aws-sdk/lib/request'
-import { AttributeMap, BatchGetItemOutput, QueryOutput, TransactWriteItemsInput, TransactWriteItemsOutput, UpdateItemOutput } from 'aws-sdk/clients/dynamodb';
+import { AttributeMap, BatchGetItemOutput, BatchWriteItemOutput, QueryOutput, TransactWriteItemsInput, TransactWriteItemsOutput, UpdateItemOutput } from 'aws-sdk/clients/dynamodb';
 import { DynamoItem } from './BaseItemManager';
 import { ppjson } from 'aarts-utils/utils';
 
@@ -90,8 +90,8 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
     }, [])
 
     export const ddbRequest = async (
-        request: Request<TransactWriteItemsOutput | BatchGetItemOutput | UpdateItemOutput | QueryOutput, AWSError>,
-    ): Promise<TransactWriteItemsOutput | BatchGetItemOutput | QueryOutput | UpdateItemOutput> => {
+        request: Request<TransactWriteItemsOutput | BatchGetItemOutput | UpdateItemOutput | QueryOutput | BatchWriteItemOutput, AWSError>,
+    ): Promise<TransactWriteItemsOutput | BatchGetItemOutput | QueryOutput | UpdateItemOutput | BatchWriteItemOutput> => {
         let cancellationReasons:{Item:any, Code:string, Message:string}[] = []
 
         request.on('error', (response) => {

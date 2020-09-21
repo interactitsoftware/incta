@@ -11,7 +11,7 @@ import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManage
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { IdmptSingleLambdaTestDataGeneratorItem, AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
-import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
+import { AppSyncEvent, loginfo } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
 import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import * as idGenUtil from 'aarts-utils/utils'
@@ -47,14 +47,13 @@ export class IdmptSingleLambdaTestDataGenerator {
         const processedItem = processedItems && processedItems.filter(i => i[uqKeyTocheck] === itemBody[uqKeyTocheck])
         if (processedItem && processedItem.length > 0) {
             // reduce the total_events expected as this item was already present and we will not issue a tx for it
-            --this.total_events
             return (processedItem[0] as unknown) as DynamoItem
         } else {
             return (await domainHandler.processPayload({
                 "payload": {
                     "arguments": {
                         ...itemBody,
-                        ringToken
+                        procedure: (this as DynamoItem).id
 
                     },
                     "identity": {
@@ -70,6 +69,7 @@ export class IdmptSingleLambdaTestDataGenerator {
             })).resultItems[0]
         }
     }
+
     public async start(__type: string, args: AartsEvent) {
         const domainHandler = new AartsSqsHandler()
         this.start_date = Date.now()
@@ -504,7 +504,6 @@ export class IdmptSingleLambdaTestDataGenerator {
             (alreadyProcessed.items as DynamoItem[]))
 
         const totalTouristsToAdd = Number(this.touristsToCreate || 0)
-        this.total_events += 12 * totalTouristsToAdd
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
         // many tourists
         const namesLenght = names.length
@@ -931,7 +930,7 @@ export class IdmptSingleLambdaTestDataGenerator {
             retryDelayOptions: {
                 //TODO figure out good enough backoff function
                 customBackoff: (retryCount: number, err) => {
-                    !process.env.DEBUGGER || console.log(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
                     // expecting to retry
                     // 1st attempt: 110 ms
                     // 2nd attempt: 200 ms
@@ -971,6 +970,7 @@ export class IdmptSingleLambdaTestDataGeneratorManager extends BaseDynamoItemMan
     async *validateStart(proc: AartsPayload<IdmptSingleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
+        proc.arguments.total_events = 47 + (proc.arguments.touristsToCreate || 0)
         return proc
     }
 

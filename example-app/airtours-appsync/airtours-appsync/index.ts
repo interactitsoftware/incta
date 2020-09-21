@@ -47,32 +47,35 @@ allItems.set(IdmptChunksMultipleLambdaTestDataGeneratorItem.__type, IdmptChunksM
 allItems.set(CreateTouristByPublishingEventItem.__type, CreateTouristByPublishingEventItem)
 allItems.set(EraseDataItem.__type, EraseDataItem)
 
+const allItemManagers = {
+    // lib from specs test model
+    [AirplaneItem.__type]: new AirplaneManager(allItems),
+    [AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
+    [AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
+    [AirportItem.__type]: new AirportManager(allItems),
+    [FlightItem.__type]: new BaseDynamoItemManager(allItems),
+    [CountryItem.__type]: new BaseDynamoItemManager(allItems),
+    [TouristItem.__type]: new BaseDynamoItemManager(allItems),
+    [DataImportProcedure.__type]: new BaseDynamoItemManager(allItems),
+
+    //defined here
+    //items
+    [CityItem.__type]: new BaseDynamoItemManager(allItems),
+    [PilotItem.__type]: new BaseDynamoItemManager(allItems),
+    // procedures
+    [SingleLambdaTestDataGeneratorItem.__type]: new SingleLambdaTestDataGeneratorManager(allItems),
+    [IdmptSingleLambdaTestDataGeneratorItem.__type]: new IdmptSingleLambdaTestDataGeneratorManager(allItems),
+    [IdmptMultipleLambdaTestDataGeneratorItem.__type]: new IdmptMultipleLambdaTestDataGeneratorManager(allItems),
+    [IdmptChunksMultipleLambdaTestDataGeneratorItem.__type]: new IdmptChunksMultipleLambdaTestDataGeneratorManager(allItems),
+    [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
+    [CreateTouristByPublishingEventItem.__type]: new CreateTouristByPublishingEventManager(allItems),
+    [EraseDataItem.__type]: new EraseDataManager(allItems)
+}
+
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
     public lookupItems = allItems
-    public itemManagers = {
-        // lib from specs test model
-        [AirplaneItem.__type]: new AirplaneManager(allItems),
-        [AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
-        [AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
-        [AirportItem.__type]: new AirportManager(allItems),
-        [FlightItem.__type]: new BaseDynamoItemManager(allItems),
-        [CountryItem.__type]: new BaseDynamoItemManager(allItems),
-        [TouristItem.__type]: new BaseDynamoItemManager(allItems),
-        [DataImportProcedure.__type]: new BaseDynamoItemManager(allItems),
-
-        //defined here
-        //items
-        [CityItem.__type]: new BaseDynamoItemManager(allItems),
-        [PilotItem.__type]: new BaseDynamoItemManager(allItems),
-        // procedures
-        [SingleLambdaTestDataGeneratorItem.__type]: new SingleLambdaTestDataGeneratorManager(allItems),
-        [IdmptSingleLambdaTestDataGeneratorItem.__type]: new IdmptSingleLambdaTestDataGeneratorManager(allItems),
-        [IdmptMultipleLambdaTestDataGeneratorItem.__type]: new IdmptMultipleLambdaTestDataGeneratorManager(allItems),
-        [IdmptChunksMultipleLambdaTestDataGeneratorItem.__type]: new IdmptChunksMultipleLambdaTestDataGeneratorManager(allItems),
-        [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
-        [CreateTouristByPublishingEventItem.__type]: new CreateTouristByPublishingEventManager(allItems),
-        [EraseDataItem.__type]: new EraseDataManager(allItems)
-    }
+    public itemManagers = allItemManagers
+    public itemManagerCallbacks = allItemManagers
 }
 
 global.domainAdapter = new DomainAdapter()

@@ -31,58 +31,80 @@ export class CreateTouristByPublishingEvent {
     public flightCode?: string
     public iban?: string
 
-    private async getAirport(name: string): Promise<AirportItem> {
-        return ((await queryItems({
-            ddbIndex: "smetadata__meta",
-            pk: name,
-            range: 'airport}name',
-            primaryKeyName: "smetadata",
-            rangeKeyName: "meta"
-        })).items as AirportItem[])[0];
+    private async getAirport(name: string): Promise<AirportItem[] | undefined> {
+        if (!!name) {
+            return ((await queryItems({
+                ddbIndex: "smetadata__meta",
+                pk: name,
+                range: 'airport}name',
+                primaryKeyName: "smetadata",
+                rangeKeyName: "meta"
+            })).items as AirportItem[]);
+        } else return undefined
+        
     }
-    private async getFlight(): Promise<FlightItem> {
-        return ((await queryItems({
-            ddbIndex: "smetadata__meta",
-            pk: this.flightCode as string,
-            range: 'flight}flight_code',
-            primaryKeyName: "smetadata",
-            rangeKeyName: "meta"
-        })).items as FlightItem[])[0];
+    private async getFlight(): Promise<FlightItem[] | undefined> {
+        if (!!this.flightCode) {
+            return ((await queryItems({
+                ddbIndex: "smetadata__meta",
+                pk: this.flightCode as string,
+                range: 'flight}flight_code',
+                primaryKeyName: "smetadata",
+                rangeKeyName: "meta"
+            })).items as FlightItem[]);
+        } else return undefined
+        
     }
-    private async getCountry(name: string): Promise<CountryItem> {
-        return ((await queryItems({
-            ddbIndex: "smetadata__meta",
-            pk: name,
-            range: 'country}name',
-            primaryKeyName: "smetadata",
-            rangeKeyName: "meta"
-        })).items as CountryItem[])[0];
+    private async getCountry(name: string): Promise<CountryItem[] | undefined> {
+        if (!!name) {
+            return ((await queryItems({
+                ddbIndex: "smetadata__meta",
+                pk: name,
+                range: 'country}name',
+                primaryKeyName: "smetadata",
+                rangeKeyName: "meta"
+            })).items as CountryItem[]);
+        } else return undefined
+        
     }
-    private async getAirplane(): Promise<AirplaneItem> {
-        return ((await queryItems({
-            ddbIndex: "smetadata__meta",
-            pk: this.airplaneCode as string,
-            range: 'airplane}reg_uq_str',
-            primaryKeyName: "smetadata",
-            rangeKeyName: "meta"
-        })).items as AirplaneItem[])[0];
+    private async getAirplane(): Promise<AirplaneItem[] | undefined> {
+        if (!!this.airplaneCode) {
+            return ((await queryItems({
+                ddbIndex: "smetadata__meta",
+                pk: this.airplaneCode as string,
+                range: 'airplane}reg_uq_str',
+                primaryKeyName: "smetadata",
+                rangeKeyName: "meta"
+            })).items as AirplaneItem[]);
+        } else {
+            return undefined
+        }
+       
     }
 
     public async start(__type: string, args: AartsEvent) {
         this.start_date = Date.now()
 
+        
+
         for (let i = 0; i < Number(this.touristsToCreate || 10); i++) {
-            this.total_events++ // or could just say this.total_events = this.touristsToCreate, as in this procedure we are only creating tourists requested
+            const flightsFound = await this.getFlight()
+            const airplaneFound = await this.getAirplane()
+            const fromAirportsFound = await this.getAirport(this.fromAirportName as string)
+            const toAirportsFound = await this.getAirport(this.toAirportName as string)
+            const fromCountriesFound = await this.getCountry(this.fromCountryName as string)
+            const toCountriesFound = await this.getCountry(this.toCountryName as string)
+
             const touristToCreate = {
-                iban: `${this.iban}${i}`,
+                iban: this.iban?`${this.iban}${i}`: undefined,
                 fname: `${this.fname}${i}`,
                 lname: `${this.lname}${i}`,
-                flight: (await this.getFlight()).id,
-                airplane: (await this.getAirplane()).id,
-                from_airport: (await this.getAirport(this.fromAirportName as string)).id,
-                to_airport: (await this.getAirport(this.toAirportName as string)).id,
-                from_country: (await this.getCountry(this.fromCountryName as string)).id,
-                to_country: (await this.getCountry(this.toCountryName as string)).id,
+                flight: !!flightsFound && flightsFound.length>0? (flightsFound[0] as DynamoItem).id : undefined,
+                airplane: !!airplaneFound && airplaneFound.length>0? (airplaneFound[0] as DynamoItem).id : undefined,
+                from_airport:!!fromAirportsFound && fromAirportsFound.length>0? (fromAirportsFound[0] as DynamoItem).id : undefined,
+                to_airport: !!toAirportsFound && toAirportsFound.length>0? (toAirportsFound[0] as DynamoItem).id : undefined,
+                from_country: !!fromCountriesFound && fromCountriesFound.length>0? (fromCountriesFound[0] as DynamoItem).id : undefined,
+                to_country: !!toCountriesFound && toCountriesFound.length>0? (toCountriesFound[0] as DynamoItem).id : undefined,
             }
 
             await dispatcher({
@@ -104,6 +126,7 @@ export class CreateTouristByPublishingEventManager extends BaseDynamoItemManager
 
     async *validateStart(proc: AartsPayload<CreateTouristByPublishingEventItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
+        proc.arguments.total_events = proc.arguments.touristsToCreate
         // can apply some domain logic on permissions, authorizations etc
         return proc
     }

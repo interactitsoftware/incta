@@ -18,7 +18,8 @@ export interface WorkerConstructProps {
     functionTimeout: Duration
     envVars?: { [key: string]: string }
     reservedConcurrentExecutions?: number
-    layers?: ILayerVersion[] | undefined
+    layers?: ILayerVersion[] | undefined,
+    sqsRetries: number
 }
 
 export class WorkerConstruct extends Construct {
@@ -36,7 +37,7 @@ export class WorkerConstruct extends Construct {
             queueName: `${props.workerName}`,
             // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
             deadLetterQueue: { 
-                maxReceiveCount: 3,
+                maxReceiveCount: props.sqsRetries,
                 queue: new Queue(this, "DEADLETTER-SQS", {
                     queueName: `${props.workerName}-DEADLETTER-SQS`
                 }),

@@ -1,14 +1,16 @@
-import { versionString } from "./DynamoDbClient";
+import { fromAttributeMap, versionString } from "./DynamoDbClient";
 import { batchGetItem } from "./dynamodb-batchGetItem";
 import { transactUpdateItem } from "./dynamodb-transactUpdateItem";
 import { transactPutItem } from "./dynamodb-transactPutItem";
 import { queryItems } from "./dynamodb-queryItems";
 import { transactDeleteItem } from "./dynamodb-transactDeleteItem";
 import { AnyConstructor, Mixin, MixinConstructor } from "aarts-types/Mixin"
-import { uuid, ppjson } from "aarts-utils/utils"
+import { uuid, ppjson, loginfo } from "aarts-utils/utils"
 import { AartsEvent, AartsPayload, IIdentity, IItemManager } from "aarts-types/interfaces"
 import { DdbQueryInput, RefKey, IBaseDynamoItemProps, IProcedure, DdbTableItemKey, DomainItem, DdbGetInput } from "./interfaces";
-
+import { StreamRecord } from "aws-lambda";
+import { AttributeMap } from "aws-sdk/clients/dynamodb";
+import { version } from "os";
 
 export const DynamoItem =
     <T extends AnyConstructor<DomainItem>>(base: T, t: string, refkeys?: RefKey<InstanceType<T>>[]) => {
@@ -24,7 +26,7 @@ export const DynamoItem =
             }
 
             public static __type: string = t
-            public static __refkeys: RefKey<InstanceType<T>>[] = refkeys?.concat([{ key: "ringToken" },{ key: "procedure" }]) || [{ key: "ringToken" },{ key: "procedure" }]
+            public static __refkeys: RefKey<InstanceType<T>>[] = refkeys?.concat([{ key: "ringToken" }, { key: "procedure" }]) || [{ key: "ringToken" }, { key: "procedure" }]
 
             public id: string = `${t}|${uuid()}`
             public meta: string = `${versionString(0)}|${t}`
@@ -47,7 +49,7 @@ export const DynamoItem =
             /**
              * id of last event that modified the record
              */
-            public ringToken?: string = process.env.ringToken
+            public ringToken?: string
         }
 
         return DynamoItem
@@ -90,21 +92,29 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         // console.log('Received arguments: ', args)
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:START] Begin start method. Doing a gate check of payload`, identity: undefined })
 
-        for await (const baseValidateResult of this.baseValidateStart(__type, args)) {
-            yield { arguments: baseValidateResult, identity: undefined }
-        }
-
         const proto = this.lookupItems.get(__type)
 
         if (!proto) {
             throw new Error(`[${__type}:START] Not able to locate dynamo item prototype for item ${__type}`)
         }
 
+        const asyncGenBase = await this.baseValidateStart(__type, args)
+        let processorBase = await asyncGenBase.next()
+        yield { arguments: `[${__type}:baseValidateStart] ${processorBase.value}`, identity: undefined }
+        do {
+            if (!processorBase.done) {
+                yield { arguments: `[${__type}:baseValidateStart] ${processorBase.value}`, identity: undefined }
+                processorBase = await asyncGenBase.next()
+            }
+        } while (!processorBase.done)
+
+
         const dynamoItems = []
-        for (const arg of args.payload.arguments) {
-            const asyncGenDomain = this.validateStart(
-                Object.assign({}, args.payload, {arguments: { ...arg, ringToken: process.env.ringToken }, identity: args.payload.identity}))
+        for (const arg of processorBase.value.arguments) {
+            let procedure = new proto(arg) as unknown as IProcedure<T>
+            const asyncGenDomain = this.validateStart(Object.assign(processorBase.value, {arguments: procedure}))
             let processorDomain = await asyncGenDomain.next()
+            yield { arguments: `[${__type}:validateStart] ${processorDomain.value}`, identity: processorBase.value.identity }
             do {
                 if (!processorDomain.done) {
                     yield { arguments: `[${__type}:validateStart] ${processorDomain.value}`, identity: undefined }
@@ -115,18 +125,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             !process.env.DEBUGGER || (yield { arguments: `[${__type}:START] Procedure applicable for Starting.`, identity: undefined })
 
-            const procedureResult = await (new proto(arg) as unknown as IProcedure<T>).start(__type, args)
-
-            !process.env.DEBUGGER || (yield { arguments: `[${__type}:START] Procedure ended.`, identity: undefined })
             //#region saving state
-            //TODO do we want to save state? what exactly are we saving?
-            // this is useful if you have a clear distinction between procedure and an item
-            // procedures should be started without a specific PK (calling dispatcher, not passing id/meta)
-            // which will always result in a new item being recorded - essentially a log of all procedure invocations
-            // turning it off for now, as this is not fully tested / designed
-            // as to the procedureResult - whatever needs to be saved it should be done inside the start method of the item (i.e in the procedure itself)
-
-            const asyncGenSave = this.save(__type, Object.assign({}, args.payload, { arguments: [procedureResult] }))
+            // SAVE STATE PRIOR starting - important is to be deterministic on number of events this proc will fire, as this is how we mark it done (comparing processed === total events)
+            let asyncGenSave = this.save(__type, Object.assign({}, { identity: args.payload.identity }, { arguments: [procedure] }))
             let processorSave = await asyncGenSave.next()
             do {
                 if (!processorSave.done) {
@@ -136,6 +137,23 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 }
             } while (!processorSave.done)
             //#endregion
+
+            const procedureResult = await procedure.start(__type, args)
+            !process.env.DEBUGGER || (yield { arguments: `[${__type}:START] Procedure ended.`, identity: undefined })
+
+            // //#region saving state AFTER procedure ended - TODO need to implement conditional check revissions =0 OR 1 because we do not know which update is going first - this one or the one from dynamo streams
+            // delete procedureResult["processed_events"] // important to remove this as it was asynchronously modified from other events
+            // // if a procedure is not firing any events it must set the success property itself
+            // asyncGenSave = this.save(__type, Object.assign({}, { identity: args.payload.identity }, { arguments: [procedureResult] }))
+            // processorSave = await asyncGenSave.next()
+            // do {
+            //     if (!processorSave.done) {
+            //         // !process.env.DEBUGGER || (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
+            //         !process.env.DEBUGGER || (yield { arguments: processorSave.value.arguments, identity: undefined })
+            //         processorSave = await asyncGenSave.next()
+            //     }
+            // } while (!processorSave.done)
+            // //#endregion
         }
 
         return { arguments: dynamoItems, identity: args.payload.identity }
@@ -206,7 +224,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      */
     async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<T>, AartsPayload<T>, undefined> {
-        !process.env.DEBUGGER || console.log('query Received arguments: ', JSON.stringify(args, null, 4))
+        !process.env.DEBUGGER || loginfo('query Received arguments: ', JSON.stringify(args, null, 4))
         !process.env.DEBUGGER || (yield { arguments: `[${item}:QUERY] Begin query method. Doing a gate check of payload`, identity: undefined })
 
         const asyncGenBaseValidate = this.baseValidateQuery(args.payload.arguments, args.payload.identity) // TODO check for id, meta present
@@ -218,7 +236,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
         } while (!processorBaseValidate.done)
 
-        !process.env.DEBUGGER || console.log("QUERIES ARE " + JSON.stringify(processorBaseValidate.value))
+        !process.env.DEBUGGER || loginfo("QUERIES ARE " + JSON.stringify(processorBaseValidate.value))
 
         // this can throw exception due to failed validation, eg. missing id/meta keys
         const asyncGen = this.validateQuery(processorBaseValidate.value, args.payload.identity) // TODO check for id, meta present
@@ -285,7 +303,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:DELETE] Loading requested items`, identity: undefined })
         const dynamoExistingItems = await batchGetItem(args.payload.arguments);
-        !process.env.DEBUGGER || console.log("result from delete", JSON.stringify(dynamoExistingItems))
+        !process.env.DEBUGGER || loginfo("result from delete", JSON.stringify(dynamoExistingItems))
 
         if (dynamoExistingItems.length !== args.payload.arguments.length) {
             throw new Error(`[${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)
@@ -335,7 +353,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param identity 
      */
     async *baseValidateGet(args: DdbGetInput[], identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
-        
+
         if (!Array.isArray(args) || args.length > 1) {
             throw new Error(`[baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
         }
@@ -357,7 +375,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      */
     async *get(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<T>, AartsPayload<T>, undefined> {
-        !process.env.DEBUGGER || console.log('Received arguments: ', args)
+        !process.env.DEBUGGER || loginfo('Received arguments: ', args)
         !process.env.DEBUGGER || (yield { arguments: `[${item}:GET] Begin get method. Doing a gate check of payload`, identity: undefined })
 
         const asyncGenBaseValidate = this.baseValidateGet(args.payload.arguments, args.payload.identity) // TODO check for id, meta present
@@ -369,7 +387,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
         } while (!processorBaseValidate.done)
 
-        !process.env.DEBUGGER || console.log("KEYS TO SEARCH ARE " + JSON.stringify(processorBaseValidate.value))
+        !process.env.DEBUGGER || loginfo("KEYS TO SEARCH ARE " + JSON.stringify(processorBaseValidate.value))
 
         // this can throw exception due to failed validation, eg. missing id/meta keys
         const asyncGen = this.validateGet(processorBaseValidate.value, args.payload.identity) // TODO check for id, meta present
@@ -415,7 +433,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 // throw new Error(`[${__type}:baseValidateCreate] {id, revisions} should not be present when creating item`)
                 delete arg.id; delete arg.revisions
             } else {
-                // !process.env.DEBUGGER || console.log("Using supplied ring token for item creation id: ", payload.ringToken)
+                // !process.env.DEBUGGER || loginfo("Using supplied ring token for item creation id: ", payload.ringToken)
                 // arg["id"] = `${__type}|${payload.ringToken}` NOPE ! dont do that // USE THE RING TOKEN FROM THE EVENT TO ENFORCE IDEMPOTENCY on create events
                 arg["meta"] = `${versionString(0)}|${__type}`
                 arg["item_type"] = __type
@@ -448,7 +466,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         for (const arg of args.payload.arguments) {
 
             const itemToCreate = Object.assign({}, new proto(), arg)
-            !process.env.DEBUGGER || console.log("itemToCreate: ", ppjson(itemToCreate))
+            !process.env.DEBUGGER || loginfo("itemToCreate: ", ppjson(itemToCreate))
 
             const asyncGenDomain = this.validateCreate(itemToCreate, args.payload.identity)
             let processorDomain = await asyncGenDomain.next()
@@ -475,6 +493,21 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         } while (!processorSave.done)
 
         return { arguments: dynamoItems, identity: args.payload.identity }
+    }
+
+    async _onCreate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
+        if (dynamodbStreamRecord !== undefined) {
+            const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
+            if (newImage.revisions !== 0) {
+                // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
+                return
+            }
+            if (!newImage.meta.startsWith(`${versionString(0)}`)) {
+                // do not act on updates about history records or refkey items 
+                return
+            }
+            console.log("================ ON CREATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
+        }
     }
     //#endregion
 
@@ -526,7 +559,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         }
 
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:UPDATE] Loading requested items`, identity: undefined })
-        const dynamoExistingItems = await batchGetItem({loadPeersLevel: 0, pks: args.payload.arguments});
+        const dynamoExistingItems = await batchGetItem({ loadPeersLevel: 0, pks: args.payload.arguments });
         // console.log("result from batch get", JSON.stringify(dynamoExistingItems))
         if (dynamoExistingItems.length !== args.payload.arguments.length) {
             throw new Error(`[${__type}:UPDATE] Unable to locate items corresponding to requested id(s)`)
@@ -556,6 +589,38 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         return { arguments: updatedItems, identity: args.payload.identity }
 
+    }
+    // TODO save initially the state of the procedure
+    // TODO KNOW how many events are to be fired prior saving the procedure!?
+    async _onUpdate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
+        if (dynamodbStreamRecord !== undefined) {
+            const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
+            console.log("================ ON UPDATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
+            if (newImage.revisions !== 0) {
+                // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
+                return
+            }
+            if (!newImage.meta.startsWith(`${versionString(0)}`)) {
+                // do not act on updates about history records or refkey items 
+                return
+            }
+            console.log("================ WILL CHECK FOR NEED TO UPDATE PROC ", ppjson(newImage))
+            // mark procedures as done when total_events=processed_events
+            if (newImage.id.startsWith("proc_") && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
+                console.log("================ ISSUING UPDATE TO PROC ", ppjson(newImage))
+                await transactUpdateItem(
+                    newImage,
+                    {
+                        end_date: Date.now(),
+                        success: true,
+                        revisions: 0,
+                        ringToken: newImage.ringToken,
+                        id: newImage.id,
+                        meta: `${versionString(0)}|${newImage.id.substr(0, newImage.id.indexOf("|"))}`
+                    },
+                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+            }
+        }
     }
     //#endregion
 
@@ -592,8 +657,10 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         // USING WRITING IN A TRANSACTION
         for (const item of args.arguments) {
-            let response = await transactPutItem(item, item_refkeys)
-            !process.env.DEBUGGER || console.log("SAVING TO DYNAMO RESULT: ", response)
+            if (!!item) {
+                let response = await transactPutItem(item, item_refkeys)
+                !process.env.DEBUGGER || loginfo("SAVING TO DYNAMO RESULT: ", response)
+            }
         }
 
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:SAVE] END`, identity: undefined })

@@ -23,7 +23,7 @@ export const chunks = <T>(arr: Array<T>, size: number): Array<Array<T>> => {
     return chunked_arr;
 }
 
-export const ppjson = (json: Record<string, any> | undefined): string => JSON.stringify(json, null, 4)
+export const ppjson = (json: Record<string, any> | undefined): string => typeof json === "object"? JSON.stringify(json, null, 4): json as unknown as string
 
 /**
  * Appends sourceRingToken, which is the ringToken of the current process. 
@@ -31,17 +31,6 @@ export const ppjson = (json: Record<string, any> | undefined): string => JSON.st
  * @param message 
  * @param obj 
  */
-export const loginfo = (message: string, ...input: any[]) => {
-    console.log(Object.assign({ 
-        ringTokenSource: process.env.ringToken, message 
-    }, 
-    ...input))
-}
-
-export const logdebug = (message: any, ...input: any[]) => {
-    !process.env.DEBUGGER || loginfo(message, input)
-}
-
-export const ifDebugger = (func: Function) => {
-    !process.env.DEBUGGER || func()
+export const loginfo = (...input: any[]) => {
+    console.log({ringTokenSource: process.env.ringToken, message: ppjson(input)})
 }

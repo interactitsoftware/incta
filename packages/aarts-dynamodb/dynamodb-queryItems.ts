@@ -6,7 +6,7 @@ import DynamoDB, { AttributeMap, AttributeValue, QueryOutput } from 'aws-sdk/cli
 import { dynamoDbClient, fromAttributeMapArray, DB_NAME, toAttributeMap, fromAttributeMap, ddbRequest } from './DynamoDbClient';
 import { DynamoItem } from './BaseItemManager';
 import { DdbQueryInput, DdbQueryOutput, DdbGSIItemKey, RefKey } from './interfaces';
-import { ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson } from 'aarts-utils/utils';
 
 export const queryItems = async <T extends DdbQueryInput, TResult extends DynamoItem>(ddbQueryPayload: T): Promise<DdbQueryOutput<TResult>> => {
 
@@ -70,14 +70,14 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
             }, {}))
     }
 
-    !process.env.DEBUGGER || console.log("================================================")
-    !process.env.DEBUGGER || console.log("dqueryKeys ", dqueryKeys)
-    !process.env.DEBUGGER || console.log("keyConditionExpression ", dkeyConditionExpression)
-    !process.env.DEBUGGER || console.log("dfilter ", dfilter)
-    !process.env.DEBUGGER || console.log("dfilterExpression ", dfilterExpression)
-    !process.env.DEBUGGER || console.log("dexpressionAttributeNames ", dexpressionAttributeNames)
-    !process.env.DEBUGGER || console.log("dexpressionAttributeValues ", dexpressionAttributeValues)
-    !process.env.DEBUGGER || console.log("================================================")
+    !process.env.DEBUGGER || loginfo("================================================")
+    !process.env.DEBUGGER || loginfo("dqueryKeys ", dqueryKeys)
+    !process.env.DEBUGGER || loginfo("keyConditionExpression ", dkeyConditionExpression)
+    !process.env.DEBUGGER || loginfo("dfilter ", dfilter)
+    !process.env.DEBUGGER || loginfo("dfilterExpression ", dfilterExpression)
+    !process.env.DEBUGGER || loginfo("dexpressionAttributeNames ", dexpressionAttributeNames)
+    !process.env.DEBUGGER || loginfo("dexpressionAttributeValues ", dexpressionAttributeValues)
+    !process.env.DEBUGGER || loginfo("================================================")
 
     const params: DynamoDB.QueryInput = {
         TableName: DB_NAME,
@@ -93,7 +93,7 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
     }
 
     const result = await ddbRequest(dynamoDbClient.query(params))
-    !process.env.DEBUGGER || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
     let resultItems = fromAttributeMapArray((result as QueryOutput).Items as AttributeMap[]) as DynamoItem[]
 
     for (let resultItem of resultItems) {

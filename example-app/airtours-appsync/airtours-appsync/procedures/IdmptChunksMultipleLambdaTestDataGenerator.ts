@@ -3,7 +3,7 @@ import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManage
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
-import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
+import { AppSyncEvent, loginfo } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
 import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
@@ -26,7 +26,7 @@ const tourist_payloads: any[] = []
 
 export class IdmptChunksMultipleLambdaTestDataGenerator {
 
-    public total_events: number = 47
+    public total_events: number = 0
     public processed_events: number = 0
     public succsess?: number
     public error?: number
@@ -38,7 +38,6 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
 
     private async registerForPublishing(event: AppSyncEvent) {
         tourist_payloads.push(event.arguments)
-        this.total_events++
     }
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
         return {
@@ -56,14 +55,13 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
         const processedItem = processedItems && processedItems.filter(i => i[uqKeyTocheck] === itemBody[uqKeyTocheck])
         if (processedItem && processedItem.length > 0) {
             // reduce the total_events expected as this item was already present and we will not issue a tx for it
-            --this.total_events
             return (processedItem[0] as unknown) as DynamoItem
         } else {
             return (await domainHandler.processPayload({
                 "payload": {
                     "arguments": {
                         ...itemBody,
-                        ringToken
+                        procedure: (this as DynamoItem).id
 
                     },
                     "identity": {
@@ -79,6 +77,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
             })).resultItems[0]
         }
     }
+
     public async start(__type: string, args: AartsEvent) {
         const domainHandler = new AartsSqsHandler()
         this.start_date = Date.now()
@@ -513,7 +512,6 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
             (alreadyProcessed.items as DynamoItem[]))
 
         const totalTouristsToAdd = Number(this.touristsToCreate || 0)
-        this.total_events += 12 * totalTouristsToAdd
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
         const namesLenght = names.length
         // many tourists
@@ -707,7 +705,6 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
 
         // we want to send all events, chunked into 25, that is why we only send them once all events are registered
         if (tourist_payloads.length > 0) {
-            this.total_events = tourist_payloads.length
             for (const chunk of chunks(tourist_payloads, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
                 await dispatcher({
                     "action": "create",
@@ -768,7 +765,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
             retryDelayOptions: {
                 //TODO figure out good enough backoff function
                 customBackoff: (retryCount: number, err) => {
-                    !process.env.DEBUGGER || console.log(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
                     // expecting to retry
                     // 1st attempt: 110 ms
                     // 2nd attempt: 200 ms
@@ -807,6 +804,7 @@ export class IdmptChunksMultipleLambdaTestDataGeneratorManager extends BaseDynam
 
     async *validateStart(proc: AartsPayload<IdmptChunksMultipleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
+        proc.arguments.total_events = 47 + (proc.arguments.touristsToCreate || 0)
         // can apply some domain logic on permissions, authorizations etc
         return proc
     }

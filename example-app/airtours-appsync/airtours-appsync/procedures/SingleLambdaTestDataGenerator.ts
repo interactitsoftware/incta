@@ -15,11 +15,12 @@ import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import * as idGenUtil from 'aarts-utils/utils'
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { names } from "./random-names/names";
+import { loginfo } from "aarts-eb-types/aartsEBUtil";
 
 export class SingleLambdaTestDataGenerator {
 
 
-    public total_events: number = 47
+    public total_events: number = 0
     public processed_events: number = 0
     public succsess?: number
     public error?: number
@@ -34,6 +35,9 @@ export class SingleLambdaTestDataGenerator {
             ...args,
             "branch": `${parentbranch ? parentbranch + "#" : ""}${args.code}-${args.type}`
         }
+    }
+    constructor () {
+        this.total_events = 47 + (this.touristsToCreate || 0)
     }
     public async start(__type: string, args: AartsEvent) {
         this.start_date = Date.now()
@@ -166,7 +170,6 @@ export class SingleLambdaTestDataGenerator {
 
         
         const totalTouristsToAdd = Number(this.touristsToCreate || 0) 
-        this.total_events += 12 * totalTouristsToAdd
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
         // many tourists
         const namesLenght = names.length
@@ -583,7 +586,7 @@ export class SingleLambdaTestDataGenerator {
             retryDelayOptions: {
                 //TODO figure out good enough backoff function
                 customBackoff: (retryCount: number, err) => {
-                    !process.env.DEBUGGER || console.log(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
                     // expecting to retry
                     // 1st attempt: 110 ms
                     // 2nd attempt: 200 ms
@@ -623,6 +626,7 @@ export class SingleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<
     async *validateStart(proc: AartsPayload<SingleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
+        proc.arguments.total_events = 47 + (proc.arguments.touristsToCreate || 0)
         return proc
     }
 

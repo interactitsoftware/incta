@@ -2,10 +2,10 @@
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { DynamoDB } from 'aws-sdk'
-import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList, AttributeMap } from 'aws-sdk/clients/dynamodb'
+import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList, AttributeMap, UpdateItemInput } from 'aws-sdk/clients/dynamodb'
 import { DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, refkeyitemmeta, ddbRequest } from './DynamoDbClient';
-import { ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson } from 'aarts-utils/utils';
 import { RefKey } from './interfaces';
 
 
@@ -36,15 +36,15 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     const updateExprHistory = `set ${Object.keys(ditemUpdates).filter(diu => diu in dexistingItem).map(uk => `#${uk} = :${uk}`).join(", ")}`
 
     //#region DEBUG msg
-    !process.env.DEBUGGER || console.log("================================================")
-    !process.env.DEBUGGER || console.log('existing item ', existingItem)
-    !process.env.DEBUGGER || console.log('itemUpdates ', itemUpdates)
-    !process.env.DEBUGGER || console.log("drevisionsUpdates ", drevisionsUpdates)
-    !process.env.DEBUGGER || console.log("ditemUpdates ", ditemUpdates)
-    !process.env.DEBUGGER || console.log("dexistingItemkey ", dexistingItemkey)
-    !process.env.DEBUGGER || console.log("updateExpr ", updateExpr)
-    !process.env.DEBUGGER || console.log("updateExprHistory ", updateExprHistory)
-    !process.env.DEBUGGER || console.log("================================================")
+    !process.env.DEBUGGER || loginfo("================================================")
+    !process.env.DEBUGGER || loginfo('existing item ', existingItem)
+    !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
+    !process.env.DEBUGGER || loginfo("drevisionsUpdates ", drevisionsUpdates)
+    !process.env.DEBUGGER || loginfo("ditemUpdates ", ditemUpdates)
+    !process.env.DEBUGGER || loginfo("dexistingItemkey ", dexistingItemkey)
+    !process.env.DEBUGGER || loginfo("updateExpr ", updateExpr)
+    !process.env.DEBUGGER || loginfo("updateExprHistory ", updateExprHistory)
+    !process.env.DEBUGGER || loginfo("================================================")
     //#endregion
 
 
@@ -121,11 +121,11 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     const allTransactWriteItemList =
         itemTransactWriteItemList.concat(
             Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
-                !process.env.DEBUGGER || console.log(`[Update, examining refkeys of ${existingItem.item_type}] analysing key: ${key}`);
+                !process.env.DEBUGGER || loginfo(`[Update, examining refkeys of ${existingItem.item_type}] analysing key: ${key}`);
                 const isRefKey = __item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1
                 const isUniqueRefKey = isRefKey && __item_refkeys.filter(r => r.key === key)[0].unique === true
-                if (isRefKey && (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")) { // changed/added ones
-                    !process.env.DEBUGGER || console.log(`refkey ${key} marked for create`)
+                if (isRefKey && !!ditemUpdates[key] && ditemUpdates[key].S !== "__del__") { // changed/added ones  // TODO changed from  isRefKey &&  (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")
+                    !process.env.DEBUGGER || loginfo(`refkey ${key} marked for create`)
                     const dmetadataupdateExpressionNames: Record<AttributeName, AttributeName> = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
                     const dmetadataupdateExpressionValues: Record<AttributeName, AttributeValue> = "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] }
                     accum.push({
@@ -174,7 +174,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
             }, [])).concat(
                 Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
                     if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && ditemUpdates[key] && ditemUpdates[key].S === "__del__") { // removed ones
-                        !process.env.DEBUGGER || console.log(`refkey ${key} marked for delete`)
+                        !process.env.DEBUGGER || loginfo(`refkey ${key} marked for delete`)
                         accum.push({
                             Delete: {
                                 Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.item_type}}${key}` } },
@@ -195,7 +195,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
     delete itemUpdates.revisions
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    !process.env.DEBUGGER || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
 
     // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
     if (!!itemUpdates["procedure"]) {
@@ -209,7 +209,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
             ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
             ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
         }))
-        !process.env.DEBUGGER || console.log("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
+        !process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
     }
 
     return Object.assign(existingItem,

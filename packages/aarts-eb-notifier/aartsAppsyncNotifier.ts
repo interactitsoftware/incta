@@ -6,7 +6,7 @@ const gql = require('graphql-tag');
 require('cross-fetch/polyfill');
 
 export const handler = async (event: SQSEvent, context: Context): Promise<any> => {
-    console.log("appsync-notifier 17 function received event: " + JSON.stringify(event, undefined, 2));
+    // console.log("appsync-notifier 17 function received event: " + JSON.stringify(event, undefined, 2));
     //console.log("process.env.APPSYNC_ENDPOINT_URL: " + process.env.APPSYNC_ENDPOINT_URL);
     //console.log("process.env.AWS_REGION: " + process.env.AWS_REGION);
     //console.log("process.env.AWS_ACCESS_KEY_ID: " + process.env.AWS_ACCESS_KEY_ID);
@@ -30,7 +30,7 @@ export const handler = async (event: SQSEvent, context: Context): Promise<any> =
     if (event["Records"] && event["Records"].length > 0) {
         for (var i = 0; i < event["Records"].length; i++) {
             var record = event["Records"][i];
-            console.log("Message is " + record["body"]);
+            // console.log("Message is " + record["body"]);
             var message = JSON.parse(record["body"]);
 
             //, from: "EVENT_BUS", sentAt: "now" <--additional attributes removed from mutation as they come from the appsync resolver
@@ -51,7 +51,7 @@ export const handler = async (event: SQSEvent, context: Context): Promise<any> =
                     // "body": Buffer.from(record["body"]).toString('base64'),
                 }
             });
-            console.log("after mutating ", a);
+            // console.log("after mutating ", a);
         }
 
     }

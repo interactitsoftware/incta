@@ -26,19 +26,21 @@ allItems.set(_specs_FlightItem.__type, _specs_FlightItem)
 allItems.set(_specs_TouristItem.__type, _specs_TouristItem)
 allItems.set(_specs_DataImporterItem.__type, _specs_DataImporterItem)
 
+const allItemManagers = {
+    "BASE": new BaseDynamoItemManager(allItems),
+    [_specs_AirplaneItem.__type]: new _specs_AirplaneManager(allItems),
+    [_specs_AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
+    [_specs_AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
+    [_specs_AirportItem.__type]: new _specs_AirportManager(allItems),
+    [_specs_FlightItem.__type]: new BaseDynamoItemManager(allItems),
+    [_specs_CountryItem.__type]: new BaseDynamoItemManager(allItems),
+    [_specs_TouristItem.__type]: new BaseDynamoItemManager(allItems),
+    [_specs_DataImporterItem.__type]: new BaseDynamoItemManager(allItems)
+}
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
     public lookupItems = allItems
-    public itemManagers = {
-        "BASE": new BaseDynamoItemManager(allItems),
-        [_specs_AirplaneItem.__type]: new _specs_AirplaneManager(allItems),
-        [_specs_AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
-        [_specs_AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
-        [_specs_AirportItem.__type]: new _specs_AirportManager(allItems),
-        [_specs_FlightItem.__type]: new BaseDynamoItemManager(allItems),
-        [_specs_CountryItem.__type]: new BaseDynamoItemManager(allItems),
-        [_specs_TouristItem.__type]: new BaseDynamoItemManager(allItems),
-        [_specs_DataImporterItem.__type]: new BaseDynamoItemManager(allItems)
-    }
+    public itemManagers = allItemManagers
+    public itemManagerCallbacks = allItemManagers
 }
 
 export const domainAdapter = new DomainAdapter()

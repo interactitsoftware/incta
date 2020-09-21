@@ -4,11 +4,11 @@
 import { TransactWriteItemsInput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
 import { DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest, versionString } from './DynamoDbClient';
-import { ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson } from 'aarts-utils/utils';
 import { RefKey } from './interfaces';
 
 export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
-    !process.env.DEBUGGER || console.log(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
+    !process.env.DEBUGGER || loginfo(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
 
     const ditem = toAttributeMap(item)
 
@@ -77,8 +77,9 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
 
     // write item to the database
     const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    !process.env.DEBUGGER || console.log("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
 
+    // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
     // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
     if (!!item["procedure"]) {
         const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
@@ -90,8 +91,9 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
             UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
             ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
             ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+            ReturnValues: "ALL_NEW"
         }))
-        !process.env.DEBUGGER || console.log("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
+        !process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
     }
     
     return item

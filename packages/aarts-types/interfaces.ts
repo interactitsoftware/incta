@@ -1,4 +1,5 @@
-import { AnyConstructor, MixinConstructor } from "./Mixin"
+import { AnyConstructor } from "./Mixin"
+import { StreamRecord  } from "aws-lambda";
 
 export type IIdentity = any
 export type IItemManagerKeys = keyof IItemManager<any>
@@ -25,6 +26,7 @@ export interface AartsPayload<T = any> {
 export interface IDomainAdapter<BASE_ITEM> {
     lookupItems: Map<string, AnyConstructor<BASE_ITEM>>
     itemManagers: { [key: string]: IItemManager<BASE_ITEM> }
+    itemManagerCallbacks: { [key: string]: IItemManagerCallback<BASE_ITEM> }
 }
 
 export interface IItemManager<TItem = any> {
@@ -40,4 +42,12 @@ export interface IItemManager<TItem = any> {
     start(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
     get(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
     query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
+}
+
+export interface IItemManagerCallback<TItem = any> {
+
+    // All methods should have the same signature
+    // in order to be able to be called by a loookup based on the action attribute sent inside the messageAttributes of an SQS message
+    _onCreate(item: string, dynamodbStreamRecord: StreamRecord | undefined) : Promise<void>
+    _onUpdate(item: string, dynamodbStreamRecord: StreamRecord | undefined) : Promise<void>
 }
