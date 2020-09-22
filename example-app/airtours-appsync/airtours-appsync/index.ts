@@ -11,7 +11,7 @@ import { AnyConstructor, MixinConstructor } from "aarts-types/Mixin"
 import {
     AirplaneItem, CountryItem, CityItem, PilotItem, AirportItem,
     AirplaneManifacturerItem, AirplaneModelItem, FlightItem,
-    TouristItem, DataImportProcedure,
+    TouristItem, TouristSeasonItem, InvoiceItem, OrderItem, DataImportProcedure,
     MultipleLambdaTestDataGeneratorItem,
     SingleLambdaTestDataGeneratorItem,
     EraseDataItem,
@@ -27,6 +27,7 @@ import { IdmptMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptM
 import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator"
 import AWS from "aws-sdk"
 import { CreateTouristByPublishingEventManager } from "./procedures/CreateTouristByPublishingEvent"
+import { _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -36,6 +37,9 @@ allItems.set(AirplaneModelItem.__type, AirplaneModelItem)
 allItems.set(CountryItem.__type, CountryItem)
 allItems.set(FlightItem.__type, FlightItem)
 allItems.set(TouristItem.__type, TouristItem)
+allItems.set(TouristSeasonItem.__type, TouristSeasonItem)
+allItems.set(InvoiceItem.__type, InvoiceItem)
+allItems.set(OrderItem.__type, OrderItem)
 allItems.set(CityItem.__type, CityItem)
 allItems.set(PilotItem.__type, PilotItem)
 allItems.set(DataImportProcedure.__type, DataImportProcedure)
@@ -56,6 +60,9 @@ const allItemManagers = {
     [FlightItem.__type]: new BaseDynamoItemManager(allItems),
     [CountryItem.__type]: new BaseDynamoItemManager(allItems),
     [TouristItem.__type]: new BaseDynamoItemManager(allItems),
+    [TouristSeasonItem.__type]: new BaseDynamoItemManager(allItems),
+    [InvoiceItem.__type]: new BaseDynamoItemManager(allItems),
+    [OrderItem.__type]: new BaseDynamoItemManager(allItems),
     [DataImportProcedure.__type]: new BaseDynamoItemManager(allItems),
 
     //defined here

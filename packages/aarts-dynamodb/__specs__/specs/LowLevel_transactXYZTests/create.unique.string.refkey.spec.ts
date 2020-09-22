@@ -1,4 +1,4 @@
-import { _specs_AirplaneItem, /**XXX _specs_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
+import { _specs_AirplaneItem, _specs_TouristSeasonItem, /**XXX _specs_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
 import { Strippable, clearDynamo, queryForId } from "../../testutils"
 import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../../DynamoDbClient"

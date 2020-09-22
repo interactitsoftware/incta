@@ -8,6 +8,9 @@ import {
     _specs_CountryItem as CountryItem,
     _specs_FlightItem as FlightItem,
     _specs_TouristItem as TouristItem,
+    _specs_TouristSeasonItem as TouristSeasonItem,
+    _specs_InvoiceItem as InvoiceItem,
+    _specs_OrderItem as OrderItem,
     _specs_DataImporterItem as DataImportProcedure
 } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 // just reuse the __specs__ test model of aarts-dynamodb lib. There are unit tests over it and also a procedure for seedin data, so its a good start for demo app
@@ -19,6 +22,9 @@ export {
     CountryItem,
     FlightItem,
     TouristItem,
+    TouristSeasonItem,
+    InvoiceItem,
+    OrderItem,
     DataImportProcedure
 }
 

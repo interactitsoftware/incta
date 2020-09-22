@@ -26,7 +26,7 @@ export const DynamoItem =
             }
 
             public static __type: string = t
-            public static __refkeys: RefKey<InstanceType<T>>[] = refkeys?.concat([{ key: "ringToken" }, { key: "procedure" }]) || [{ key: "ringToken" }, { key: "procedure" }]
+            public static __refkeys: RefKey<InstanceType<T>>[] = refkeys?.concat([{ key: "ringToken" }]) || [{ key: "ringToken" }]
 
             public id: string = `${t}|${uuid()}`
             public meta: string = `${versionString(0)}|${t}`
@@ -111,7 +111,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         const dynamoItems = []
         for (const arg of processorBase.value.arguments) {
-            let procedure = new proto(arg) as unknown as IProcedure<T>
+            let procedure = new proto(arg) as unknown as IProcedure<T> & DynamoItem
+            procedure.id = `${procedure.item_type}|${procedure.ringToken}` // TODO unify in some more general place. Using the ringToken as the GUID part of a procedure, avoiding one more refkey "procedure"
             const asyncGenDomain = this.validateStart(Object.assign(processorBase.value, { arguments: procedure }))
             let processorDomain = await asyncGenDomain.next()
             yield { arguments: `[${__type}:validateStart] ${processorDomain.value}`, identity: processorBase.value.identity }
