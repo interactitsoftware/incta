@@ -29,12 +29,12 @@ describe('manager.get.spec', () => {
     const getGenerator = await domainAdapter.itemManagers[_specs_AirportItem.__type].get("doesnt matter here",
       {
         payload: {
-          arguments: [{ id: arrangedAirplane.id }, { id: arrangedAirport.id }],
+          arguments: [{pks: [{ id: arrangedAirplane.id }, { id: arrangedAirport.id }]}],
           identity: "akrsmv"
         },
         meta: {
           item: "notneededfortest",
-          action: "query",
+          action: "get",
           eventSource: "notneededfortest",
           ringToken: "notneededfortest"
         }
@@ -74,7 +74,7 @@ describe('manager.get.spec', () => {
         })) return a
     }
 
-    expect(callWithPayloadNotArray).rejects.toThrow(/is not an array\!/)
+    expect(callWithPayloadNotArray).rejects.toThrow(/Payload is not a single element array/)
 
   })
 })

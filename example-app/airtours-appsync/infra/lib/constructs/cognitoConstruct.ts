@@ -9,6 +9,7 @@ export class CognitoConstruct extends cdk.Construct {
 
     public readonly userPool: cognito.IUserPool;
     public readonly identityPool: cognito.CfnIdentityPool
+    public readonly webClient: cognito.UserPoolClient
 
     constructor(scope: cdk.Construct, id: string, props: CognitoConstructProps) {
         super(scope, id);
@@ -100,7 +101,8 @@ export class CognitoConstruct extends cdk.Construct {
         });
         //#endregion
 
-        this.userPool = userPool;
-        this.identityPool = identityPool;
+        this.userPool = userPool
+        this.identityPool = identityPool
+        this.webClient = userPoolClient
     }
 }

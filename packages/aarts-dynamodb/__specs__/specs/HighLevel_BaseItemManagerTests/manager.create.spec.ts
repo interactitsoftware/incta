@@ -33,7 +33,7 @@ describe('manager.create.spec', () => {
       )) { }
     }
 
-    return expect(callWithPayloadNotArray).rejects.toThrow(/is not an array\!/)
+    return expect(callWithPayloadNotArray).rejects.toThrow(/Payload is not a single element array/)
 
   })
 
@@ -58,7 +58,7 @@ describe('manager.create.spec', () => {
       )) { }
     }
 
-    return expect(callWithPayloadNotArray).rejects.toThrow(/excedes the max arguments array length constraint\(1\)/)
+    return expect(callWithPayloadNotArray).rejects.toThrow(/Payload is not a single element array/)
 
   })
 

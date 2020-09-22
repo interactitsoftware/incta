@@ -1,7 +1,7 @@
 import { Code, Runtime, Function, LayerVersion, StartingPosition } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
 import { join } from 'path';
-import { Duration, RemovalPolicy, App, StackProps, Stack } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, App, StackProps, Stack, CfnOutput } from '@aws-cdk/core';
 import { AttributeType, BillingMode, StreamViewType, ProjectionType, Table } from '@aws-cdk/aws-dynamodb';
 import { ENV_VARS__DB_NAME, ENV_VARS__DDB_LOCAL_URL } from '../env-constants';
 import { sep } from "path"
@@ -105,6 +105,27 @@ export class AartsAllInfraStack extends Stack {
       layers: [
         nodeModulesLayer
       ]
-    });
+    })
+
+    new CfnOutput(this, "aws_project_region", {
+      description: "aws_project_region",
+      value: this.region
+    })
+    new CfnOutput(this, "aws_cognito_identity_pool_id", {
+      description: "aws_cognito_identity_pool_id",
+      value: cognitoConstruct.identityPool.ref
+    })
+    new CfnOutput(this, "aws_user_pools_id", {
+      description: "aws_user_pools_id",
+      value: cognitoConstruct.userPool.userPoolId
+    })
+    new CfnOutput(this, "aws_user_pools_web_client_id", {
+      description: "aws_user_pools_web_client_id",
+      value: cognitoConstruct.webClient.userPoolClientId
+    })
+    new CfnOutput(this, "aws_appsync_graphqlEndpoint", {
+      description: "aws_appsync_graphqlEndpoint",
+      value: appSyncConstruct.graphQLApi.graphqlUrl
+    })
   }
 }

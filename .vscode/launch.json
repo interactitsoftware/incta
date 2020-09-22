@@ -10,7 +10,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                "manager.query.spec"
+                "manager.update.spec"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

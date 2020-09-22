@@ -120,11 +120,11 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     // build all updates by also examining refkeys
     const allTransactWriteItemList =
         itemTransactWriteItemList.concat(
-            Object.keys(dexistingItem).reduce<TransactWriteItem[]>((accum, key) => {
+            Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).reduce<TransactWriteItem[]>((accum, key) => {
                 !process.env.DEBUGGER || loginfo(`[Update, examining refkeys of ${existingItem.item_type}] analysing key: ${key}`);
                 const isRefKey = __item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1
                 const isUniqueRefKey = isRefKey && __item_refkeys.filter(r => r.key === key)[0].unique === true
-                if (isRefKey && !!ditemUpdates[key] && ditemUpdates[key].S !== "__del__") { // changed/added ones  // TODO changed from  isRefKey &&  (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")
+                if (isRefKey && ((!dexistingItem[key] || dexistingItem[key].S !== "__del__") && (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__"))) { // changed/added ones, without those marked for delete  // TODO changed from  isRefKey &&  (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")
                     !process.env.DEBUGGER || loginfo(`refkey ${key} marked for create`)
                     const dmetadataupdateExpressionNames: Record<AttributeName, AttributeName> = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
                     const dmetadataupdateExpressionValues: Record<AttributeName, AttributeValue> = "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] }

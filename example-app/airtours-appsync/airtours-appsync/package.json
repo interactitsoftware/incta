@@ -1,6 +1,6 @@
 {
   "name": "touristart",
-  "version": "0.0.404",
+  "version": "0.0.405",
   "description": "example business domain using aws lambda and dynamodb via the aarts framework ",
   "main": "index.js",
   "scripts": {

@@ -1,9 +1,259 @@
 
-> aarts-dynamodb@0.4.122 test C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-dynamodb
+> aarts-dynamodb@0.4.258 test C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-dynamodb
 > jest --runInBand
 
-PASS __specs__/specs/LowLevel_transactXYZTests/query.spec.ts (33.195 s)
-FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.query.spec.ts (60.836 s)
+PASS __specs__/specs/HighLevel_BaseItemManagerTests/manager.start.spec.ts (36.465 s)
+FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts (26.381 s)
+  ● manager.delete.spec › payload.arguments passed must be a single element array
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected pattern: /excedes the max arguments array length constraint\(1\)/
+    Received message: "[airport:baseValidateDelete] Payload is not a single element array! [
+        {},
+        {}
+    ]"
+
+          274 | 
+          275 |         if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
+        > 276 |             throw new Error(`[${__type}:baseValidateDelete] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
+              |                   ^
+          277 |         }
+          278 | 
+          279 |         for (const arg of event.payload.arguments) {
+
+      at _specs_AirportManager.baseValidateDelete (BaseItemManager.ts:276:19)
+                at baseValidateDelete.next (<anonymous>)
+      at _specs_AirportManager.delete (BaseItemManager.ts:300:26)
+                at delete.next (<anonymous>)
+      at callWithPayloadNotArray (__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts:44:22)
+      at Object.toThrow (node_modules/expect/build/index.js:241:20)
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts:61:52)
+
+  ● manager.delete.spec › delete will still fail if wrong revisions is passed
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected pattern: /revisions passed does not match item revisions/
+    Received message: "Cannot read property 'map' of undefined"
+
+           9 | 
+          10 | export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Promise<T[]> => {
+        > 11 |     const keys: AttributeMap[] = toAttributeMapArray(args.pks.map(i => { return { id: i.id, meta: i.meta } }))
+             |                                                               ^
+          12 | 
+          13 |     if (args.loadPeersLevel === undefined) {
+          14 |         args.loadPeersLevel = 0 // default behaviour, do not load peers if not requested
+
+      at Object.exports.batchGetItem (dynamodb-batchGetItem.ts:11:63)
+      at _specs_AirportManager.delete (BaseItemManager.ts:305:43)
+      at callWithPayloadNotArray (__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts:94:22)
+      at Object.toThrow (node_modules/expect/build/index.js:241:20)
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts:115:52)
+
+  ● manager.delete.spec › delete a previously created item › delete a previously created item
+
+    TypeError: Cannot read property 'map' of undefined
+
+       9 | 
+      10 | export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Promise<T[]> => {
+    > 11 |     const keys: AttributeMap[] = toAttributeMapArray(args.pks.map(i => { return { id: i.id, meta: i.meta } }))
+         |                                                               ^
+      12 | 
+      13 |     if (args.loadPeersLevel === undefined) {
+      14 |         args.loadPeersLevel = 0 // default behaviour, do not load peers if not requested
+
+      at Object.exports.batchGetItem (dynamodb-batchGetItem.ts:11:63)
+      at _specs_AirportManager.delete (BaseItemManager.ts:305:43)
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts:148:29)
+
+FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts
+  ● Console
+
+    console.log
+      ========================  {
+        id: 'airplane|88dd7fc6-562e-4101-80dd-e8cbcf410b4c',
+        meta: 'v_0|airplane',
+        revisions: 0,
+        number_of_seats: 13,
+        item_type: 'airplane',
+        ringToken: 'notneededfortest'
+      }
+
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
+
+    console.log
+      ========================  {
+        id: 'airplane|5e1dbc74-beb1-4d15-b96e-edb69dfaa943',
+        meta: 'v_0|airplane',
+        revisions: 0,
+        number_of_seats: '__del__',
+        item_type: 'airplane',
+        ringToken: 'notneededfortest'
+      }
+
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
+
+  ● manager.update.spec › update remove refkey
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 0
+    + Received  + 1
+
+    @@ -6,7 +6,8 @@
+        "item_type": "airplane",
+        "manifacturer": "to",
+        "meta": "v_0|airplane",
+        "number_of_seats": null,
+        "revisions": 1,
+    +   "ringToken": "notneededfortest",
+        "some_other_prop": 14,
+      }
+
+       98 | 
+       99 |       const mainItem = all.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
+    > 100 |       expect(mainItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1 }))
+          |                        ^
+      101 | 
+      102 |     })
+      103 |   })
+
+      at __specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts:100:24
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts:61:12)
+
+(node:22136) UnhandledPromiseRejectionWarning: Error: expect(received).rejects.toThrow(expected)
+
+Expected pattern: /is not an array\!/
+Received message: "[baseValidateGet] Payload is not a single element array! {
+    \"id\": \"airplane|be81be9f-8b5e-462d-bf59-068399884fad\"
+}"
+
+      356 | 
+      357 |         if (!Array.isArray(args) || args.length > 1) {
+    > 358 |             throw new Error(`[baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
+          |                   ^
+      359 |         }
+      360 | 
+      361 |         return Object.assign(args[0], {
+
+      at _specs_AirportManager.baseValidateGet (BaseItemManager.ts:358:19)
+          at baseValidateGet.next (<anonymous>)
+      at _specs_AirportManager.get (BaseItemManager.ts:382:64)
+          at get.next (<anonymous>)
+      at callWithPayloadNotArray (__specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts:62:22)
+      at Object.toThrow (node_modules/expect/build/index.js:223:56)
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts:77:45)
+(node:22136) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 10)
+(node:22136) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts
+  ● manager.get.spec › get 2 items of different type via single call to manager
+
+    [baseValidateGet] Payload is not a single element array! [
+        {
+            "id": "airplane|be81be9f-8b5e-462d-bf59-068399884fad"
+        },
+        {
+            "id": "airport|f4a5f013-5205-4e19-8b92-0e6c3f627c9f"
+        }
+    ]
+
+      356 | 
+      357 |         if (!Array.isArray(args) || args.length > 1) {
+    > 358 |             throw new Error(`[baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
+          |                   ^
+      359 |         }
+      360 | 
+      361 |         return Object.assign(args[0], {
+
+      at _specs_AirportManager.baseValidateGet (BaseItemManager.ts:358:19)
+          at baseValidateGet.next (<anonymous>)
+      at _specs_AirportManager.get (BaseItemManager.ts:382:64)
+          at get.next (<anonymous>)
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts:43:43)
+
+FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts
+  ● manager.create.spec › payload.arguments passed must be an array
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected pattern: /is not an array\!/
+    Received message: "[airplane:baseValidateCreate] Payload is not a single element array! {
+        \"id\": \"airplane|e88e1b1a-c0d9-423e-bc7a-29d200e865a4\",
+        \"meta\": \"v_0|airplane\",
+        \"item_type\": \"airplane\",
+        \"revisions\": 0,
+        \"date_created\": \"2020-09-22T06:43:25.478Z\",
+        \"date_updated\": \"2020-09-22T06:43:25.478Z\",
+        \"duration_hours\": 15,
+        \"reg_uq_str\": \"nomer5\",
+        \"reg_uq_number\": 5
+    }"
+
+          425 | 
+          426 |         if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
+        > 427 |             throw new Error(`[${__type}:baseValidateCreate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
+              |                   ^
+          428 |         }
+          429 | 
+          430 |
+
+      at _specs_AirplaneManager.baseValidateCreate (BaseItemManager.ts:427:19)
+                at baseValidateCreate.next (<anonymous>)
+      at _specs_AirplaneManager.create (BaseItemManager.ts:455:26)
+                at create.next (<anonymous>)
+      at callWithPayloadNotArray (__specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts:19:22)
+      at Object.toThrow (node_modules/expect/build/index.js:241:20)
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts:36:52)
+
+  ● manager.create.spec › payload.arguments passed must be a single element array
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected pattern: /excedes the max arguments array length constraint\(1\)/
+    Received message: "[airplane:baseValidateCreate] Payload is not a single element array! [
+        {
+            \"id\": \"airplane|4617e091-4343-4ea0-8518-1848d09ad621\",
+            \"meta\": \"v_0|airplane\",
+            \"item_type\": \"airplane\",
+            \"revisions\": 0,
+            \"date_created\": \"2020-09-22T06:43:25.516Z\",
+            \"date_updated\": \"2020-09-22T06:43:25.516Z\",
+            \"duration_hours\": 15,
+            \"reg_uq_str\": \"nomer5\",
+            \"reg_uq_number\": 5
+        },
+        {
+            \"id\": \"airplane|4617e091-4343-4ea0-8518-1848d09ad621\",
+            \"meta\": \"v_0|airplane\",
+            \"item_type\": \"airplane\",
+            \"revisions\": 0,
+            \"date_created\": \"2020-09-22T06:43:25.516Z\",
+            \"date_updated\": \"2020-09-22T06:43:25.516Z\",
+            \"duration_hours\": 15,
+            \"reg_uq_str\": \"nomer5\",
+            \"reg_uq_number\": 5
+        }
+    ]"
+
+          425 | 
+          426 |         if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
+        > 427 |             throw new Error(`[${__type}:baseValidateCreate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
+              |                   ^
+          428 |         }
+          429 | 
+          430 |
+
+      at _specs_AirplaneManager.baseValidateCreate (BaseItemManager.ts:427:19)
+                at baseValidateCreate.next (<anonymous>)
+      at _specs_AirplaneManager.create (BaseItemManager.ts:455:26)
+                at create.next (<anonymous>)
+      at callWithPayloadNotArray (__specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts:44:22)
+      at Object.toThrow (node_modules/expect/build/index.js:241:20)
+      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts:61:52)
+
+PASS __specs__/specs/LowLevel_transactXYZTests/query.spec.ts (30.275 s)
+FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.query.spec.ts (61.254 s)
   ● query spec › query.gsi1.meta__smetadata.spec › fill fail if arguments is not an array
 
     Timeout - Async callback was not invoked within the 60000 ms timeout specified by jest.setTimeout.Error: Timeout - Async callback was not invoked within the 60000 ms timeout specified by jest.setTimeout.
@@ -28,191 +278,40 @@ FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.query.spec.ts (60.83
 
       at mapper (node_modules/jest-jasmine2/build/queueRunner.js:27:45)
 
-FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.start.spec.ts (57.198 s)
-  ● manager.start.spec › starts corresponding procedure
-
-    : Timeout - Async callback was not invoked within the 30000 ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 30000 ms timeout specified by jest.setTimeout.Error:
-
-      66 |   })
-      67 | 
-    > 68 |   test('starts corresponding procedure', async () => {
-         |   ^
-      69 |     const domainItem = new _specs_DataImporterItem({ prc_params: {a:"a",b:["b",1],d:{d1:"d1",d2:"d2",d3:1}}})
-      70 |     const createGenerator = domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
-      71 |       _specs_DataImporterItem.__type,
-
-      at new Spec (node_modules/jest-jasmine2/build/jasmine/Spec.js:116:22)
-      at Suite.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.start.spec.ts:68:3)
-      at Object.<anonymous> (__specs__/specs/HighLevel_BaseItemManagerTests/manager.start.spec.ts:9:1)
-
-
-  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
-    Attempted to log "Error calling dynamo: {
-        "message": "require(...).v4 is not a function",
-        "code": "TypeError",
-        "time": "2020-09-09T18:31:42.724Z"
-    }".
-
-       96 | 
-       97 |         request.on('error', (response) => {
-    >  98 |             console.error(`Error calling dynamo: ${ppjson(response)}`);
-          |                     ^
-       99 |         });
-      100 |         
-      101 |         request.on('extractError', (response) => {
-
-      at BufferedConsole.error (node_modules/@jest/console/build/BufferedConsole.js:165:10)
-      at Request.<anonymous> (DynamoDbClient.ts:98:21)
-      at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
-      at Request.emit (node_modules/aws-sdk/lib/sequential_executor.js:78:10)
-      at Request.emit (node_modules/aws-sdk/lib/request.js:688:14)
-      at Request.transition (node_modules/aws-sdk/lib/request.js:22:10)
-      at AcceptorStateMachine.runTo (node_modules/aws-sdk/lib/state_machine.js:14:12)
-      at node_modules/aws-sdk/lib/state_machine.js:26:10
-      at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:35:11)
-      at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:690:12)
-
-PASS __specs__/specs/LowLevel_transactXYZTests/create.number.refkey.spec.ts (28.108 s)
-  ● Console
-
-    console.error
-      Unhandled error
-
-      at process.uncaught (node_modules/jest-jasmine2/build/jasmine/Env.js:248:21)
-
-    console.error
-      Error: Caught error after test environment was torn down
-      
-      {
-          "cancellationReasons": false,
-          "err": {
-              "message": "require(...).v4 is not a function",
-              "code": "TypeError",
-              "time": "2020-09-09T18:31:42.724Z"
-          }
-      }
-          at Object.exports.ddbRequest (C:\Users\TechHuddle\Documents\aarts-all\packages\aarts-dynamodb\DynamoDbClient.ts:1836:11)
-          at runMicrotasks (<anonymous>)
-          at processTicksAndRejections (internal/process/task_queues.js:93:5)
-
-      at process.uncaught (node_modules/jest-jasmine2/build/jasmine/Env.js:249:21)
-
-PASS __specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts
-  ● Console
-
-    console.error
-      Error calling dynamo: {
-          "message": "Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, None, None, ConditionalCheckFailed]",
-          "code": "TransactionCanceledException",
-          "time": "2020-09-09T18:32:11.112Z",
-          "requestId": "918ab44b-3122-4ba6-8364-f65334d314b6",
-          "statusCode": 400,
-          "retryable": false,
-          "retryDelay": 28.268738565462257
-      }
-
-       96 | 
-       97 |         request.on('error', (response) => {
-    >  98 |             console.error(`Error calling dynamo: ${ppjson(response)}`);
-          |                     ^
-       99 |         });
-      100 |         
-      101 |         request.on('extractError', (response) => {
-
-      at Request.<anonymous> (DynamoDbClient.ts:98:21)
-      at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
-      at Request.emit (node_modules/aws-sdk/lib/sequential_executor.js:78:10)
-      at Request.emit (node_modules/aws-sdk/lib/request.js:688:14)
-      at Request.transition (node_modules/aws-sdk/lib/request.js:22:10)
-      at AcceptorStateMachine.runTo (node_modules/aws-sdk/lib/state_machine.js:14:12)
-      at node_modules/aws-sdk/lib/state_machine.js:26:10
-      at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:38:9)
-
-PASS __specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts
-PASS __specs__/specs/HighLevel_BaseItemManagerTests/manager.delete.spec.ts
+PASS __specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts (26.216 s)
   ● Console
 
     console.log
-      set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision,
+      ========================  {
+        id: 'airplane|52d25267-c928-4a52-8465-e3a3dcf231e8',
+        meta: 'v_0|airplane',
+        revisions: 0,
+        reg_uq_number: 13
+      }
 
-      at Object.exports.transactDeleteItem (dynamodb-transactDeleteItem.ts:36:13)
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
           at runMicrotasks (<anonymous>)
 
-PASS __specs__/specs/LowLevel_transactXYZTests/create.unique.number.refkey.spec.ts
-  ● Console
-
-    console.error
-      Error calling dynamo: {
-          "message": "Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed, None]",
-          "code": "TransactionCanceledException",
-          "time": "2020-09-09T18:32:14.079Z",
-          "requestId": "3cf6ffb4-2047-48e4-8af3-3189c09091c7",
-          "statusCode": 400,
-          "retryable": false,
-          "retryDelay": 34.352780839784536
+    console.log
+      ========================  {
+        id: 'airplane|5f8e0e13-ea65-45bc-8302-0851963d2afa',
+        meta: 'v_0|airplane',
+        revisions: 0,
+        reg_uq_number: 21
       }
 
-       96 | 
-       97 |         request.on('error', (response) => {
-    >  98 |             console.error(`Error calling dynamo: ${ppjson(response)}`);
-          |                     ^
-       99 |         });
-      100 |         
-      101 |         request.on('extractError', (response) => {
-
-      at Request.<anonymous> (DynamoDbClient.ts:98:21)
-      at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
-      at Request.emit (node_modules/aws-sdk/lib/sequential_executor.js:78:10)
-      at Request.emit (node_modules/aws-sdk/lib/request.js:688:14)
-      at Request.transition (node_modules/aws-sdk/lib/request.js:22:10)
-      at AcceptorStateMachine.runTo (node_modules/aws-sdk/lib/state_machine.js:14:12)
-      at node_modules/aws-sdk/lib/state_machine.js:26:10
-      at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:38:9)
-
-PASS __specs__/specs/LowLevel_transactXYZTests/create.string.refkey.spec.ts
-PASS __specs__/specs/LowLevel_transactXYZTests/create.unique.string.refkey.spec.ts
-  ● Console
-
-    console.error
-      Error calling dynamo: {
-          "message": "Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed, None]",
-          "code": "TransactionCanceledException",
-          "time": "2020-09-09T18:32:15.458Z",
-          "requestId": "5cf93947-0878-4975-a039-e51ad093113f",
-          "statusCode": 400,
-          "retryable": false,
-          "retryDelay": 25.01028332264411
-      }
-
-       96 | 
-       97 |         request.on('error', (response) => {
-    >  98 |             console.error(`Error calling dynamo: ${ppjson(response)}`);
-          |                     ^
-       99 |         });
-      100 |         
-      101 |         request.on('extractError', (response) => {
-
-      at Request.<anonymous> (DynamoDbClient.ts:98:21)
-      at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
-      at Request.emit (node_modules/aws-sdk/lib/sequential_executor.js:78:10)
-      at Request.emit (node_modules/aws-sdk/lib/request.js:688:14)
-      at Request.transition (node_modules/aws-sdk/lib/request.js:22:10)
-      at AcceptorStateMachine.runTo (node_modules/aws-sdk/lib/state_machine.js:14:12)
-      at node_modules/aws-sdk/lib/state_machine.js:26:10
-      at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:38:9)
-
-PASS __specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.ts
-  ● Console
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
+          at runMicrotasks (<anonymous>)
 
     console.error
       Error calling dynamo: {
           "message": "Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, None, None, ConditionalCheckFailed]",
           "code": "TransactionCanceledException",
-          "time": "2020-09-09T18:32:16.279Z",
-          "requestId": "d291d008-20aa-405c-9fe5-4087e392e7ec",
+          "time": "2020-09-22T06:45:23.536Z",
+          "requestId": "c8132639-81ce-4647-9d5e-3681675c802f",
           "statusCode": 400,
           "retryable": false,
-          "retryDelay": 17.74902577920465
+          "retryDelay": 9.510841325756282
       }
 
        96 | 
@@ -233,8 +332,59 @@ PASS __specs__/specs/LowLevel_transactXYZTests/update.unique.number.refkey.spec.
       at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:38:9)
 
 PASS __specs__/specs/LowLevel_transactXYZTests/get.spec.ts
-PASS __specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts
-PASS __specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts
+PASS __specs__/specs/LowLevel_transactXYZTests/update.unique.string.refkey.spec.ts
+  ● Console
+
+    console.log
+      ========================  {
+        id: 'airplane|fa2fc782-5ccf-40b4-af50-ea9eb01d9f76',
+        meta: 'v_0|airplane',
+        revisions: 0,
+        reg_uq_str: '11updatedTo15'
+      }
+
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
+          at runMicrotasks (<anonymous>)
+
+    console.log
+      ========================  {
+        id: 'airplane|5be14500-b511-4c01-97b0-75d837393718',
+        meta: 'v_0|airplane',
+        revisions: 0,
+        reg_uq_str: 'existing21'
+      }
+
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
+          at runMicrotasks (<anonymous>)
+
+    console.error
+      Error calling dynamo: {
+          "message": "Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, None, None, ConditionalCheckFailed]",
+          "code": "TransactionCanceledException",
+          "time": "2020-09-22T06:45:25.719Z",
+          "requestId": "656ad959-19a8-4f64-87c9-d7533fa12113",
+          "statusCode": 400,
+          "retryable": false,
+          "retryDelay": 6.955925945104635
+      }
+
+       96 | 
+       97 |         request.on('error', (response) => {
+    >  98 |             console.error(`Error calling dynamo: ${ppjson(response)}`);
+          |                     ^
+       99 |         });
+      100 |         
+      101 |         request.on('extractError', (response) => {
+
+      at Request.<anonymous> (DynamoDbClient.ts:98:21)
+      at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
+      at Request.emit (node_modules/aws-sdk/lib/sequential_executor.js:78:10)
+      at Request.emit (node_modules/aws-sdk/lib/request.js:688:14)
+      at Request.transition (node_modules/aws-sdk/lib/request.js:22:10)
+      at AcceptorStateMachine.runTo (node_modules/aws-sdk/lib/state_machine.js:14:12)
+      at node_modules/aws-sdk/lib/state_machine.js:26:10
+      at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:38:9)
+
 PASS __specs__/specs/LowLevel_transactXYZTests/delete.spec.ts
   ● Console
 
@@ -244,38 +394,141 @@ PASS __specs__/specs/LowLevel_transactXYZTests/delete.spec.ts
       at Object.exports.transactDeleteItem (dynamodb-transactDeleteItem.ts:36:13)
           at runMicrotasks (<anonymous>)
 
-PASS __specs__/specs/HighLevel_BaseItemManagerTests/manager.get.spec.ts
-PASS __specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts
 PASS __specs__/specs/LowLevel_transactXYZTests/update.remove.refkey.spec.ts
-------------------------------------|---------|----------|---------|---------|------------------------------------------------------------------------------------------------------------------------------------------------
-File                                | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                                                                                              
-------------------------------------|---------|----------|---------|---------|------------------------------------------------------------------------------------------------------------------------------------------------
-All files                           |   89.67 |    66.86 |    90.7 |   89.62 |                                                                                                                                                
- aarts-dynamodb                     |   90.33 |    68.62 |    95.7 |   90.09 |                                                                                                                                                
-  BaseItemManager.ts                |   83.33 |    60.29 |   92.86 |    83.1 | 96,102,113-114,123-144,170,175,184,191-192,219-220,231-232,289,297,312,351,369-370,381-382,400,425-426,442,448,475-476,491,502,506,512,531,538 
-  DynamoDbClient.ts                 |   97.92 |    88.46 |     100 |   97.44 | 106                                                                                                                                            
-  dynamodb-batchGetItem.ts          |   90.91 |       50 |     100 |      90 | 26                                                                                                                                             
-  dynamodb-queryItems.ts            |   93.48 |       70 |     100 |   93.33 | 36,94-95                                                                                                                                       
-  dynamodb-transactDeleteItem.ts    |   95.45 |    75.68 |   81.82 |     100 | 25-31,113-138                                                                                                                                  
-  dynamodb-transactPutItem.ts       |     100 |    82.35 |     100 |     100 | 11,55-80                                                                                                                                       
-  dynamodb-transactUpdateItem.ts    |   98.53 |    70.77 |     100 |   98.36 | 23                                                                                                                                             
- aarts-dynamodb/__specs__           |   93.65 |       80 |   71.43 |     100 |                                                                                                                                                
-  testutils.ts                      |   93.65 |       80 |   71.43 |     100 | 58-77                                                                                                                                          
- aarts-dynamodb/__specs__/testmodel |   87.02 |    27.78 |   86.67 |   85.64 |                                                                                                                                                
-  Airplane.ts                       |   69.57 |       50 |     100 |   69.57 | 72-73,76-77,81-83                                                                                                                              
-  Airport.ts                        |   21.05 |        0 |   33.33 |   21.05 | 30-54                                                                                                                                          
-  Country.ts                        |     100 |      100 |     100 |     100 |                                                                                                                                                
-  DataImporter.ts                   |      50 |      100 |     100 |      50 | 24-31                                                                                                                                          
-  Flight.ts                         |     100 |      100 |     100 |     100 |                                                                                                                                                
-  Tourist.ts                        |     100 |      100 |     100 |     100 |                                                                                                                                                
-  _DynamoItems.ts                   |     100 |      100 |     100 |     100 |                                                                                                                                                
-  itemManagersMap.ts                |     100 |      100 |     100 |     100 |                                                                                                                                                
-  testDataSeeder.ts                 |     100 |      100 |     100 |     100 |                                                                                                                                                
-------------------------------------|---------|----------|---------|---------|------------------------------------------------------------------------------------------------------------------------------------------------
+  ● Console
 
-Test Suites: 2 failed, 16 passed, 18 total
-Tests:       5 failed, 39 passed, 44 total
+    console.log
+      ========================  {
+        id: 'airplane|1bef8254-8a51-4b8a-b15d-1e52b214f4b1',
+        meta: 'v_0|airplane',
+        revisions: 0,
+        number_of_seats: '__del__'
+      }
+
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
+          at runMicrotasks (<anonymous>)
+
+PASS __specs__/specs/LowLevel_transactXYZTests/create.unique.number.refkey.spec.ts
+  ● Console
+
+    console.error
+      Error calling dynamo: {
+          "message": "Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed, None]",
+          "code": "TransactionCanceledException",
+          "time": "2020-09-22T06:45:27.795Z",
+          "requestId": "becca87a-a9b0-45d2-9576-31cf50f70a80",
+          "statusCode": 400,
+          "retryable": false,
+          "retryDelay": 24.51330997401524
+      }
+
+       96 | 
+       97 |         request.on('error', (response) => {
+    >  98 |             console.error(`Error calling dynamo: ${ppjson(response)}`);
+          |                     ^
+       99 |         });
+      100 |         
+      101 |         request.on('extractError', (response) => {
+
+      at Request.<anonymous> (DynamoDbClient.ts:98:21)
+      at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
+      at Request.emit (node_modules/aws-sdk/lib/sequential_executor.js:78:10)
+      at Request.emit (node_modules/aws-sdk/lib/request.js:688:14)
+      at Request.transition (node_modules/aws-sdk/lib/request.js:22:10)
+      at AcceptorStateMachine.runTo (node_modules/aws-sdk/lib/state_machine.js:14:12)
+      at node_modules/aws-sdk/lib/state_machine.js:26:10
+      at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:38:9)
+
+PASS __specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts
+  ● Console
+
+    console.log
+      ========================  {
+        id: 'airplane|66c69fbd-1fec-4732-af93-3a961bc9f634',
+        meta: 'v_0|airplane',
+        revisions: 0,
+        number_of_seats: 13
+      }
+
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
+          at runMicrotasks (<anonymous>)
+
+PASS __specs__/specs/LowLevel_transactXYZTests/create.unique.string.refkey.spec.ts
+  ● Console
+
+    console.error
+      Error calling dynamo: {
+          "message": "Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed, None]",
+          "code": "TransactionCanceledException",
+          "time": "2020-09-22T06:45:29.173Z",
+          "requestId": "1af5d86c-3c84-4486-bb45-9eaca0a502a7",
+          "statusCode": 400,
+          "retryable": false,
+          "retryDelay": 17.96244948815161
+      }
+
+       96 | 
+       97 |         request.on('error', (response) => {
+    >  98 |             console.error(`Error calling dynamo: ${ppjson(response)}`);
+          |                     ^
+       99 |         });
+      100 |         
+      101 |         request.on('extractError', (response) => {
+
+      at Request.<anonymous> (DynamoDbClient.ts:98:21)
+      at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
+      at Request.emit (node_modules/aws-sdk/lib/sequential_executor.js:78:10)
+      at Request.emit (node_modules/aws-sdk/lib/request.js:688:14)
+      at Request.transition (node_modules/aws-sdk/lib/request.js:22:10)
+      at AcceptorStateMachine.runTo (node_modules/aws-sdk/lib/state_machine.js:14:12)
+      at node_modules/aws-sdk/lib/state_machine.js:26:10
+      at Request.<anonymous> (node_modules/aws-sdk/lib/request.js:38:9)
+
+PASS __specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts
+  ● Console
+
+    console.log
+      ========================  {
+        id: 'flight|f075af54-1a8b-4c6e-8752-ad4709d4e63f',
+        meta: 'v_0|flight',
+        revisions: 0,
+        tourist_season: 'season-2'
+      }
+
+      at Object.exports.transactUpdateItem (dynamodb-transactUpdateItem.ts:20:13)
+          at runMicrotasks (<anonymous>)
+
+PASS __specs__/specs/LowLevel_transactXYZTests/create.string.refkey.spec.ts
+PASS __specs__/specs/LowLevel_transactXYZTests/create.number.refkey.spec.ts
+------------------------------------|---------|----------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------
+File                                | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                                                                                                  
+------------------------------------|---------|----------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------
+All files                           |   82.43 |    57.14 |    83.7 |   82.19 |                                                                                                                                                    
+ aarts-dynamodb                     |   78.78 |    57.89 |   85.86 |    78.4 |                                                                                                                                                    
+  BaseItemManager.ts                |   66.53 |     45.4 |   73.33 |   66.53 | 98,106-107,120-121,135-136,190,199,206-207,234-235,246-247,265,301,306-348,361-368,383-416,438-440,456,462,490-491,499-521,532,538,558,565,596-611 
+  DynamoDbClient.ts                 |   97.92 |    88.46 |     100 |   97.44 | 106                                                                                                                                                
+  dynamodb-batchGetItem.ts          |   45.45 |    19.05 |   42.86 |   46.43 | 14,32-33,44-63                                                                                                                                     
+  dynamodb-queryItems.ts            |   97.96 |       70 |     100 |   97.92 | 39                                                                                                                                                 
+  dynamodb-transactDeleteItem.ts    |   93.18 |    72.97 |   81.82 |    97.3 | 99                                                                                                                                                 
+  dynamodb-transactPutItem.ts       |      92 |    71.43 |     100 |   90.91 | 85-96                                                                                                                                              
+  dynamodb-transactUpdateItem.ts    |   94.94 |    68.75 |     100 |   94.29 | 16,33,202-212                                                                                                                                      
+ aarts-dynamodb/__specs__           |   93.65 |       80 |   71.43 |     100 |                                                                                                                                                    
+  testutils.ts                      |   93.65 |       80 |   71.43 |     100 | 58-77                                                                                                                                              
+ aarts-dynamodb/__specs__/testmodel |   88.15 |    27.78 |   86.67 |   86.91 |                                                                                                                                                    
+  Airplane.ts                       |   69.57 |       50 |     100 |   69.57 | 72-73,76-77,81-83                                                                                                                                  
+  Airport.ts                        |   21.05 |        0 |   33.33 |   21.05 | 30-54                                                                                                                                              
+  Country.ts                        |     100 |      100 |     100 |     100 |                                                                                                                                                    
+  DataImporter.ts                   |      70 |      100 |     100 |      70 | 24-26                                                                                                                                              
+  Flight.ts                         |     100 |      100 |     100 |     100 |                                                                                                                                                    
+  Tourist.ts                        |     100 |      100 |     100 |     100 |                                                                                                                                                    
+  _DynamoItems.ts                   |     100 |      100 |     100 |     100 |                                                                                                                                                    
+  itemManagersMap.ts                |     100 |      100 |     100 |     100 |                                                                                                                                                    
+  testDataSeeder.ts                 |     100 |      100 |     100 |     100 |                                                                                                                                                    
+------------------------------------|---------|----------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Test Suites: 5 failed, 13 passed, 18 total
+Tests:       11 failed, 33 passed, 44 total
 Snapshots:   0 total
-Time:        192.89 s, estimated 205 s
+Time:        192.331 s
 Ran all test suites.
 npm ERR! Test failed.  See above for more details.

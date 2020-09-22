@@ -56,12 +56,12 @@ describe('manager.update.spec', () => {
   })
   test('update remove refkey', async () => {
 
-    const airplane = new _specs_AirplaneItem({number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
+    const airplane = new _specs_AirplaneItem({number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14", ringToken:"someringtoken"})
 
     return await transactPutItem(airplane, _specs_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
       const allBeforeUpdate = await queryForId(airplane.id)
-      expect(allBeforeUpdate.length).toBe(3) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats
+      expect(allBeforeUpdate.length).toBe(4) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats, 4 - ringToken
       
       const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type, 
         {
@@ -79,7 +79,7 @@ describe('manager.update.spec', () => {
             item: "notneededfortest",
             action: "query",
             eventSource: "notneededfortest",
-            ringToken: "notneededfortest"
+            ringToken: "the new ring token"
           }
         
       })
@@ -91,16 +91,71 @@ describe('manager.update.spec', () => {
         }
       } while (!updateProcessor.done)
       
-      expect(updateProcessor.value.arguments[0]).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1}))// main item returned
+      expect(updateProcessor.value.arguments[0]).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1}))// main item returned, 
 
       const all = await queryForId(airplane.id)
-      expect(all.length).toBe(3) // 1 main item, 2 history of update, 3 refkey for manifacturer [no 4 - refkey for number_of_seats was deleted]
+      expect(all.length).toBe(4) // 1 main item, 2 history of update, 3 refkey for manifacturer, 4 - ringToken [no 5 - refkey for number_of_seats was deleted]
+
+      expect(JSON.stringify(all.filter(item => !item.meta.startsWith("v_1")).map(item => item.ringToken))).toBe(JSON.stringify(["the new ring token","the new ring token","the new ring token"])) // all 3 refkeys got updated with latest ring token
+      expect(JSON.stringify(all.filter(item => item.meta.startsWith("v_1")).map(item => item.ringToken))).toBe(JSON.stringify(["someringtoken"])) // and the history record contains the old ringToken value
 
       const mainItem = all.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
-      expect(mainItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1 }))
+      expect(mainItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1, ringToken: "the new ring token" }))
 
     })
   })
+
+  test.only('update adds refkeys if not exist yet', async () => {
+
+    const airplane = new _specs_AirplaneItem({number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
+
+    return await transactPutItem(airplane, _specs_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item, without a ringtoken
+
+      const allBeforeUpdate = await queryForId(airplane.id)
+      expect(allBeforeUpdate.length).toBe(3) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats, [ no 4 - ringToken]
+      
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type, 
+        {
+          payload: {
+            arguments: [{ // update arranged item
+              id: arrangedItem.id,
+              meta: arrangedItem.meta,
+              revisions: arrangedItem.revisions,
+              //@ts-ignore
+              number_of_seats: "__del__"
+            }],
+            identity: "akrsmv"
+          },
+          meta: {
+            item: "notneededfortest",
+            action: "query",
+            eventSource: "notneededfortest",
+            ringToken: "the new ring token"
+          }
+        
+      })
+
+      let updateProcessor = await updateGen.next()
+      do {
+        if (!updateProcessor.done) {
+          updateProcessor = await updateGen.next()
+        }
+      } while (!updateProcessor.done)
+      
+      expect(updateProcessor.value.arguments[0]).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1}))// main item returned, 
+
+      const all = await queryForId(airplane.id)
+      expect(all.length).toBe(4) // 1 main item, 2 history of update, 3 refkey for manifacturer, 4 - ringToken [no 5 - refkey for number_of_seats was deleted]
+
+      expect(JSON.stringify(all.filter(item => !item.meta.startsWith("v_1")).map(item => item.ringToken))).toBe(JSON.stringify(["the new ring token","the new ring token","the new ring token"])) // all 3 refkeys got updated with latest ring token
+      expect(JSON.stringify(all.filter(item => item.meta.startsWith("v_1")).map(item => item.ringToken))).toBe(JSON.stringify(["someringtoken"])) // and the history record contains the old ringToken value
+
+      const mainItem = all.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
+      expect(mainItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1, ringToken: "the new ring token" }))
+
+    })
+  })
+
 })
 
 
