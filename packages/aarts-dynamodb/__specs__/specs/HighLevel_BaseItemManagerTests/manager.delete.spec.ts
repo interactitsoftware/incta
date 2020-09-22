@@ -70,7 +70,7 @@ describe('manager.delete.spec', () => {
         _specs_AirportItem.__type,
         {
           payload: {
-            arguments: [{ id: "id without proper revisions will fail" }],
+            arguments: [{pks:[{ id: "id without proper revisions will fail" }]}],
             identity: "akrsmv"
           },
           meta: {
@@ -95,10 +95,10 @@ describe('manager.delete.spec', () => {
         _specs_AirportItem.__type,
         {
           payload: {
-            arguments: [{
+            arguments: [{pks:[{
               id: arrangedItem1.id,
               revisions: 15
-            }],
+            }]}],
             identity: "akrsmv"
           },
           meta: {
@@ -130,7 +130,7 @@ describe('manager.delete.spec', () => {
         _specs_AirportItem.__type,
         {
           payload: {
-            arguments: [{ id: arrangedItem2.id, revisions: arrangedItem2.revisions }], // the only two needed keys for a delete
+            arguments: [{pks:[{ id: arrangedItem2.id, revisions: arrangedItem2.revisions }]}], // the only two needed keys for a delete
             identity: "akrsmv"
           },
           meta: {

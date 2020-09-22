@@ -13,13 +13,13 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     // --> check for any refs loaded and unload them before updating starts
     Object.assign(itemUpdates, Object.keys(itemUpdates).reduce<Record<string, string>>((accum, key) => {
         if (__item_refkeys.filter(k => !k.unique && !!k.ref).map(k => k.key).indexOf(key) > -1 && typeof itemUpdates[key] !== undefined && typeof itemUpdates[key] !== 'string') {
-            accum[key] = (itemUpdates as T)[key].id 
+            accum[key] = (itemUpdates as T)[key].id
         }
         return accum
     }, {}))
-    console.log("======================== ",  itemUpdates)
+    console.log("======================== ", itemUpdates)
     // <-- 
-    
+
     const drevisionsUpdates = toAttributeMap(
         { "inc_revision": 1, "start_revision": 0 })
     const ditemUpdates: DynamoDB.AttributeMap = toAttributeMap(
@@ -126,11 +126,17 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                 const isUniqueRefKey = isRefKey && __item_refkeys.filter(r => r.key === key)[0].unique === true
                 if (isRefKey && ((!dexistingItem[key] || dexistingItem[key].S !== "__del__") && (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__"))) { // changed/added ones, without those marked for delete  // TODO changed from  isRefKey &&  (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")
                     !process.env.DEBUGGER || loginfo(`refkey ${key} marked for create`)
-                    const dmetadataupdateExpressionNames: Record<AttributeName, AttributeName> = "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
-                    const dmetadataupdateExpressionValues: Record<AttributeName, AttributeValue> = "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] }
+                    
+                    const dmetadataupdateExpressionNames: Record<AttributeName, AttributeName> = !!dexistingItem[key] ?
+                        "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" } :
+                        "S" in ditemUpdates[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
+                    const dmetadataupdateExpressionValues: Record<AttributeName, AttributeValue> = !!dexistingItem[key] ?
+                        "S" in dexistingItem[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] } :
+                        "S" in ditemUpdates[key] ? { ":smetadata": ditemUpdates[key] || dexistingItem[key] } : { ":nmetadata": ditemUpdates[key] || dexistingItem[key] }
+
                     accum.push({
                         Update: {
-                            ConditionExpression: `#revisions = :revisions`,
+                            ConditionExpression: `attribute_not_exists(#revisions) OR #revisions = :revisions`,
                             Key: { id: dexistingItemkey.id, meta: { S: refkeyitemmeta(existingItem, key) } },
                             TableName: DB_NAME,
                             ExpressionAttributeNames: Object.assign(
@@ -143,7 +149,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                                 dmetadataupdateExpressionValues,
                                 updateExpressionValues
                             ),
-                            UpdateExpression: updateExpr + ("S" in dexistingItem[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata"),
+                            UpdateExpression: updateExpr + (!!dexistingItem[key]? "S" in dexistingItem[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata":"S" in ditemUpdates[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata"),
                             ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                         }
                     })
@@ -203,7 +209,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
             TableName: DB_NAME,
             Key: Object.assign({
                 id: { S: itemUpdates["procedure"] },
-                meta: { S: `${versionString(0)}|${itemUpdates["procedure"].substr(0, itemUpdates["procedure"].indexOf("|"))}`},
+                meta: { S: `${versionString(0)}|${itemUpdates["procedure"].substr(0, itemUpdates["procedure"].indexOf("|"))}` },
             }),
             UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
             ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },

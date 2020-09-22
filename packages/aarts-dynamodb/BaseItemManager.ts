@@ -112,7 +112,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const dynamoItems = []
         for (const arg of processorBase.value.arguments) {
             let procedure = new proto(arg) as unknown as IProcedure<T>
-            const asyncGenDomain = this.validateStart(Object.assign(processorBase.value, {arguments: procedure}))
+            const asyncGenDomain = this.validateStart(Object.assign(processorBase.value, { arguments: procedure }))
             let processorDomain = await asyncGenDomain.next()
             yield { arguments: `[${__type}:validateStart] ${processorDomain.value}`, identity: processorBase.value.identity }
             do {
@@ -276,7 +276,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`[${__type}:baseValidateDelete] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
-        for (const arg of event.payload.arguments) {
+        for (const arg of event.payload.arguments[0].pks) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
                 throw new Error("id and revisions keys is mandatory when deleting")
@@ -302,20 +302,26 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         }
 
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:DELETE] Loading requested items`, identity: undefined })
-        const dynamoExistingItems = await batchGetItem(args.payload.arguments);
-        !process.env.DEBUGGER || loginfo("result from delete", JSON.stringify(dynamoExistingItems))
-
-        if (dynamoExistingItems.length !== args.payload.arguments.length) {
+        const dynamoExistingItems = await batchGetItem(args.payload.arguments[0]);
+        
+        if (dynamoExistingItems.length !== args.payload.arguments[0].pks.length) {
             throw new Error(`[${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)
         }
+        
+        yield { arguments: `[${__type}:DELETE] requested deletion of ${ppjson(dynamoExistingItems)}`, identity: undefined }
 
-        if (dynamoExistingItems[0].revisions !== args.payload.arguments[0].revisions) {
-            throw new Error(`[${__type}:DELETE] revisions passed does not match item revisions`)
+
+        for (const existingItem of dynamoExistingItems) {
+            const requestedId = (args.payload.arguments[0].pks as {id:string, revisions:number}[]).filter(pk => pk.id === existingItem.id)[0]
+            if (existingItem.revisions !== requestedId.revisions) {
+                throw new Error(`[${__type}:DELETE] revisions passed does not match item revisions: ${ppjson(requestedId)}`)
+            }
         }
+
 
         const updatedItems = []
 
-        for (const arg of args.payload.arguments) {
+        for (const arg of args.payload.arguments[0].pks) {
             const existingItem = dynamoExistingItems.filter(d => d.id == arg.id && d.meta == arg.meta)[0]
 
             for await (const domainValidateMessage of this.validateDelete(

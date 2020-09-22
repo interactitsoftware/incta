@@ -33,7 +33,7 @@ export class _specs_TouristItem extends DynamoItem(_specs_Tourist, "tourist", [
 export class _specs_AirplaneItem extends DynamoItem(_specs_Airplane, "airplane", [
     {key: "reg_uq_str", unique: true},
     {key: "reg_uq_number", unique: true},
-    {key: "number_of_seats"},// although not pointing to other type, we still want to query by it
+    {key: "number_of_seats"},// although not pointing to other type, nor its unique - we still want to query by it
     {key: "model", ref: "airplane_model"},
     {key: "manifacturer", ref: "airplane_manifacturer"},
 ]) { }
