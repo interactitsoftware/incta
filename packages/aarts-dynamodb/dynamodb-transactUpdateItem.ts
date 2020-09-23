@@ -32,7 +32,8 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
         // no new updates, only revision passed
         throw new Error(`no new updates, only revision passed for id[${existingItem.id}]`)
     }
-    const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(uk => uk != "revisions").map(uk => `#${uk} = :${uk}`).join(", ")}`
+
+    const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(uk => ["revisions", "id", "meta"].indexOf(uk) === -1).map(uk => `#${uk} = :${uk}`).join(", ")}`
     const updateExprHistory = `set ${Object.keys(ditemUpdates).filter(diu => diu in dexistingItem).map(uk => `#${uk} = :${uk}`).join(", ")}`
 
     //#region DEBUG msg
@@ -50,7 +51,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
     const updateExpressionValues: Record<AttributeName, AttributeValue> = Object.assign(
         {},
-        Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
+        Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(key => ["id", "meta"].indexOf(key) === -1).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
             accum[`:${key}`] = !!ditemUpdates[key] ? ditemUpdates[key].S !== "__del__" ? ditemUpdates[key] : { NULL: true } : dexistingItem[key]
             return accum
         }, {}),
@@ -59,16 +60,16 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
             return accum
         }, {})
     )
-    const updateExpressionNames: Record<AttributeName, AttributeName> = 
-    Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates))))
-        .reduce<{ [key: string]: AttributeName }>((accum, key) => {
-            accum[`#${key}`] = key
-            return accum
-        }, {})
+    const updateExpressionNames: Record<AttributeName, AttributeName> =
+        Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(key => ["id", "meta"].indexOf(key) === -1)
+            .reduce<{ [key: string]: AttributeName }>((accum, key) => {
+                accum[`#${key}`] = key
+                return accum
+            }, {})
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
             Update: {
-                ConditionExpression: `attribute_not_exists(#revisions) OR #revisions = :revisions`,
+                ConditionExpression: `(attribute_not_exists(#revisions) OR #revisions = :revisions)`,
                 Key: dexistingItemkey,
                 TableName: DB_NAME,
                 ExpressionAttributeNames: updateExpressionNames,
@@ -121,13 +122,13 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     // build all updates by also examining refkeys
     const allTransactWriteItemList =
         itemTransactWriteItemList.concat(
-            Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).reduce<TransactWriteItem[]>((accum, key) => {
+            Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(key => ["id", "meta"].indexOf(key) === -1).reduce<TransactWriteItem[]>((accum, key) => {
                 !process.env.DEBUGGER || loginfo(`[Update, examining refkeys of ${existingItem.item_type}] analysing key: ${key}`);
                 const isRefKey = __item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1
                 const isUniqueRefKey = isRefKey && __item_refkeys.filter(r => r.key === key)[0].unique === true
                 if (isRefKey && ((!dexistingItem[key] || dexistingItem[key].S !== "__del__") && (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__"))) { // changed/added ones, without those marked for delete  // TODO changed from  isRefKey &&  (!ditemUpdates[key] || ditemUpdates[key].S !== "__del__")
                     !process.env.DEBUGGER || loginfo(`refkey ${key} marked for create`)
-                    
+
                     const dmetadataupdateExpressionNames: Record<AttributeName, AttributeName> = !!dexistingItem[key] ?
                         "S" in dexistingItem[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" } :
                         "S" in ditemUpdates[key] ? { "#smetadata": "smetadata" } : { "#nmetadata": "nmetadata" }
@@ -137,7 +138,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
                     accum.push({
                         Update: {
-                            ConditionExpression: `attribute_not_exists(#revisions) OR #revisions = :revisions`,
+                            ConditionExpression: `(attribute_not_exists(#revisions) OR #revisions = :revisions)`,
                             Key: { id: dexistingItemkey.id, meta: { S: refkeyitemmeta(existingItem, key) } },
                             TableName: DB_NAME,
                             ExpressionAttributeNames: Object.assign(
@@ -150,7 +151,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                                 dmetadataupdateExpressionValues,
                                 updateExpressionValues
                             ),
-                            UpdateExpression: updateExpr + (!!dexistingItem[key]? "S" in dexistingItem[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata":"S" in ditemUpdates[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata"),
+                            UpdateExpression: updateExpr + (!!dexistingItem[key] ? "S" in dexistingItem[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata" : "S" in ditemUpdates[key] ? ", #smetadata = :smetadata" : ", #nmetadata = :nmetadata"),
                             ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                         }
                     })
@@ -171,7 +172,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                                 Item: toAttributeMap({ id: `uq|${existingItem.item_type}}${key}`, meta: `${itemUpdates[key]}` }),
                                 TableName: DB_NAME,
                                 ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-                                ConditionExpression: "attribute_not_exists(#id) and attribute_not_exists(#meta)",
+                                ConditionExpression: "(attribute_not_exists(#id) and attribute_not_exists(#meta))",
                                 ExpressionAttributeNames: { "#id": "id", "#meta": "meta" }
                             }
                         })

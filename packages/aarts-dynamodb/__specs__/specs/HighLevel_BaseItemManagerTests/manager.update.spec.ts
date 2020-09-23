@@ -154,7 +154,7 @@ describe('manager.update.spec', () => {
       expect(mainItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1, ringToken: "the new ring token" }))
 
       const newRefKeyItem = all.filter(i => i.meta === `${_specs_AirplaneItem.__type}}ringToken`)[0]
-      expect(newRefKeyItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1, ringToken: "the new ring token" }))
+      expect(newRefKeyItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1, ringToken: "the new ring token", smetadata: "the new ring token", meta: refkeyitemmeta(airplane, "ringToken") }))
     })
   })
 

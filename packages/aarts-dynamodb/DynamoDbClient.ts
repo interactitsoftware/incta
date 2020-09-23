@@ -94,18 +94,26 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
     ): Promise<TransactWriteItemsOutput | BatchGetItemOutput | QueryOutput | UpdateItemOutput | BatchWriteItemOutput> => {
         let cancellationReasons:{Item:any, Code:string, Message:string}[] = []
 
-        request.on('error', (response) => {
+        request.on('error', (response, httpResponse) => {
             console.error(`Error calling dynamo: ${ppjson(response)}`);
-        });
-        
-        request.on('extractError', (response) => {
             try {
-                cancellationReasons = JSON.parse(response.httpResponse.body.toString()).CancellationReasons;
+                cancellationReasons = JSON.parse(httpResponse.httpResponse.body.toString()).CancellationReasons;
+                console.log(cancellationReasons, ppjson(cancellationReasons))
             } catch (err) {
                 // suppress this just in case some types of errors aren't JSON parseable
                 console.error('Error extracting cancellation error', err);
             }
         });
+        
+        // this extractError event ... is it raised at all?
+        // request.on('extractError', (response) => {
+        //     try {
+        //         cancellationReasons = JSON.parse(response.httpResponse.body.toString()).CancellationReasons;
+        //     } catch (err) {
+        //         // suppress this just in case some types of errors aren't JSON parseable
+        //         console.error('Error extracting cancellation error', err);
+        //     }
+        // });
 
         try {
             return await request.promise()
