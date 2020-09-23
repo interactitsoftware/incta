@@ -50,8 +50,8 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
     const updateExpressionValues: Record<AttributeName, AttributeValue> = Object.assign(
         {},
-        Object.keys(ditemUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
-            accum[`:${key}`] = ditemUpdates[key].S !== "__del__" ? ditemUpdates[key] : { NULL: true }
+        Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
+            accum[`:${key}`] = !!ditemUpdates[key] ? ditemUpdates[key].S !== "__del__" ? ditemUpdates[key] : { NULL: true } : dexistingItem[key]
             return accum
         }, {}),
         Object.keys(drevisionsUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
@@ -59,7 +59,8 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
             return accum
         }, {})
     )
-    const updateExpressionNames: Record<AttributeName, AttributeName> = Object.keys(ditemUpdates)
+    const updateExpressionNames: Record<AttributeName, AttributeName> = 
+    Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates))))
         .reduce<{ [key: string]: AttributeName }>((accum, key) => {
             accum[`#${key}`] = key
             return accum
