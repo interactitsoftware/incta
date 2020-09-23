@@ -32,7 +32,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
         // no new updates, only revision passed
         throw new Error(`no new updates, only revision passed for id[${existingItem.id}]`)
     }
-    const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Object.keys(ditemUpdates).filter(uk => uk != "revisions").map(uk => `#${uk} = :${uk}`).join(", ")}`
+    const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(uk => uk != "revisions").map(uk => `#${uk} = :${uk}`).join(", ")}`
     const updateExprHistory = `set ${Object.keys(ditemUpdates).filter(diu => diu in dexistingItem).map(uk => `#${uk} = :${uk}`).join(", ")}`
 
     //#region DEBUG msg
@@ -68,7 +68,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
             Update: {
-                ConditionExpression: `#revisions = :revisions`,
+                ConditionExpression: `attribute_not_exists(#revisions) OR #revisions = :revisions`,
                 Key: dexistingItemkey,
                 TableName: DB_NAME,
                 ExpressionAttributeNames: updateExpressionNames,
