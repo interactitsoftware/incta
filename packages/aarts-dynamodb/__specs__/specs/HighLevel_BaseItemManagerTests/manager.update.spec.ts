@@ -105,9 +105,9 @@ describe('manager.update.spec', () => {
     })
   })
 
-  test('update adds refkeys if not exist yet', async () => {
+  test.only('update adds refkeys if not exist yet', async () => {
 
-    const airplane = new _specs_AirplaneItem({number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
+    const airplane = new _specs_AirplaneItem({prop_not_updated: 555, number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
 
     return await transactPutItem(airplane, _specs_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item, without a ringtoken
 
@@ -142,7 +142,7 @@ describe('manager.update.spec', () => {
         }
       } while (!updateProcessor.done)
       
-      expect(updateProcessor.value.arguments[0]).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1}))// main item returned, 
+      expect(updateProcessor.value.arguments[0]).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1 }))// main item returned, 
 
       const all = await queryForId(airplane.id)
       expect(all.length).toBe(4) // 1 main item, 2 history of update, 3 refkey for manifacturer, 4 - ringToken [no 5 - refkey for number_of_seats was deleted]
@@ -153,6 +153,8 @@ describe('manager.update.spec', () => {
       const mainItem = all.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
       expect(mainItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1, ringToken: "the new ring token" }))
 
+      const newRefKeyItem = all.filter(i => i.meta === `${_specs_AirplaneItem.__type}}ringToken`)[0]
+      expect(newRefKeyItem).toEqual(Object.assign({}, airplane, { number_of_seats: null, revisions: 1, ringToken: "the new ring token" }))
     })
   })
 

@@ -1,6 +1,6 @@
 {
   "name": "touristart",
-  "version": "0.0.413",
+  "version": "0.0.416",
   "description": "example business domain using aws lambda and dynamodb via the aarts framework ",
   "main": "index.js",
   "scripts": {
@@ -25,14 +25,14 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^13.13.21",
-    "aarts-dynamodb": "^0.4.262",
-    "aarts-eb-dispatcher": "^1.0.258",
+    "aarts-dynamodb": "^0.4.265",
+    "aarts-eb-dispatcher": "^1.0.261",
     "aarts-eb-dispatcher-tester": "^1.0.146",
-    "aarts-eb-handler": "^0.3.259",
+    "aarts-eb-handler": "^0.3.262",
     "aarts-eb-notifier": "0.0.7",
-    "aarts-eb-types": "^0.2.273",
-    "aarts-types": "^0.2.274",
-    "aws-sdk": "^2.757.0",
+    "aarts-eb-types": "^0.2.276",
+    "aarts-types": "^0.2.277",
+    "aws-sdk": "^2.758.0",
     "typescript": "^3.9.7"
   },
   "devDependencies": {}
