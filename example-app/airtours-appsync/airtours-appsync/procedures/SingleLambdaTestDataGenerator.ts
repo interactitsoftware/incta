@@ -13,9 +13,10 @@ import { SingleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../
 import AWS from "aws-sdk";
 import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import * as idGenUtil from 'aarts-utils/utils'
-import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
+import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem, _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { names } from "./random-names/names";
 import { loginfo } from "aarts-eb-types/aartsEBUtil";
+import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
 
 export class SingleLambdaTestDataGenerator {
 
@@ -113,34 +114,79 @@ export class SingleLambdaTestDataGenerator {
         const dynamo_plane_b787_reg444 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_AirplaneItem.__type, plane_b787_reg444)
         const dynamo_plane_b787_reg555 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_AirplaneItem.__type, plane_b787_reg555)
 
+        // 7 tourist seasons
+        const q4_2020: _specs_TouristSeason = { code: "2020/Q4", price_flight_per_hour: 13, discounts: { vip: 50, class_1: 20, class_2: 40 } }
+        const q1_2021: _specs_TouristSeason = { code: "2021/Q1", price_flight_per_hour: 15, discounts: { vip: 30, class_1: 10, class_2: 20 } }
+        const q2_2021: _specs_TouristSeason = { code: "2021/Q2", price_flight_per_hour: 19, discounts: { vip: 60, class_1: 20, class_2: 40 } }
+        const q3_2021: _specs_TouristSeason = { code: "2021/Q3", price_flight_per_hour: 50, discounts: { vip: 35, class_1: 10, class_2: 20 } }
+        const q4_2021: _specs_TouristSeason = { code: "2021/Q4", price_flight_per_hour: 40, discounts: { vip: 45, class_1: 10, class_2: 20 } }
+        const q1_2022: _specs_TouristSeason = { code: "2022/Q1", price_flight_per_hour: 35, discounts: { vip: 45, class_1: 11, class_2: 23 } }
+        const q2_2022: _specs_TouristSeason = { code: "2022/Q2", price_flight_per_hour: 35, discounts: { vip: 30, class_1: 11, class_2: 25 } }
+
+        const dynamo_q4_2020 = await this.createItem(
+            args.meta.ringToken as string,
+            domainHandler,
+            _specs_TouristSeasonItem.__type,
+            q4_2020)
+        const dynamo_q1_2021 = await this.createItem(
+            args.meta.ringToken as string,
+            domainHandler,
+            _specs_TouristSeasonItem.__type,
+            q1_2021)
+        const dynamo_q2_2021 = await this.createItem(
+            args.meta.ringToken as string,
+            domainHandler,
+            _specs_TouristSeasonItem.__type,
+            q2_2021)
+        const dynamo_q3_2021 = await this.createItem(
+            args.meta.ringToken as string,
+            domainHandler,
+            _specs_TouristSeasonItem.__type,
+            q3_2021)
+        const dynamo_q4_2021 = await this.createItem(
+            args.meta.ringToken as string,
+            domainHandler,
+            _specs_TouristSeasonItem.__type,
+            q4_2021)
+        const dynamo_q1_2022 = await this.createItem(
+            args.meta.ringToken as string,
+            domainHandler,
+            _specs_TouristSeasonItem.__type,
+            q1_2022)
+        const dynamo_q2_2022 = await this.createItem(
+            args.meta.ringToken as string,
+            domainHandler,
+            _specs_TouristSeasonItem.__type,
+            q2_2022)
+
         // 20 flights
-        const flight_sf_mw = { tourist_season: "2021/Q1", duration_hours: 10, flight_code: "F1", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_bg_country.id, to_country: dynamo_ru_country.id }
-        const flight_sf_bj = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F2", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ch_airport_bj.id, from_country: dynamo_bg_country.id, to_country: dynamo_ch_country.id }
-        const flight_sf_mw1 = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F3", airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_bg_country.id, to_country: dynamo_ru_country.id }
+        const flight_sf_mw = { tourist_season: dynamo_q4_2020.id, duration_hours: 10, flight_code: "F1", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_bg_country.id, to_country: dynamo_ru_country.id }
+        const flight_sf_bj = { tourist_season: dynamo_q4_2020.id, duration_hours: 15, flight_code: "F2", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ch_airport_bj.id, from_country: dynamo_bg_country.id, to_country: dynamo_ch_country.id }
+        const flight_sf_mw1 = { tourist_season: dynamo_q4_2020.id, duration_hours: 15, flight_code: "F3", airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_bg_country.id, to_country: dynamo_ru_country.id }
 
-        const flight_bj_mw = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F4", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ch_country.id, to_country: dynamo_ru_country.id }
-        const flight_bj_ke = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F5", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ch_country.id, to_country: dynamo_us_country.id }
-        const flight_bj_ke1 = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F6", airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ch_country.id, to_country: dynamo_us_country.id }
-        const flight_bj_sy = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F7", airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_au_airport_sy.id, from_country: dynamo_ch_country.id, to_country: dynamo_au_country.id }
+        const flight_bj_mw = { tourist_season: dynamo_q1_2021.id, duration_hours: 7, flight_code: "F4", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ch_country.id, to_country: dynamo_ru_country.id }
+        const flight_bj_ke = { tourist_season: dynamo_q1_2021.id, duration_hours: 22, flight_code: "F5", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ch_country.id, to_country: dynamo_us_country.id }
+        const flight_bj_ke1 = { tourist_season: dynamo_q1_2021.id, duration_hours: 22, flight_code: "F6", airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ch_country.id, to_country: dynamo_us_country.id }
+        const flight_bj_sy = { tourist_season: dynamo_q1_2021.id, duration_hours: 23, flight_code: "F7", airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_ch_airport_bj.id, to_airport: dynamo_au_airport_sy.id, from_country: dynamo_ch_country.id, to_country: dynamo_au_country.id }
 
-        const flight_mw_ke = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F8", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ru_country.id, to_country: dynamo_us_country.id }
-        const flight_mw_sf = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F9", airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id }
-        const flight_mw_pt = { tourist_season: "2021/Q1", duration_hours: 15, flight_code: "F10", airplane: dynamo_plane_b787_reg555.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_ru_airport_pt.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id }
+        const flight_mw_ke = { tourist_season: dynamo_q2_2021.id, duration_hours: 11, flight_code: "F8", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_ru_country.id, to_country: dynamo_us_country.id }
+        const flight_mw_sf = { tourist_season: dynamo_q2_2021.id, duration_hours: 16, flight_code: "F9", airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id }
+        const flight_mw_pt = { tourist_season: dynamo_q2_2021.id, duration_hours: 3, flight_code: "F10", airplane: dynamo_plane_b787_reg555.id, from_airport: dynamo_ru_airport_mw.id, to_airport: dynamo_ru_airport_pt.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id }
 
-        const flight_sy_bj = { tourist_season: "2021/Q1", duration_hours: 5, flight_code: "F11", airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_ch_airport_bj.id, from_country: dynamo_au_country.id, to_country: dynamo_ch_country.id }
-        const flight_sy_ln = { tourist_season: "2021/Q1", duration_hours: 5, flight_code: "F12", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_uk_airport_ln.id, from_country: dynamo_au_country.id, to_country: dynamo_uk_country.id }
-        const flight_sy_ke = { tourist_season: "2021/Q1", duration_hours: 2, flight_code: "F13", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_au_country.id, to_country: dynamo_us_country.id }
+        const flight_sy_bj = { tourist_season: dynamo_q3_2021.id, duration_hours: 15, flight_code: "F11", airplane: dynamo_plane_b787_reg444.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_ch_airport_bj.id, from_country: dynamo_au_country.id, to_country: dynamo_ch_country.id }
+        const flight_sy_ln = { tourist_season: dynamo_q3_2021.id, duration_hours: 10, flight_code: "F12", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_uk_airport_ln.id, from_country: dynamo_au_country.id, to_country: dynamo_uk_country.id }
+        const flight_sy_ke = { tourist_season: dynamo_q3_2021.id, duration_hours: 2, flight_code: "F13", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_au_airport_sy.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_au_country.id, to_country: dynamo_us_country.id }
 
-        const flight_sr_sf = { tourist_season: "2021/Q1", duration_hours: 5, flight_code: "F14", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_sr_airport_bg.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_sr_country.id, to_country: dynamo_bg_country.id }
-        const flight_sr_ke = { tourist_season: "2021/Q1", duration_hours: 5, flight_code: "F15", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_sr_airport_bg.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_sr_country.id, to_country: dynamo_us_country.id }
+        const flight_sr_sf = { tourist_season: dynamo_q4_2021.id, duration_hours: 1, flight_code: "F14", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_sr_airport_bg.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_sr_country.id, to_country: dynamo_bg_country.id }
+        const flight_sr_ke = { tourist_season: dynamo_q4_2021.id, duration_hours: 9, flight_code: "F15", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_sr_airport_bg.id, to_airport: dynamo_us_airport_ke.id, from_country: dynamo_sr_country.id, to_country: dynamo_us_country.id }
 
-        const flight_ke_sf = { tourist_season: "2021/Q2", duration_hours: 5, flight_code: "F16", airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_us_country.id, to_country: dynamo_bg_country.id }
-        const flight_ke_mw = { tourist_season: "2021/Q2", duration_hours: 4, flight_code: "F17", airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_us_country.id, to_country: dynamo_ru_country.id }
-        const flight_ke_mw1 = { tourist_season: "2021/Q2", duration_hours: 5, flight_code: "F18", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_us_country.id, to_country: dynamo_ru_country.id }
+        const flight_ke_sf = { tourist_season: dynamo_q1_2022.id, duration_hours: 15, flight_code: "F16", airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_us_country.id, to_country: dynamo_bg_country.id }
+        const flight_ke_mw = { tourist_season: dynamo_q1_2022.id, duration_hours: 10, flight_code: "F17", airplane: dynamo_plane_tu144_reg222.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_us_country.id, to_country: dynamo_ru_country.id }
+        const flight_ke_mw1 = { tourist_season: dynamo_q1_2022.id, duration_hours: 10, flight_code: "F18", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_us_airport_ke.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_us_country.id, to_country: dynamo_ru_country.id }
 
-        const flight_pt_mw = { tourist_season: "2021/Q3", duration_hours: 5, flight_code: "F19", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id }
-        const flight_pt_sf = { tourist_season: "2021/Q3", duration_hours: 7, flight_code: "F20", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id }
-        
+        const flight_pt_mw = { tourist_season: dynamo_q2_2022.id, duration_hours: 3, flight_code: "F19", airplane: dynamo_plane_tu144_reg333.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_ru_country.id, to_country: dynamo_ru_country.id }
+        const flight_pt_sf = { tourist_season: dynamo_q2_2022.id, duration_hours: 6, flight_code: "F20", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_ru_airport_pt.id, to_airport: dynamo_bg_airport_sf.id, from_country: dynamo_ru_country.id, to_country: dynamo_bg_country.id }
+      
         const dynamo_flight_sf_mw = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sf_mw )
         const dynamo_flight_sf_bj = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type, flight_sf_bj )
         const dynamo_flight_sf_mw1 = await this.createItem(args.meta.ringToken as string, domainHandler, _specs_FlightItem.__type,flight_sf_mw1 )
@@ -626,7 +672,8 @@ export class SingleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<
     async *validateStart(proc: AartsPayload<SingleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
-        proc.arguments.total_events = 47 + (proc.arguments.touristsToCreate || 0)
+        proc.arguments.total_events = 54 + (proc.arguments.touristsToCreate || 0)
+        proc.arguments.start_date = Date.now()
         return proc
     }
 

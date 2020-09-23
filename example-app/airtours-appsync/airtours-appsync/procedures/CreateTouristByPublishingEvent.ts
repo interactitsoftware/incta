@@ -127,6 +127,7 @@ export class CreateTouristByPublishingEventManager extends BaseDynamoItemManager
     async *validateStart(proc: AartsPayload<CreateTouristByPublishingEventItem>): AsyncGenerator<string, AartsPayload, undefined> {
         const errors: string[] = []
         proc.arguments.total_events = proc.arguments.touristsToCreate
+        proc.arguments.start_date = Date.now()
         // can apply some domain logic on permissions, authorizations etc
         return proc
     }
