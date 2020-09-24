@@ -10,7 +10,6 @@ import { AartsEvent, AartsPayload, IIdentity, IItemManager } from "aarts-types/i
 import { DdbQueryInput, RefKey, IBaseDynamoItemProps, IProcedure, DdbTableItemKey, DomainItem, DdbGetInput } from "./interfaces";
 import { StreamRecord } from "aws-lambda";
 import { AttributeMap } from "aws-sdk/clients/dynamodb";
-import { version } from "os";
 
 export const DynamoItem =
     <T extends AnyConstructor<DomainItem>>(base: T, t: string, refkeys?: RefKey<InstanceType<T>>[]) => {
@@ -59,11 +58,61 @@ export type DynamoItem = Mixin<typeof DynamoItem>
 
 export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager<T> {
 
-    private lookupItems: Map<string, AnyConstructor<DynamoItem & DomainItem>>
+    public lookupItems: Map<string, AnyConstructor<DynamoItem & DomainItem>>
 
     constructor(lookupItems: Map<string, AnyConstructor<DynamoItem & DomainItem>>) {
         this.lookupItems = lookupItems
     }
+
+    
+    public onCreate : Function | undefined
+    public onUpdate : Function | undefined
+
+    //#region STREAMS CALLBACKS
+    async _onCreate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
+        if (dynamodbStreamRecord !== undefined) {
+            const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
+            if (newImage.revisions !== 0) {
+                // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
+                return
+            }
+            !process.env.DEBUGGER || console.log("ON CREATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
+            if (typeof this.onCreate === "function") {
+                await this.onCreate(__type, newImage)
+            } else {
+                !process.env.DEBUGGER || console.log(`No specific onCreate method was found in manager of ${__type}`)
+            }
+        }
+    }
+    async _onUpdate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
+        if (dynamodbStreamRecord !== undefined) {
+            const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
+            !process.env.DEBUGGER || console.log("ON UPDATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
+            
+            // mark procedures as done when total_events=processed_events
+            if (newImage.id.startsWith("proc_") && newImage.revisions === 0 && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
+                console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
+                await transactUpdateItem(
+                    newImage,
+                    {
+                        end_date: Date.now(),
+                        success: true,
+                        revisions: 0,
+                        ringToken: newImage.ringToken,
+                        id: newImage.id,
+                        meta: `${versionString(0)}|${newImage.id.substr(0, newImage.id.indexOf("|"))}`
+                    },
+                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+            }
+            console.log("CHECKING this.onUpdate ", ppjson(this.onUpdate))
+            if (typeof this.onUpdate === "function") {
+                await this.onUpdate(__type, newImage)
+            } else {
+                !process.env.DEBUGGER || console.log(`No specific onUpdate method was found in manager of ${__type}`)
+            }
+        }
+    }
+    //#endregion
 
     //#region START
     /**
@@ -501,21 +550,6 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         return { arguments: dynamoItems, identity: args.payload.identity }
     }
-
-    async _onCreate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
-        if (dynamodbStreamRecord !== undefined) {
-            const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
-            if (newImage.revisions !== 0) {
-                // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
-                return
-            }
-            if (!newImage.meta.startsWith(`${versionString(0)}`)) {
-                // do not act on updates about history records or refkey items 
-                return
-            }
-            console.log("================ ON CREATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
-        }
-    }
     //#endregion
 
     //#region UPDATE
@@ -596,38 +630,6 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         return { arguments: updatedItems, identity: args.payload.identity }
 
-    }
-    // TODO save initially the state of the procedure
-    // TODO KNOW how many events are to be fired prior saving the procedure!?
-    async _onUpdate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
-        if (dynamodbStreamRecord !== undefined) {
-            const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
-            console.log("================ ON UPDATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
-            if (newImage.revisions !== 0) {
-                // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
-                return
-            }
-            if (!newImage.meta.startsWith(`${versionString(0)}`)) {
-                // do not act on updates about history records or refkey items 
-                return
-            }
-            console.log("================ WILL CHECK FOR NEED TO UPDATE PROC ", ppjson(newImage))
-            // mark procedures as done when total_events=processed_events
-            if (newImage.id.startsWith("proc_") && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
-                console.log("================ ISSUING UPDATE TO PROC ", ppjson(newImage))
-                await transactUpdateItem(
-                    newImage,
-                    {
-                        end_date: Date.now(),
-                        success: true,
-                        revisions: 0,
-                        ringToken: newImage.ringToken,
-                        id: newImage.id,
-                        meta: `${versionString(0)}|${newImage.id.substr(0, newImage.id.indexOf("|"))}`
-                    },
-                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-            }
-        }
     }
     //#endregion
 

@@ -1,12 +1,13 @@
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { AirportItem, CountryItem, FlightItem, AirplaneItem, CreateTouristByPublishingEventItem } from "../_DynamoItems"
+import { AirportItem, CountryItem, FlightItem, AirplaneItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
 import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
+import { loginfo, ppjson } from "aarts-utils/utils";
 
 
 export class CreateTouristByPublishingEvent {
@@ -130,6 +131,49 @@ export class CreateTouristByPublishingEventManager extends BaseDynamoItemManager
         proc.arguments.start_date = Date.now()
         // can apply some domain logic on permissions, authorizations etc
         return proc
+    }
+
+    public onUpdate = async (__type: string, newImage: DynamoItem) => {
+        !process.env.DEBUGGER || loginfo(`IN SPECIFIC OnCreate METHOD: ${ppjson(newImage)}`);
+        if (!!newImage && newImage.revisions === 1 && newImage.success === true) {
+            !process.env.DEBUGGER || loginfo(`WILL START GENERATE INVOICES: ${ppjson(newImage)}`);
+            // if the procedure completed
+            
+            // do not call directly the generator, you need it in a separate lambda (+ you will need to cycle through its yields, if directly invoked)
+            // (global.domainAdapter.itemManagers[GenerateInvoicesItem.__type] as unknown as IProcedure<GenerateInvoicesItem>).start(GenerateInvoicesItem.__type, {
+            //     meta: {
+            //         action: "start",
+            //         eventSource: "worker:input:long",
+            //         item: GenerateInvoicesItem.__type,
+            //         ringToken: newImage.ringToken as string
+            //     },
+            //     payload: {
+            //         arguments: {
+            //             ringToken: newImage.ringToken as string
+            //         },
+            //         identity: {
+
+            //         }
+            //     }
+            // })
+
+            // instead publish new event
+            await dispatcher({
+                "action": "start",
+                "item": GenerateInvoicesItem.__type,
+                "ringToken": newImage.ringToken as string,
+                "jobType": "long",
+                "arguments": {
+                    ringToken: newImage.ringToken as string
+                },
+                "identity": {
+                    "username": "akrsmv"
+                }
+            })
+        } else {
+            !process.env.DEBUGGER || loginfo(`onUpdate fired for ${__type} but conditions to fire next procedures were not met: ${ppjson(newImage)}`)
+        }
+
     }
 
 }

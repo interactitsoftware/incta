@@ -1,6 +1,10 @@
 import { BaseDynamoItemManager, DynamoItem } from "../../BaseItemManager"
 import { _specs_AirportItem } from "./_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
+import { AttributeMap, StreamRecord } from "aws-sdk/clients/dynamodbstreams"
+import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
+import { fromAttributeMap, versionString } from "../../DynamoDbClient"
+import { MixinConstructor } from "aarts-types/Mixin"
 
 export class _specs_Airport {
     

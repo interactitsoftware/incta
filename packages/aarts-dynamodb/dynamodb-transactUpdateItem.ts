@@ -36,18 +36,6 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(uk => ["revisions", "id", "meta"].indexOf(uk) === -1).map(uk => `#${uk} = :${uk}`).join(", ")}`
     const updateExprHistory = `set ${Object.keys(ditemUpdates).filter(diu => diu in dexistingItem).map(uk => `#${uk} = :${uk}`).join(", ")}`
 
-    //#region DEBUG msg
-    !process.env.DEBUGGER || loginfo("================================================")
-    !process.env.DEBUGGER || loginfo('existing item ', existingItem)
-    !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
-    !process.env.DEBUGGER || loginfo("drevisionsUpdates ", drevisionsUpdates)
-    !process.env.DEBUGGER || loginfo("ditemUpdates ", ditemUpdates)
-    !process.env.DEBUGGER || loginfo("dexistingItemkey ", dexistingItemkey)
-    !process.env.DEBUGGER || loginfo("updateExpr ", updateExpr)
-    !process.env.DEBUGGER || loginfo("updateExprHistory ", updateExprHistory)
-    !process.env.DEBUGGER || loginfo("================================================")
-    //#endregion
-
 
     const updateExpressionValues: Record<AttributeName, AttributeValue> = Object.assign(
         {},
@@ -66,6 +54,21 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                 accum[`#${key}`] = key
                 return accum
             }, {})
+
+    //#region DEBUG msg
+    !process.env.DEBUGGER || loginfo("================================================")
+    !process.env.DEBUGGER || loginfo('existing item ', existingItem)
+    !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
+    !process.env.DEBUGGER || loginfo("drevisionsUpdates ", drevisionsUpdates)
+    !process.env.DEBUGGER || loginfo("ditemUpdates ", ditemUpdates)
+    !process.env.DEBUGGER || loginfo("dexistingItemkey ", dexistingItemkey)
+    !process.env.DEBUGGER || loginfo("updateExpr ", updateExpr)
+    !process.env.DEBUGGER || loginfo('existing item ', existingItem)
+    !process.env.DEBUGGER || loginfo("updateExpressionNames ", updateExpressionNames)
+    !process.env.DEBUGGER || loginfo("updateExpressionValues ", updateExpressionValues)
+    !process.env.DEBUGGER || loginfo("updateExprHistory ", updateExprHistory)
+    !process.env.DEBUGGER || loginfo("================================================")
+    //#endregion
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
             Update: {

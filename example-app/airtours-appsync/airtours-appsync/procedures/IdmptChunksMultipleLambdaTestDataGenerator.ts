@@ -1,7 +1,7 @@
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem } from "../_DynamoItems"
+import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem, GenerateInvoicesItem } from "../_DynamoItems"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { AppSyncEvent, loginfo } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
@@ -10,8 +10,12 @@ import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_Airpl
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
 import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
 import { names } from "./random-names/names";
-import { chunks } from "aarts-utils/utils";
+import { chunks, ppjson } from "aarts-utils/utils";
 import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
+import { MixinConstructor } from "aarts-types/Mixin";
+import { transactUpdateItem } from "aarts-dynamodb/dynamodb-transactUpdateItem";
+import { versionString } from "aarts-dynamodb/DynamoDbClient";
+import { IProcedure } from "aarts-dynamodb/interfaces";
 
 const tourist_payloads: any[] = []
 
@@ -82,7 +86,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
 
     public async start(__type: string, args: AartsEvent) {
         const domainHandler = new AartsSqsHandler()
-        
+
 
         const alreadyProcessed = await queryItems({
             ddbIndex: "smetadata__meta",
@@ -1009,6 +1013,49 @@ export class IdmptChunksMultipleLambdaTestDataGeneratorManager extends BaseDynam
         proc.arguments.start_date = Date.now()
         // can apply some domain logic on permissions, authorizations etc
         return proc
+    }
+
+    public onUpdate = async (__type: string, newImage: DynamoItem) => {
+        !process.env.DEBUGGER || loginfo(`IN SPECIFIC OnCreate METHOD:`, newImage);
+        if (!!newImage && newImage.revisions === 1 && newImage.success === true) {
+            !process.env.DEBUGGER || loginfo(`WILL START GENERATE INVOICES:`,newImage);
+            // if the procedure completed
+            
+            // do not call directly the generator, you need it in a separate lambda (+ you will need to cycle through its yields, if directly invoked)
+            // (global.domainAdapter.itemManagers[GenerateInvoicesItem.__type] as unknown as IProcedure<GenerateInvoicesItem>).start(GenerateInvoicesItem.__type, {
+            //     meta: {
+            //         action: "start",
+            //         eventSource: "worker:input:long",
+            //         item: GenerateInvoicesItem.__type,
+            //         ringToken: newImage.ringToken as string
+            //     },
+            //     payload: {
+            //         arguments: {
+            //             ringToken: newImage.ringToken as string
+            //         },
+            //         identity: {
+
+            //         }
+            //     }
+            // })
+
+            // instead publish new event
+            await dispatcher({
+                "action": "start",
+                "item": GenerateInvoicesItem.__type,
+                "ringToken": newImage.ringToken as string,
+                "jobType": "long",
+                "arguments": {
+                    ringToken: newImage.ringToken as string
+                },
+                "identity": {
+                    "username": "akrsmv"
+                }
+            })
+        } else {
+            !process.env.DEBUGGER || loginfo(`onUpdate fired for ${__type} but conditions to fire next procedures were not met`, newImage)
+        }
+
     }
 
 }

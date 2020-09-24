@@ -17,7 +17,7 @@ import {
     EraseDataItem,
     IdmptSingleLambdaTestDataGeneratorItem,
     IdmptMultipleLambdaTestDataGeneratorItem,
-    IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem
+    IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem
 } from "./_DynamoItems"
 import { EraseDataManager } from "./procedures/EraseData"
 import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
@@ -28,6 +28,7 @@ import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "./procedures/
 import AWS from "aws-sdk"
 import { CreateTouristByPublishingEventManager } from "./procedures/CreateTouristByPublishingEvent"
 import { _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
+import { GenerateInvoicesManager } from "./procedures/GenerateInvoices"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -49,6 +50,7 @@ allItems.set(IdmptSingleLambdaTestDataGeneratorItem.__type, IdmptSingleLambdaTes
 allItems.set(IdmptMultipleLambdaTestDataGeneratorItem.__type, IdmptMultipleLambdaTestDataGeneratorItem)
 allItems.set(IdmptChunksMultipleLambdaTestDataGeneratorItem.__type, IdmptChunksMultipleLambdaTestDataGeneratorItem)
 allItems.set(CreateTouristByPublishingEventItem.__type, CreateTouristByPublishingEventItem)
+allItems.set(GenerateInvoicesItem.__type, GenerateInvoicesItem)
 allItems.set(EraseDataItem.__type, EraseDataItem)
 
 const allItemManagers = {
@@ -76,6 +78,7 @@ const allItemManagers = {
     [IdmptChunksMultipleLambdaTestDataGeneratorItem.__type]: new IdmptChunksMultipleLambdaTestDataGeneratorManager(allItems),
     [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
     [CreateTouristByPublishingEventItem.__type]: new CreateTouristByPublishingEventManager(allItems),
+    [GenerateInvoicesItem.__type]: new GenerateInvoicesManager(allItems),
     [EraseDataItem.__type]: new EraseDataManager(allItems)
 }
 

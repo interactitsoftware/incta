@@ -4,7 +4,7 @@ import { AartsEBUtil, AppSyncEvent } from "aarts-eb-types/aartsEBUtil"
 import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHandlerFromContent";
 import { processPayload } from "aarts-handler/aartsHandler"
 import { prepareAppSyncEventForDispatch } from "aarts-eb-types/prepareAppSyncEventForDispatch"
-import { loginfo, ppjson } from "aarts-utils/utils";
+import { loginfo } from "aarts-utils/utils";
 import { IItemManagerCallback } from "aarts-types/interfaces";
 
 /**
@@ -22,13 +22,15 @@ class aartsSnsDispatcher extends AartsEBUtil {
 	private async processDynamoDBStreamEvent(event: DynamoDBStreamEvent) {
 		let result = {}
 
-		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY" && (record.dynamodb?.NewImage as {meta:{S:string}})["meta"].S.startsWith(`v_0`))) {
+		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY" 
+		&& (record.dynamodb?.NewImage as {meta:{S:string}})["meta"].S.startsWith(`v_0`))) { // fire only for main items
 			const item = `${(rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.substr(0, (rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.indexOf("|"))}`
 			const itemManagerCallback = global.domainAdapter.itemManagers[item] as unknown as IItemManagerCallback<object>;
 			await itemManagerCallback._onUpdate(item, rec.dynamodb)
 		}
 
-		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT" && (record.dynamodb?.NewImage as {meta:{S:string}})["meta"].S.startsWith(`v_0`))) {
+		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT" 
+		&& (record.dynamodb?.NewImage as {meta:{S:string}})["meta"].S.startsWith(`v_0`))) { // fire only for main items
 			const item = `${(rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.substr(0, (rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.indexOf("|"))}`
 			const itemManagerCallback = global.domainAdapter.itemManagers[item] as unknown as IItemManagerCallback<object>;
 			await itemManagerCallback._onCreate(item, rec.dynamodb)
@@ -72,9 +74,9 @@ class aartsSnsDispatcher extends AartsEBUtil {
 		const ringToken: string = (event as { ringToken: string }).ringToken || this.uuid()
 		// log the ringToken
 		if (!!(event as { ringToken: string }).ringToken) {
-			!process.env.DEBUGGER || loginfo(`using already present ring token:  ${ringToken} for received event ${ppjson(event)}`)
+			!process.env.DEBUGGER || loginfo(`using already present ring token:  ${ringToken} for received event`, event)
 		} else {
-			!process.env.DEBUGGER || loginfo(`generated ring token: ${ringToken} for received event: ${ppjson(event)}`)
+			!process.env.DEBUGGER || loginfo(`generated ring token: ${ringToken} for received event`, event)
 		}
 
 		let result
@@ -95,7 +97,7 @@ class aartsSnsDispatcher extends AartsEBUtil {
 		//used sam local runtime
 		const sqsEvent = await samLocalSimulateSQSHandlerFromContent(JSON.stringify(event), ringToken);
 		!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
-		!process.env.DEBUGGER || loginfo("sqsEVENT simulated: " + sqsEvent)
+		!process.env.DEBUGGER || loginfo("sqsEVENT simulated: ", sqsEvent)
 
 		// only run inside local lambda runner
 		// Note the endpoint name

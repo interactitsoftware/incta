@@ -39,6 +39,7 @@ import { MultipleLambdaTestDataGenerator } from "./procedures/MultipleLambdaTest
 import { IdmptMultipleLambdaTestDataGenerator } from "./procedures/IdmptMultipleLambdaTestDataGenerator";
 import { IdmptChunksMultipleLambdaTestDataGenerator } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator";
 import { CreateTouristByPublishingEvent } from "./procedures/CreateTouristByPublishingEvent";
+import { GenerateInvoices } from "./procedures/GenerateInvoices";
 
 export class CityItem extends DynamoItem(City, "city", [ // the dynamodb wrapper object that we deal with
     {key:"name"},
@@ -79,6 +80,11 @@ export class MultipleLambdaTestDataGeneratorItem extends DynamoItem(MultipleLamb
 ]) {}
 
 export class CreateTouristByPublishingEventItem extends DynamoItem(CreateTouristByPublishingEvent, "proc_create_tourists", [
+    {key: "start_date"},
+    {key: "end_date"},
+]) {}
+
+export class GenerateInvoicesItem extends DynamoItem(GenerateInvoices, "proc_generate_invoices", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}

@@ -1,9 +1,14 @@
-import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { IIdentity } from "aarts-types/interfaces";
 import { loginfo } from "aarts-eb-types/aartsEBUtil"
 
 // using the one from the aarts-dynamodb/__specs__
 import {_specs_AirportItem as AirportItem} from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
+import { MixinConstructor } from "aarts-types/Mixin";
+import { AttributeMap, StreamRecord } from "aws-sdk/clients/dynamodbstreams";
+import { fromAttributeMap, versionString } from "aarts-dynamodb/DynamoDbClient";
+import { transactUpdateItem } from "aarts-dynamodb/dynamodb-transactUpdateItem"
+import {ppjson} from "aarts-utils/utils"
 
 // Although we are reusing dynamoitem definition from the __specs__ we are redefining the manager for that object here
 export class AirportManager extends BaseDynamoItemManager<AirportItem> {
@@ -36,4 +41,17 @@ export class AirportManager extends BaseDynamoItemManager<AirportItem> {
     async *validateUpdate(airport: AirportItem, identity: IIdentity): AsyncGenerator<string, AirportItem, undefined> {
         throw new Error("Method not implemented.")
     }
+
+    // public onCreate = async (__type: string, newImage: DynamoItem) => {
+    //     console.log("^^^^^^^^^^^FROM A SPECIFIC ITEM MANAGER BECAUSE HE IMPLEMENTED onCreate " + + "__type: " + __type + ppjson(newImage));
+    //     await transactUpdateItem(
+    //         newImage,
+    //         {
+    //             tralalalalalla: 100,
+    //             id: newImage.id,
+    //             revisions: newImage.revisions,
+    //             meta: `${versionString(0)}|${newImage.id.substr(0, newImage.id.indexOf("|"))}`
+    //         },
+    //         (this.lookupItems.get(newImage.item_type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+    // }
 }
