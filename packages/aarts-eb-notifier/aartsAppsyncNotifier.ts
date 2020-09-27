@@ -6,7 +6,7 @@ const gql = require('graphql-tag');
 require('cross-fetch/polyfill');
 
 export const handler = async (event: SQSEvent, context: Context): Promise<any> => {
-    // console.log("appsync-notifier 17 function received event: " + JSON.stringify(event, undefined, 2));
+    //console.log("appsync-notifier 17 function received event: " + JSON.stringify(event, undefined, 2));
     //console.log("process.env.APPSYNC_ENDPOINT_URL: " + process.env.APPSYNC_ENDPOINT_URL);
     //console.log("process.env.AWS_REGION: " + process.env.AWS_REGION);
     //console.log("process.env.AWS_ACCESS_KEY_ID: " + process.env.AWS_ACCESS_KEY_ID);
@@ -47,7 +47,7 @@ export const handler = async (event: SQSEvent, context: Context): Promise<any> =
                 mutation,
                 variables: {
                     "to": `${record.messageAttributes["eventSource"].stringValue as string}:${record.messageAttributes["item"].stringValue as string}`,
-                    "body": JSON.stringify(message.arguments || message),
+                    "body": JSON.stringify(message.payload.arguments || message),
                     // "body": Buffer.from(record["body"]).toString('base64'),
                 }
             });

@@ -48,13 +48,13 @@ export class _specs_AirportManager extends BaseDynamoItemManager<_specs_AirportI
 
             if (errors.length > 0) {
                 console.log('INVALID airport: ', errors)
-                throw new Error(errors.join("; "))
+                throw new Error(`${process.env.ringToken}: ${errors.join("; ")}`)
             } else {
                 return airport
             }
     }
 
     async *validateUpdate(airport: _specs_AirportItem, identity: IIdentity): AsyncGenerator<string, _specs_AirportItem, undefined> {
-        throw new Error("Method not implemented.")
+        throw new Error(`${process.env.ringToken}: Method not implemented.`)
     }
 }

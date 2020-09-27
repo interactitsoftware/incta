@@ -35,7 +35,7 @@ export async function* processPayloadAsync(evnt: AartsEvent): AsyncGenerator<Aar
 	// -->>
 	// TODO excerpt this on aarts-sqs-handler level as it breaks the usage of aartsHandler without sns/event bus
 	if (evnt.payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
-		throw new Error(`[${evnt.meta.item}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
+		throw new Error(`${process.env.ringToken}: [${evnt.meta.item}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
 	} else if (["query","get"].indexOf(evnt.meta.action) === -1 && evnt.payload.arguments.length > 1) {
 		!process.env.DEBUGGER || (yield Object.assign({}, evnt, {eventType: "output", jobType: "short"}, { payload: { arguments: `[AartsHandler:processPayloadAsync] Payload is multi element array. Generating events for each element` } }))
 		for (const payload of evnt.payload.arguments) {

@@ -29,7 +29,7 @@ export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
             if (errors.length > 0) {
                 yield `[airplaneManager/validateCreate]: END WITH ERRORS ${ppjson(errors)}`
                 console.log('INVALID airplane: ', errors)
-                throw new Error(errors.join(";;"))
+                throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
             } else {
                 !process.env.DEBUGGER || (yield `[airplaneManager/validateCreate]: END successful`)
                 console.log('valid airplane', airplane)

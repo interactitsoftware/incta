@@ -30,7 +30,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
     if (Object.keys(ditemUpdates).length === 1 && "revisions" in ditemUpdates) {
         // no new updates, only revision passed
-        throw new Error(`no new updates, only revision passed for id[${existingItem.id}]`)
+        throw new Error(`${process.env.ringToken}: no new updates, only revision passed for id[${existingItem.id}]`)
     }
 
     const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(uk => ["revisions", "id", "meta"].indexOf(uk) === -1).map(uk => `#${uk} = :${uk}`).join(", ")}`
@@ -205,8 +205,12 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     }
 
     delete itemUpdates.revisions
-    const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    try {
+        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
+        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    } catch (err) {
+        throw new Error(ppjson({request: params, error: err}))
+    }
 
     // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
     if (!!itemUpdates["procedure"]) {

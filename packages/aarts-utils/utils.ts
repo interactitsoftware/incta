@@ -23,7 +23,7 @@ export const chunks = <T>(arr: Array<T>, size: number): Array<Array<T>> => {
     return chunked_arr;
 }
 
-export const ppjson = (json: Record<string, any> | undefined): string => typeof json === "object"? JSON.stringify(json, null, 4): json as unknown as string
+export const ppjson = (json: any): string => typeof json === "object"? JSON.stringify(json, null, 4): json as unknown as string
 
 /**
  * Appends sourceRingToken, which is the ringToken of the current process. 

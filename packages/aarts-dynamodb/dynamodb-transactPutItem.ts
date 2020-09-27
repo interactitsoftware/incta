@@ -76,9 +76,12 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     }
 
     // write item to the database
-    const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
-
+    try {
+        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
+        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    } catch (err) {
+        throw new Error(ppjson({request: params, error: err}))
+    }
     // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
     // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
     if (!!item["procedure"]) {

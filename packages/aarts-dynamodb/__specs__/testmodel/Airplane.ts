@@ -80,7 +80,7 @@ export class _specs_AirplaneManager extends BaseDynamoItemManager<_specs_Airplan
             if (errors.length > 0) {
                 yield `[SamoletManager/validateCreate]: END WITH ERRORS  ${ppjson(errors)}`
                 console.log('INVALID samolet: ', errors)
-                throw new Error(errors.join(";;"))
+                throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
             } else {
                 yield `[SamoletManager/validateCreate]: END successful validateCreate method`
                 return samolet

@@ -36,7 +36,7 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
 
         if (typeof ddbQueryPayload["range"] === "object") {
             if (!("min" in ddbQueryPayload["range"] || "max" in ddbQueryPayload["range"])) {
-                throw new Error("range key for query is object but is missing the keys min,max")
+                throw new Error(`${process.env.ringToken}: range key for query is object but is missing the keys min,max`)
             }
             dexpressionAttributeValues[`:range_min`] = toAttributeMap(ddbQueryPayload.range).min
             dexpressionAttributeValues[`:range_max`] = toAttributeMap(ddbQueryPayload.range).max
@@ -92,15 +92,19 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
 
     }
 
-    const result = await ddbRequest(dynamoDbClient.query(params))
-    !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
-    let resultItems = fromAttributeMapArray((result as QueryOutput).Items as AttributeMap[]) as DynamoItem[]
+    try {
+        const result = await ddbRequest(dynamoDbClient.query(params))
+        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+        let resultItems = fromAttributeMapArray((result as QueryOutput).Items as AttributeMap[]) as DynamoItem[]
 
-    for (let resultItem of resultItems) {
-        await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad)
+        for (let resultItem of resultItems) {
+            await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad)
+        }
+    
+        return { items: resultItems as TResult[], lastEvaluatedKey: fromAttributeMap<DdbGSIItemKey>((result as QueryOutput).LastEvaluatedKey as DynamoDB.Key), count: (result as QueryOutput).Count }
+    
+    } catch (err) {
+        throw new Error(ppjson({request: params, error: err}))
     }
-
-    return { items: resultItems as TResult[], lastEvaluatedKey: fromAttributeMap<DdbGSIItemKey>((result as QueryOutput).LastEvaluatedKey as DynamoDB.Key), count: (result as QueryOutput).Count }
-
 }
 

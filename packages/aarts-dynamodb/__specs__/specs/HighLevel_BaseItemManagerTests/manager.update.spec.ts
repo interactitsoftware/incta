@@ -159,7 +159,7 @@ describe('manager.update.spec', () => {
   })
 
 
-  test.only('update does a single property update which is not a refkey', async () => {
+  test('update does a single property update which is not a refkey', async () => {
 
     const airplane = new _specs_AirplaneItem({ number_of_seats:11, manifacturer: "to", some_other_prop:14, another_prop:"14"})
 

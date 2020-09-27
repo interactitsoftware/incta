@@ -13,7 +13,12 @@ import {
     _specs_CountryItem, 
     _specs_FlightItem, 
     _specs_TouristItem,
-    _specs_DataImporterItem, _specs_TouristSeasonItem, _specs_InvoiceItem, _specs_OrderItem } from "./_DynamoItems"
+    _specs_DataImporterItem,
+    _specs_TouristSeasonItem,
+    _specs_InvoiceItem,
+    _specs_OrderItem,
+    _specs_EraseDataItem
+ } from "./_DynamoItems"
 
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
@@ -28,6 +33,7 @@ allItems.set(_specs_DataImporterItem.__type, _specs_DataImporterItem)
 allItems.set(_specs_TouristSeasonItem.__type, _specs_TouristSeasonItem)
 allItems.set(_specs_InvoiceItem.__type, _specs_InvoiceItem)
 allItems.set(_specs_OrderItem.__type, _specs_OrderItem)
+allItems.set(_specs_EraseDataItem.__type, _specs_EraseDataItem)
 
 const allItemManagers = {
     "BASE": new BaseDynamoItemManager(allItems),
@@ -42,6 +48,7 @@ const allItemManagers = {
     [_specs_TouristSeasonItem.__type]: new BaseDynamoItemManager(allItems),
     [_specs_InvoiceItem.__type]: new BaseDynamoItemManager(allItems),
     [_specs_OrderItem.__type]: new BaseDynamoItemManager(allItems),
+    [_specs_EraseDataItem.__type]: new BaseDynamoItemManager(allItems),
 }
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
     public lookupItems = allItems

@@ -72,7 +72,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async _onCreate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
         if (dynamodbStreamRecord !== undefined) {
             const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
-            if (newImage.revisions !== 0) {
+            if (!newImage.meta.startsWith(versionString(0)) || newImage.revisions !== 0) {
                 // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
                 return
             }
@@ -90,25 +90,28 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             !process.env.DEBUGGER || console.log("ON UPDATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
             
             // mark procedures as done when total_events=processed_events
-            if (newImage.id.startsWith("proc_") && newImage.revisions === 0 && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
-                console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
-                await transactUpdateItem(
-                    newImage,
-                    {
-                        end_date: Date.now(),
-                        success: true,
-                        revisions: 0,
-                        ringToken: newImage.ringToken,
-                        id: newImage.id,
-                        meta: `${versionString(0)}|${newImage.id.substr(0, newImage.id.indexOf("|"))}`
-                    },
-                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-            }
-            console.log("CHECKING this.onUpdate ", ppjson(this.onUpdate))
-            if (typeof this.onUpdate === "function") {
-                await this.onUpdate(__type, newImage)
-            } else {
-                !process.env.DEBUGGER || console.log(`No specific onUpdate method was found in manager of ${__type}`)
+            if (newImage.meta.startsWith(versionString(0))) {
+                if (newImage.id.startsWith("proc_") && newImage.revisions === 0 && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
+                    console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
+                    await transactUpdateItem(
+                        newImage,
+                        {
+                            end_date: Date.now(),
+                            success: true,
+                            revisions: 0,
+                            ringToken: newImage.ringToken,
+                            id: newImage.id,
+                            meta: `${versionString(0)}|${newImage.id.substr(0, newImage.id.indexOf("|"))}`
+                        },
+                        (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+                }
+
+                console.log("CHECKING this.onUpdate ", ppjson(this.onUpdate))
+                if (typeof this.onUpdate === "function") {
+                    await this.onUpdate(__type, newImage)
+                } else {
+                    !process.env.DEBUGGER || console.log(`No specific onUpdate method was found in manager of ${__type}`)
+                }
             }
         }
     }
@@ -128,7 +131,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateStart] START. checking for mandatory item keys: ` + ppjson(args.payload))
 
         if (!Array.isArray(args.payload.arguments) || args.payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateStart] Payload is not a single element array! ${ppjson(args.payload.arguments)}`)
+            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateStart] Payload is not a single element array! ${ppjson(args.payload.arguments)}`)
         }
 
         // TODO excerpt seting up the procedure object and assigning the ringToken in here, not in the start method as it is now
@@ -144,7 +147,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const proto = this.lookupItems.get(__type)
 
         if (!proto) {
-            throw new Error(`[${__type}:START] Not able to locate dynamo item prototype for item ${__type}`)
+            throw new Error(`${process.env.ringToken}: [${__type}:START] Not able to locate dynamo item prototype for item ${__type}`)
         }
 
         const asyncGenBase = await this.baseValidateStart(__type, args)
@@ -228,7 +231,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateQuery(args: DdbQueryInput[], identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
 
         if (!Array.isArray(args) || args.length > 1) {
-            throw new Error(`[baseValidateQuery] Payload is not a single element array! ${ppjson(args)}`)
+            throw new Error(`${process.env.ringToken}: [baseValidateQuery] Payload is not a single element array! ${ppjson(args)}`)
         }
 
         if (!args[0].limit || args[0].limit > 50) {
@@ -237,7 +240,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         return args.reduce<DdbQueryInput[]>((accum, inputQueryArg) => {
             if (!inputQueryArg.pk) {
-                throw new Error(`PK is mandatory when querying`)
+                throw new Error(`${process.env.ringToken}: [baseValidateQuery] PK is mandatory when querying`)
             }
             // check for proper value on available GSIs
             if (!!inputQueryArg.ddbIndex && [
@@ -246,7 +249,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 "smetadata__meta",
                 "meta__nmetadata",
                 "nmetadata__meta",].indexOf(inputQueryArg.ddbIndex) < 0) {
-                throw new Error(`Provided GSI Name is invalid`)
+                throw new Error(`${process.env.ringToken}: Provided GSI Name is invalid`)
             } else if (!!inputQueryArg.ddbIndex) {
                 // infer keys from index provided
                 inputQueryArg.primaryKeyName = inputQueryArg.ddbIndex.substr(0, inputQueryArg.ddbIndex.indexOf("__"))
@@ -323,13 +326,13 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateDelete] checking for mandatory item keys`)
 
         if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateDelete] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
+            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateDelete] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
         for (const arg of event.payload.arguments[0].pks) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
-                throw new Error("id and revisions keys is mandatory when deleting")
+                throw new Error(`${process.env.ringToken}: id and revisions keys is mandatory when deleting`)
             } else {
                 arg["meta"] = `${versionString(0)}|${__type}`
                 arg["ringToken"] = event.meta.ringToken
@@ -355,7 +358,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const dynamoExistingItems = await batchGetItem(args.payload.arguments[0]);
         
         if (dynamoExistingItems.length !== args.payload.arguments[0].pks.length) {
-            throw new Error(`[${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)
+            throw new Error(`${process.env.ringToken}: [${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)
         }
         
         yield { arguments: `[${__type}:DELETE] requested deletion of ${ppjson(dynamoExistingItems)}`, identity: undefined }
@@ -364,7 +367,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         for (const existingItem of dynamoExistingItems) {
             const requestedId = (args.payload.arguments[0].pks as {id:string, revisions:number}[]).filter(pk => pk.id === existingItem.id)[0]
             if (existingItem.revisions !== requestedId.revisions) {
-                throw new Error(`[${__type}:DELETE] revisions passed does not match item revisions: ${ppjson(requestedId)}`)
+                throw new Error(`${process.env.ringToken}: [${__type}:DELETE] revisions passed does not match item revisions: ${ppjson(requestedId)}`)
             }
         }
 
@@ -411,15 +414,19 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async *baseValidateGet(args: DdbGetInput[], identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
 
         if (!Array.isArray(args) || args.length > 1) {
-            throw new Error(`[baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
+            throw new Error(`${process.env.ringToken}: [baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
         }
 
         return Object.assign(args[0], {
             pks: args[0].pks.reduce<DdbTableItemKey[]>((accum, item) => {
                 if (item.id) {
-                    accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
+                    if ( !item.meta) {
+                        accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
+                    } else {
+                        accum.push({ id: item.id, meta: item.meta })
+                    }
                 } else {
-                    throw new Error(`invalid ID keys passed. id: ${item.id} meta: ${item.meta}`)
+                    throw new Error(`${process.env.ringToken}: invalid ID keys passed. id: ${item.id} meta: ${item.meta}`)
                 }
                 return accum
             }, [])
@@ -480,17 +487,17 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateCreate] START. checking for mandatory item keys: ` + ppjson(event))
 
         if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateCreate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
+            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateCreate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
 
         for (const arg of event.payload.arguments) {
-            if ("id" in arg || "revisions" in arg) {
-                // throw new Error(`[${__type}:baseValidateCreate] {id, revisions} should not be present when creating item`)
-                delete arg.id; delete arg.revisions
+            if ("revisions" in arg) {
+                // throw new Error(`${process.env.ringToken}: [${__type}:baseValidateCreate] {id, revisions} should not be present when creating item`)
+                delete arg.revisions
             } else {
                 // !process.env.DEBUGGER || loginfo("Using supplied ring token for item creation id: ", payload.ringToken)
-                // arg["id"] = `${__type}|${payload.ringToken}` NOPE ! dont do that // USE THE RING TOKEN FROM THE EVENT TO ENFORCE IDEMPOTENCY on create events
+                // arg["id"] = `${__type}|${payload.ringToken}` NOPE ! dont do that, allow clients to cpecify their own ID, ex usage see nomenclatures
                 arg["meta"] = `${versionString(0)}|${__type}`
                 arg["item_type"] = __type
                 arg["ringToken"] = event.meta.ringToken
@@ -515,22 +522,23 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const proto = this.lookupItems.get(__type)
 
         if (!proto) {
-            throw new Error(`[${__type}:CREATE] Not able to locate dynamo item prototype for item ${__type}`)
+            throw new Error(`${process.env.ringToken}: [${__type}:CREATE] Not able to locate dynamo item prototype for item ${__type}`)
         }
 
         const dynamoItems = []
         for (const arg of args.payload.arguments) {
 
+            !process.env.DEBUGGER || loginfo("Arguments from payload to be merged with itemToCreate: ", arg)
             const itemToCreate = Object.assign({}, new proto(), arg)
             !process.env.DEBUGGER || loginfo("itemToCreate: ", ppjson(itemToCreate))
 
             const asyncGenDomain = this.validateCreate(itemToCreate, args.payload.identity)
             let processorDomain = await asyncGenDomain.next()
-            yield { arguments: `[${__type}:validateCreate] ${processorDomain.value}`, identity: undefined }
+            yield { arguments: `[${__type}:validateCreate] ${ppjson(processorDomain.value)}`, identity: undefined }
             do {
                 if (!processorDomain.done) {
                     processorDomain = await asyncGenDomain.next()
-                    yield { arguments: `[${__type}:validateCreate] ${processorDomain.value}`, identity: undefined }
+                    yield { arguments: `[${__type}:validateCreate] ${ppjson(processorDomain.value)}`, identity: undefined }
                 }
             } while (!processorDomain.done)
             dynamoItems.push(processorDomain.value)
@@ -570,13 +578,13 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         !process.env.DEBUGGER || (yield `[${__type}:baseValidateUpdate] checking for mandatory item keys`)
 
         if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
-            throw new Error(`[${__type}:baseValidateUpdate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
+            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateUpdate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
         for (const arg of event.payload.arguments) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
-                throw new Error("{id, revisions} keys are mandatory when updating")
+                throw new Error(`${process.env.ringToken}: {id, revisions} keys are mandatory when updating`)
             } else {
                 arg["meta"] = `${versionString(0)}|${__type}`
                 arg["item_type"] = __type
@@ -603,7 +611,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const dynamoExistingItems = await batchGetItem({ loadPeersLevel: 0, pks: args.payload.arguments });
         // console.log("result from batch get", JSON.stringify(dynamoExistingItems))
         if (dynamoExistingItems.length !== args.payload.arguments.length) {
-            throw new Error(`[${__type}:UPDATE] Unable to locate items corresponding to requested id(s)`)
+            throw new Error(`${process.env.ringToken}: [${__type}:UPDATE] Unable to locate items corresponding to requested id(s)`)
         }
 
         const updatedItems = []

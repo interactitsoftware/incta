@@ -66,7 +66,6 @@ export class CreateTouristByPublishingEvent {
                 rangeKeyName: "meta"
             })).items as CountryItem[]);
         } else return undefined
-        
     }
     private async getAirplane(): Promise<AirplaneItem[] | undefined> {
         if (!!this.airplaneCode) {

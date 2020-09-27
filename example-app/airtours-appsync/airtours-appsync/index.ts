@@ -6,26 +6,25 @@ import { handler as notifier } from "aarts-eb-notifier/aartsAppsyncNotifier"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { handler as dispatcherTester } from "aarts-eb-dispatcher-tester/aartsDispatcherStressTester"
 import { IDomainAdapter } from "aarts-types/interfaces"
-import { AnyConstructor, MixinConstructor } from "aarts-types/Mixin"
+import { AnyConstructor } from "aarts-types/Mixin"
 
 import {
+    // -- defined on a aarts-dynamodb/_specs_ level
     AirplaneItem, CountryItem, CityItem, PilotItem, AirportItem,
     AirplaneManifacturerItem, AirplaneModelItem, FlightItem,
-    TouristItem, TouristSeasonItem, InvoiceItem, OrderItem, DataImportProcedure,
+    TouristItem, TouristSeasonItem, InvoiceItem, OrderItem, DataImportProcedure, EraseDataProcedure,
+    // defined in this lib
     MultipleLambdaTestDataGeneratorItem,
     SingleLambdaTestDataGeneratorItem,
-    EraseDataItem,
     IdmptSingleLambdaTestDataGeneratorItem,
     IdmptMultipleLambdaTestDataGeneratorItem,
     IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem
 } from "./_DynamoItems"
-import { EraseDataManager } from "./procedures/EraseData"
 import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
 import { MultipleLambdaTestDataGeneratorManager } from "./procedures/MultipleLambdaTestDataGenerator"
 import { IdmptSingleLambdaTestDataGeneratorManager } from "./procedures/IdmptSingleLambdaTestDataGenerator"
 import { IdmptMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptMultipleLambdaTestDataGenerator"
 import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator"
-import AWS from "aws-sdk"
 import { CreateTouristByPublishingEventManager } from "./procedures/CreateTouristByPublishingEvent"
 import { _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 import { GenerateInvoicesManager } from "./procedures/GenerateInvoices"
@@ -44,6 +43,7 @@ allItems.set(OrderItem.__type, OrderItem)
 allItems.set(CityItem.__type, CityItem)
 allItems.set(PilotItem.__type, PilotItem)
 allItems.set(DataImportProcedure.__type, DataImportProcedure)
+allItems.set(EraseDataProcedure.__type, EraseDataProcedure)
 allItems.set(SingleLambdaTestDataGeneratorItem.__type, SingleLambdaTestDataGeneratorItem)
 allItems.set(MultipleLambdaTestDataGeneratorItem.__type, MultipleLambdaTestDataGeneratorItem)
 allItems.set(IdmptSingleLambdaTestDataGeneratorItem.__type, IdmptSingleLambdaTestDataGeneratorItem)
@@ -51,10 +51,10 @@ allItems.set(IdmptMultipleLambdaTestDataGeneratorItem.__type, IdmptMultipleLambd
 allItems.set(IdmptChunksMultipleLambdaTestDataGeneratorItem.__type, IdmptChunksMultipleLambdaTestDataGeneratorItem)
 allItems.set(CreateTouristByPublishingEventItem.__type, CreateTouristByPublishingEventItem)
 allItems.set(GenerateInvoicesItem.__type, GenerateInvoicesItem)
-allItems.set(EraseDataItem.__type, EraseDataItem)
+
 
 const allItemManagers = {
-    // lib from specs test model
+    // taken from _specs_ in aarts-dynamodb's test model
     [AirplaneItem.__type]: new AirplaneManager(allItems),
     [AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
     [AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
@@ -66,7 +66,7 @@ const allItemManagers = {
     [InvoiceItem.__type]: new BaseDynamoItemManager(allItems),
     [OrderItem.__type]: new BaseDynamoItemManager(allItems),
     [DataImportProcedure.__type]: new BaseDynamoItemManager(allItems),
-
+    [EraseDataProcedure.__type]: new BaseDynamoItemManager(allItems),
     //defined here
     //items
     [CityItem.__type]: new BaseDynamoItemManager(allItems),
@@ -79,7 +79,6 @@ const allItemManagers = {
     [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
     [CreateTouristByPublishingEventItem.__type]: new CreateTouristByPublishingEventManager(allItems),
     [GenerateInvoicesItem.__type]: new GenerateInvoicesManager(allItems),
-    [EraseDataItem.__type]: new EraseDataManager(allItems)
 }
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {

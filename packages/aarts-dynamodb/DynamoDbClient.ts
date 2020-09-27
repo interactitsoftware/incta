@@ -95,13 +95,13 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
         let cancellationReasons:{Item:any, Code:string, Message:string}[] = []
 
         request.on('error', (response, httpResponse) => {
-            console.error(`Error calling dynamo: ${ppjson(response)}`);
+            console.error(`${process.env.ringToken}: Error calling dynamo: ${ppjson(response)}`);
             try {
                 cancellationReasons = JSON.parse(httpResponse.httpResponse.body.toString()).CancellationReasons;
                 console.log(cancellationReasons, ppjson(cancellationReasons))
             } catch (err) {
                 // suppress this just in case some types of errors aren't JSON parseable
-                console.error('Error extracting cancellation error', err);
+                console.error(`${process.env.ringToken}: Error extracting cancellation error`, err);
             }
         });
         
@@ -118,7 +118,7 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
         try {
             return await request.promise()
         } catch (err) {
-            throw new Error(ppjson({ 
+            throw new Error(ppjson({ ringToken: process.env.ringToken,
                 cancellationReasons:cancellationReasons && cancellationReasons.length > 1 && cancellationReasons.filter(c=> c.Item || c.Message),
                 err }))
         }

@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/core');
 import lambda = require('@aws-cdk/aws-lambda');
-import { LambdaDataSource, MappingTemplate } from '@aws-cdk/aws-appsync';
+import { AuthorizationType, IField, LambdaDataSource, MappingTemplate, Type } from '@aws-cdk/aws-appsync';
 import { AppSyncConstruct } from './appSyncConstruct';
 
 export type AartsResolver = {name:string, jobType: "long" | "short" }
@@ -48,5 +48,17 @@ export class AppSyncLambdaDataSourceConstruct extends cdk.Construct {
         })
         createResolvers(lds, props.mutateResolvers, "Mutation")
         createResolvers(lds, props.queryResolvers, "Query")
+
+
+        // props.appSyncConstruct.graphQLApi.schema.addQuery('queryS', {
+        //     type: Type.AWS_JSON,
+        //     isList:false,
+        //     isRequired:false,
+        //     isRequiredList: false,
+        //     argsToString: ()=>'item: String',
+        //     directivesToString: () => '@aws_iam @aws_cognito_user_pools'
+        // })
+
+
     }
 }

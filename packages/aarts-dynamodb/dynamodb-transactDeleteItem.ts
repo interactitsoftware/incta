@@ -125,7 +125,7 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
             }
         })
     }
-    
+
 
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,
@@ -134,7 +134,11 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
         // ClientRequestToken: ringToken // TODO
     }
 
-    const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-    !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    try {
+        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
+        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+    } catch (err) {
+        throw new Error(ppjson({ request: params, error: err }))
+    }
     return existingItem
 }
