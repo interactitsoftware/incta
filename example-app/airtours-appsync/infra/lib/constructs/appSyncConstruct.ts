@@ -80,6 +80,16 @@ type Notification @aws_iam @aws_cognito_user_pools{
     body: String!
     sentAt: String!
 }
+
+type Notification2 @aws_iam @aws_cognito_user_pools{
+    worker: String!
+    item: String!
+    action: String!
+    identity: String!
+    ringToken: String
+    body: String!
+    sentAt: String!
+}
 `
     }
 }

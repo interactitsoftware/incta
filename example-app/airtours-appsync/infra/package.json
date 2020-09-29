@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk-typescript",
-  "version": "0.1.462",
+  "version": "0.1.473",
   "bin": {
     "aws-cdk-typescript": "bin/aws-cdk-typescript.js"
   },
@@ -16,7 +16,7 @@
     "@types/node": "10.17.5",
     "aws-cdk": "^1.64.1",
     "jest": "^26.4.2",
-    "ts-jest": "^26.4.0",
+    "ts-jest": "^26.4.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7",
     "yaml-cfn": "^0.2.3"

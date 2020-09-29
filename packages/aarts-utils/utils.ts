@@ -34,3 +34,5 @@ export const ppjson = (json: any): string => typeof json === "object"? JSON.stri
 export const loginfo = (...input: any[]) => {
     console.log({ringTokenSource: process.env.ringToken, message: ppjson(input)})
 }
+
+export const versionString = (nr: number) => `v_${nr}`

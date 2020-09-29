@@ -80,6 +80,27 @@ example NOT OK limits
  - an item with 20 refkeys and 2 of them marked unique. 20 + 2*2 = 24 > 22 (NOT OK)
  - an item with 23 refkeys and none of them marked unique. 23 + 2*0 = 23 > 22 (NOT OK)
 
+## Lambda
+- Domain Logic uploaded into a AWS Lambda Layer
+- SNS-SQS subscription for an event-bus async features
+- AppSync/GraphQL asynchronous notifications
+- Notifying for any errors via SNS topic
+  
+
+----------
+
+## First milestone implementation
+- Injecting whatever domain logic into the lambda handler, simple IoC using the Nodejs Global interface. Convention. Pattern Matching.
+- Decribing the domain entities, in a way, for aarts to know which one are of interest, so we can query over them
+- Typescript async generators allowing for reporting (notifying clients etc) over the execution progress (yielding notifications, returning results)
+- Mixin patterns for merging / decorating each domain entitiy with necessary dynamo item keys. Thanks to [Nickolay Platonov](https://www.bryntum.com/blog/the-mixin-pattern-in-typescript-all-you-need-to-know/)
+- Dynamodb transactional operations, allowing for a domain entity with up to 23 refkeys
+- Queries: Mainly index preloading, implemented with 4 GSI used for describing all domain key properties of interest (currently 2 for string types and 2 of number types)
+- Keeping a history of all CRUD mainpulations, using versioning
+
+- Dynamodb trickery is inspired by the talks of [Rick Houlihan](https://www.youtube.com/watch?v=HaEPXoXVf2k&t=1054s) and the [AWS Dynamodb best practices](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html)
+
+
 # Improve (TODOs)
 - implement functionality around the `ref` property of a refkey - all specified refkeys to be loaded, with their full contents to be able to be returned, by a single request (currently only their ids are returned)
 - consider filling smetadata key on the main item level (v_0) with the item's id. This way, the first reverse GSI lookup (PK|RANGE<->RANGE|PK) can be utilized from the GSI meta__smetadata, eliminating the need of the 5th GSI meta__id (verify other functionality will operate as before!)

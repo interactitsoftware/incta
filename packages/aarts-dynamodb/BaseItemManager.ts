@@ -64,9 +64,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         this.lookupItems = lookupItems
     }
 
-    
-    public onCreate : Function | undefined
-    public onUpdate : Function | undefined
+
+    public onCreate: Function | undefined
+    public onUpdate: Function | undefined
 
     //#region STREAMS CALLBACKS
     async _onCreate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
@@ -76,7 +76,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
                 return
             }
-            !process.env.DEBUGGER || console.log("ON CREATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
+            !process.env.DEBUGGER || loginfo("ON CREATE CALL BACK FIRED for streamRecord ", newImage)
             if (typeof this.onCreate === "function") {
                 await this.onCreate(__type, newImage)
             } else {
@@ -87,31 +87,29 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async _onUpdate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
         if (dynamodbStreamRecord !== undefined) {
             const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
-            !process.env.DEBUGGER || console.log("ON UPDATE CALL BACK FIRED for streamRecord ", ppjson(newImage))
-            
-            // mark procedures as done when total_events=processed_events
-            if (newImage.meta.startsWith(versionString(0))) {
-                if (newImage.id.startsWith("proc_") && newImage.revisions === 0 && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
-                    console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
-                    await transactUpdateItem(
-                        newImage,
-                        {
-                            end_date: Date.now(),
-                            success: true,
-                            revisions: 0,
-                            ringToken: newImage.ringToken,
-                            id: newImage.id,
-                            meta: `${versionString(0)}|${newImage.id.substr(0, newImage.id.indexOf("|"))}`
-                        },
-                        (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-                }
+            !process.env.DEBUGGER || loginfo("_onUpdate CALL BACK FIRED for streamRecord ", newImage)
 
-                console.log("CHECKING this.onUpdate ", ppjson(this.onUpdate))
-                if (typeof this.onUpdate === "function") {
-                    await this.onUpdate(__type, newImage)
-                } else {
-                    !process.env.DEBUGGER || console.log(`No specific onUpdate method was found in manager of ${__type}`)
-                }
+            // mark procedures as done when total_events=processed_events
+            if (newImage.id.startsWith("proc_") && newImage.revisions === 0 && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
+                console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
+                await transactUpdateItem(
+                    newImage,
+                    {
+                        end_date: Date.now(),
+                        success: true,
+                        revisions: 0,
+                        ringToken: newImage.ringToken,
+                        id: newImage.id,
+                        meta: newImage.meta,
+                    },
+                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+            }
+
+            console.log("CHECKING this.onUpdate ", ppjson(this.onUpdate))
+            if (typeof this.onUpdate === "function") {
+                await this.onUpdate(__type, newImage)
+            } else {
+                !process.env.DEBUGGER || console.log(`No specific onUpdate method was found in manager of ${__type}`)
             }
         }
     }
@@ -356,16 +354,16 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         !process.env.DEBUGGER || (yield { arguments: `[${__type}:DELETE] Loading requested items`, identity: undefined })
         const dynamoExistingItems = await batchGetItem(args.payload.arguments[0]);
-        
+
         if (dynamoExistingItems.length !== args.payload.arguments[0].pks.length) {
             throw new Error(`${process.env.ringToken}: [${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)
         }
-        
+
         yield { arguments: `[${__type}:DELETE] requested deletion of ${ppjson(dynamoExistingItems)}`, identity: undefined }
 
 
         for (const existingItem of dynamoExistingItems) {
-            const requestedId = (args.payload.arguments[0].pks as {id:string, revisions:number}[]).filter(pk => pk.id === existingItem.id)[0]
+            const requestedId = (args.payload.arguments[0].pks as { id: string, revisions: number }[]).filter(pk => pk.id === existingItem.id)[0]
             if (existingItem.revisions !== requestedId.revisions) {
                 throw new Error(`${process.env.ringToken}: [${__type}:DELETE] revisions passed does not match item revisions: ${ppjson(requestedId)}`)
             }
@@ -420,7 +418,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         return Object.assign(args[0], {
             pks: args[0].pks.reduce<DdbTableItemKey[]>((accum, item) => {
                 if (item.id) {
-                    if ( !item.meta) {
+                    if (!item.meta) {
                         accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
                     } else {
                         accum.push({ id: item.id, meta: item.meta })

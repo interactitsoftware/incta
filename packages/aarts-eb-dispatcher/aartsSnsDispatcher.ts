@@ -6,7 +6,7 @@ import { processPayload } from "aarts-handler/aartsHandler"
 import { prepareAppSyncEventForDispatch } from "aarts-eb-types/prepareAppSyncEventForDispatch"
 import { loginfo } from "aarts-utils/utils";
 import { IItemManagerCallback } from "aarts-types/interfaces";
-
+import { versionString } from "aarts-utils/utils"
 /**
  * forwards to SNS, decorating with:
  * - eventSource = worker:input
@@ -22,15 +22,15 @@ class aartsSnsDispatcher extends AartsEBUtil {
 	private async processDynamoDBStreamEvent(event: DynamoDBStreamEvent) {
 		let result = {}
 
-		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY" 
-		&& (record.dynamodb?.NewImage as {meta:{S:string}})["meta"].S.startsWith(`v_0`))) { // fire only for main items
+		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY"
+			&& (record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(versionString(0)))) { // fire only for main items
 			const item = `${(rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.substr(0, (rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.indexOf("|"))}`
 			const itemManagerCallback = global.domainAdapter.itemManagers[item] as unknown as IItemManagerCallback<object>;
 			await itemManagerCallback._onUpdate(item, rec.dynamodb)
 		}
 
-		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT" 
-		&& (record.dynamodb?.NewImage as {meta:{S:string}})["meta"].S.startsWith(`v_0`))) { // fire only for main items
+		for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT"
+			&& (record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(`v_0`))) { // fire only for main items
 			const item = `${(rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.substr(0, (rec.dynamodb?.Keys as { id: { S: string }, meta: { S: string } }).id.S.indexOf("|"))}`
 			const itemManagerCallback = global.domainAdapter.itemManagers[item] as unknown as IItemManagerCallback<object>;
 			await itemManagerCallback._onCreate(item, rec.dynamodb)

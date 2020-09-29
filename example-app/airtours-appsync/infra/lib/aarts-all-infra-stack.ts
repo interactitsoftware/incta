@@ -1,11 +1,8 @@
-import { Code, Runtime, Function, LayerVersion, StartingPosition } from '@aws-cdk/aws-lambda';
+import { Code, Runtime, LayerVersion, StartingPosition } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
 import { join } from 'path';
-import { Duration, RemovalPolicy, App, StackProps, Stack, CfnOutput } from '@aws-cdk/core';
-import { AttributeType, BillingMode, StreamViewType, ProjectionType, Table } from '@aws-cdk/aws-dynamodb';
-import { ENV_VARS__DB_NAME, ENV_VARS__DDB_LOCAL_URL } from '../env-constants';
+import { Duration, App, StackProps, Stack, CfnOutput } from '@aws-cdk/core';
 import { sep } from "path"
-import { S3Construct } from './constructs/s3Construct';
 import { DynamoDBConstruct } from './constructs/dynamoDbConstruct';
 import { CognitoConstruct } from './constructs/cognitoConstruct';
 import { EventBusConstruct } from './constructs/eventBusConstruct';
@@ -32,7 +29,7 @@ export class AartsAllInfraStack extends Stack {
       description: 'A layer holding the libraries needed for the contracts-compliant domain adapter',
     });
 
-    const s3Construct = new S3Construct(this, `Buckets`, {})
+    // const s3Construct = new S3Construct(this, `Buckets`, {})
 
     const dynamoDbConstruct = new DynamoDBConstruct(this, 'DB', {})
 

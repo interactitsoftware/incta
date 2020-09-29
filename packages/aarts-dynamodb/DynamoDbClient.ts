@@ -1,8 +1,8 @@
 import { DynamoDB, AWSError } from 'aws-sdk'
 import { Request } from 'aws-sdk/lib/request'
-import { AttributeMap, BatchGetItemOutput, BatchWriteItemOutput, QueryOutput, TransactWriteItemsInput, TransactWriteItemsOutput, UpdateItemOutput } from 'aws-sdk/clients/dynamodb';
+import { AttributeMap, BatchGetItemOutput, BatchWriteItemOutput, QueryOutput, TransactWriteItemsOutput, UpdateItemOutput } from 'aws-sdk/clients/dynamodb';
 import { DynamoItem } from './BaseItemManager';
-import { ppjson } from 'aarts-utils/utils';
+import { ppjson, versionString } from 'aarts-utils/utils';
 
 export const offline_options = {
     region: 'ddblocal',
@@ -31,7 +31,7 @@ export function removeEmpty(obj: Record<string, any>): object {
         )
 }
 
-export const versionString = (nr: number) => `v_${nr}`
+export { versionString }
 export const deletedVersionString = (nr: number) => `d_${nr}`
 
 export const uniqueitemrefkeyid = <T extends DynamoItem>(item: T, key: string) => `uq|${item.item_type}}${key}`
