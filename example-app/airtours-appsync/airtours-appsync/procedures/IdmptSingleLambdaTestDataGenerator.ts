@@ -67,7 +67,7 @@ export class IdmptSingleLambdaTestDataGenerator {
                     "eventSource": "worker:input",
                     "ringToken": ringToken
                 }
-            })).resultItems[0]
+            })).payload.resultItems[0]
         }
     }
 
@@ -1025,7 +1025,7 @@ export class IdmptSingleLambdaTestDataGenerator {
 
 export class IdmptSingleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<IdmptSingleLambdaTestDataGeneratorItem> {
 
-    async *validateStart(proc: AartsPayload<IdmptSingleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
+    async *validateStart(proc: AartsPayload<IdmptSingleLambdaTestDataGeneratorItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         proc.arguments.total_events = 54 + (proc.arguments.touristsToCreate || 0)

@@ -10,6 +10,7 @@ export interface AartsEvent {
     eventType?: "output" | "input" | undefined;
     jobType?: "short" | "long" | undefined;
 }
+
 export interface AartsMeta {
     item: string,
     action: IItemManagerKeys,
@@ -18,8 +19,8 @@ export interface AartsMeta {
 }
 
 export interface AartsPayload<T = any> {
-    arguments: any
-    identity: any
+    arguments?: any
+    identity?: any
     resultItems?: T[]
     selectionSetList?: string
 }

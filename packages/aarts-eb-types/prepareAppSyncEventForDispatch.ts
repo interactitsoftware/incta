@@ -2,7 +2,8 @@ import { AppSyncEvent } from "./aartsEBUtil"
 
 export const prepareAppSyncEventForDispatch = (event: AppSyncEvent, ringToken: string) => {
 	return {
-		Message: JSON.stringify({payload: {arguments: event.arguments, identity: event.identity}}),
+		Message: JSON.stringify({payload: event}),
+		// Message: JSON.stringify({payload: {arguments: event.arguments, identity: event.identity}}),
 		MessageAttributes: {
 			"eventSource": {
 				DataType: 'String',

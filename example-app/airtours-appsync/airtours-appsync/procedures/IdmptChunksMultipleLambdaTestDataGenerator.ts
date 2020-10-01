@@ -12,10 +12,6 @@ import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
 import { names } from "./random-names/names";
 import { chunks, ppjson } from "aarts-utils/utils";
 import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
-import { MixinConstructor } from "aarts-types/Mixin";
-import { transactUpdateItem } from "aarts-dynamodb/dynamodb-transactUpdateItem";
-import { versionString } from "aarts-dynamodb/DynamoDbClient";
-import { IProcedure } from "aarts-dynamodb/interfaces";
 
 const tourist_payloads: any[] = []
 
@@ -43,7 +39,8 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
     public useNamesLength?: number
 
     private async registerForPublishing(event: AppSyncEvent) {
-        tourist_payloads.push(event.arguments)
+        // tourist_payloads.push(event.arguments)
+        tourist_payloads.push(event)
     }
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
         return {
@@ -80,7 +77,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
                     "eventSource": "worker:input",
                     "ringToken": ringToken
                 }
-            })).resultItems[0]
+            })).payload.resultItems[0]
         }
     }
 
@@ -911,11 +908,12 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
         // we want to send all events, chunked into 25, that is why we only send them once all events are registered
         if (tourist_payloads.length > 0) {
             for (const chunk of chunks(tourist_payloads, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
+                
                 await dispatcher({
-                    "action": "create",
-                    "item": _specs_TouristItem.__type,
+                    "action": "create",//may not be necessary here ?
+                    "item": _specs_TouristItem.__type,//may not be necessary here ?
+                    "jobType": "long", //may not be necessary here ?
                     "ringToken": args.meta.ringToken as string,
-                    "jobType": "long",
                     "arguments": chunk,
                     "identity": {
                         "username": "akrsmv"
@@ -1007,7 +1005,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
 
 export class IdmptChunksMultipleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<IdmptChunksMultipleLambdaTestDataGeneratorItem> {
 
-    async *validateStart(proc: AartsPayload<IdmptChunksMultipleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
+    async *validateStart(proc: AartsPayload<IdmptChunksMultipleLambdaTestDataGeneratorItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         proc.arguments.total_events = 54 + (proc.arguments.touristsToCreate || 0)
         proc.arguments.start_date = Date.now()

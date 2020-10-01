@@ -424,7 +424,7 @@ const dynamo_q2_2022 = await this.createItem(
                 "eventSource": "worker:input",
                 "ringToken": ringToken
             }
-        })).resultItems[0]
+        })).payload.resultItems[0]
     }
 
     /**
@@ -507,7 +507,7 @@ const dynamo_q2_2022 = await this.createItem(
 
 export class MultipleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<MultipleLambdaTestDataGeneratorItem> {
 
-    async *validateStart(proc: AartsPayload<MultipleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
+    async *validateStart(proc: AartsPayload<MultipleLambdaTestDataGeneratorItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         proc.arguments.total_events = 54 + (proc.arguments.touristsToCreate || 0)

@@ -6,7 +6,7 @@ const gql = require('graphql-tag');
 require('cross-fetch/polyfill');
 
 export const handler = async (event: SQSEvent, context: Context): Promise<any> => {
-    //console.log("appsync-notifier 17 function received event: " + JSON.stringify(event, undefined, 2));
+    console.log("appsync-notifier function received event: " + JSON.stringify(event, undefined, 2));
     //console.log("process.env.APPSYNC_ENDPOINT_URL: " + process.env.APPSYNC_ENDPOINT_URL);
     //console.log("process.env.AWS_REGION: " + process.env.AWS_REGION);
     //console.log("process.env.AWS_ACCESS_KEY_ID: " + process.env.AWS_ACCESS_KEY_ID);
@@ -30,28 +30,44 @@ export const handler = async (event: SQSEvent, context: Context): Promise<any> =
     if (event["Records"] && event["Records"].length > 0) {
         for (var i = 0; i < event["Records"].length; i++) {
             var record = event["Records"][i];
-            // console.log("Message is " + record["body"]);
-            var message = JSON.parse(record["body"]);
 
+             var message = JSON.parse(record["body"]);
+             console.log("Message is " + record["body"]);
+             console.log("----------------------");
+             console.log( "item", `${record.messageAttributes["item"].stringValue as string}`)
+             console.log( "action", `${record.messageAttributes["action"].stringValue as string}`)
+             console.log( "identity", JSON.stringify(message.payload.identity))
+             console.log( "ringToken",  `${record.messageAttributes["ringToken"].stringValue as string}`)
+             console.log( "eventSource", `${record.messageAttributes["eventSource"].stringValue as string}`)
+             console.log( "body", JSON.stringify(message.payload.arguments || message))
+             console.log("----------------------");
+            
             //, from: "EVENT_BUS", sentAt: "now" <--additional attributes removed from mutation as they come from the appsync resolver
-            const mutation = gql`mutation Notification($to: String!, $body: String!) {
-    notify(to: $to, body: $body)
+            const mutation = gql`mutation Notification($item: String!, $action: String!, $identity: String!, $ringToken: String!, $eventSource: String!, $body: String!) {
+    notify(item: $item, action: $action, identity: $identity, ringToken: $ringToken, eventSource: $eventSource, body: $body)
     {
         body
-        to
-        from
+        eventSource
+        ringToken
+        item
+        action
+        identity
         sentAt
     }
 }`;
             var a = await graphqlClient.mutate({
                 mutation,
                 variables: {
-                    "to": `${record.messageAttributes["eventSource"].stringValue as string}:${record.messageAttributes["item"].stringValue as string}`,
+                    "item": `${record.messageAttributes["item"].stringValue as string}`,
+                    "action": `${record.messageAttributes["action"].stringValue as string}`,
+                    "ringToken":  `${record.messageAttributes["ringToken"].stringValue as string}`,
+                    "eventSource": `${record.messageAttributes["eventSource"].stringValue as string}`,
+                    "identity": JSON.stringify(message.payload.identity),
                     "body": JSON.stringify(message.payload.arguments || message),
                     // "body": Buffer.from(record["body"]).toString('base64'),
                 }
             });
-            // console.log("after mutating ", a);
+            console.log("after mutating ", a);
         }
 
     }

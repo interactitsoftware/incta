@@ -36,14 +36,17 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
             fieldName: 'notify',
             typeName: 'Mutation',
             requestMappingTemplate: MappingTemplate.fromString(
-                `{
-"version": "2017-02-28",
-"payload": {
-"body": "$util.escapeJavaScript(\${context.arguments.body})",
-"from": "\${context.identity.username}",
-"to": "\${context.arguments.to}",
-"sentAt": "$util.time.nowISO8601()"
-}
+`{
+    "version": "2017-02-28",
+    "payload": {
+        "item": "\${context.arguments.item}",
+        "action": "\${context.arguments.action}",
+        "identity": "$util.escapeJavaScript(\${context.arguments.identity})",
+        "ringToken": "\${context.arguments.ringToken}",
+        "eventSource": "\${context.arguments.eventSource}",
+        "body": "$util.escapeJavaScript(\${context.arguments.body})",
+        "sentAt": "$util.time.nowISO8601()"
+    }
 }`),
             responseMappingTemplate: MappingTemplate.fromString("$util.toJson($ctx.result)"),
         });
@@ -52,7 +55,7 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
 
         this.notifierFunctionConstruct = new WorkerConstruct(this, "Notify", {
             workerName: `${clientAppName}Notifier`,
-            functionTimeout: Duration.seconds(30),
+            functionTimeout: Duration.seconds(10),
             functionHandler: "index.notifier",
             functionImplementationPath: join("..", clientAppDirName, "dist"),
             functionRuntime: Runtime.NODEJS_12_X,

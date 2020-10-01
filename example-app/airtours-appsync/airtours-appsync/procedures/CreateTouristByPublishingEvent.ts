@@ -107,6 +107,7 @@ export class CreateTouristByPublishingEvent {
                 to_country: !!toCountriesFound && toCountriesFound.length>0? (toCountriesFound[0] as DynamoItem).id : undefined,
             }
 
+            // todo chunk it
             await dispatcher({
                 "action": "create",
                 "item": _specs_TouristItem.__type,
@@ -124,7 +125,7 @@ export class CreateTouristByPublishingEvent {
 
 export class CreateTouristByPublishingEventManager extends BaseDynamoItemManager<CreateTouristByPublishingEventItem> {
 
-    async *validateStart(proc: AartsPayload<CreateTouristByPublishingEventItem>): AsyncGenerator<string, AartsPayload, undefined> {
+    async *validateStart(proc: AartsPayload<CreateTouristByPublishingEventItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         proc.arguments.total_events = proc.arguments.touristsToCreate
         proc.arguments.start_date = Date.now()

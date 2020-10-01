@@ -609,7 +609,7 @@ export class SingleLambdaTestDataGenerator {
                 "eventSource": "worker:input",
                 "ringToken": parentRingToken + "_"+ idGenUtil.uuid()
             }
-        })).resultItems[0]
+        })).payload.resultItems[0]
     }
 
    
@@ -669,7 +669,7 @@ export class SingleLambdaTestDataGenerator {
 
 export class SingleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<SingleLambdaTestDataGeneratorItem> {
 
-    async *validateStart(proc: AartsPayload<SingleLambdaTestDataGeneratorItem>): AsyncGenerator<string, AartsPayload, undefined> {
+    async *validateStart(proc: AartsPayload<SingleLambdaTestDataGeneratorItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         proc.arguments.total_events = 54 + (proc.arguments.touristsToCreate || 0)

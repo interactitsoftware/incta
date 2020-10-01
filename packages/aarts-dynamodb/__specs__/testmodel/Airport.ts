@@ -1,10 +1,6 @@
-import { BaseDynamoItemManager, DynamoItem } from "../../BaseItemManager"
+import { BaseDynamoItemManager } from "../../BaseItemManager"
 import { _specs_AirportItem } from "./_DynamoItems"
-import { IIdentity } from "aarts-types/interfaces"
-import { AttributeMap, StreamRecord } from "aws-sdk/clients/dynamodbstreams"
-import { transactUpdateItem } from "../../dynamodb-transactUpdateItem"
-import { fromAttributeMap, versionString } from "../../DynamoDbClient"
-import { MixinConstructor } from "aarts-types/Mixin"
+import { AartsPayload, IIdentity } from "aarts-types/interfaces"
 
 export class _specs_Airport {
     
@@ -30,20 +26,20 @@ export class _specs_Airport {
 }
 
 export class _specs_AirportManager extends BaseDynamoItemManager<_specs_AirportItem> {
-    async *validateCreate(airport: _specs_AirportItem, identity: IIdentity): AsyncGenerator<string, _specs_AirportItem, undefined> {
+    async *validateCreate(airport: _specs_AirportItem, identity: IIdentity): AsyncGenerator<AartsPayload, _specs_AirportItem, undefined> {
             const errors: string[] = []
 
             if (airport.airport_size === 100) {
                 errors.push("airport_size: nah 100 is taken")
-                yield "airport_size: nah 100 is taken"
+                yield { resultItems: [{ message:  "airport_size: nah 100 is taken"}]}
             }
             if (airport.airport_size <= 10) {
                 errors.push("airport_size: cannot be le than 10")
-                yield "airport_size: cannot be le than 10"
+                yield { resultItems: [{ message:  "airport_size: cannot be le than 10"}]}
             }
             if (airport.airport_size > 1000) {
                 errors.push("size: cannot be greater than 1000")
-                yield "size: cannot be greater than 1000"
+                yield { resultItems: [{ message:  "size: cannot be greater than 1000"}]}
             }
 
             if (errors.length > 0) {
@@ -54,7 +50,7 @@ export class _specs_AirportManager extends BaseDynamoItemManager<_specs_AirportI
             }
     }
 
-    async *validateUpdate(airport: _specs_AirportItem, identity: IIdentity): AsyncGenerator<string, _specs_AirportItem, undefined> {
+    async *validateUpdate(airport: _specs_AirportItem, identity: IIdentity): AsyncGenerator<AartsPayload, _specs_AirportItem, undefined> {
         throw new Error(`${process.env.ringToken}: Method not implemented.`)
     }
 }

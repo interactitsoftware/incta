@@ -4,7 +4,6 @@ import { DynamoItem, BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManage
 import { handler } from "aarts-eb-handler/aartsSqsHandler"
 import { handler as notifier } from "aarts-eb-notifier/aartsAppsyncNotifier"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
-import { handler as dispatcherTester } from "aarts-eb-dispatcher-tester/aartsDispatcherStressTester"
 import { IDomainAdapter } from "aarts-types/interfaces"
 import { AnyConstructor } from "aarts-types/Mixin"
 
@@ -89,4 +88,4 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
 
 global.domainAdapter = new DomainAdapter()
 
-export { dispatcher, dispatcherTester, handler, notifier }
+export { dispatcher, handler, notifier }

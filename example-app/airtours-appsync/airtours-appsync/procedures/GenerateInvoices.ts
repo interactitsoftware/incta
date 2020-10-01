@@ -52,7 +52,7 @@ export class GenerateInvoices {
 
 export class GenerateInvoicesManager extends BaseDynamoItemManager<GenerateInvoicesItem> {
 
-    async *validateStart(proc: AartsPayload<GenerateInvoicesItem>): AsyncGenerator<string, AartsPayload, undefined> {
+    async *validateStart(proc: AartsPayload<GenerateInvoicesItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         proc.arguments.total_events = proc.arguments.touristsToCreate
         proc.arguments.start_date = Date.now()

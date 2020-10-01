@@ -1,6 +1,6 @@
 import { BaseDynamoItemManager } from "../../BaseItemManager"
 import { _specs_AirportItem, _specs_AirplaneItem } from "./_DynamoItems"
-import { IIdentity } from "aarts-types/interfaces"
+import { AartsPayload, IIdentity } from "aarts-types/interfaces"
 import { ppjson } from "aarts-utils/utils"
 
 export class _specs_AirplaneModel { 
@@ -63,32 +63,32 @@ export class _specs_Airplane {
 }
 
 export class _specs_AirplaneManager extends BaseDynamoItemManager<_specs_AirplaneItem> {
-    async *validateCreate(samolet: _specs_AirplaneItem, identity: IIdentity): AsyncGenerator<string, _specs_AirplaneItem, undefined> {
-        yield `[SamoletManager/validateCreate]: BEGIN validateCreate method`
+    async *validateCreate(samolet: _specs_AirplaneItem, identity: IIdentity): AsyncGenerator<AartsPayload, _specs_AirplaneItem, undefined> {
+        yield { resultItems: [{ message:  `[SamoletManager/validateCreate]: BEGIN validateCreate method`}]}
             // TODO validate this samolet
             const errors: string[] = []
 
             if (samolet.number_of_seats  && samolet.number_of_seats < 10) {
                 errors.push("wing_length: number_of_seats cannot be less than 10")
-                yield "wing_length: number_of_seats cannot be less than 10"
+                yield { resultItems: [{ message:  "wing_length: number_of_seats cannot be less than 10"}]}
             }
             if (samolet.number_of_seats  && samolet.number_of_seats > 1000) {
                 errors.push("wing_length: wing_length cannot be greater than 1000")
-                yield "wing_length: wing_length cannot be greater than 1000"
+                yield { resultItems: [{ message:  "wing_length: wing_length cannot be greater than 1000"}]}
             }
 
             if (errors.length > 0) {
-                yield `[SamoletManager/validateCreate]: END WITH ERRORS  ${ppjson(errors)}`
+                yield { resultItems: [{ message:  `[SamoletManager/validateCreate]: END WITH ERRORS  ${ppjson(errors)}`}]}
                 console.log('INVALID samolet: ', errors)
                 throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
             } else {
-                yield `[SamoletManager/validateCreate]: END successful validateCreate method`
+                yield { resultItems: [{ message:  `[SamoletManager/validateCreate]: END successful validateCreate method`}]}
                 return samolet
             }
     }
 
-    async *validateUpdate(samolet: _specs_AirplaneItem, identity: IIdentity): AsyncGenerator<string, _specs_AirplaneItem, undefined> {
-            yield "SO THIS IS THE DOMAIN VALIDATE UPDATE METHOD"
+    async *validateUpdate(samolet: _specs_AirplaneItem, identity: IIdentity): AsyncGenerator<AartsPayload, _specs_AirplaneItem, undefined> {
+        yield { resultItems: [{ message:  "SO THIS IS THE DOMAIN VALIDATE UPDATE METHOD"}]}
             return samolet
     }
 }
