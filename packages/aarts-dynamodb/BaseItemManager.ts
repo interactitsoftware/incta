@@ -10,6 +10,7 @@ import { AartsEvent, AartsPayload, IIdentity, IItemManager } from "aarts-types/i
 import { DdbQueryInput, RefKey, IBaseDynamoItemProps, IProcedure, DdbTableItemKey, DomainItem, DdbGetInput } from "./interfaces";
 import { StreamRecord } from "aws-lambda";
 import { AttributeMap } from "aws-sdk/clients/dynamodb";
+import { getItemById } from "./_itemUtils";
 
 export const DynamoItem =
     <T extends AnyConstructor<DomainItem>>(base: T, t: string, refkeys?: RefKey<InstanceType<T>>[]) => {
@@ -90,19 +91,24 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             !process.env.DEBUGGER || loginfo("_onUpdate CALL BACK FIRED for streamRecord ", newImage)
 
             // mark procedures as done when total_events=processed_events
-            if (newImage.id.startsWith("proc_") && newImage.revisions === 0 && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
+            // TODO refine it not to cycle indefinetley
+            if (newImage.id.startsWith("proc_") && (newImage.revisions === 0 || newImage.revisions === 1 ) && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
                 console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
-                await transactUpdateItem(
-                    newImage,
-                    {
-                        end_date: Date.now(),
-                        success: true,
-                        revisions: 0,
-                        ringToken: newImage.ringToken,
-                        id: newImage.id,
-                        meta: newImage.meta,
-                    },
-                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+                try { // swallow errors for now
+                    await transactUpdateItem(
+                        newImage,
+                        {
+                            end_date: Date.now(),
+                            success: true,
+                            revisions: 1, // TODO make it possible to be array, and conditional check to be either = :rev or IN (:el1, :el2...)
+                            ringToken: newImage.ringToken,
+                            id: newImage.id,
+                            meta: newImage.meta,
+                        },
+                        (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+                } catch (err) {
+                    console.error("ERROR updating proc_ ", ppjson(err))
+                }
             }
 
             console.log("CHECKING this.onUpdate ", ppjson(this.onUpdate))
@@ -179,31 +185,55 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             // SAVE STATE PRIOR starting - important is to be deterministic on number of events this proc will fire, as this is how we mark it done (comparing processed === total events)
             let asyncGenSave = this.save(__type, Object.assign({}, { identity: args.payload.identity }, { arguments: [procedure] }))
             let processorSave = await asyncGenSave.next()
+            !process.env.DEBUGGER || (yield { resultItems: [{ message: processorSave.value.arguments }] })
             do {
                 if (!processorSave.done) {
                     // !process.env.DEBUGGER || (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
-                    !process.env.DEBUGGER || (yield { resultItems: [{ message: processorSave.value.arguments }] })
                     processorSave = await asyncGenSave.next()
+                    !process.env.DEBUGGER || (yield { resultItems: [{ message: processorSave.value.arguments }] })
                 }
             } while (!processorSave.done)
             //#endregion
-
-            const procedureResult = await procedure.start(__type, args)
+            let procedureResult
+            try {
+                procedureResult = await procedure.start(__type, args)
+            } catch (ex) {
+                procedure["errors"] = ppjson(ex)
+                procedureResult = procedure
+            } finally {
+                //#region saving state AFTER procedure ended - TODO need to implement conditional check revissions =0 OR 1 because we do not know which update is going first - this one or the one from dynamo streams
+                if (procedureResult) {
+                    delete procedureResult["processed_events"] // important to remove this as it was asynchronously modified from other events
+                }
+                // if a procedure is not firing any events it must set the success property itself
+                // a pure hack - load latest just for updating procedure's revisions
+                const proc_from_db = await getItemById(procedure.item_type, procedure.id)
+                await transactUpdateItem(
+                    proc_from_db[0],
+                    {
+                        proc_synchronours_end_date: Date.now(), //-->  procedure synchronous enddate
+                        ...procedureResult,
+                        revisions: proc_from_db[0].revisions
+                        // success: true,
+                        // revisions: 1, // TODO make it possible to be array, and conditional check to be either = :rev or IN (:el1, :el2...)
+                        // ringToken: newImage.ringToken,
+                        // id: newImage.id,
+                        // meta: newImage.meta,
+                    },
+                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+                // asyncGenSave = this.save(__type, Object.assign({}, { identity: args.payload.identity }, { arguments: [procedureResult] }))
+                // processorSave = await asyncGenSave.next()
+                // !process.env.DEBUGGER || (yield { resultItems: [{ message: processorSave.value.arguments }] })
+                // do {
+                //     if (!processorSave.done) {
+                //         // !process.env.DEBUGGER || (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
+                //         processorSave = await asyncGenSave.next()
+                //         !process.env.DEBUGGER || (yield { resultItems: [{ message: processorSave.value.arguments }] })
+                //     }
+                // } while (!processorSave.done)
+                //#endregion
+            }
             !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${__type}:START] Procedure ended.` }] })
-
-            // //#region saving state AFTER procedure ended - TODO need to implement conditional check revissions =0 OR 1 because we do not know which update is going first - this one or the one from dynamo streams
-            // delete procedureResult["processed_events"] // important to remove this as it was asynchronously modified from other events
-            // // if a procedure is not firing any events it must set the success property itself
-            // asyncGenSave = this.save(__type, Object.assign({}, { identity: args.payload.identity }, { arguments: [procedureResult] }))
-            // processorSave = await asyncGenSave.next()
-            // do {
-            //     if (!processorSave.done) {
-            //         // !process.env.DEBUGGER || (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
-            //         !process.env.DEBUGGER || (yield { arguments: processorSave.value.arguments})
-            //         processorSave = await asyncGenSave.next()
-            //     }
-            // } while (!processorSave.done)
-            // //#endregion
         }
 
         return { arguments: dynamoItems, identity: args.payload.identity }
@@ -487,7 +517,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`${process.env.ringToken}: [${__type}:baseValidateCreate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
         }
 
-        if (!event.payload.arguments[0] ) {
+        if (!event.payload.arguments[0]) {
             throw new Error(`${process.env.ringToken}: [${__type}:baseValidateCreate] Payload is a single element array, but its invalid ! ${ppjson(event.payload.arguments)}`);
         }
 
@@ -558,7 +588,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
         } while (!processorSave.done)
 
-        return { resultItems: dynamoItems, identity: {username: "krasi"} }
+        return { resultItems: dynamoItems, identity: { username: "krasi" } }
     }
     //#endregion
 
