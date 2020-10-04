@@ -1,0 +1,9 @@
+dynamodblocaldata
+node_modules
+*.js
+*.d.ts
+out.txt
+test-events
+cdk.out
+dist
+

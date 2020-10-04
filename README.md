@@ -1,5 +1,5 @@
 # aarts
-A fully serverless application, with end to end developer experience - from automated testing to CI/CD pipelines. Project is open source and looking for contributors and sponsors. It targets cost optimization and configurable speed to cost ratio, *at any scale*. Current achievements are processing 250K events for 30 minutes at ~$50 (depending on the processing needed). Because its serverless, if the app is not used, it won't generate any costs, while still, always available.
+Serverless application, with end to end developer experience - from automated testing to CI/CD pipelines. Project is open source and looking for contributors and sponsors. It targets cost optimization and configurable speed to cost ratio, *at any scale*. Current achievements are processing 250K events for 30 minutes at ~$50 (depending on the processing needed). Because its serverless, if the app is not used, it won't generate any costs, while still, always available.
 
 Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage. It is modularized into npm packages, so client applications may focus only on domain logic. Please refer to the example-app in this repo 
 

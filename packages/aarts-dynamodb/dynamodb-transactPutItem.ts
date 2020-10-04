@@ -84,7 +84,7 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     }
     // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
     // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
-    if (!!item["procedure"]) {
+    if (!!item["procedure"] && process.env.ringToken === item["procedure"].substr(item["procedure"].indexOf("|") + 1)) {
         const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
             TableName: DB_NAME,
             Key: Object.assign({

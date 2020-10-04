@@ -1,0 +1,55 @@
+{
+  "name": "aarts-cli",
+  "version": "0.1.585",
+  "bin": {
+    "aarts": "aarts.sh"
+  },
+  "main": "./dist",
+  "files": [
+    "bin/**",
+    "lib/**",
+    "*.json",
+    "*.sh",
+    "*.js",
+    "*.d.ts",
+    "*.md"
+  ],
+  "scripts": {
+    "build": "tsc && cp package.json aarts.sh ln-cross-platform.sh ./dist && echo {\"app\": \"node bin/aws-cdk-typescript.js\"} > ./dist/cdk.json",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "^1.66.0",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^10.17.35",
+    "@types/shelljs": "^0.8.8",
+    "aws-cdk": "^1.66.0",
+    "jest": "^26.4.2",
+    "ts-jest": "^26.4.1",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7",
+    "yaml-cfn": "^0.2.3"
+  },
+  "dependencies": {
+    "@aws-cdk/assets": "^1.66.0",
+    "@aws-cdk/aws-apigateway": "^1.66.0",
+    "@aws-cdk/aws-appsync": "^1.66.0",
+    "@aws-cdk/aws-cloudformation": "^1.66.0",
+    "@aws-cdk/aws-cloudfront": "^1.66.0",
+    "@aws-cdk/aws-cognito": "^1.66.0",
+    "@aws-cdk/aws-dynamodb": "^1.66.0",
+    "@aws-cdk/aws-iam": "^1.66.0",
+    "@aws-cdk/aws-lambda": "^1.66.0",
+    "@aws-cdk/aws-lambda-event-sources": "^1.66.0",
+    "@aws-cdk/aws-s3": "^1.66.0",
+    "@aws-cdk/aws-s3-deployment": "^1.66.0",
+    "@aws-cdk/aws-s3-notifications": "^1.66.0",
+    "@aws-cdk/aws-sns": "^1.66.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.66.0",
+    "@aws-cdk/aws-sqs": "^1.66.0",
+    "@aws-cdk/core": "^1.66.0",
+    "shelljs": "^0.8.4"
+  }
+}

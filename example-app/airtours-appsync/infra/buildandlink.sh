@@ -86,6 +86,16 @@ npm publish -m "dev update"
 # npm link
 
 echo ------------------------------------------------
+echo            AARTS_CLI
+echo ------------------------------------------------
+cd $AARTS_HOME/packages/aarts-cli
+npm install && npm update 
+npm version patch
+npm run build
+cd dist
+npm publish -m "dev update"
+
+echo ------------------------------------------------
 echo            AARTS_EB_NOTIFIER
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-eb-notifier

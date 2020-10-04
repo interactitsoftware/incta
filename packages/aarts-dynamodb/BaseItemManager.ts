@@ -208,19 +208,21 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 // if a procedure is not firing any events it must set the success property itself
                 // a pure hack - load latest just for updating procedure's revisions
                 const proc_from_db = await getItemById(procedure.item_type, procedure.id)
-                await transactUpdateItem(
-                    proc_from_db[0],
-                    {
-                        proc_synchronours_end_date: Date.now(), //-->  procedure synchronous enddate
-                        ...procedureResult,
-                        revisions: proc_from_db[0].revisions
-                        // success: true,
-                        // revisions: 1, // TODO make it possible to be array, and conditional check to be either = :rev or IN (:el1, :el2...)
-                        // ringToken: newImage.ringToken,
-                        // id: newImage.id,
-                        // meta: newImage.meta,
-                    },
-                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+                if(!!proc_from_db && !!proc_from_db[0]) {
+                    await transactUpdateItem(
+                        proc_from_db[0],
+                        {
+                            proc_synchronours_end_date: Date.now(), //-->  procedure synchronous enddate
+                            ...procedureResult,
+                            revisions: proc_from_db[0].revisions
+                            // success: true,
+                            // revisions: 1, // TODO make it possible to be array, and conditional check to be either = :rev or IN (:el1, :el2...)
+                            // ringToken: newImage.ringToken,
+                            // id: newImage.id,
+                            // meta: newImage.meta,
+                        },
+                        (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+                }
                 // asyncGenSave = this.save(__type, Object.assign({}, { identity: args.payload.identity }, { arguments: [procedureResult] }))
                 // processorSave = await asyncGenSave.next()
                 // !process.env.DEBUGGER || (yield { resultItems: [{ message: processorSave.value.arguments }] })
