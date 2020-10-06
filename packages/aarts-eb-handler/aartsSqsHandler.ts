@@ -35,7 +35,7 @@ export class AartsSqsHandler extends AartsEBUtil {
 		// SPECIAL CASE IF ITS ACTUALLY NOT REALLY AartsEvent yet, i.e no meta present, its still an AppSyncEvent (because of direct calls to this method from procedures ) 
 		if (Array.isArray(input.payload.arguments) && input.payload.arguments.length > Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)) {
 			throw new Error(`${process.env.ringToken}: [${input.meta.item}:baseValidateDelete] Payload is array an it excedes the max arguments array length constraint(${Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25)})`)
-		} else if (Array.isArray(input.payload.arguments) && ["query", "get"].indexOf((input as unknown as AppSyncEvent).action) === -1 && input.payload.arguments.length > 1) {
+		} else if (Array.isArray(input.payload.arguments) && ["query", "get"].indexOf((input as unknown as AppSyncEvent).action) === -1 && input.payload.arguments.length >= 1) {
 			console.log("SQSSQS-TRALALA SHTE RAZPRASHTA ", ppjson(input.payload.arguments) );
 			!process.env.DEBUGGER || (await this.publish(prepareAartsEventForDispatch(Object.assign({}, input, { meta: {action: input.meta.action, ringToken: input.meta.ringToken, item: input.meta.ringToken}, payload: { identity: input.payload.identity, resultItems: [{ message: `[AartsHandler:processPayloadAsync] Payload is multi element array. Generating events for each element` }] } }))))
 			for (const payload of input.payload.arguments) {

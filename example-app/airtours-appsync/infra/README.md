@@ -1,4 +1,4 @@
-# How to run
+# BECOMES OBSOLATE IN FLAVOR OF AARTS-CLI
 
 ## Prerequisites
 - [nodejs]

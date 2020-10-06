@@ -4,7 +4,7 @@ CLIENT_PROJECT_PATH=$(PWD)
 AARTS_INFRA_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 #defaults
-STACK_NAME=`printf '%s\n' "${PWD##*/}" | sed 's/[-\|_0123456789]//g' | sed 's/\.//g'`
+STACK_NAME=`printf '%s\n' "${PWD##*/}" | sed 's/[\|_0123456789]//g' | sed 's/\.//g'`
 AWS_PROFILE=akrsmv
 DEBUG_MODE=
 

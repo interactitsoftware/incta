@@ -50,23 +50,23 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
         return accum
     }, itemTransactWriteItemList)
 
-    // TODO BE EXCERPTED INTO A SEPARATE dynamodb-streams-firehose module
+    //EXCERPTED INTO dynamodb-streams callbacks
     // too much transaction conflicts may occur, if lots of items created/updated
-    if (process.env.PERFORM_AGGREGATIONS) {
-        allTransactWriteItemList.push({ // update aggregations
-            Update: {
-                TableName: DB_NAME,
-                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-                Key: Object.assign({
-                    id: { S: "aggregations" },
-                    meta: { S: `totals` },
-                }),
-                UpdateExpression: `SET #item_type = if_not_exists(#item_type, :zero) + :inc_one`,
-                ExpressionAttributeNames: { [`#item_type`]: item.item_type },
-                ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
-            }
-        })
-    }
+    // if (process.env.PERFORM_AGGREGATIONS) {
+    //     allTransactWriteItemList.push({ // update aggregations
+    //         Update: {
+    //             TableName: DB_NAME,
+    //             ReturnValuesOnConditionCheckFailure: "ALL_OLD",
+    //             Key: Object.assign({
+    //                 id: { S: "aggregations" },
+    //                 meta: { S: `totals` },
+    //             }),
+    //             UpdateExpression: `SET #item_type = if_not_exists(#item_type, :zero) + :inc_one`,
+    //             ExpressionAttributeNames: { [`#item_type`]: item.item_type },
+    //             ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+    //         }
+    //     })
+    // }
 
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,
@@ -82,22 +82,21 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     } catch (err) {
         throw new Error(ppjson({request: params, error: err}))
     }
-    // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
-    // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
-    if (!!item["procedure"] && process.env.ringToken === item["procedure"].substr(item["procedure"].indexOf("|") + 1)) {
-        const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
-            TableName: DB_NAME,
-            Key: Object.assign({
-                id: { S: item["procedure"] },
-                meta: { S: `${versionString(0)}|${item["procedure"].substr(0, item["procedure"].indexOf("|"))}`},
-            }),
-            UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
-            ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
-            ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
-            ReturnValues: "ALL_NEW"
-        }))
-        !process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
-    }
+    // // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
+    // if (!!item["procedure"] && process.env.ringToken === item["procedure"].substr(item["procedure"].indexOf("|") + 1)) {
+    //     const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
+    //         TableName: DB_NAME,
+    //         Key: Object.assign({
+    //             id: { S: item["procedure"] },
+    //             meta: { S: `${versionString(0)}|${item["procedure"].substr(0, item["procedure"].indexOf("|"))}`},
+    //         }),
+    //         UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
+    //         ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+    //         ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+    //         ReturnValues: "ALL_NEW"
+    //     }))
+    //     !process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
+    // }
     
     return item
 }

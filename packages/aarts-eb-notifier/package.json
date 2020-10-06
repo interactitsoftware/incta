@@ -1,6 +1,6 @@
 {
   "name": "aarts-eb-notifier",
-  "version": "0.1.54",
+  "version": "0.1.88",
   "description": "calls an appsync local datasource with aarts payload passed",
   "main": "./aartsAppsyncNotifier.js",
   "types": "./aartsAppsyncNotifier.d.ts",
@@ -11,11 +11,11 @@
   "dependencies": {
     "@types/aws-lambda": "^8.10.63",
     "@types/graphql": "^14.5.0",
-    "@types/node": "^13.13.21",
+    "@types/node": "^13.13.23",
     "@types/redux": "^3.6.0",
     "@types/request": "^2.48.4",
     "aws-appsync": "^1.8.1",
-    "aws-sdk": "^2.766.0",
+    "aws-sdk": "^2.768.0",
     "cross-fetch": "^3.0.6",
     "graphql-tag": "^2.11.0",
     "typescript": "^3.9.7"

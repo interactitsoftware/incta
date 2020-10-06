@@ -39,7 +39,6 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
     public useNamesLength?: number
 
     private async registerForPublishing(event: AppSyncEvent) {
-        // tourist_payloads.push(event.arguments)
         tourist_payloads.push(event)
     }
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {

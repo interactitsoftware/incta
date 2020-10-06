@@ -1,4 +1,4 @@
-import { fromAttributeMap, versionString } from "./DynamoDbClient";
+import { DB_NAME, ddbRequest, dynamoDbClient, fromAttributeMap, versionString } from "./DynamoDbClient";
 import { batchGetItem } from "./dynamodb-batchGetItem";
 import { transactUpdateItem } from "./dynamodb-transactUpdateItem";
 import { transactPutItem } from "./dynamodb-transactPutItem";
@@ -73,12 +73,14 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async _onCreate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
         if (dynamodbStreamRecord !== undefined) {
             const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
-            if (!newImage.meta.startsWith(versionString(0)) || newImage.revisions !== 0) {
+            if (!newImage.meta.startsWith(versionString(0))) {
                 // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
                 return
             }
-            !process.env.DEBUGGER || loginfo("ON CREATE CALL BACK FIRED for streamRecord ", newImage)
+            !process.env.DEBUGGER || loginfo("_onCreate CALL BACK FIRED for streamRecord ", newImage)
+
             if (typeof this.onCreate === "function") {
+                !process.env.DEBUGGER || loginfo("CALLING ON CREATE CALL BACK for item ", newImage.item_type)
                 await this.onCreate(__type, newImage)
             } else {
                 !process.env.DEBUGGER || console.log(`No specific onCreate method was found in manager of ${__type}`)
@@ -88,19 +90,19 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async _onUpdate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
         if (dynamodbStreamRecord !== undefined) {
             const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
+            const oldImage = fromAttributeMap(dynamodbStreamRecord?.OldImage as AttributeMap) as DynamoItem
             !process.env.DEBUGGER || loginfo("_onUpdate CALL BACK FIRED for streamRecord ", newImage)
 
             // mark procedures as done when total_events=processed_events
             // TODO refine it not to cycle indefinetley
-            if (newImage.id.startsWith("proc_") && (newImage.revisions === 0 || newImage.revisions === 1 ) && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
+            if (newImage.id.startsWith("proc_") && (newImage.revisions === 0 || newImage.revisions === 1) && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
                 console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
                 try { // swallow errors for now
                     await transactUpdateItem(
                         newImage,
                         {
                             end_date: Date.now(),
-                            success: true,
-                            revisions: 1, // TODO make it possible to be array, and conditional check to be either = :rev or IN (:el1, :el2...)
+                            item_state: "success",
                             ringToken: newImage.ringToken,
                             id: newImage.id,
                             meta: newImage.meta,
@@ -208,7 +210,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 // if a procedure is not firing any events it must set the success property itself
                 // a pure hack - load latest just for updating procedure's revisions
                 const proc_from_db = await getItemById(procedure.item_type, procedure.id)
-                if(!!proc_from_db && !!proc_from_db[0]) {
+                if (!!proc_from_db && !!proc_from_db[0]) {
                     await transactUpdateItem(
                         proc_from_db[0],
                         {
@@ -616,7 +618,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         }
 
         for (const arg of event.payload.arguments) {
-            if (!("id" in arg && "revisions" in arg)) {
+            if (!("id" in arg && ("revisions" in arg || arg["id"].startsWith("proc_")))) {
                 // will throw error if ONLY SOME of the above keys are present
                 throw new Error(`${process.env.ringToken}: {id, revisions} keys are mandatory when updating`)
             } else {

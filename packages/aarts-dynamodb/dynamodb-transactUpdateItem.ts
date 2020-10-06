@@ -28,14 +28,19 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     const dexistingItemkey = { id: { S: itemUpdates.id }, meta: { S: itemUpdates.meta } };
     const dexistingItem = toAttributeMap(existingItem)
 
-    if (Object.keys(ditemUpdates).length === 1 && "revisions" in ditemUpdates) {
+    if (Object.keys(ditemUpdates).length === 0 || (Object.keys(ditemUpdates).length === 1 && "revisions" in ditemUpdates)) {
         // no new updates, only revision passed
-        throw new Error(`${process.env.ringToken}: no new updates, only revision passed for id[${existingItem.id}]`)
+        throw new Error(`${process.env.ringToken}: no new update for id[${existingItem.id}]`)
+    }
+
+    if (!!ditemUpdates["item_type"]) {
+        // forbid changing item's type
+        throw new Error(`${process.env.ringToken}: changing item_type is forbidden`)
     }
 
     const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Array.from(new Set(Object.keys(dexistingItem).concat(Object.keys(ditemUpdates)))).filter(uk => ["revisions", "id", "meta"].indexOf(uk) === -1).map(uk => `#${uk} = :${uk}`).join(", ")}`
-    const updateExprHistory = `set ${Object.keys(ditemUpdates).filter(diu => diu in dexistingItem).map(uk => `#${uk} = :${uk}`).join(", ")}`
-
+    // in the case of proc_ updates revisions is not being passed so ensure its always in the list:
+    const updateExprHistory = `set ${Object.keys(ditemUpdates).filter(diu => diu !== "revisions" && diu in dexistingItem).concat(["revisions"]).map(uk => `#${uk} = :${uk}`).join(", ")}`
 
     const updateExpressionValues: Record<AttributeName, AttributeValue> = Object.assign(
         {},
@@ -72,7 +77,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
             Update: {
-                ConditionExpression: `(attribute_not_exists(#revisions) OR #revisions = :revisions)`,
+                ConditionExpression: existingItem.item_type.startsWith("proc_") ? `(attribute_not_exists(#revisions) OR attribute_exists(#revisions) OR #revisions = :revisions)` : `(attribute_not_exists(#revisions) OR #revisions = :revisions)`,
                 Key: dexistingItemkey,
                 TableName: DB_NAME,
                 ExpressionAttributeNames: updateExpressionNames,
@@ -105,19 +110,19 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                 }),
                 UpdateExpression: updateExprHistory,
                 ExpressionAttributeNames: Object.keys(ditemUpdates).reduce<{ [key: string]: AttributeName }>((accum, key) => {
-                    if (key in dexistingItem) { // value may not existed in item being updated
+                    if (key != "revisions" && key in dexistingItem) { // value may not existed in item being updated
                         accum[`#${key}`] = key
                     }
                     return accum
-                }, {}),
+                }, {"#revisions": "revisions"}),
                 ExpressionAttributeValues: Object.assign(
                     {},
                     Object.keys(ditemUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
-                        if (key in dexistingItem) { // value may not existed in item being updated
+                        if (key != "revisions" && key in dexistingItem) { // value may not existed in item being updated
                             accum[`:${key}`] = dexistingItem[key]
                         }
                         return accum
-                    }, {})
+                    }, {":revisions": dexistingItem["revisions"]})
                 ),
             }
         }
@@ -141,7 +146,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
                     accum.push({
                         Update: {
-                            ConditionExpression: `(attribute_not_exists(#revisions) OR #revisions = :revisions)`,
+                            ConditionExpression: existingItem.item_type.startsWith("proc_") ? `(attribute_not_exists(#revisions) OR attribute_exists(#revisions) OR #revisions = :revisions)` : `(attribute_not_exists(#revisions) OR #revisions = :revisions)`,
                             Key: { id: dexistingItemkey.id, meta: { S: refkeyitemmeta(existingItem, key) } },
                             TableName: DB_NAME,
                             ExpressionAttributeNames: Object.assign(
@@ -213,19 +218,19 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     }
 
     // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
-    if (!!itemUpdates["procedure"] && process.env.ringToken === itemUpdates["procedure"].substr(itemUpdates["procedure"].indexOf("|") + 1)) {
-        const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
-            TableName: DB_NAME,
-            Key: Object.assign({
-                id: { S: itemUpdates["procedure"] },
-                meta: { S: `${versionString(0)}|${itemUpdates["procedure"].substr(0, itemUpdates["procedure"].indexOf("|"))}` },
-            }),
-            UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
-            ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
-            ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
-        }))
-        !process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
-    }
+    // if (!!itemUpdates["procedure"] && process.env.ringToken === itemUpdates["procedure"].substr(itemUpdates["procedure"].indexOf("|") + 1)) {
+    //     const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
+    //         TableName: DB_NAME,
+    //         Key: Object.assign({
+    //             id: { S: itemUpdates["procedure"] },
+    //             meta: { S: `${versionString(0)}|${itemUpdates["procedure"].substr(0, itemUpdates["procedure"].indexOf("|"))}` },
+    //         }),
+    //         UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
+    //         ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
+    //         ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
+    //     }))
+    //     !process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
+    // }
 
     return Object.assign(existingItem,
         Object.keys(itemUpdates).filter(k => itemUpdates[k] === "__del__")

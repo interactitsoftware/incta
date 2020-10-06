@@ -85,7 +85,6 @@ export class EventBusConstruct extends cdk.Construct {
         })
         this.grantAccess(this.eventDispatcher)
         props.dynamoDbConstruct.grantAccess(this.eventDispatcher)
-
     }
 
     grantAccess(lambdaFunction: lambda.Function) {

@@ -1,8 +1,9 @@
 {
   "name": "aarts-cli",
-  "version": "0.1.585",
+  "version": "0.1.696",
   "bin": {
-    "aarts": "aarts.sh"
+    "aarts": "aarts.sh",
+    "aarts-cdk-typescript": "bin/aarts-cdk-typescript.js"
   },
   "main": "./dist",
   "files": [
@@ -15,7 +16,7 @@
     "*.md"
   ],
   "scripts": {
-    "build": "tsc && cp package.json aarts.sh ln-cross-platform.sh ./dist && echo {\"app\": \"node bin/aws-cdk-typescript.js\"} > ./dist/cdk.json",
+    "build": "tsc && cp package.json aarts.sh ln-cross-platform.sh ./dist && echo {\"app\": \"node bin/aarts-cdk-typescript.js\"} > ./dist/cdk.json",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk"
@@ -23,10 +24,10 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.66.0",
     "@types/jest": "^24.9.1",
-    "@types/node": "^10.17.35",
+    "@types/node": "^10.17.37",
     "@types/shelljs": "^0.8.8",
     "aws-cdk": "^1.66.0",
-    "jest": "^26.4.2",
+    "jest": "^26.5.2",
     "ts-jest": "^26.4.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7",

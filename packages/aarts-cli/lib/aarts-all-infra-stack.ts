@@ -10,9 +10,11 @@ import { AppSyncLocalDatasourceConstruct } from './constructs/AppSyncLocalDataso
 import { AartsResolver, AppSyncLambdaDataSourceConstruct } from './constructs/appSyncLambdaDataSourceConstruct';
 import { WorkerConstruct } from './constructs/workerConstruct';
 import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
+import lambda = require('@aws-cdk/aws-lambda')
+import { DynamoEventsConstruct } from './constructs/dynamoEventsConstruct';
 
 let clientAppName: string, clientAppDirName: string
-export {clientAppName, clientAppDirName}
+export { clientAppName, clientAppDirName }
 export interface AartsInfraStackProps extends StackProps {
   clientAppName: string
   clientAppDirName: string
@@ -69,14 +71,9 @@ export class AartsAllInfraStack extends Stack {
       nodeModulesLayer
     })
 
-    eventBusConstruct.eventDispatcher.addEventSource(new DynamoEventSource(dynamoDbConstruct.table,
-      {
-        startingPosition: StartingPosition.LATEST,
-        batchSize: 10,
-        bisectBatchOnError: true,
-        parallelizationFactor: 10,
-        maxBatchingWindow: Duration.seconds(10)
-      }))
+    const dynamoEventsConstruct = new DynamoEventsConstruct(this, "DynamoEvents", {
+      eventBusConstruct, dynamoDbConstruct, nodeModulesLayer
+    })
 
     const workerInputHandlerShort = new WorkerConstruct(this, `${props.clientAppName}HandlerShort`, {
       workerName: `${props.clientAppName}HandlerShort`,
@@ -90,7 +87,8 @@ export class AartsAllInfraStack extends Stack {
       sqsRetries: 3,
       layers: [
         nodeModulesLayer
-      ]
+      ],
+      reservedConcurrentExecutions: 25
     });
 
     const workerInputHandlerLong = new WorkerConstruct(this, `${props.clientAppName}HandlerLong`, {
@@ -105,14 +103,16 @@ export class AartsAllInfraStack extends Stack {
       sqsRetries: 1,
       layers: [
         nodeModulesLayer
-      ]
+      ],
+      reservedConcurrentExecutions: 25
     })
 
-    if (!!this.node.tryGetContext("debug-mode")) 
-    {
+    if (!!this.node.tryGetContext("debug-mode")) {
       workerInputHandlerLong.function.addEnvironment("DEBUGGER", "1")
       workerInputHandlerShort.function.addEnvironment("DEBUGGER", "1")
       eventBusConstruct.eventDispatcher.addEnvironment("DEBUGGER", "1")
+      dynamoEventsConstruct.dynamoEventsAggregation.addEnvironment("DEBUGGER", "1")
+      dynamoEventsConstruct.dynamoEventsCallback.addEnvironment("DEBUGGER", "1")
       appSyncLocalDatasourceConstruct.notifierFunctionConstruct.function.addEnvironment("DEBUGGER", "1")
     }
 

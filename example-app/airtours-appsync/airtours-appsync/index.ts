@@ -6,6 +6,8 @@ import { handler as notifier } from "aarts-eb-notifier/aartsAppsyncNotifier"
 import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
 import { IDomainAdapter } from "aarts-types/interfaces"
 import { AnyConstructor } from "aarts-types/Mixin"
+import { dynamoEventsAggregation } from "aarts-dynamodb-events/dynamoEventsAggregation"
+import { dynamoEventsCallback } from "aarts-dynamodb-events/dynamoEventsCallback"
 
 import {
     // -- defined on a aarts-dynamodb/_specs_ level
@@ -88,4 +90,4 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
 
 global.domainAdapter = new DomainAdapter()
 
-export { dispatcher, handler, notifier }
+export { dispatcher, handler, notifier, dynamoEventsAggregation, dynamoEventsCallback }
