@@ -1,6 +1,5 @@
 'use strict'
-// TODO keys (id / meta) as separate params, and a string for the update expression?
-// https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
+
 import { DynamoDB } from 'aws-sdk'
 import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList, AttributeMap, UpdateItemInput } from 'aws-sdk/clients/dynamodb'
 import { DynamoItem } from './BaseItemManager';
