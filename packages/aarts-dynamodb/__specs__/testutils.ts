@@ -115,7 +115,7 @@ export const testInsertOneNonUniqueRefKey = async<T extends DynamoItem>(
     const createdItems = await queryForId(item.id)
     expect(createdItems.length).toBe(2)
 
-    const ddbMainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${item.item_type}`)[0]
+    const ddbMainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${item.__typename}`)[0]
     const ddbRefkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(item, input.propRefKey))[0]
 
     expect(ddbMainItem).toEqual(item)

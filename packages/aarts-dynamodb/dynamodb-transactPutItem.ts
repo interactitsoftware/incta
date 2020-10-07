@@ -61,8 +61,8 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     //                 id: { S: "aggregations" },
     //                 meta: { S: `totals` },
     //             }),
-    //             UpdateExpression: `SET #item_type = if_not_exists(#item_type, :zero) + :inc_one`,
-    //             ExpressionAttributeNames: { [`#item_type`]: item.item_type },
+    //             UpdateExpression: `SET #__typename = if_not_exists(#__typename, :zero) + :inc_one`,
+    //             ExpressionAttributeNames: { [`#__typename`]: item.__typename },
     //             ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
     //         }
     //     })

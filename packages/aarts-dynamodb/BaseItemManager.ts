@@ -36,7 +36,7 @@ export const DynamoItem =
             // LEAVE (s|n))metadata keys ONLY TO REFKEY LOGIC
             // public smetadata: string = idstr
 
-            public item_type: string = t
+            public __typename: string = t
             public item_state?: string
             public state_history?: Record<number, string>
             public revisions: number = 0
@@ -80,7 +80,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             !process.env.DEBUGGER || loginfo("_onCreate CALL BACK FIRED for streamRecord ", newImage)
 
             if (typeof this.onCreate === "function") {
-                !process.env.DEBUGGER || loginfo("CALLING ON CREATE CALL BACK for item ", newImage.item_type)
+                !process.env.DEBUGGER || loginfo("CALLING ON CREATE CALL BACK for item ", newImage.__typename)
                 await this.onCreate(__type, newImage)
             } else {
                 !process.env.DEBUGGER || console.log(`No specific onCreate method was found in manager of ${__type}`)
@@ -169,7 +169,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const dynamoItems = []
         for (const arg of processorBase.value.arguments) {
             let procedure = new proto(arg) as unknown as IProcedure<T> & DynamoItem
-            procedure.id = `${procedure.item_type}|${procedure.ringToken}` // TODO unify in some more general place. Using the ringToken as the GUID part of a procedure, avoiding one more refkey "procedure"
+            procedure.id = `${procedure.__typename}|${procedure.ringToken}` // TODO unify in some more general place. Using the ringToken as the GUID part of a procedure, avoiding one more refkey "procedure"
             const asyncGenDomain = this.validateStart(Object.assign(processorBase.value, { arguments: procedure }))
             let processorDomain = await asyncGenDomain.next()
             yield { resultItems: [{ message: `[${__type}:validateStart] ${processorDomain.value}` }] }
@@ -209,7 +209,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 }
                 // if a procedure is not firing any events it must set the success property itself
                 // a pure hack - load latest just for updating procedure's revisions
-                const proc_from_db = await getItemById(procedure.item_type, procedure.id)
+                const proc_from_db = await getItemById(procedure.__typename, procedure.id)
                 if (!!proc_from_db && !!proc_from_db[0]) {
                     await transactUpdateItem(
                         proc_from_db[0],
@@ -534,7 +534,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 // !process.env.DEBUGGER || loginfo("Using supplied ring token for item creation id: ", payload.ringToken)
                 // arg["id"] = `${__type}|${payload.ringToken}` NOPE ! dont do that, allow clients to cpecify their own ID, ex usage see nomenclatures
                 arg["meta"] = `${versionString(0)}|${__type}`
-                arg["item_type"] = __type
+                arg["__typename"] = __type
                 arg["ringToken"] = event.meta.ringToken
             }
         }
@@ -623,7 +623,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 throw new Error(`${process.env.ringToken}: {id, revisions} keys are mandatory when updating`)
             } else {
                 arg["meta"] = `${versionString(0)}|${__type}`
-                arg["item_type"] = __type
+                arg["__typename"] = __type
                 arg["ringToken"] = event.meta.ringToken
             }
         }

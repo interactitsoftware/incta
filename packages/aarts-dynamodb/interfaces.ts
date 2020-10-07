@@ -10,7 +10,7 @@ export interface IBaseDynamoItemProps {
 
     id: string
 
-    item_type: string
+    __typename: string
     item_state?: string
     state_history?: Record<number, string>
     revisions: number

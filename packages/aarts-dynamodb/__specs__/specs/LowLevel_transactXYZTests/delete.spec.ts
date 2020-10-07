@@ -26,7 +26,7 @@ describe('delete item', () => {
     
     const allAfterDelete = await queryForId(airplane.id)
     expect(allAfterDelete.length).toBe(1)
-    expect(allAfterDelete[0]).toEqual(Object.assign(airplane,{meta: `${deletedVersionString(1)}|${airplane.item_type}`, revisions: 0}))
+    expect(allAfterDelete[0]).toEqual(Object.assign(airplane,{meta: `${deletedVersionString(1)}|${airplane.__typename}`, revisions: 0}))
     
   })
 })

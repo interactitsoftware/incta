@@ -76,7 +76,7 @@ FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts
         meta: 'v_0|airplane',
         revisions: 0,
         number_of_seats: 13,
-        item_type: 'airplane',
+        __typename: 'airplane',
         ringToken: 'notneededfortest'
       }
 
@@ -88,7 +88,7 @@ FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts
         meta: 'v_0|airplane',
         revisions: 0,
         number_of_seats: '__del__',
-        item_type: 'airplane',
+        __typename: 'airplane',
         ringToken: 'notneededfortest'
       }
 
@@ -102,7 +102,7 @@ FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.update.spec.ts
     + Received  + 1
 
     @@ -6,7 +6,8 @@
-        "item_type": "airplane",
+        "__typename": "airplane",
         "manifacturer": "to",
         "meta": "v_0|airplane",
         "number_of_seats": null,
@@ -181,7 +181,7 @@ FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts
     Received message: "[airplane:baseValidateCreate] Payload is not a single element array! {
         \"id\": \"airplane|e88e1b1a-c0d9-423e-bc7a-29d200e865a4\",
         \"meta\": \"v_0|airplane\",
-        \"item_type\": \"airplane\",
+        \"__typename\": \"airplane\",
         \"revisions\": 0,
         \"date_created\": \"2020-09-22T06:43:25.478Z\",
         \"date_updated\": \"2020-09-22T06:43:25.478Z\",
@@ -215,7 +215,7 @@ FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts
         {
             \"id\": \"airplane|4617e091-4343-4ea0-8518-1848d09ad621\",
             \"meta\": \"v_0|airplane\",
-            \"item_type\": \"airplane\",
+            \"__typename\": \"airplane\",
             \"revisions\": 0,
             \"date_created\": \"2020-09-22T06:43:25.516Z\",
             \"date_updated\": \"2020-09-22T06:43:25.516Z\",
@@ -226,7 +226,7 @@ FAIL __specs__/specs/HighLevel_BaseItemManagerTests/manager.create.spec.ts
         {
             \"id\": \"airplane|4617e091-4343-4ea0-8518-1848d09ad621\",
             \"meta\": \"v_0|airplane\",
-            \"item_type\": \"airplane\",
+            \"__typename\": \"airplane\",
             \"revisions\": 0,
             \"date_created\": \"2020-09-22T06:43:25.516Z\",
             \"date_updated\": \"2020-09-22T06:43:25.516Z\",

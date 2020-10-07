@@ -49,7 +49,7 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
         //         ReturnValuesOnConditionCheckFailure: "ALL_OLD",
         //         Item: Object.assign({
         //             id: dexistingItemkey.id,
-        //             meta: { S: `${versionString(++existingItem.revisions)}|${existingItem.item_type}` },
+        //             meta: { S: `${versionString(++existingItem.revisions)}|${existingItem.__typename}` },
         //         }
         //             , Object.keys(ditemUpdates).reduce<{ [key: string]: AttributeValue }>((accum, key) => {
         //                 accum[key] = dexistingItem[key]
@@ -63,7 +63,7 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
                 ReturnValuesOnConditionCheckFailure: "ALL_OLD",
                 Key: Object.assign({
                     id: dexistingItemkey.id,
-                    meta: { S: `${deletedVersionString(++existingItem.revisions)}|${existingItem.item_type}` },
+                    meta: { S: `${deletedVersionString(++existingItem.revisions)}|${existingItem.__typename}` },
                 }),
                 UpdateExpression: updateExprHistory,
                 ExpressionAttributeNames: Object.keys(dexistingItem).reduce<{ [key: string]: AttributeName }>((accum, key) => {
@@ -89,7 +89,7 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
         if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1) {
             accum.push({
                 Delete: {
-                    Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.item_type}}${key}` } },
+                    Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.__typename}}${key}` } },
                     TableName: DB_NAME,
                     ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                 }
@@ -98,7 +98,7 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
         if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && __item_refkeys.filter(r => r.key === key)[0].unique === true) {
             accum.push({
                 Delete: {
-                    Key: toAttributeMap({ id: `uq|${existingItem.item_type}}${key}`, meta: `${existingItem[key]}` }),
+                    Key: toAttributeMap({ id: `uq|${existingItem.__typename}}${key}`, meta: `${existingItem[key]}` }),
                     TableName: DB_NAME,
                     ReturnValuesOnConditionCheckFailure: "ALL_OLD"
                 }
@@ -119,8 +119,8 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
                     id: { S: "aggregations" },
                     meta: { S: `totals` },
                 }),
-                UpdateExpression: `SET #${existingItem.item_type} = #${existingItem.item_type} - :dec_one`,
-                ExpressionAttributeNames: { [`#${existingItem.item_type}`]: existingItem.item_type },
+                UpdateExpression: `SET #${existingItem.__typename} = #${existingItem.__typename} - :dec_one`,
+                ExpressionAttributeNames: { [`#${existingItem.__typename}`]: existingItem.__typename },
                 ExpressionAttributeValues: { ":dec_one": { "N": "1" } },
             }
         })

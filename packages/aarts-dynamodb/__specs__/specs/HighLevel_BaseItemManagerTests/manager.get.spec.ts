@@ -49,9 +49,9 @@ describe('manager.get.spec', () => {
 
     expect(processorGet.value.arguments.length).toBe(2)
     //@ts-ignore
-    expect(processorGet.value.arguments.filter(a => a.item_type === _specs_AirplaneItem.__type).length).toBe(1)
+    expect(processorGet.value.arguments.filter(a => a.__typename === _specs_AirplaneItem.__type).length).toBe(1)
     //@ts-ignore
-    return expect(processorGet.value.arguments.filter(a => a.item_type === _specs_AirportItem.__type).length).toBe(1)
+    return expect(processorGet.value.arguments.filter(a => a.__typename === _specs_AirportItem.__type).length).toBe(1)
   })
 
   test('will throw if payload arguments is not an array', async () => {

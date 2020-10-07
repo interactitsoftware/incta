@@ -34,10 +34,10 @@ export function removeEmpty(obj: Record<string, any>): object {
 export { versionString }
 export const deletedVersionString = (nr: number) => `d_${nr}`
 
-export const uniqueitemrefkeyid = <T extends DynamoItem>(item: T, key: string) => `uq|${item.item_type}}${key}`
+export const uniqueitemrefkeyid = <T extends DynamoItem>(item: T, key: string) => `uq|${item.__typename}}${key}`
 
-export const refkeyitemmeta = <T extends DynamoItem>(item: T, key: string) => `${item.item_type}}${key}`
-// export const refkeyitemtype = <T extends DynamoItem>(item: DynamoItem, key: string) => `ref_key|${item.item_type}}${key}`
+export const refkeyitemmeta = <T extends DynamoItem>(item: T, key: string) => `${item.__typename}}${key}`
+// export const refkeyitemtype = <T extends DynamoItem>(item: DynamoItem, key: string) => `ref_key|${item.__typename}}${key}`
 export const refkeyitem = <T extends DynamoItem>(item: T, key: string) => Object.assign(
     {},
     item,
@@ -45,7 +45,7 @@ export const refkeyitem = <T extends DynamoItem>(item: T, key: string) => Object
         meta:  refkeyitemmeta(item, key),
         smetadata: typeof item[key] === "string" ? item[key] as string : undefined,
         nmetadata: typeof item[key] === "number" ? item[key] as number : undefined,
-        // item_type: refkeyitemtype(item, key)
+        // __typename: refkeyitemtype(item, key)
     })
 
 export function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemUpdates: Record<string, any>): object {

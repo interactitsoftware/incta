@@ -47,6 +47,6 @@ export class AirportManager extends BaseDynamoItemManager<AirportItem> {
     //             revisions: newImage.revisions,
     //             meta: `${versionString(0)}|${newImage.id.substr(0, newImage.id.indexOf("|"))}`
     //         },
-    //         (this.lookupItems.get(newImage.item_type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+    //         (this.lookupItems.get(newImage.__typename) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
     // }
 }

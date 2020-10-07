@@ -64,7 +64,7 @@ __specs__/specs/LowLevel_transactXYZTests/get.spec.ts(42,89): error TS2339: Prop
 __specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(17,34): error TS2345: Argument of type '_specs_AirplaneItem' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
   Type '_specs_AirplaneItem' is not assignable to type 'AnyConstructor<object>'.
 __specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(19,32): error TS2345: Argument of type '_specs_Airplane' is not assignable to parameter of type 'DynamoItem<_specs_Airplane>'.
-  Type '_specs_Airplane' is missing the following properties from type 'DynamoItem<AnyConstructor<object>>.DynamoItem': id, meta, item_type, revisions, and 2 more.
+  Type '_specs_Airplane' is missing the following properties from type 'DynamoItem<AnyConstructor<object>>.DynamoItem': id, meta, __typename, revisions, and 2 more.
 __specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(20,26): error TS2339: Property 'id' does not exist on type '_specs_Airplane'.
 __specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(21,28): error TS2339: Property 'meta' does not exist on type '_specs_Airplane'.
 __specs__/specs/LowLevel_transactXYZTests/update.number.refkey.spec.ts(22,33): error TS2339: Property 'revisions' does not exist on type '_specs_Airplane'.
@@ -80,7 +80,7 @@ __specs__/specs/LowLevel_transactXYZTests/update.remove.refkey.spec.ts(22,33): e
 __specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(18,48): error TS2345: Argument of type '_specs_FlightItem' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
   Type '_specs_FlightItem' is not assignable to type 'AnyConstructor<object>'.
 __specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(20,51): error TS2345: Argument of type '_specs_Flight' is not assignable to parameter of type 'DynamoItem<_specs_Flight>'.
-  Type '_specs_Flight' is missing the following properties from type 'DynamoItem<AnyConstructor<object>>.DynamoItem': id, meta, item_type, revisions, and 2 more.
+  Type '_specs_Flight' is missing the following properties from type 'DynamoItem<AnyConstructor<object>>.DynamoItem': id, meta, __typename, revisions, and 2 more.
 __specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(21,26): error TS2339: Property 'id' does not exist on type '_specs_Flight'.
 __specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(22,28): error TS2339: Property 'meta' does not exist on type '_specs_Flight'.
 __specs__/specs/LowLevel_transactXYZTests/update.string.refkey.spec.ts(23,33): error TS2339: Property 'revisions' does not exist on type '_specs_Flight'.
@@ -535,12 +535,12 @@ BaseItemManager.ts(52,27): error TS2322: Type 'RefKey<InstanceType<T>>[] | { key
   Type '{ key: "ringToken"; }[]' is not assignable to type 'RefKey<InstanceType<T>>[]'.
     Type '{ key: "ringToken"; }' is not assignable to type 'RefKey<InstanceType<T>>'.
       Types of property 'key' are incompatible.
-        Type '"ringToken"' is not assignable to type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
+        Type '"ringToken"' is not assignable to type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
 BaseItemManager.ts(52,84): error TS2769: No overload matches this call.
   Overload 1 of 2, '(...items: ConcatArray<RefKey<InstanceType<T>>>[]): RefKey<InstanceType<T>>[] | undefined', gave the following error.
-    Type '"ringToken"' is not assignable to type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
+    Type '"ringToken"' is not assignable to type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
   Overload 2 of 2, '(...items: (RefKey<InstanceType<T>> | ConcatArray<RefKey<InstanceType<T>>>)[]): RefKey<InstanceType<T>>[] | undefined', gave the following error.
-    Type '"ringToken"' is not assignable to type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
+    Type '"ringToken"' is not assignable to type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof InstanceType<T>'.
 BaseItemManager.ts(146,58): error TS2339: Property 'start' does not exist on type 'DynamoItem<T>'.
 BaseItemManager.ts(374,22): error TS2339: Property 'id' does not exist on type 'T'.
 BaseItemManager.ts(375,39): error TS2339: Property 'id' does not exist on type 'T'.
@@ -550,26 +550,26 @@ BaseItemManager.ts(377,69): error TS2339: Property 'id' does not exist on type '
 BaseItemManager.ts(377,86): error TS2339: Property 'meta' does not exist on type 'T'.
 BaseItemManager.ts(578,80): error TS2339: Property '__refkeys' does not exist on type 'DynamoItem<T>'.
 BaseItemManager.ts(597,66): error TS2339: Property '__refkeys' does not exist on type 'DynamoItem<T>'.
-dynamodb-transactDeleteItem.ts(88,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
-dynamodb-transactDeleteItem.ts(97,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactDeleteItem.ts(88,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactDeleteItem.ts(97,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
 dynamodb-transactDeleteItem.ts(100,95): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
   No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
-dynamodb-transactPutItem.ts(27,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactPutItem.ts(27,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
 dynamodb-transactPutItem.ts(27,85): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
   No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
-dynamodb-transactPutItem.ts(36,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactPutItem.ts(36,70): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
 dynamodb-transactPutItem.ts(36,85): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
   No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
 dynamodb-transactPutItem.ts(37,94): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
   No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
 dynamodb-transactUpdateItem.ts(17,53): error TS2339: Property 'id' does not exist on type 'Partial<T>'.
 dynamodb-transactUpdateItem.ts(17,82): error TS2339: Property 'meta' does not exist on type 'Partial<T>'.
-dynamodb-transactUpdateItem.ts(113,91): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactUpdateItem.ts(113,91): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
 dynamodb-transactUpdateItem.ts(144,107): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
   No index signature with a parameter of type 'string' was found on type 'DynamoItem<AnyConstructor<object>>.DynamoItem & AnyConstructor<object>'.
 dynamodb-transactUpdateItem.ts(153,108): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Partial<T>'.
   No index signature with a parameter of type 'string' was found on type 'Partial<T>'.
-dynamodb-transactUpdateItem.ts(165,82): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "item_type" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
+dynamodb-transactUpdateItem.ts(165,82): error TS2345: Argument of type 'string' is not assignable to parameter of type '"id" | "__typename" | "item_state" | "state_history" | "revisions" | "checksum" | "user_created" | "user_updated" | "date_created" | "date_updated" | keyof T'.
 dynamodb-transactUpdateItem.ts(185,24): error TS2339: Property 'revisions' does not exist on type 'Partial<T>'.
 dynamodb-transactUpdateItem.ts(190,46): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Partial<T>'.
   No index signature with a parameter of type 'string' was found on type 'Partial<T>'.

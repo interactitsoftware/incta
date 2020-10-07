@@ -39,10 +39,10 @@ describe('get', () => {
     })
 
     expect(getResult.length).toBe(4)
-    expect(getResult.filter(r=>r.item_type === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 11).length).toBe(1)
-    expect(getResult.filter(r=>r.item_type === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 13).length).toBe(1)
-    expect(getResult.filter(r=>r.item_type === _specs_AirportItem.__type).filter(r => r.airport_size === 200).length).toBe(1)
-    expect(getResult.filter(r=>r.item_type === _specs_AirportItem.__type).filter(r => r.airport_size === 300).length).toBe(1)
+    expect(getResult.filter(r=>r.__typename === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 11).length).toBe(1)
+    expect(getResult.filter(r=>r.__typename === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 13).length).toBe(1)
+    expect(getResult.filter(r=>r.__typename === _specs_AirportItem.__type).filter(r => r.airport_size === 200).length).toBe(1)
+    expect(getResult.filter(r=>r.__typename === _specs_AirportItem.__type).filter(r => r.airport_size === 300).length).toBe(1)
     
   })
 })

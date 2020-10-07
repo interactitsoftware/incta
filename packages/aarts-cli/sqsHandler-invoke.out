@@ -141,7 +141,7 @@ Mounting C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\ai
     "airport_size": 11,
     "id": "airport|f6902135-a183-4fc1-9a0a-a50a87fbf5ef",
     "meta": "v_0|airport",
-    "item_type": "airport",
+    "__typename": "airport",
     "revisions": 0,
     "date_created": "2020-09-06T10:30:09.675Z",
     "date_updated": "2020-09-06T10:30:09.675Z",
@@ -159,7 +159,7 @@ Mounting C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\ai
   airport_size: 11,
   id: 'airport|f6902135-a183-4fc1-9a0a-a50a87fbf5ef',
   meta: 'v_0|airport',
-  item_type: 'airport',
+  __typename: 'airport',
   revisions: 0,
   date_created: '2020-09-06T10:30:09.675Z',
   date_updated: '2020-09-06T10:30:09.675Z',
@@ -283,7 +283,7 @@ Mounting C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\ai
   airport_size: 11,
   id: 'airport|f6902135-a183-4fc1-9a0a-a50a87fbf5ef',
   meta: 'v_0|airport',
-  item_type: 'airport',
+  __typename: 'airport',
   revisions: 0,
   date_created: '2020-09-06T10:30:09.675Z',
   date_updated: '2020-09-06T10:30:09.675Z',
@@ -334,7 +334,7 @@ Mounting C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\ai
             "reg_uq_number": 123,
             "ringToken": "1599388197748_287822.8086218939",
             "meta": "v_0|airport",
-            "item_type": "airport"
+            "__typename": "airport"
         },
         "identity": {
             "username": "akrsmv"
@@ -351,7 +351,7 @@ Mounting C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\ai
             "airport_size": 11,
             "id": "airport|f6902135-a183-4fc1-9a0a-a50a87fbf5ef",
             "meta": "v_0|airport",
-            "item_type": "airport",
+            "__typename": "airport",
             "revisions": 0,
             "date_created": "2020-09-06T10:30:09.675Z",
             "date_updated": "2020-09-06T10:30:09.675Z",
@@ -368,7 +368,7 @@ Mounting C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\ai
     ]
 }
 2020-09-06T10:30:09.746Z	bce3d8b1-aaf0-16e8-09fc-af93fa4fd7d5	INFO	--->MOCK SNS/MESSAGE START {
-  Message: '{"aaaa":797,"number_of_seats":17,"home_airport":"geneva","name":"Sofia","country":"bg","model":"abc","manifacturer":"airbus","reg_uq_number":123,"ringToken":"1599388197748_287822.8086218939","meta":"v_0|airport","item_type":"airport"}',
+  Message: '{"aaaa":797,"number_of_seats":17,"home_airport":"geneva","name":"Sofia","country":"bg","model":"abc","manifacturer":"airbus","reg_uq_number":123,"ringToken":"1599388197748_287822.8086218939","meta":"v_0|airport","__typename":"airport"}',
   MessageAttributes: {
     eventSource: { DataType: 'String', StringValue: 'worker:output:create' },
     action: { DataType: 'String', StringValue: 'create' },

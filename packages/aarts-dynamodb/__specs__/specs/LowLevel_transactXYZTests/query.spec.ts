@@ -143,7 +143,7 @@ describe('query spec', () => {
       })
 
       expect(airplane_with_unique_ref_555.count).toBe(1)
-      expect(airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].item_type).toBe("airplane")
+      expect(airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].__typename).toBe("airplane")
 
       const all_items_relating_to_airplane_555 = await queryItems({
         ddbIndex: "smetadata__meta",
@@ -162,7 +162,7 @@ describe('query spec', () => {
       })
 
       expect(airplane_with_unique_ref_111.count).toBe(1)
-      expect(airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].item_type).toBe("airplane")
+      expect(airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].__typename).toBe("airplane")
 
       const all_items_relating_to_airplane_444 = await queryItems({
         ddbIndex: "smetadata__meta",

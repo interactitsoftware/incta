@@ -63,8 +63,8 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 
 				// update aggregations
 				// total items of this type and state
-					const oldCounter = `${((rec.dynamodb?.NewImage as { item_type: { S: string } })["item_type"] || {S:"undefined"}).S}|${((rec.dynamodb?.OldImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
-					const newCounter = `${((rec.dynamodb?.NewImage as { item_type: { S: string } })["item_type"] || {S:"undefined"}).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
+					const oldCounter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || {S:"undefined"}).S}|${((rec.dynamodb?.OldImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
+					const newCounter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || {S:"undefined"}).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
 					if (typesByStatusesMapNew.has(newCounter)) {
 						typesByStatusesMapNew.set(newCounter, (typesByStatusesMapNew.get(newCounter) as number) + 1)
 					} else {
@@ -114,7 +114,7 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 			for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT"
 				&& !!record.dynamodb?.NewImage && (record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(`v_0`))) { // fire only for main items
 
-				const counter = `${((rec.dynamodb?.NewImage as { item_type: { S: string } })["item_type"] || {S:"undefined"}).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
+				const counter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || {S:"undefined"}).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
 
 				if (typesByStatusesMapNew.has(counter)) {
 					typesByStatusesMapNew.set(counter, (typesByStatusesMapNew.get(counter) as number) + 1)

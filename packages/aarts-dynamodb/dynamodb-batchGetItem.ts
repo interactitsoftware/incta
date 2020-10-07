@@ -45,7 +45,7 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
 export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: number, peersPropsToLoad?: string[] | undefined) => {
     if (loadPeersLevel === 0) return
 
-    const __type = (resultItem as unknown as DynamoItem).item_type as string
+    const __type = (resultItem as unknown as DynamoItem).__typename as string
     const __refkeysToItems = (((global.domainAdapter.lookupItems as unknown) as Map<string, MixinConstructor<typeof DynamoItem>>).get(__type)?.__refkeys as RefKey<Record<string, any>>[]).filter(k => !!k.ref && (peersPropsToLoad === undefined || peersPropsToLoad.indexOf(k.key) > -1))
     const keysToLoad = __refkeysToItems.reduce<{ key: string, pk: { id: string, meta: string } }[]>((accum, i) => {
         if (Object.keys(resultItem).indexOf(i.key) > -1 && !!resultItem[i.key]) {
