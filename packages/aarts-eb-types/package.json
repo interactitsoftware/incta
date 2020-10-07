@@ -1,6 +1,6 @@
 {
   "name": "aarts-eb-types",
-  "version": "0.2.405",
+  "version": "0.2.406",
   "description": "base types for aarts event bus in aws",
   "main": "./dist/aartsEBUtil.js",
   "types": "./dist/aartsEBUtil.d.ts",
