@@ -3,15 +3,16 @@ import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManage
 import { DomainItem } from "aarts-dynamodb/interfaces"
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
 import { IdmptMultipleLambdaTestDataGeneratorItem, AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem } from "../_DynamoItems"
-import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
-import { AppSyncEvent, loginfo } from "aarts-eb-types/aartsEBUtil";
+import { dispatch } from "aarts-eb-dispatcher/aartsSnsDispatcher"
+import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
-import { AartsSqsHandler } from "aarts-eb-handler/aartsSqsHandler";
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem, _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
 import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
 import { names } from "./random-names/names";
 import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
+import { loginfo } from "aarts-utils/utils";
+import { processPayload } from "aarts-eb-handler/aartsSqsHandler";
 
 export class IdmptMultipleLambdaTestDataGenerator {
 
@@ -26,7 +27,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
     public on_finish?: string[] = ['proc_produce_tourists_csv','proc_send_welcome_email']
 
     private async publishAndRegister(event: AppSyncEvent) {
-        await dispatcher(event)
+        await dispatch(event)
     }
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
         return {
@@ -36,7 +37,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
     }
     private async createItem(
         ringToken: string,
-        domainHandler: AartsSqsHandler,
         __type: string,
         itemBody: Record<string, any>,
         uqKeyTocheck: string | number,
@@ -45,7 +45,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
         if (processedItem && processedItem.length > 0) {
             return (processedItem[0] as unknown) as DynamoItem
         } else {
-            return (await domainHandler.processPayload({
+            return (await processPayload({
                 "payload": {
                     "arguments": {
                         ...itemBody,
@@ -67,7 +67,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
     }
 
     public async start(__type: string, args: AartsEvent) {
-        const domainHandler = new AartsSqsHandler()
         this.start_date = Date.now()
 
         const alreadyProcessed = await queryItems({
@@ -96,49 +95,42 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_bg_country = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             CountryItem.__type,
             bg_country,
             "name",
             alreadyProcessed.items as DynamoItem[])
         const dynamo_sr_country = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             CountryItem.__type,
             sr_country,
             "name",
             alreadyProcessed.items as DynamoItem[])
         const dynamo_ru_country = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             CountryItem.__type,
             ru_country,
             "name",
             alreadyProcessed.items as DynamoItem[])
         const dynamo_ch_country = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             CountryItem.__type,
             ch_country,
             "name",
             alreadyProcessed.items as DynamoItem[])
         const dynamo_us_country = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             CountryItem.__type,
             us_country,
             "name",
             alreadyProcessed.items as DynamoItem[])
         const dynamo_uk_country = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             CountryItem.__type,
             uk_country,
             "name",
             alreadyProcessed.items as DynamoItem[])
         const dynamo_au_country = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             CountryItem.__type,
             au_country,
             "name",
@@ -158,70 +150,60 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_bg_airport_sf = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             bg_airport_sf,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_bg_airport_bs = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             bg_airport_bs,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_sr_airport_bg = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             sr_airport_bg,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_ch_airport_bj = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             ch_airport_bj,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_us_airport_ke = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             us_airport_ke,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_uk_airport_ln = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             uk_airport_ln,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_au_airport_sy = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             au_airport_sy,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_ru_airport_mw = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             ru_airport_mw,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_ru_airport_pt = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             ru_airport_pt,
             "name",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_ru_airport_ng = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirportItem.__type,
             ru_airport_ng,
             "name",
@@ -234,7 +216,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_boeing = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirplaneManifacturerItem.__type,
             boeing,
             "name",
@@ -242,7 +223,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_irkut = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirplaneManifacturerItem.__type,
             irkut,
             "name",
@@ -255,7 +235,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_model_787 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirplaneModelItem.__type,
             model_787,
             "name",
@@ -263,7 +242,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_model_mc21 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirplaneModelItem.__type,
             model_mc21,
             "name",
@@ -271,7 +249,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_model_tu144 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             AirplaneModelItem.__type,
             model_tu144,
             "name",
@@ -286,7 +263,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_plane_mc21_reg111 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_AirplaneItem.__type,
             plane_mc21_reg111,
             "reg_uq_str",
@@ -294,7 +270,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_plane_tu144_reg222 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_AirplaneItem.__type,
             plane_tu144_reg222,
             "reg_uq_str",
@@ -302,7 +277,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_plane_tu144_reg333 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_AirplaneItem.__type,
             plane_tu144_reg333,
             "reg_uq_str",
@@ -310,7 +284,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_plane_b787_reg444 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_AirplaneItem.__type,
             plane_b787_reg444,
             "reg_uq_str",
@@ -318,7 +291,6 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_plane_b787_reg555 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_AirplaneItem.__type,
             plane_b787_reg555,
             "reg_uq_str",
@@ -335,49 +307,42 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_q4_2020 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_TouristSeasonItem.__type,
             q4_2020,
             "code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_q1_2021 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_TouristSeasonItem.__type,
             q1_2021,
             "code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_q2_2021 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_TouristSeasonItem.__type,
             q2_2021,
             "code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_q3_2021 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_TouristSeasonItem.__type,
             q3_2021,
             "code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_q4_2021 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_TouristSeasonItem.__type,
             q4_2021,
             "code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_q1_2022 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_TouristSeasonItem.__type,
             q1_2022,
             "code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_q2_2022 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_TouristSeasonItem.__type,
             q2_2022,
             "code",
@@ -413,21 +378,18 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_flight_sf_mw = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_sf_mw,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_sf_bj = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_sf_bj,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_sf_mw1 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_sf_mw1,
             "flight_code",
@@ -435,28 +397,24 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_flight_bj_mw = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_bj_mw,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_bj_ke = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_bj_ke,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_bj_ke1 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_bj_ke1,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_bj_sy = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_bj_sy,
             "flight_code",
@@ -464,21 +422,18 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_flight_mw_ke = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_mw_ke,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_mw_sf = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_mw_sf,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_mw_pt = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_mw_pt,
             "flight_code",
@@ -486,21 +441,18 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_flight_sy_bj = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_sy_bj,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_sy_ln = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_sy_ln,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_sy_ke = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_sy_ke,
             "flight_code",
@@ -508,14 +460,12 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_flight_sr_sf = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_sr_sf,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_sr_ke = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_sr_ke,
             "flight_code",
@@ -523,21 +473,18 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_flight_ke_sf = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_ke_sf,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_ke_mw = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_ke_mw,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_ke_mw1 = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_ke_mw1,
             "flight_code",
@@ -545,14 +492,12 @@ export class IdmptMultipleLambdaTestDataGenerator {
 
         const dynamo_flight_pt_mw = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_pt_mw,
             "flight_code",
             (alreadyProcessed.items as DynamoItem[]))
         const dynamo_flight_pt_sf = await this.createItem(
             args.meta.ringToken as string,
-            domainHandler,
             _specs_FlightItem.__type,
             flight_pt_sf,
             "flight_code",

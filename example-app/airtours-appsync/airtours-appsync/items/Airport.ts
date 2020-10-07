@@ -1,14 +1,9 @@
-import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { loginfo } from "aarts-eb-types/aartsEBUtil"
 
 // using the one from the aarts-dynamodb/__specs__
 import {_specs_AirportItem as AirportItem} from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
-import { MixinConstructor } from "aarts-types/Mixin";
-import { AttributeMap, StreamRecord } from "aws-sdk/clients/dynamodbstreams";
-import { fromAttributeMap, versionString } from "aarts-dynamodb/DynamoDbClient";
-import { transactUpdateItem } from "aarts-dynamodb/dynamodb-transactUpdateItem"
-import {ppjson} from "aarts-utils/utils"
+import { loginfo } from "aarts-utils/utils"
 
 // Although we are reusing dynamoitem definition from the __specs__ we are redefining the manager for that object here
 export class AirportManager extends BaseDynamoItemManager<AirportItem> {

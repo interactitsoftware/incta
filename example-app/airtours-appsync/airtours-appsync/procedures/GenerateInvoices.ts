@@ -1,8 +1,7 @@
-import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { AirportItem, CountryItem, FlightItem, AirplaneItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem } from "../_DynamoItems"
-import { handler as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
+import { GenerateInvoicesItem } from "../_DynamoItems"
+
 
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
