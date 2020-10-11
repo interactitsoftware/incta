@@ -1,5 +1,4 @@
-import { Strippable, clearDynamo, queryForId } from "../../testutils"
-import { transactPutItem } from "../../../dynamodb-transactPutItem";
+import { clearDynamo, queryForId } from "../../testutils"
 import { _specs_CountryItem, _specs_AirportItem, _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "../../testmodel/_DynamoItems";
 import { queryItems } from "../../../dynamodb-queryItems";
 import { versionString } from "../../../DynamoDbClient";
@@ -107,98 +106,89 @@ describe('query spec', () => {
     })
   })
 
-  describe('query.gsi3.smetadata__meta.spec', () => {
-    test('query particular item types having something in common with a string refkey value', async () => {
-      // get the sofia airport dynamo record
-      const sofia_airport = await queryItems({
-        ddbIndex: "meta__smetadata",
-        primaryKeyName: "meta",
-        rangeKeyName: "smetadata",
-        pk: `${_specs_AirportItem.__type}}name`,
-        range: "Sofia"
-      })
-
-      // get all flights to or from sofia
-      // PK: Sofia
-      // RANGE: begins_with(flight); 
-      const all_flights_to_from_sofia = await queryItems({
-        ddbIndex: "smetadata__meta",
-        primaryKeyName: "smetadata",
-        rangeKeyName: "meta",
-        pk: `${sofia_airport.items && sofia_airport.items[0].id}`,
-        range: "flight"
-      })
-      return expect(all_flights_to_from_sofia.count).toBe(7) //see test model
+  test('meta__smetadata: query particular item types having something in common with a string refkey value', async () => {
+    // get the sofia airport dynamo record
+    const sofia_airport = await queryItems({
+      ddbIndex: "meta__smetadata",
+      primaryKeyName: "meta",
+      rangeKeyName: "smetadata",
+      pk: `${_specs_AirportItem.__type}}name`,
+      range: "Sofia"
     })
+
+    // get all flights to or from sofia
+    // PK: Sofia
+    // RANGE: begins_with(flight); 
+    const all_flights_to_from_sofia = await queryItems({
+      ddbIndex: "smetadata__meta",
+      primaryKeyName: "smetadata",
+      rangeKeyName: "meta",
+      pk: `${sofia_airport.items && sofia_airport.items[0].id}`,
+      range: `${_specs_FlightItem.__type}`
+    })
+    return expect(all_flights_to_from_sofia.count).toBe(7) //see test model
   })
 
-  describe('query.gsi4.nmetadata__meta.spec', () => {
-    test('query particular item types having something in common with a number refkey value', async () => {
-      
-      const airplane_with_unique_ref_555 = await queryItems({
-        ddbIndex: "nmetadata__meta",
-        primaryKeyName: "nmetadata",
-        rangeKeyName: "meta",
-        pk: 555
-      })
+  test('nmetadata__meta: query particular item types having something in common with a number refkey value', async () => {
 
-      expect(airplane_with_unique_ref_555.count).toBe(1)
-      expect(airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].__typename).toBe("airplane")
-
-      const all_items_relating_to_airplane_555 = await queryItems({
-        ddbIndex: "smetadata__meta",
-        primaryKeyName: "smetadata",
-        rangeKeyName: "meta",
-        pk: (airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].id) as string
-      })
-
-      expect(all_items_relating_to_airplane_555.count).toBe(1) // so airplane 555 flew only once, see test model 
-
-      const airplane_with_unique_ref_111 = await queryItems({
-        ddbIndex: "nmetadata__meta",
-        primaryKeyName: "nmetadata",
-        rangeKeyName: "meta",
-        pk: 111
-      })
-
-      expect(airplane_with_unique_ref_111.count).toBe(1)
-      expect(airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].__typename).toBe("airplane")
-
-      const all_items_relating_to_airplane_444 = await queryItems({
-        ddbIndex: "smetadata__meta",
-        primaryKeyName: "smetadata",
-        rangeKeyName: "meta",
-        pk: (airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].id) as string
-      })
-
-      expect(all_items_relating_to_airplane_444.count).toBe(7) // so airplane 111 had 7 flights 
-      
-
+    const airplane_with_unique_ref_555 = await queryItems({
+      ddbIndex: "nmetadata__meta",
+      primaryKeyName: "nmetadata",
+      rangeKeyName: "meta",
+      pk: 555
     })
 
+    expect(airplane_with_unique_ref_555.count).toBe(1)
+    expect(airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].__typename).toBe(`${_specs_AirplaneItem.__type}`)
+
+    const all_items_relating_to_airplane_555 = await queryItems({
+      ddbIndex: "smetadata__meta",
+      primaryKeyName: "smetadata",
+      rangeKeyName: "meta",
+      pk: (airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].id) as string
+    })
+
+    expect(all_items_relating_to_airplane_555.count).toBe(1) // so airplane 555 flew only once, see test model 
+
+    const airplane_with_unique_ref_111 = await queryItems({
+      ddbIndex: "nmetadata__meta",
+      primaryKeyName: "nmetadata",
+      rangeKeyName: "meta",
+      pk: 111
+    })
+
+    expect(airplane_with_unique_ref_111.count).toBe(1)
+    expect(airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].__typename).toBe(`${_specs_AirplaneItem.__type}`)
+
+    const all_items_relating_to_airplane_444 = await queryItems({
+      ddbIndex: "smetadata__meta",
+      primaryKeyName: "smetadata",
+      rangeKeyName: "meta",
+      pk: (airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].id) as string
+    })
+
+    expect(all_items_relating_to_airplane_444.count).toBe(7) // so airplane 111 had 7 flights 
   })
 
-  describe('use additional filter on keys', () => {
-    test('query all flights with duration greater than 10 hours', async () => {
-      const long_lasting_flights = await queryItems({
-        ddbIndex: "meta__id",
-        primaryKeyName: "meta",
-        pk: `${versionString(0)}|${_specs_FlightItem.__type}`,
-        rangeKeyName: "id",
-        filter: [{ key: "duration_hours", predicate: ">", value: 10 }]
-      })
-      return expect(long_lasting_flights.count).toBe(9)
+  test('use query filters: query all flights with duration greater than 10 hours', async () => {
+    const long_lasting_flights = await queryItems({
+      ddbIndex: "meta__id",
+      primaryKeyName: "meta",
+      pk: `${versionString(0)}|${_specs_FlightItem.__type}`,
+      rangeKeyName: "id",
+      filter: [{ key: "duration_hours", predicate: ">", value: 10 }]
     })
-    test('query all flights with duration greater than or equal 10 hours', async () => {
-      const long_lasting_flights = await queryItems({
-        ddbIndex: "meta__id",
-        primaryKeyName: "meta",
-        pk: `${versionString(0)}|${_specs_FlightItem.__type}`,
-        rangeKeyName: "id",
-        filter: [{ key: "duration_hours", predicate: ">=", value: 10 }]
-      })
-      return expect(long_lasting_flights.count).toBe(10)
+    return expect(long_lasting_flights.count).toBe(9)
+  })
+  test('use query filters: query all flights with duration greater than or equal 10 hours', async () => {
+    const long_lasting_flights = await queryItems({
+      ddbIndex: "meta__id",
+      primaryKeyName: "meta",
+      pk: `${versionString(0)}|${_specs_FlightItem.__type}`,
+      rangeKeyName: "id",
+      filter: [{ key: "duration_hours", predicate: ">=", value: 10 }]
     })
+    return expect(long_lasting_flights.count).toBe(10)
   })
 
 })

@@ -77,7 +77,7 @@ describe('manager.create.spec', () => {
           eventSource: "notneededfortest",
           ringToken: "notneededfortest"
         }
-        
+
       }
     )
     let processorCreate = await createGenerator.next()
@@ -88,22 +88,24 @@ describe('manager.create.spec', () => {
     } while (!processorCreate.done)
 
 
-    //@ts-ignore
-    expect(processorCreate.value.arguments.length).toBe(1)
-    expect(processorCreate.value.arguments[0].duration_hours).toBe(15)
-    expect(processorCreate.value.arguments[0].reg_uq_str).toBe("nomer5")
-    expect(processorCreate.value.arguments[0].reg_uq_number).toBe(5)
+    expect(processorCreate.value.resultItems?.length).toBe(1)
+    if (processorCreate.value.resultItems && processorCreate.value.resultItems[0]) {
+      expect(processorCreate.value.resultItems.length).toBe(1)
+      expect(processorCreate.value.resultItems[0].duration_hours).toBe(15)
+      expect(processorCreate.value.resultItems[0].reg_uq_str).toBe("nomer5")
+      expect(processorCreate.value.resultItems[0].reg_uq_number).toBe(5)
+    } else {
+      throw Error("resultItems was empty")
+    }
+
 
     //assert all items created
     const allItems: ScanOutput = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
-    const aggregations = allItems.Items?.filter(i => i.id.S === "aggregations")[0]
-    expect(aggregations).toHaveProperty(_specs_AirplaneItem.__type)
-    expect(aggregations && aggregations[_specs_AirplaneItem.__type].N).toBe("1")
-    return expect(allItems.Count).toBe(6) // 2 uq constraints + 2 refkeys + the main item + aggregations = 6
+    return expect(allItems.Count).toBe(5) // 2 uq constraints + 2 refkeys + the main item 
   })
 
-  test.only('create as per payload passed using the passed id', async () => {
-    const domainItem = new _specs_AirplaneItem({ id: `${_specs_AirplaneItem.__type}|test123`, duration_hours: 15, reg_uq_str: "nomer5", reg_uq_number: 5 })
+  test('create as per payload passed using the passed id', async () => {
+    const domainItem = new _specs_AirplaneItem({ id: `${_specs_AirplaneItem.__type}|test456`, duration_hours: 15, reg_uq_str: "nomer7", reg_uq_number: 7 })
     const createGenerator = domainAdapter.itemManagers[_specs_AirplaneItem.__type].create(
       _specs_AirplaneItem.__type,
       {
@@ -117,7 +119,7 @@ describe('manager.create.spec', () => {
           eventSource: "notneededfortest",
           ringToken: "notneededfortest"
         }
-        
+
       }
     )
     let processorCreate = await createGenerator.next()
@@ -128,21 +130,26 @@ describe('manager.create.spec', () => {
     } while (!processorCreate.done)
 
 
-    //@ts-ignore
-    expect(processorCreate.value.arguments.length).toBe(1)
-    expect(processorCreate.value.arguments[0].id).toBe(`${_specs_AirplaneItem.__type}|test123`)
-    expect(processorCreate.value.arguments[0].duration_hours).toBe(15)
-    expect(processorCreate.value.arguments[0].reg_uq_str).toBe("nomer5")
-    expect(processorCreate.value.arguments[0].reg_uq_number).toBe(5)
+    expect(processorCreate.value.resultItems?.length).toBe(1)
+    if (processorCreate.value.resultItems && processorCreate.value.resultItems[0]) {
+      expect(processorCreate.value.resultItems[0].id).toBe(`${_specs_AirplaneItem.__type}|test456`)
+      expect(processorCreate.value.resultItems[0].duration_hours).toBe(15)
+      expect(processorCreate.value.resultItems[0].reg_uq_str).toBe("nomer7")
+      expect(processorCreate.value.resultItems[0].reg_uq_number).toBe(7)
+    } else {
+      throw Error("resultItems was empty")
+    }
 
     //assert all items created
     const allItems: ScanOutput = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
-    const createdItems = allItems.Items?.filter(i => i.id.S === `${_specs_AirplaneItem.__type}|test123`) as _specs_AirplaneItem[]
+    const createdItems = allItems.Items?.filter(i => i.id.S === `${_specs_AirplaneItem.__type}|test456`) as _specs_AirplaneItem[]
+    const uqConstraints = allItems.Items?.filter(i => i.meta.S === "7" || i.meta.S === "nomer7") as _specs_AirplaneItem[]
     expect(createdItems.length).toBe(3)// 2 refkeys + the main item = 3
-    const aggregations = allItems.Items?.filter(i => i.id.S === "aggregations")[0]
-    expect(aggregations).toHaveProperty(_specs_AirplaneItem.__type)
-    expect(aggregations && aggregations[_specs_AirplaneItem.__type].N).toBe("1")
-    return expect(allItems.Count).toBe(6) // 2 uq constraints + 2 refkeys + the main item + aggregations = 6
+    // the 2 uq constraints
+    expect(uqConstraints).toEqual([
+      {id:{S:`uq|${_specs_AirplaneItem.__type}}reg_uq_str`}, meta: {S:"nomer7"}},
+      {id:{S:`uq|${_specs_AirplaneItem.__type}}reg_uq_number`}, meta: {S:"7"}}
+    ]) 
   })
 })
 

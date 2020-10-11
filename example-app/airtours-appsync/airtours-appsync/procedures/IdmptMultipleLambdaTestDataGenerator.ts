@@ -24,7 +24,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
     public end_date?: number
 
     public touristsToCreate?:number
-    public on_finish?: string[] = ['proc_produce_tourists_csv','proc_send_welcome_email']
+    public on_finish?: string[] = ['Proc__produce_tourists_csv','Proc__send_welcome_email']
 
     private async publishAndRegister(event: AppSyncEvent) {
         await dispatch(event)

@@ -95,21 +95,25 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             // mark procedures as done when total_events=processed_events
             // TODO refine it not to cycle indefinetley
-            if (newImage.id.startsWith("proc_") && (newImage.revisions === 0 || newImage.revisions === 1) && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
+            if (newImage.id.startsWith("Proc__") && (newImage.revisions === 0 || newImage.revisions === 1) && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
                 console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
-                try { // swallow errors for now
-                    await transactUpdateItem(
-                        newImage,
-                        {
-                            end_date: Date.now(),
-                            item_state: "success",
-                            ringToken: newImage.ringToken,
-                            id: newImage.id,
-                            meta: newImage.meta,
-                        },
-                        (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-                } catch (err) {
-                    console.error("ERROR updating proc_ ", ppjson(err))
+                const Proc__from_db = await getItemById(newImage.__typename, newImage.id)
+                if (!!Proc__from_db && !!Proc__from_db[0]) {
+                    try { // swallow errors for now
+                        await transactUpdateItem(
+                            Proc__from_db[0],
+                            {
+                                end_date: Date.now(),
+                                item_state: "success",
+                                ringToken: newImage.ringToken,
+                                revisions: Proc__from_db[0].revisions,
+                                id: newImage.id,
+                                meta: newImage.meta,
+                            },
+                            (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+                    } catch (err) {
+                        console.error("ERROR updating Proc__ ", ppjson(err))
+                    }
                 }
             }
 
@@ -145,7 +149,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         return args.payload
     }
 
-    async *start(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
+    async *start(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         // console.log('Received arguments: ', args)
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${__type}:START] Begin start method. Doing a gate check of payload` }] })
 
@@ -203,44 +207,31 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 procedure["errors"] = ppjson(ex)
                 procedureResult = procedure
             } finally {
-                //#region saving state AFTER procedure ended - TODO need to implement conditional check revissions =0 OR 1 because we do not know which update is going first - this one or the one from dynamo streams
+                //#region saving state AFTER procedure ended
                 if (procedureResult) {
                     delete procedureResult["processed_events"] // important to remove this as it was asynchronously modified from other events
                 }
-                // if a procedure is not firing any events it must set the success property itself
-                // a pure hack - load latest just for updating procedure's revisions
-                const proc_from_db = await getItemById(procedure.__typename, procedure.id)
-                if (!!proc_from_db && !!proc_from_db[0]) {
+                // if a procedure is not firing any events it must set the success property itself?
+                // load latest procedure contents
+                // TODO what if async update of procedure sneak in between getting from db and the consequent update? retries?
+                const Proc__from_db = await getItemById(procedure.__typename, procedure.id)
+                if (!!Proc__from_db && !!Proc__from_db[0]) {
                     await transactUpdateItem(
-                        proc_from_db[0],
+                        Proc__from_db[0],
+                        // procedure,
                         {
-                            proc_synchronours_end_date: Date.now(), //-->  procedure synchronous enddate
+                            synchronours_end_date: Date.now(),
                             ...procedureResult,
-                            revisions: proc_from_db[0].revisions
-                            // success: true,
-                            // revisions: 1, // TODO make it possible to be array, and conditional check to be either = :rev or IN (:el1, :el2...)
-                            // ringToken: newImage.ringToken,
-                            // id: newImage.id,
-                            // meta: newImage.meta,
+                            revisions: Proc__from_db[0].revisions
                         },
                         (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
                 }
-                // asyncGenSave = this.save(__type, Object.assign({}, { identity: args.payload.identity }, { arguments: [procedureResult] }))
-                // processorSave = await asyncGenSave.next()
-                // !process.env.DEBUGGER || (yield { resultItems: [{ message: processorSave.value.arguments }] })
-                // do {
-                //     if (!processorSave.done) {
-                //         // !process.env.DEBUGGER || (yield { arguments: Object.assign({}, args, {message: processorSave.value.arguments}), identity: undefined})// do we want more details?
-                //         processorSave = await asyncGenSave.next()
-                //         !process.env.DEBUGGER || (yield { resultItems: [{ message: processorSave.value.arguments }] })
-                //     }
-                // } while (!processorSave.done)
                 //#endregion
             }
             !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${__type}:START] Procedure ended.` }] })
         }
 
-        return { arguments: dynamoItems, identity: args.payload.identity }
+        return { resultItems: dynamoItems, identity: args.payload.identity }
     }
 
     //#endregion
@@ -291,6 +282,10 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 inputQueryArg.rangeKeyName = "meta"
             }
 
+            if (!process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS) {
+                console.log("WILL START TRANSFORMING " + ppjson(args[0]))
+            }
+
             accum.push(inputQueryArg as unknown as DdbQueryInput)
             return accum
         }, [])[0] // TODO query only by one input at a time refactor
@@ -307,7 +302,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param item 
      * @param args 
      */
-    async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
+    async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         !process.env.DEBUGGER || loginfo('query Received arguments: ', JSON.stringify(args, null, 4))
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${item}:QUERY] Begin query method. Doing a gate check of payload` }] })
 
@@ -335,7 +330,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         const dynamoItems = await queryItems(processor.value);
 
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${item}:QUERY] End` }] })
-        return { arguments: dynamoItems, identity: args.payload.identity }
+        return { resultItems: [dynamoItems] }
     }
     //#endregion
 
@@ -618,7 +613,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         }
 
         for (const arg of event.payload.arguments) {
-            if (!("id" in arg && ("revisions" in arg || arg["id"].startsWith("proc_")))) {
+            if (!("id" in arg && ("revisions" in arg || arg["id"].startsWith("Proc__")))) {
                 // will throw error if ONLY SOME of the above keys are present
                 throw new Error(`${process.env.ringToken}: {id, revisions} keys are mandatory when updating`)
             } else {
@@ -636,7 +631,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param __type 
      * @param args
      */
-    async *update(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
+    async *update(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${__type}:UPDATE] BEGIN update method. Doing a gate check of payload` }] })
 
         for await (const baseValidateResult of this.baseValidateUpdate(__type, args)) {
@@ -666,13 +661,12 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                     existingItem,
                     arg,
                     (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-                // (this.lookupItems.get(__type) as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys)
             )
         }
 
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${__type}:UPDATE] END` }] })
 
-        return { arguments: updatedItems, identity: args.payload.identity }
+        return { resultItems: updatedItems, identity: args.payload.identity }
 
     }
     //#endregion

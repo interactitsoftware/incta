@@ -1,7 +1,7 @@
 import { _specs_AirplaneItem, _specs_TouristSeasonItem, /**XXX _specs_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../../testutils"
-import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../../DynamoDbClient"
+import { clearDynamo, queryForId } from "../../testutils"
+import { uniqueitemrefkeyid } from "../../../DynamoDbClient"
 
 
 describe('create unique string refkey', () => {
@@ -33,7 +33,7 @@ describe('create unique string refkey', () => {
     const airplane = new _specs_AirplaneItem()
     airplane.reg_uq_str = "abcdef" // arrange already existing for create (prev test ensures existing, TODO make independant)
 
-    return await expect(transactPutItem(airplane, _specs_AirplaneItem.__refkeys)).rejects.toThrow(/ConditionalCheckFailed/)
+    return await expect(transactPutItem(airplane, _specs_AirplaneItem.__refkeys)).rejects.toThrow()
 
   })
 })

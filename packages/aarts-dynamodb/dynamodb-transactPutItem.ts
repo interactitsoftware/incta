@@ -3,12 +3,25 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { TransactWriteItemsInput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
 import { DynamoItem } from './BaseItemManager';
-import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest, versionString } from './DynamoDbClient';
+import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest, versionString, toAttributeMapKeysOnly } from './DynamoDbClient';
 import { loginfo, ppjson } from 'aarts-utils/utils';
 import { RefKey } from './interfaces';
 
 export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
     !process.env.DEBUGGER || loginfo(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
+
+
+    // New approach where reffered item is being loaded in same key as the corresponding refkey but with Upper case first letter
+    // --> check for any refs loaded and unload them before creating starts
+    if (__item_refkeys) {
+        const itemRefs = __item_refkeys.filter(k => !!k.ref).map(k => k.ref)
+        for (const prop in Object.keys(item)) {
+            if (itemRefs.indexOf(prop) > -1 && prop === `${prop[0].toUpperCase()}${prop.slice(1)}`) {
+                delete item[prop]
+            }
+        }
+    }
+    // <-- 
 
     const ditem = toAttributeMap(item)
 
@@ -28,7 +41,7 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
         if (__item_refkeys && __item_refkeys.map(r => r.key).indexOf(key) > -1 && !!item[key]) {
             accum.push({
                 Put: {
-                    Item: toAttributeMap(refkeyitem(item, key)),
+                    Item: !!process.env.copyEntireItemToGsis ? toAttributeMap(refkeyitem(item, key)) : toAttributeMapKeysOnly(refkeyitem(item, key), ["id", "meta", "smetadata", "nmetadata"]),
                     TableName: DB_NAME,
                     ReturnValuesOnConditionCheckFailure: "ALL_OLD",
                 }
@@ -50,24 +63,6 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
         return accum
     }, itemTransactWriteItemList)
 
-    //EXCERPTED INTO dynamodb-streams callbacks
-    // too much transaction conflicts may occur, if lots of items created/updated
-    // if (process.env.PERFORM_AGGREGATIONS) {
-    //     allTransactWriteItemList.push({ // update aggregations
-    //         Update: {
-    //             TableName: DB_NAME,
-    //             ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-    //             Key: Object.assign({
-    //                 id: { S: "aggregations" },
-    //                 meta: { S: `totals` },
-    //             }),
-    //             UpdateExpression: `SET #__typename = if_not_exists(#__typename, :zero) + :inc_one`,
-    //             ExpressionAttributeNames: { [`#__typename`]: item.__typename },
-    //             ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
-    //         }
-    //     })
-    // }
-
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,
         ReturnConsumedCapacity: "TOTAL",
@@ -82,21 +77,6 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     } catch (err) {
         throw new Error(ppjson({request: params, error: err}))
     }
-    // // upon a successful transaction (ie this code is reached, tx passed), update the total processed events of a procedure (if it was provided)
-    // if (!!item["procedure"] && process.env.ringToken === item["procedure"].substr(item["procedure"].indexOf("|") + 1)) {
-    //     const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.updateItem({
-    //         TableName: DB_NAME,
-    //         Key: Object.assign({
-    //             id: { S: item["procedure"] },
-    //             meta: { S: `${versionString(0)}|${item["procedure"].substr(0, item["procedure"].indexOf("|"))}`},
-    //         }),
-    //         UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_one`,
-    //         ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
-    //         ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_one": { "N": "1" } },
-    //         ReturnValues: "ALL_NEW"
-    //     }))
-    //     !process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
-    // }
-    
+        
     return item
 }

@@ -44,49 +44,49 @@ import { CreateTouristByPublishingEvent } from "./procedures/CreateTouristByPubl
 import { GenerateInvoices } from "./procedures/GenerateInvoices";
 
 // ----------------- items defs
-export class CityItem extends DynamoItem(City, "city", [ // the dynamodb wrapper object that we deal with
+export class CityItem extends DynamoItem(City, "City", [ // the dynamodb wrapper object that we deal with
     {key:"name"},
     {key: "population"},
     {key: "country", ref:"country"}
 ]) { }
-export class PilotItem extends DynamoItem(Pilot, "pilot", [ // the dynamodb wrapper object that we deal with
+export class PilotItem extends DynamoItem(Pilot, "Pilot", [ // the dynamodb wrapper object that we deal with
     {key:"name"},
     {key: "city", ref: "city"},
     {key: "country", ref:"country"}
 ]) { }  
 
 // --------------- procedures defs
-export class SingleLambdaTestDataGeneratorItem extends DynamoItem(SingleLambdaTestDataGenerator, "proc_single_lambda_test_data_generator", [
+export class SingleLambdaTestDataGeneratorItem extends DynamoItem(SingleLambdaTestDataGenerator, "Proc__TestDataGenSingleLambda", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class IdmptSingleLambdaTestDataGeneratorItem extends DynamoItem(IdmptSingleLambdaTestDataGenerator, "proc_idmpt_single_lambda_test_data_generator", [
+export class IdmptSingleLambdaTestDataGeneratorItem extends DynamoItem(IdmptSingleLambdaTestDataGenerator, "Proc__TestDataGenSingleLambdaIdmpt", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class IdmptMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptMultipleLambdaTestDataGenerator, "proc_idmpt_multiple_lambda_test_data_generator", [
+export class IdmptMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptMultipleLambdaTestDataGenerator, "Proc__TestDataGenMultipleLambdaIdmpt", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class IdmptChunksMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptChunksMultipleLambdaTestDataGenerator, "proc_idmpt_chunks_multiple_lambda_test_data_generator", [
+export class IdmptChunksMultipleLambdaTestDataGeneratorItem extends DynamoItem(IdmptChunksMultipleLambdaTestDataGenerator, "Proc__TestDataGenMultipleLambdaIdmptChunks", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class MultipleLambdaTestDataGeneratorItem extends DynamoItem(MultipleLambdaTestDataGenerator, "proc_multiple_lambda_test_data_generator", [
+export class MultipleLambdaTestDataGeneratorItem extends DynamoItem(MultipleLambdaTestDataGenerator, "Proc__TestDataGenMultipleLambda", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class CreateTouristByPublishingEventItem extends DynamoItem(CreateTouristByPublishingEvent, "proc_create_tourists", [
+export class CreateTouristByPublishingEventItem extends DynamoItem(CreateTouristByPublishingEvent, "Proc__CreateTourists", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}
 
-export class GenerateInvoicesItem extends DynamoItem(GenerateInvoices, "proc_generate_invoices", [
+export class GenerateInvoicesItem extends DynamoItem(GenerateInvoices, "Proc__GenerateInvoices", [
     {key: "start_date"},
     {key: "end_date"},
 ]) {}

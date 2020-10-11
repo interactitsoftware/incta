@@ -107,26 +107,6 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
         return accum
     }, itemTransactWriteItemList)
 
-
-    // TODO BE EXCERPTED INTO A SEPARATE dynamodb-streams-firehose module
-    // too much transaction conflicts may occur, if lots of items created/updated
-    if (process.env.PERFORM_AGGREGATIONS) {
-        allTransactWriteItemList.push({ // UPDATE aggregations
-            Update: {
-                TableName: DB_NAME,
-                ReturnValuesOnConditionCheckFailure: "ALL_OLD",
-                Key: Object.assign({
-                    id: { S: "aggregations" },
-                    meta: { S: `totals` },
-                }),
-                UpdateExpression: `SET #${existingItem.__typename} = #${existingItem.__typename} - :dec_one`,
-                ExpressionAttributeNames: { [`#${existingItem.__typename}`]: existingItem.__typename },
-                ExpressionAttributeValues: { ":dec_one": { "N": "1" } },
-            }
-        })
-    }
-
-
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,
         ReturnConsumedCapacity: "TOTAL",

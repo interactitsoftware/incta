@@ -20,7 +20,7 @@ describe('manager.start.spec', () => {
       for await (let dataImporterResult of await domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
         _specs_DataImporterItem.__type,
         {
-          payload:{
+          payload: {
             arguments: domainItem,
             identity: "akrsmv"
           },
@@ -30,12 +30,12 @@ describe('manager.start.spec', () => {
             eventSource: "notneededfortest",
             ringToken: "notneededfortest"
           }
-          
+
         }
-      )){}
+      )) { }
     }
 
-    return expect(callWithPayloadNotArray).rejects.toThrow(/\[airtours_test_data_importer:baseValidateStart\] Payload is not a single element array! \{\}/)
+    return expect(callWithPayloadNotArray).rejects.toThrow(/\[Proc__AirtoursDataImporter:baseValidateStart\] Payload is not a single element array! \{\}/)
 
   })
 
@@ -56,9 +56,9 @@ describe('manager.start.spec', () => {
             eventSource: "notneededfortest",
             ringToken: "notneededfortest"
           }
-          
+
         }
-      )){}
+      )) { }
     }
 
     return expect(callWithPayloadNotArray).rejects.toThrow(/Payload is not a single element array/)
@@ -66,13 +66,14 @@ describe('manager.start.spec', () => {
   })
 
   test('starts corresponding procedure', async () => {
-    const domainItem = new _specs_DataImporterItem({ prc_params: {a:"a",b:["b",1],d:{d1:"d1",d2:"d2",d3:1}}})
+    const prc_params = { a: "a", b: ["b", 1], d: { d1: "d1", d2: "d2", d3: 1 } }
+    const domainItem = new _specs_DataImporterItem({ prc_params })
     const createGenerator = domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
       _specs_DataImporterItem.__type,
       {
         payload: {
           arguments: [domainItem],
-        identity: "akrsmv"
+          identity: "akrsmv"
         },
         meta: {
           item: "notneededfortest",
@@ -80,7 +81,7 @@ describe('manager.start.spec', () => {
           eventSource: "notneededfortest",
           ringToken: "notneededfortest"
         }
-        
+
       }
     )
     let processorCreate = await createGenerator.next()
@@ -89,25 +90,19 @@ describe('manager.start.spec', () => {
         processorCreate = await createGenerator.next()
       }
     } while (!processorCreate.done)
-    
 
-    //@ts-ignore
-    // expect(processorCreate.value.arguments.length).toBe(1)
-    // expect(processorCreate.value.arguments[0].duration_hours).toBe(15)
-    // expect(processorCreate.value.arguments[0].reg_uq_str).toBe("nomer5")
-    // expect(processorCreate.value.arguments[0].reg_uq_number).toBe(5)
+
+    expect(processorCreate.value.resultItems?.length).toBe(1)
+    if (processorCreate.value.resultItems && processorCreate.value.resultItems[0]) {
+      expect(processorCreate.value.resultItems[0].arguments.prc_params).toEqual(prc_params)
+    } else {
+      throw Error("result items was empty")
+    }
 
     //assert all items created
-    const allItems:ScanOutput = await dynamoDbClient.scan({TableName: DB_NAME}).promise()
-    const aggregations = allItems.Items?.filter(i => i.id.S === "aggregations")[0]
-    expect(aggregations).toHaveProperty(_specs_AirplaneItem.__type)
+    const allItems: ScanOutput = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
 
-    expect(aggregations && aggregations[_specs_AirplaneItem.__type].N).toBe("5")
-    expect(aggregations && aggregations[_specs_FlightItem.__type].N).toBe("20")
-    expect(aggregations && aggregations[_specs_AirplaneManifacturerItem.__type].N).toBe("2")
-    return expect(aggregations && aggregations[_specs_AirplaneModelItem.__type].N).toBe("3")
-
-    // return expect(allItems.Count).toBe(6) // 2 uq constraints + 2 refkeys + the main item + aggregations = 6
+    return expect(allItems.Count).toBe(730) //total items after the test data seeder finishes
   })
 })
 

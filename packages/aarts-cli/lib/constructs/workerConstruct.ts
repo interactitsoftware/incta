@@ -28,7 +28,9 @@ export class WorkerConstruct extends Construct {
 
     constructor(scope: Construct, id: string, props: WorkerConstructProps) {
         super(scope, id);
-
+        const functionDeadletterQueue = new Queue(this, "DEADLETTER", {
+            queueName: `${props.workerName}-DEADLETTER`
+        })
         const functionQueue = new Queue(this, "Queue", {
             // as per best practices from AWS visibilityTimeout is suggesteed 6 times lambda timeout
             // however we reduce to only 1.5 the lambda timeout, as we do not have retries in the lambda
@@ -36,13 +38,12 @@ export class WorkerConstruct extends Construct {
             // receiveMessageWaitTime: Duration.seconds(3), // long polling for events
             queueName: `${props.workerName}`,
             // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
-            deadLetterQueue: { 
+            deadLetterQueue: {
                 maxReceiveCount: props.sqsRetries,
-                queue: new Queue(this, "DEADLETTER-SQS", {
-                    queueName: `${props.workerName}-DEADLETTER-SQS`
-                }),
+                queue: functionDeadletterQueue,
             }
         })
+        functionQueue.node.addDependency(functionDeadletterQueue)
 
         props.eventBusConstruct?.eventBus.addSubscription(new SqsSubscription(functionQueue, {
             rawMessageDelivery: true,
@@ -80,7 +81,7 @@ export class WorkerConstruct extends Construct {
             // unlike the dispatcher who must not have retries
             // workers must have retries - to tackle dynamo scaling events or transaction conflicting events
             // or any other application specific situations resulting in error
-            
+
             // WARNING 1) make sure domain logic is idempotent
             retryAttempts: 0, // WARNING 2) with SQS event source for the lambda, retries are actually controlled via the maxReceiveCount above, 
             // and a DLQ attached there, will be used only if the lambda is called asynchronously (--invocation-type=Event)
@@ -94,9 +95,16 @@ export class WorkerConstruct extends Construct {
             layers: props.layers
         })
 
-        props.eventBusConstruct?.grantAccess(this.function);
-        props.dynamoDbConstruct?.grantAccess(this.function);
+        if (!!props.eventBusConstruct) {
+            this.function.node.addDependency(props.eventBusConstruct.eventBus)
+            functionQueue.node.addDependency(props.eventBusConstruct.eventBus)
+            props.eventBusConstruct.grantAccess(this.function)
+        }
 
+        if (props.dynamoDbConstruct) {
+            this.function.node.addDependency(props.dynamoDbConstruct)
+            props.dynamoDbConstruct?.grantAccess(this.function)
+        }
     }
 }
 

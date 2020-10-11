@@ -25,8 +25,8 @@ describe('manager.delete.spec', () => {
             identity: "akrsmv"
           },
           meta: {
-            item: "notneededfortest",
-            action: "query",
+            item: `${_specs_AirportItem.__type}`,
+            action: "delete",
             eventSource: "notneededfortest",
             ringToken: "notneededfortest"
           }
@@ -34,7 +34,7 @@ describe('manager.delete.spec', () => {
       )) { }
     }
 
-    return expect(callWithPayloadNotArray).rejects.toThrow(/\[airport:baseValidateDelete\] Payload is not a single element array! \{\}/)
+    return expect(callWithPayloadNotArray).rejects.toThrow(/Payload is not a single element array!/)
 
   })
 
@@ -135,7 +135,7 @@ describe('manager.delete.spec', () => {
           },
           meta: {
             item: "notneededfortest",
-            action: "query",
+            action: "delete",
             eventSource: "notneededfortest",
             ringToken: "notneededfortest"
           }
@@ -151,11 +151,8 @@ describe('manager.delete.spec', () => {
 
       //assert all items deleted
       const allItemsAfterDelete: ScanOutput = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
-      const aggregationsAfterDelete = allItemsAfterDelete.Items?.filter(i => i.id.S === "aggregations")[0]
       const deletedHistoryRecord = allItemsAfterDelete.Items?.filter(i => i.meta.S === `${deletedVersionString(1)}|${_specs_AirportItem.__type}`)[0]
-      expect(aggregationsAfterDelete).toHaveProperty(_specs_AirportItem.__type)
-      expect(aggregationsAfterDelete && aggregationsAfterDelete[_specs_AirportItem.__type].N).toBe("0")
-      expect(allItemsAfterDelete.Count).toBe(2) // aggregations + single history record
+      expect(allItemsAfterDelete.Count).toBe(1) // single history record
       expect(deletedHistoryRecord && deletedHistoryRecord.airport_size.N).toBe("20")
       expect(deletedHistoryRecord && deletedHistoryRecord.revisions.N).toBe("0")
     })

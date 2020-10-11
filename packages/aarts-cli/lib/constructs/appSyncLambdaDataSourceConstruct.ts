@@ -26,6 +26,7 @@ export class AppSyncLambdaDataSourceConstruct extends cdk.Construct {
         "item": "$context.arguments.item",
         "arguments": $utils.toJson($context.arguments.payload),
         "selectionSetList": $utils.toJson($ctx.info.selectionSetList),
+        "selectionSetGraphQL": $utils.toJson($ctx.info.selectionSetGraphQL),
         "identity": $utils.toJson($context.identity)
     }
 }`)

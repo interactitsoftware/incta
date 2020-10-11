@@ -1,12 +1,10 @@
-import { Strippable, clearDynamo, queryForId } from "../../testutils"
-import { transactPutItem } from "../../../dynamodb-transactPutItem";
+import { clearDynamo } from "../../testutils"
 import { _specs_CountryItem, _specs_AirportItem, _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "../../testmodel/_DynamoItems";
 import { queryItems } from "../../../dynamodb-queryItems";
-import { versionString } from "../../../DynamoDbClient";
 import { seedAirtoursData } from "../../testmodel/testDataSeeder";
 import { domainAdapter } from "../../testmodel/itemManagersMap";
 
-describe('query spec', () => {
+describe('manager.query.spec', () => {
 
     beforeAll(async (done) => {
         await clearDynamo();
@@ -15,194 +13,191 @@ describe('query spec', () => {
     }, 60000)
     // afterAll(async (done) => { await clearDynamo(); done() })
 
-    describe('query.gsi1.meta__smetadata.spec', () => {
+    test('meta__smetadata: will fail if arguments is not an array', async () => {
 
-        test('fill fail if arguments is not an array', async () => {
+        // get the sofia airport dynamo record
+        const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
+            _specs_AirportItem.__type,
+            {
+                payload: {
+                    arguments: {
 
-            // get the sofia airport dynamo record
-            const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
-                _specs_AirportItem.__type,
-                {
-                    payload: {
-                        arguments: {
-
-                        },
-                        identity: "akrsmv"
                     },
-                    meta: {
-                        item: "notneededfortest",
-                        action: "query",
-                        eventSource: "notneededfortest",
-                        ringToken: "notneededfortest"
-                    }
-
+                    identity: "akrsmv"
+                },
+                meta: {
+                    item: "notneededfortest",
+                    action: "query",
+                    eventSource: "notneededfortest",
+                    ringToken: "notneededfortest"
                 }
-            )
-            const willFailBecauseArgsNoArray = async () => {
-                let queryProcessor = await queryGen.next()
-                do {
-                    if (!queryProcessor.done) {
-                        queryProcessor = await queryGen.next()
-                    }
-                } while (!queryProcessor.done)
+
             }
-
-            expect(willFailBecauseArgsNoArray).rejects.toThrow(/\[baseValidateQuery\] Payload is not a single element array! \{\}/)
-        })
-
-        // get all flights to sofia
-        test('query all items having particular string refkey value', async () => {
-
-            // get the sofia airport dynamo record
-            const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
-                _specs_AirportItem.__type,
-                {
-                    payload: {
-                        arguments: [{
-                            ddbIndex: "meta__smetadata",
-                            primaryKeyName: "meta",
-                            rangeKeyName: "smetadata",
-                            pk: `${_specs_AirportItem.__type}}name`,
-                            range: "Sofia"
-                        }],
-                        identity: "akrsmv"
-                    },
-                    meta: {
-                        item: "notneededfortest",
-                        action: "query",
-                        eventSource: "notneededfortest",
-                        ringToken: "notneededfortest"
-                    }
-
-                }
-            )
-
+        )
+        const willFailBecauseArgsNoArray = async () => {
             let queryProcessor = await queryGen.next()
             do {
                 if (!queryProcessor.done) {
                     queryProcessor = await queryGen.next()
                 }
             } while (!queryProcessor.done)
+        }
 
-            // META: flight}to_airport; 
-            // SMETADATA: SOFIA AIRPORT's ID
-            const queryGen1 = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
-                _specs_AirportItem.__type,
-                {
-                    payload:{
-                        arguments: [{
-                            ddbIndex: "meta__smetadata",
-                            primaryKeyName: "meta",
-                            rangeKeyName: "smetadata",
-                            pk: `${_specs_FlightItem.__type}}to_airport`,
-                            range: queryProcessor.value.arguments.items && queryProcessor.value.arguments.items[0].id
-                        }],
-                        identity: "akrsmv"
-                    },
-                    meta: {
-                      item: "notneededfortest",
-                      action: "query",
-                      eventSource: "notneededfortest",
-                      ringToken: "notneededfortest"
-                    }
-                    
+        expect(willFailBecauseArgsNoArray).rejects.toThrow(/\[baseValidateQuery\] Payload is not a single element array! \{\}/)
+    })
+
+    // get all flights to sofia
+    test('query all items having particular string refkey value', async () => {
+
+        // get the sofia airport dynamo record
+        const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
+            _specs_AirportItem.__type,
+            {
+                payload: {
+                    arguments: [{
+                        ddbIndex: "meta__smetadata",
+                        primaryKeyName: "meta",
+                        rangeKeyName: "smetadata",
+                        pk: `${_specs_AirportItem.__type}}name`,
+                        range: "Sofia"
+                    }],
+                    identity: "akrsmv"
+                },
+                meta: {
+                    item: "notneededfortest",
+                    action: "query",
+                    eventSource: "notneededfortest",
+                    ringToken: "notneededfortest"
                 }
-            )
 
-            let queryProcessor1 = await queryGen1.next()
-            do {
-                if (!queryProcessor1.done) {
-                    queryProcessor1 = await queryGen1.next()
+            }
+        )
+
+        let queryProcessor = await queryGen.next()
+        do {
+            if (!queryProcessor.done) {
+                queryProcessor = await queryGen.next()
+            }
+        } while (!queryProcessor.done)
+
+        // META: flight}to_airport; 
+        // SMETADATA: SOFIA AIRPORT's ID
+        const queryGen1 = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
+            _specs_AirportItem.__type,
+            {
+                payload: {
+                    arguments: [{
+                        ddbIndex: "meta__smetadata",
+                        primaryKeyName: "meta",
+                        rangeKeyName: "smetadata",
+                        pk: `${_specs_FlightItem.__type}}to_airport`,
+                        range: (queryProcessor.value.resultItems && queryProcessor.value.resultItems[0].items[0].id)
+                    }],
+                    identity: "akrsmv"
+                },
+                meta: {
+                    item: "notneededfortest",
+                    action: "query",
+                    eventSource: "notneededfortest",
+                    ringToken: "notneededfortest"
                 }
-            } while (!queryProcessor1.done)
+
+            }
+        )
+
+        let queryProcessor1 = await queryGen1.next()
+        do {
+            if (!queryProcessor1.done) {
+                queryProcessor1 = await queryGen1.next()
+            }
+        } while (!queryProcessor1.done)
 
 
-            return expect(queryProcessor1.value.arguments.count).toBe(4) // see test model below
+        return expect((queryProcessor1.value.resultItems && queryProcessor1.value.resultItems[0].items.length)).toBe(4) // see test model below
+    })
+
+    // get all flights to sofia
+    test('Emphasize that base manager can be used for queries - query all items having particular string refkey value - via BaseManager', async () => {
+
+        const queryManager = await domainAdapter.itemManagers["BASE"]
+        // get the sofia airport dynamo record
+        const queryGen = queryManager.query(
+            _specs_AirportItem.__type,
+            {
+                payload: {
+                    arguments: [{
+                        ddbIndex: "meta__smetadata",
+                        primaryKeyName: "meta",
+                        rangeKeyName: "smetadata",
+                        pk: `${_specs_AirportItem.__type}}name`,
+                        range: "Sofia"
+                    }],
+                    identity: "akrsmv"
+                },
+                meta: {
+                    item: "notneededfortest",
+                    action: "query",
+                    eventSource: "notneededfortest",
+                    ringToken: "notneededfortest"
+                }
+
+            }
+        )
+
+        let queryProcessor = await queryGen.next()
+        do {
+            if (!queryProcessor.done) {
+                queryProcessor = await queryGen.next()
+            }
+        } while (!queryProcessor.done)
+
+        // META: flight}to_airport; 
+        // SMETADATA: SOFIA AIRPORT's ID
+        const queryGen1 = queryManager.query(
+            _specs_AirportItem.__type,
+            {
+                payload: {
+                    arguments: [{
+                        ddbIndex: "meta__smetadata",
+                        primaryKeyName: "meta",
+                        rangeKeyName: "smetadata",
+                        pk: `${_specs_FlightItem.__type}}to_airport`,
+                        range: queryProcessor.value.resultItems && queryProcessor.value.resultItems[0].items && queryProcessor.value.resultItems[0].items[0].id
+                    }],
+                    identity: "akrsmv"
+                },
+                meta: {
+                    item: "notneededfortest",
+                    action: "query",
+                    eventSource: "notneededfortest",
+                    ringToken: "notneededfortest"
+                }
+
+            }
+        )
+
+        let queryProcessor1 = await queryGen1.next()
+        do {
+            if (!queryProcessor1.done) {
+                queryProcessor1 = await queryGen1.next()
+            }
+        } while (!queryProcessor1.done)
+
+
+        return expect(queryProcessor1.value.resultItems && queryProcessor1.value.resultItems[0].items.length).toBe(4) // see test model below
+    })
+
+    test('query all items having particular string refkey value', async () => {
+        // get a flight by flight_code
+        const flight_by_code = await queryItems({
+            ddbIndex: "meta__smetadata",
+            pk: `${_specs_FlightItem.__type}}flight_code`,
+            range: "F13",
+            rangeKeyName: 'smetadata',
+            primaryKeyName: 'meta'
         })
 
-        // get all flights to sofia
-        test('Emphasize that base manager can be used for queries - query all items having particular string refkey value - via BaseManager', async () => {
-
-            const queryManager = await domainAdapter.itemManagers["BASE"]
-            // get the sofia airport dynamo record
-            const queryGen = queryManager.query(
-                _specs_AirportItem.__type,
-                {
-                    payload: {
-                        arguments: [{
-                            ddbIndex: "meta__smetadata",
-                            primaryKeyName: "meta",
-                            rangeKeyName: "smetadata",
-                            pk: `${_specs_AirportItem.__type}}name`,
-                            range: "Sofia"
-                        }],
-                        identity: "akrsmv"
-                    },
-                    meta: {
-                      item: "notneededfortest",
-                      action: "query",
-                      eventSource: "notneededfortest",
-                      ringToken: "notneededfortest"
-                    }
-                    
-                }
-            )
-
-            let queryProcessor = await queryGen.next()
-            do {
-                if (!queryProcessor.done) {
-                    queryProcessor = await queryGen.next()
-                }
-            } while (!queryProcessor.done)
-
-            // META: flight}to_airport; 
-            // SMETADATA: SOFIA AIRPORT's ID
-            const queryGen1 = queryManager.query(
-                _specs_AirportItem.__type,
-                {
-                    payload: {
-                        arguments: [{
-                            ddbIndex: "meta__smetadata",
-                            primaryKeyName: "meta",
-                            rangeKeyName: "smetadata",
-                            pk: `${_specs_FlightItem.__type}}to_airport`,
-                            range: queryProcessor.value.arguments.items && queryProcessor.value.arguments.items[0].id
-                        }],
-                        identity: "akrsmv"
-                    },
-                    meta: {
-                      item: "notneededfortest",
-                      action: "query",
-                      eventSource: "notneededfortest",
-                      ringToken: "notneededfortest"
-                    }
-                    
-                }
-            )
-
-            let queryProcessor1 = await queryGen1.next()
-            do {
-                if (!queryProcessor1.done) {
-                    queryProcessor1 = await queryGen1.next()
-                }
-            } while (!queryProcessor1.done)
-
-
-            return expect(queryProcessor1.value.arguments.count).toBe(4) // see test model below
-        })
-
-        test('query all items having particular string refkey value', async () => {
-            // get a flight by flight_code
-            const flight_by_code = await queryItems({
-                ddbIndex: "meta__smetadata",
-                pk: `${_specs_FlightItem.__type}}flight_code`,
-                range: "F13",
-                rangeKeyName: 'smetadata',
-                primaryKeyName: 'meta'
-            })
-
-            return expect(flight_by_code.count).toBe(1) //see testmodel
-        })
+        return expect(flight_by_code.count).toBe(1) //see testmodel
     })
 
     // BASICALLY THE SAME FUNCTIONALITY TESTED AS IN LOW LEVEL QUERY TESTS, THIS TIME VIA A MANAGER AS SHOWN IN ABOVE TEST
@@ -298,7 +293,7 @@ describe('query spec', () => {
     //         })
 
     //         expect(airplane_with_unique_ref_555.count).toBe(1)
-    //         expect(airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].__typename).toBe("airplane")
+    //         expect(airplane_with_unique_ref_555.items && airplane_with_unique_ref_555.items[0].__typename).toBe(`${_specs_AirplaneItem.__type}`)
 
     //         const all_items_relating_to_airplane_555 = await queryItems({
     //             ddbIndex: "smetadata__meta",
@@ -317,7 +312,7 @@ describe('query spec', () => {
     //         })
 
     //         expect(airplane_with_unique_ref_111.count).toBe(1)
-    //         expect(airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].__typename).toBe("airplane")
+    //         expect(airplane_with_unique_ref_111.items && airplane_with_unique_ref_111.items[0].__typename).toBe(`${_specs_AirplaneItem.__type}`)
 
     //         const all_items_relating_to_airplane_444 = await queryItems({
     //             ddbIndex: "smetadata__meta",

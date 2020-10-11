@@ -25,7 +25,7 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
 
     try {
         const result = await ddbRequest(dynamoDbClient.batchGetItem(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+        !process.env.DEBUGGER || loginfo("====DDB==== BatchGetItemOutput: ", ppjson(result))
 
         let resultItems = fromAttributeMapArray(((result as BatchGetItemOutput).Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[]
 
@@ -64,6 +64,6 @@ export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: nu
     })
 
     for (const refKeyToItem of keysToLoad) {
-        resultItem[refKeyToItem.key] = loadedItemsFromKeys.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
+        resultItem[`${refKeyToItem.key.split("_").map(word => word[0].toUpperCase() + word.slice(1)).join('')}`] = loadedItemsFromKeys.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
     }
 }

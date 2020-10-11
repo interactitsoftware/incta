@@ -10,6 +10,7 @@ export interface AppSyncEvent {
     jobType?: "long" | "short" | undefined
     eventType?: "input" | "output" | undefined
     selectionSetList?: string | undefined
+    selectionSetGraphQL?: string | undefined
 }
 
 /**

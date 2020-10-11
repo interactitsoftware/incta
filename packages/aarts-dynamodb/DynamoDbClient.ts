@@ -30,6 +30,17 @@ export function removeEmpty(obj: Record<string, any>): object {
             {}
         )
 }
+export function leaveKeysOnly<T extends Record<string, any>>(obj: T, keysArray: string[]): T {
+    return Object.keys(obj)
+        .filter(k => obj[k] != null && keysArray.indexOf(k) > -1) // Remove undef. and null.
+        .reduce(
+            (newObj, k) =>
+                typeof obj[k] === "object"
+                    ? { ...newObj, [k]: removeEmpty(leaveKeysOnly(obj[k], keysArray)) } // Recurse.
+                    : { ...newObj, [k]: obj[k] }, // Copy value.
+            {}
+        ) as T
+}
 
 export { versionString }
 export const deletedVersionString = (nr: number) => `d_${nr}`
@@ -70,6 +81,11 @@ export const toAttributeMap = <T>(item: T) => item && DynamoDB.Converter.marshal
             removeEmpty(item),
             dynamoDbConverterOptions
         )
+
+export const toAttributeMapKeysOnly = <T>(item: T, keysArray: string[]) => item && DynamoDB.Converter.marshall(
+    removeEmpty(leaveKeysOnly(item, keysArray)),
+    dynamoDbConverterOptions
+)
 
 export const toAttributeMapArray = <T>(items: T[]) => items.reduce<DynamoDB.AttributeMap[]>(
     (prev: DynamoDB.AttributeMap[], item: T, index: number, array: T[]) => {

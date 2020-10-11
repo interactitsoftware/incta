@@ -6,7 +6,9 @@ import { RemovalPolicy } from '@aws-cdk/core';
 import { ENV_VARS__DB_NAME, ENV_VARS__TEST_DB_NAME, ENV_VARS__DB_ENDPOINT } from '../../env-constants';
 import { clientAppName } from "../aarts-all-infra-stack"
 
-export interface DynamoDBConstructProps { }
+export interface DynamoDBConstructProps { 
+  copyEntireItemToGsis: string
+}
 export class DynamoDBConstruct extends cdk.Construct {
 
   public readonly table: dynamodb.Table;
@@ -36,7 +38,7 @@ export class DynamoDBConstruct extends cdk.Construct {
         indexName: "meta__smetadata",
         partitionKey: { name: "meta", type: AttributeType.STRING },
         sortKey: { name: "smetadata", type: AttributeType.STRING },
-        projectionType: ProjectionType.ALL,
+        projectionType: !!props.copyEntireItemToGsis && props.copyEntireItemToGsis !== "undefined" ? ProjectionType.ALL : ProjectionType.KEYS_ONLY,
         // readCapacity: 1,
         // writeCapacity: 1,
       })
@@ -45,7 +47,7 @@ export class DynamoDBConstruct extends cdk.Construct {
         indexName: "meta__nmetadata",
         partitionKey: { name: "meta", type: AttributeType.STRING },
         sortKey: { name: "nmetadata", type: AttributeType.NUMBER },
-        projectionType: ProjectionType.ALL,
+        projectionType: !!props.copyEntireItemToGsis && props.copyEntireItemToGsis !== "undefined" ? ProjectionType.ALL : ProjectionType.KEYS_ONLY,
         // readCapacity: 1,
         // writeCapacity: 1,
       })
@@ -54,7 +56,7 @@ export class DynamoDBConstruct extends cdk.Construct {
         indexName: "smetadata__meta",
         partitionKey: { name: "smetadata", type: AttributeType.STRING },
         sortKey: { name: "meta", type: AttributeType.STRING },
-        projectionType: ProjectionType.ALL,
+        projectionType: !!props.copyEntireItemToGsis && props.copyEntireItemToGsis !== "undefined" ? ProjectionType.ALL : ProjectionType.KEYS_ONLY,
         // readCapacity: 1,
         // writeCapacity: 1,
       })
@@ -63,7 +65,7 @@ export class DynamoDBConstruct extends cdk.Construct {
         indexName: "nmetadata__meta",
         partitionKey: { name: "nmetadata", type: AttributeType.NUMBER },
         sortKey: { name: "meta", type: AttributeType.STRING },
-        projectionType: ProjectionType.ALL,
+        projectionType: !!props.copyEntireItemToGsis && props.copyEntireItemToGsis !== "undefined" ? ProjectionType.ALL : ProjectionType.KEYS_ONLY,
         // readCapacity: 1,
         // writeCapacity: 1,
       })
@@ -72,7 +74,7 @@ export class DynamoDBConstruct extends cdk.Construct {
         indexName: "meta__id",
         partitionKey: { name: "meta", type: AttributeType.STRING },
         sortKey: { name: "id", type: AttributeType.STRING },
-        projectionType: ProjectionType.ALL,
+        projectionType: !!props.copyEntireItemToGsis && props.copyEntireItemToGsis !== "undefined" ? ProjectionType.ALL : ProjectionType.KEYS_ONLY,
         // readCapacity: 1,
         // writeCapacity: 1,
       })

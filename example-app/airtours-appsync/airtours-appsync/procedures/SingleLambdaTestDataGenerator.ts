@@ -28,7 +28,7 @@ export class SingleLambdaTestDataGenerator {
     public end_date?: number
 
     public touristsToCreate?:number
-    public on_finish?: string[] = ['proc_produce_tourists_csv','proc_send_welcome_email']
+    public on_finish?: string[] = ['Proc__produce_tourists_csv','Proc__send_welcome_email']
 
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
         return {

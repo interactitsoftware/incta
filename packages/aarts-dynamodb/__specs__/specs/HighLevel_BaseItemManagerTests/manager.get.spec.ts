@@ -1,14 +1,10 @@
 import {
-  _specs_AirplaneItem, /**XXX_specs_AirplaneRefkeys */
+  _specs_AirplaneItem,
   _specs_AirportItem
 } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../../testutils"
-import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
-import { versionString, refkeyitemmeta, deletedVersionString } from "../../../DynamoDbClient"
-import { transactDeleteItem } from "../../../dynamodb-transactDeleteItem"
+import { clearDynamo } from "../../testutils"
 import { domainAdapter } from "../../testmodel/itemManagersMap"
-import { CognitoIdentity } from "aws-sdk"
 import { DynamoItem } from "../../../BaseItemManager"
 
 let arrangedAirplane: DynamoItem

@@ -18,6 +18,7 @@ export { clientAppName, clientAppDirName }
 export interface AartsInfraStackProps extends StackProps {
   clientAppName: string
   clientAppDirName: string
+  copyEntireItemToGsis: string
 }
 
 export class AartsAllInfraStack extends Stack {
@@ -39,7 +40,9 @@ export class AartsAllInfraStack extends Stack {
 
     // const s3Construct = new S3Construct(this, `Buckets`, {})
 
-    const dynamoDbConstruct = new DynamoDBConstruct(this, 'DB', {})
+    const dynamoDbConstruct = new DynamoDBConstruct(this, 'DB', {
+      copyEntireItemToGsis: props.copyEntireItemToGsis
+    })
 
     const eventBusConstruct = new EventBusConstruct(this, `Events`, {
       nodeModulesLayer,
@@ -100,7 +103,7 @@ export class AartsAllInfraStack extends Stack {
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
       eventSource: "worker:input:long",
-      sqsRetries: 1,
+      sqsRetries: 3,
       layers: [
         nodeModulesLayer
       ],

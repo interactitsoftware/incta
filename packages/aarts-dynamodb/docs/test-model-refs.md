@@ -9,7 +9,7 @@
 
 {
   "action": "start",
-  "item": "airtours_test_data_importer",
+  "item": "Proc__AirtoursDataImporter",
   "arguments": {},
   "identity": {
     "username": "akrsmv"

@@ -1,13 +1,12 @@
 import { _specs_AirplaneItem, /**_specs_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../../testutils"
+import { clearDynamo, queryForId } from "../../testutils"
 import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
 import { versionString, refkeyitemmeta } from "../../../DynamoDbClient"
 
 describe('update number refkey', () => {
 
   beforeAll(async (done) => { await clearDynamo(); done() })
-  // afterAll(async (done) => { await clearDynamo(); done() })
 
   test('update number refkey', async () => {
 
@@ -25,13 +24,16 @@ describe('update number refkey', () => {
 
         expect(updateResult).toBeInstanceOf(_specs_AirplaneItem)
 
-        const createdItems = await queryForId(airplane.id)
+        const updatedItems = await queryForId(airplane.id)
 
-        const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
-        const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(airplane, "number_of_seats"))[0]
+        const mainItem = updatedItems.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
+        const refkeyItemCopy = updatedItems.filter(i => i.meta === refkeyitemmeta(airplane, "number_of_seats"))[0]
 
-        expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
-          .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripNmetadata()._obj)
+        expect(refkeyItemCopy).toEqual({
+          id:mainItem.id, 
+          meta: refkeyitemmeta(airplane, "number_of_seats"),
+          nmetadata: 13
+        })
 
       })
     })

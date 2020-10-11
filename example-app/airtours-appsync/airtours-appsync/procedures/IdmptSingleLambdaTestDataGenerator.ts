@@ -25,7 +25,7 @@ export class IdmptSingleLambdaTestDataGenerator {
     public error?: number
     public start_date?: number
     public end_date?: number
-    public on_finish?: string[] = ['proc_produce_tourists_csv','proc_send_welcome_email']
+    public on_finish?: string[] = ['Proc__produce_tourists_csv','Proc__send_welcome_email']
 
     public touristsToCreate?: number
 

@@ -1,10 +1,10 @@
 import { _specs_AirplaneItem, /**_specs_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../../testutils"
+import { clearDynamo, queryForId } from "../../testutils"
 import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
-import { versionString, refkeyitemmeta } from "../../../DynamoDbClient"
+import { versionString } from "../../../DynamoDbClient"
 
-describe('update remove refkey', () => {
+describe('update.remove.refkey', () => {
 
   beforeAll(async (done) => { await clearDynamo(); done() })
   // afterAll(async (done) => { await clearDynamo(); done() })
@@ -31,7 +31,7 @@ describe('update remove refkey', () => {
         expect(all.length).toBe(2) // 1 main item, 2 history of update [no 3 - refkey was deleted]
         
         const mainItem = all.filter(i => i.meta === `${versionString(0)}|${_specs_AirplaneItem.__type}`)[0]
-        expect(mainItem).toEqual(Object.assign({}, airplane, {number_of_seats:null}))
+        expect(mainItem).toEqual(Object.assign({}, airplane, {number_of_seats:undefined}))
 
     })
   })

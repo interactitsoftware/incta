@@ -1,6 +1,6 @@
 import { _specs_FlightItem } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../../testutils"
+import { clearDynamo, queryForId } from "../../testutils"
 import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
 import { versionString, refkeyitemmeta } from "../../../DynamoDbClient"
 
@@ -8,8 +8,6 @@ import { versionString, refkeyitemmeta } from "../../../DynamoDbClient"
 describe('update string refkey', () => {
 
   beforeAll(async (done) => { await clearDynamo(); done() })
-  // afterAll(async (done) => { await clearDynamo(); done() })
-
 
   test('update string refkey', async () => {
 
@@ -26,14 +24,16 @@ describe('update string refkey', () => {
 
       expect(updateResult).toBeInstanceOf(_specs_FlightItem)
 
-      const createdItems = await queryForId(flight.id)
+      const updatedItems = await queryForId(flight.id)
 
-      const mainItem = createdItems.filter(i => i.meta === `${versionString(0)}|${_specs_FlightItem.__type}`)[0]
-      const refkeyItemCopy = createdItems.filter(i => i.meta === refkeyitemmeta(flight, "tourist_season"))[0]
+      const mainItem = updatedItems.filter(i => i.meta === `${versionString(0)}|${_specs_FlightItem.__type}`)[0]
+      const refkeyItemCopy = updatedItems.filter(i => i.meta === refkeyitemmeta(flight, "tourist_season"))[0]
 
       expect(mainItem.tourist_season).toBe("season-2")
-      expect(new Strippable(mainItem).stripCreatedUpdatedDates().stripMeta()._obj)
-        .toEqual(new Strippable(refkeyItemCopy).stripCreatedUpdatedDates().stripMeta().stripSmetadata()._obj)
-
+      expect(refkeyItemCopy).toEqual({
+        id:mainItem.id, 
+        meta: refkeyitemmeta(flight, "tourist_season"),
+        smetadata: "season-2"
+      })
   })
 })

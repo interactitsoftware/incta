@@ -1,8 +1,8 @@
 import { _specs_AirplaneItem, /**_specs_AirplaneRefkeys */ } from "../../testmodel/_DynamoItems"
 import { transactPutItem } from "../../../dynamodb-transactPutItem"
-import { Strippable, clearDynamo, queryForId } from "../../testutils"
+import { clearDynamo, queryForId } from "../../testutils"
 import { transactUpdateItem } from "../../../dynamodb-transactUpdateItem"
-import { versionString, refkeyitemmeta, uniqueitemrefkeyid } from "../../../DynamoDbClient"
+import { uniqueitemrefkeyid } from "../../../DynamoDbClient"
 
 
 describe('update unique string refkey', () => {
@@ -50,7 +50,7 @@ describe('update unique string refkey', () => {
       meta: airplane1.meta,
       revisions: airplane1.revisions,
       reg_uq_str: "existing21"
-    }, _specs_AirplaneItem.__refkeys)).rejects.toThrow(/ConditionalCheckFailed/)
+    }, _specs_AirplaneItem.__refkeys)).rejects.toThrow()
 
     // const ddbUpdated = await queryForId(airplane1.id)
     // expect(ddbUpdated.length).toBe(3) //1 main item,2 refkey item copy 3 history record

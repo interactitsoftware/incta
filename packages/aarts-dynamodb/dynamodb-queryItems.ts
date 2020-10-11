@@ -1,12 +1,12 @@
 'use strict'
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
-import { populateRefKeys } from './dynamodb-batchGetItem'
+import { batchGetItem, populateRefKeys } from './dynamodb-batchGetItem'
 import DynamoDB, { AttributeMap, AttributeValue, QueryOutput } from 'aws-sdk/clients/dynamodb'
 import { dynamoDbClient, fromAttributeMapArray, DB_NAME, toAttributeMap, fromAttributeMap, ddbRequest } from './DynamoDbClient';
 import { DynamoItem } from './BaseItemManager';
 import { DdbQueryInput, DdbQueryOutput, DdbGSIItemKey, RefKey } from './interfaces';
-import { loginfo, ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson, versionString } from 'aarts-utils/utils';
 
 export const queryItems = async <T extends DdbQueryInput, TResult extends DynamoItem>(ddbQueryPayload: T): Promise<DdbQueryOutput<TResult>> => {
 
@@ -94,8 +94,18 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
 
     try {
         const result = await ddbRequest(dynamoDbClient.query(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+        !process.env.DEBUGGER || loginfo("====DDB==== QueryOutput: ", ppjson(result))
         let resultItems = fromAttributeMapArray((result as QueryOutput).Items as AttributeMap[]) as DynamoItem[]
+
+        // ----------- 
+        if (!!ddbQueryPayload.ddbIndex && !!resultItems && resultItems.length > 0 && !process.env.copyEntireItemToGsis) {
+            // console.log("results FILTERED are " + ppjson(resultItems.map(r => {r.id, r.meta, r.smetadata, r.nmetadata})))
+            // console.log("results are " + ppjson(resultItems))
+            // console.log("GETTING THEM VIA BATCH GET")
+            resultItems = await batchGetItem({pks: resultItems.map(r => {return {id: r.id, meta:  `${versionString(0)}|${ r.id.substr(0,r.id.indexOf("|"))}`}})})
+            // console.log("results with BATCH GET ITEM ARE " + ppjson(resultItems))
+        }
+        // -----------
 
         for (let resultItem of resultItems) {
             await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad)

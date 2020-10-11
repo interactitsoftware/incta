@@ -29,7 +29,7 @@ export async function processPayload(evnt: AartsEvent, context?: Context): Promi
 
 export async function* processPayloadAsync(evnt: AartsEvent): AsyncGenerator<AartsEvent, AartsEvent, undefined> {
 
-	process.env.DO_NOT_PRINT_RECEIVED_AARTS_PAYLOAD || (yield Object.assign({}, evnt, { payload: { resultItems: [{message: `[AartsHandler:processPayloadAsync] Received payload: ${ppjson(evnt)}`}] } }))
+	process.env.DO_NOT_PRINT_RECEIVED_AARTS_PAYLOAD || (yield Object.assign({}, evnt, { payload: { resultItems: [{ message: `[AartsHandler:processPayloadAsync] Received payload: ${ppjson(evnt)}` }] } }))
 	const payloadsArray = Array.isArray(evnt.payload.arguments) ? evnt.payload.arguments : [evnt.payload.arguments]
 	Object.assign(evnt, {
 		payload: {
@@ -55,7 +55,7 @@ export async function* processPayloadAsync(evnt: AartsEvent): AsyncGenerator<Aar
 			})
 	}
 
-	!process.env.DEBUGGER || (yield Object.assign({}, evnt, { payload: { resultItems: [{message: `[AartsHandler:processPayloadAsync] Will Invoke ${evnt.meta.item}:${evnt.meta.action} manager action`}] } }))
+	!process.env.DEBUGGER || (yield Object.assign({}, evnt, { payload: { resultItems: [{ message: `[AartsHandler:processPayloadAsync] Will Invoke ${evnt.meta.item}:${evnt.meta.action} manager action` }] } }))
 
 	const asyncGen = manager[evnt.meta.action](evnt.meta.item, evnt)
 	let processor = await asyncGen.next()

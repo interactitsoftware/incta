@@ -5,6 +5,7 @@ import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHand
 import { processPayload } from "aarts-handler/aartsHandler"
 import { prepareAppSyncEventForDispatch } from "aarts-eb-types/prepareAppSyncEventForDispatch"
 import { loginfo, ppjson, uuid } from "aarts-utils/utils";
+import { IItemManagerKeys } from "aarts-types/interfaces";
 
 /**
  * forwards to SNS, decorating with:
@@ -29,30 +30,27 @@ export const dispatch = async (event: AppSyncEvent | DynamoDBStreamEvent, contex
 		throw new Error(`Unknown event landed in arrtsSNSEventDispatcher: ${ppjson(event)}`)
 	}
 
-	return {
-		statusCode: 200,
-		body: { result, ringToken }
-	}
+	return result
 }
 
 const processAppSyncEvent = async (event: AppSyncEvent, ringToken: string, context?: Context) => {
 
 	let result
 	if (event.action === "query" || event.action === "get") {
-		!process.env.DEBUGGER || loginfo('dispatching directly to handler, skipping SNS publishing')
-		result = await processPayload({
+		!process.env.DEBUGGER || loginfo('dispatching directly to handler, skipping SNS publishing. Event is ', event)
+			Object.assign(event.arguments, { selectionSetGraphQL: event.selectionSetGraphQL, selectionSetList: event.selectionSetList })
+		return (await processPayload({
 			meta: {
 				ringToken: ringToken,
 				eventSource: `worker:${event.eventType === "output" ? event.eventType : "input"}:${event.jobType}`,
-				action: event.action,
+				action: event.action as IItemManagerKeys,
 				item: event.item
 			},
 			payload: {
 				arguments: event.arguments,
 				identity: event.identity,
-				selectionSetList: event.selectionSetList
 			}
-		}, context)
+		}, context)).payload.resultItems[0].items
 	} else if (!process.env["AWS_SAM_LOCAL"]) {
 		// used runtime in aws
 		const publishInput: AWS.SNS.PublishInput = prepareAppSyncEventForDispatch(event, ringToken)
