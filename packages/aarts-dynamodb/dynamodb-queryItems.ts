@@ -97,24 +97,20 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
         !process.env.DEBUGGER || loginfo("====DDB==== QueryOutput: ", ppjson(result))
         let resultItems = fromAttributeMapArray((result as QueryOutput).Items as AttributeMap[]) as DynamoItem[]
 
-        // ----------- 
-        if (!!ddbQueryPayload.ddbIndex && !!resultItems && resultItems.length > 0 && !process.env.copyEntireItemToGsis) {
-            // console.log("results FILTERED are " + ppjson(resultItems.map(r => {r.id, r.meta, r.smetadata, r.nmetadata})))
-            // console.log("results are " + ppjson(resultItems))
-            // console.log("GETTING THEM VIA BATCH GET")
-            resultItems = await batchGetItem({pks: resultItems.map(r => {return {id: r.id, meta:  `${versionString(0)}|${ r.id.substr(0,r.id.indexOf("|"))}`}})})
-            // console.log("results with BATCH GET ITEM ARE " + ppjson(resultItems))
+        if (!!ddbQueryPayload.ddbIndex && !!resultItems && resultItems.length > 0) {
+            if (!process.env.copyEntireItemToGsis) {
+                resultItems = await batchGetItem({ pks: resultItems.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }), projectionExpression: ddbQueryPayload.projectionExpression })
+            } else {
+                for (let resultItem of resultItems) {
+                    await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad, ddbQueryPayload.projectionExpression)
+                }
+            }
         }
-        // -----------
-
-        for (let resultItem of resultItems) {
-            await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad)
-        }
-    
+        
         return { items: resultItems as TResult[], lastEvaluatedKey: fromAttributeMap<DdbGSIItemKey>((result as QueryOutput).LastEvaluatedKey as DynamoDB.Key), count: (result as QueryOutput).Count }
-    
+
     } catch (err) {
-        throw new Error(ppjson({request: params, error: err}))
+        throw new Error(ppjson({ request: params, error: err }))
     }
 }
 

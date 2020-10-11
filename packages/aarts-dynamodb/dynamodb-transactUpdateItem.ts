@@ -103,7 +103,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                 ReturnValuesOnConditionCheckFailure: "ALL_OLD",
                 Key: Object.assign({
                     id: dexistingItemkey.id,
-                    meta: { S: `${versionString(++existingItem.revisions)}|${existingItem.__typename}` },
+                    meta: { S: `${versionString(existingItem.revisions + 1)}|${existingItem.__typename}` },
                 }),
                 UpdateExpression: updateExprHistory,
                 ExpressionAttributeNames: Object.assign(

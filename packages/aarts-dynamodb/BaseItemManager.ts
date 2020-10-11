@@ -1,4 +1,4 @@
-import { DB_NAME, ddbRequest, dynamoDbClient, fromAttributeMap, versionString } from "./DynamoDbClient";
+import { DB_NAME, ddbRequest, dynamoDbClient, fromAttributeMap, transformGraphQLSelection, versionString } from "./DynamoDbClient";
 import { batchGetItem } from "./dynamodb-batchGetItem";
 import { transactUpdateItem } from "./dynamodb-transactUpdateItem";
 import { transactPutItem } from "./dynamodb-transactPutItem";
@@ -283,7 +283,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
 
             if (!process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS) {
-                console.log("WILL START TRANSFORMING " + ppjson(args[0]))
+                console.log("WILL START TRANSFORMING " + inputQueryArg)
+                Object.assign(inputQueryArg, transformGraphQLSelection(inputQueryArg.selectionSetGraphQL))
+                console.log("transformed " + inputQueryArg)
             }
 
             accum.push(inputQueryArg as unknown as DdbQueryInput)
@@ -456,7 +458,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 }
                 return accum
             }, [])
-        })
+        },
+        !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
     }
     /**
      * making use of dynamodb batchGetItems

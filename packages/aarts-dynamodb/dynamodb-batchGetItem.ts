@@ -17,7 +17,9 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
     const params: BatchGetItemInput = {
         RequestItems: {
             [DB_NAME]: {
-                Keys: keys
+                Keys: keys,
+                // ProjectionExpression: !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? args.projectionExpression : undefined
+                ProjectionExpression: args.projectionExpression
             }
         },
         ReturnConsumedCapacity: 'TOTAL',
@@ -31,18 +33,18 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
 
         if (args.loadPeersLevel !== 0) {
             for (let resultItem of resultItems) {
-                await populateRefKeys(resultItem, args.loadPeersLevel, args.peersPropsToLoad)
+                await populateRefKeys(resultItem, args.loadPeersLevel, args.peersPropsToLoad, args.projectionExpression)
             }
         }
 
         return resultItems as T[]
     } catch (err) {
-        throw new Error(ppjson({request: params, error: err}))
+        throw new Error(ppjson({ request: params, error: err }))
     }
 
 }
 
-export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: number, peersPropsToLoad?: string[] | undefined) => {
+export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: number, peersPropsToLoad: string[] | undefined, projectionExpression: string | undefined) => {
     if (loadPeersLevel === 0) return
 
     const __type = (resultItem as unknown as DynamoItem).__typename as string
@@ -60,7 +62,8 @@ export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: nu
     const loadedItemsFromKeys = await batchGetItem({
         pks: Array.from(keysToLoad.reduce<Map<string, DdbTableItemKey>>((accum, item) => { accum.set(`${item.pk.id}${item.pk.meta}`, item.pk); return accum }, new Map()).values()),
         loadPeersLevel: --loadPeersLevel,
-        peersPropsToLoad
+        peersPropsToLoad,
+        projectionExpression
     })
 
     for (const refKeyToItem of keysToLoad) {

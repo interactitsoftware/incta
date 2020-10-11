@@ -3,6 +3,7 @@ import { Request } from 'aws-sdk/lib/request'
 import { AttributeMap, BatchGetItemOutput, BatchWriteItemOutput, QueryOutput, TransactWriteItemsOutput, UpdateItemOutput } from 'aws-sdk/clients/dynamodb';
 import { DynamoItem } from './BaseItemManager';
 import { ppjson, versionString } from 'aarts-utils/utils';
+import { DdbLoadPeersInput } from './interfaces';
 
 export const offline_options = {
     region: 'ddblocal',
@@ -42,6 +43,51 @@ export function leaveKeysOnly<T extends Record<string, any>>(obj: T, keysArray: 
         ) as T
 }
 
+export const transformGraphQLSelection = (graphqlQuery: string | undefined): DdbLoadPeersInput => {
+    const result: DdbLoadPeersInput = {
+        loadPeersLevel: 0,
+        peersPropsToLoad: [],
+        projectionExpression: undefined
+    }
+
+    if (!graphqlQuery) {
+        return result
+    }
+
+    const words = graphqlQuery
+        .replace(/\.\.\./g, ' ... ')
+        .replace(/{/g, ' { ')
+        .replace(/}/g, ' } ')
+        .replace(/\n|\\n|/g, '')
+        .split(/\s+|,/)
+        .filter(word => !!word || word.trim() !== '')
+    let nesting = 0, prjExp = ['__typename'], loadPeersLevels: number[] = []
+    for (let i = 1; i < words.length; i++) { // skip first '{'
+
+        if (words[i] === "{") {
+            nesting++
+        } else if (words[i] === "...") {
+            // skip '...' 'on' 'SomeItem' '{' 'xyz'<-- and position here
+            i += 3
+            continue
+        } else if (words[i] === "}") {
+            loadPeersLevels.push(nesting)
+            nesting--
+        }
+        else {
+            if (!words[i].startsWith("_") && `${words[i][0].toUpperCase()}${words[i].slice(1)}` === words[i]) {
+                (result.peersPropsToLoad as string[]).push(words[i])
+            } else {
+                prjExp.push(words[i])
+            }
+        }
+    }
+    result.projectionExpression = Array.from(new Set(prjExp)).join(",")
+    result.peersPropsToLoad = Array.from(new Set(result.peersPropsToLoad))
+    result.loadPeersLevel = Math.max(...loadPeersLevels)
+    return result
+}
+
 export { versionString }
 export const deletedVersionString = (nr: number) => `d_${nr}`
 
@@ -53,7 +99,7 @@ export const refkeyitem = <T extends DynamoItem>(item: T, key: string) => Object
     {},
     item,
     {
-        meta:  refkeyitemmeta(item, key),
+        meta: refkeyitemmeta(item, key),
         smetadata: typeof item[key] === "string" ? item[key] as string : undefined,
         nmetadata: typeof item[key] === "number" ? item[key] as number : undefined,
         // __typename: refkeyitemtype(item, key)
@@ -61,8 +107,8 @@ export const refkeyitem = <T extends DynamoItem>(item: T, key: string) => Object
 
 export function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemUpdates: Record<string, any>): object {
     return Object.keys(itemUpdates)
-    // Remove those with same value, preserving whatever the revisions passed
-        .filter(k => k === "revisions" || (itemUpdates[k] === "__del__" && existingItem[k]) ||  (itemUpdates[k] !== "__del__" && itemUpdates[k] != existingItem[k])) 
+        // Remove those with same value, preserving whatever the revisions passed
+        .filter(k => k === "revisions" || (itemUpdates[k] === "__del__" && existingItem[k]) || (itemUpdates[k] !== "__del__" && itemUpdates[k] != existingItem[k]))
         .reduce(
             (newObj, k) =>
                 typeof itemUpdates[k] === "object"
@@ -78,9 +124,9 @@ export const fromAttributeMap = <T>(item: AttributeMap | undefined) => DynamoDB.
 ) as T
 
 export const toAttributeMap = <T>(item: T) => item && DynamoDB.Converter.marshall(
-            removeEmpty(item),
-            dynamoDbConverterOptions
-        )
+    removeEmpty(item),
+    dynamoDbConverterOptions
+)
 
 export const toAttributeMapKeysOnly = <T>(item: T, keysArray: string[]) => item && DynamoDB.Converter.marshall(
     removeEmpty(leaveKeysOnly(item, keysArray)),
@@ -105,37 +151,39 @@ export const fromAttributeMapArray = <T>(attrMapArray: DynamoDB.AttributeMap[] |
         return accum
     }, [])
 
-    export const ddbRequest = async (
-        request: Request<TransactWriteItemsOutput | BatchGetItemOutput | UpdateItemOutput | QueryOutput | BatchWriteItemOutput, AWSError>,
-    ): Promise<TransactWriteItemsOutput | BatchGetItemOutput | QueryOutput | UpdateItemOutput | BatchWriteItemOutput> => {
-        let cancellationReasons:{Item:any, Code:string, Message:string}[] = []
+export const ddbRequest = async (
+    request: Request<TransactWriteItemsOutput | BatchGetItemOutput | UpdateItemOutput | QueryOutput | BatchWriteItemOutput, AWSError>,
+): Promise<TransactWriteItemsOutput | BatchGetItemOutput | QueryOutput | UpdateItemOutput | BatchWriteItemOutput> => {
+    let cancellationReasons: { Item: any, Code: string, Message: string }[] = []
 
-        request.on('error', (response, httpResponse) => {
-            console.error(`${process.env.ringToken}: Error calling dynamo: ${ppjson(response)}`);
-            try {
-                cancellationReasons = JSON.parse(httpResponse.httpResponse.body.toString()).CancellationReasons;
-                console.log(cancellationReasons, ppjson(cancellationReasons))
-            } catch (err) {
-                // suppress this just in case some types of errors aren't JSON parseable
-                console.error(`${process.env.ringToken}: Error extracting cancellation error`, err);
-            }
-        });
-        
-        // this extractError event ... is it raised at all?
-        // request.on('extractError', (response) => {
-        //     try {
-        //         cancellationReasons = JSON.parse(response.httpResponse.body.toString()).CancellationReasons;
-        //     } catch (err) {
-        //         // suppress this just in case some types of errors aren't JSON parseable
-        //         console.error('Error extracting cancellation error', err);
-        //     }
-        // });
-
+    request.on('error', (response, httpResponse) => {
+        console.error(`${process.env.ringToken}: Error calling dynamo: ${ppjson(response)}`);
         try {
-            return await request.promise()
+            cancellationReasons = JSON.parse(httpResponse.httpResponse.body.toString()).CancellationReasons;
+            console.log(cancellationReasons, ppjson(cancellationReasons))
         } catch (err) {
-            throw new Error(ppjson({ ringToken: process.env.ringToken,
-                cancellationReasons:cancellationReasons && cancellationReasons.length > 1 && cancellationReasons.filter(c=> c.Item || c.Message),
-                err }))
+            // suppress this just in case some types of errors aren't JSON parseable
+            console.error(`${process.env.ringToken}: Error extracting cancellation error`, err);
         }
+    });
+
+    // this extractError event ... is it raised at all?
+    // request.on('extractError', (response) => {
+    //     try {
+    //         cancellationReasons = JSON.parse(response.httpResponse.body.toString()).CancellationReasons;
+    //     } catch (err) {
+    //         // suppress this just in case some types of errors aren't JSON parseable
+    //         console.error('Error extracting cancellation error', err);
+    //     }
+    // });
+
+    try {
+        return await request.promise()
+    } catch (err) {
+        throw new Error(ppjson({
+            ringToken: process.env.ringToken,
+            cancellationReasons: cancellationReasons && cancellationReasons.length > 1 && cancellationReasons.filter(c => c.Item || c.Message),
+            err
+        }))
     }
+}

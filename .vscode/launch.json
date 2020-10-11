@@ -10,7 +10,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                "query"
+                "utility.functions"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",

@@ -50,6 +50,8 @@ export interface DdbGetInput extends DdbLoadPeersInput{
 export interface DdbLoadPeersInput {
     loadPeersLevel?: number
     peersPropsToLoad?: string[]
+    projectionExpression?: string
+    selectionSetGraphQL?: string
 }
 
 export interface IProcedure<T> {
