@@ -99,14 +99,29 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
 
         if (!!ddbQueryPayload.ddbIndex && !!resultItems && resultItems.length > 0) {
             if (!process.env.copyEntireItemToGsis) {
-                resultItems = await batchGetItem({ pks: resultItems.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }), projectionExpression: ddbQueryPayload.projectionExpression })
+                console.log("calling batch get item with", {
+                    pks: resultItems.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }),
+                    loadPeersLevel: ddbQueryPayload.loadPeersLevel,
+                    peersPropsToLoad: ddbQueryPayload.peersPropsToLoad,
+                    projectionExpression: ddbQueryPayload.projectionExpression
+                })
+                resultItems = await batchGetItem({
+                    pks: resultItems.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }),
+                    loadPeersLevel: ddbQueryPayload.loadPeersLevel,
+                    peersPropsToLoad: ddbQueryPayload.peersPropsToLoad,
+                    projectionExpression: ddbQueryPayload.projectionExpression
+                })
             } else {
                 for (let resultItem of resultItems) {
                     await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad, ddbQueryPayload.projectionExpression)
                 }
             }
+        } else if (!!resultItems && resultItems.length > 0) {
+            for (let resultItem of resultItems) {
+                await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad, ddbQueryPayload.projectionExpression)
+            }
         }
-        
+
         return { items: resultItems as TResult[], lastEvaluatedKey: fromAttributeMap<DdbGSIItemKey>((result as QueryOutput).LastEvaluatedKey as DynamoDB.Key), count: (result as QueryOutput).Count }
 
     } catch (err) {

@@ -283,9 +283,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
 
             if (!process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS) {
-                console.log("WILL START TRANSFORMING " + inputQueryArg)
+                console.log("WILL START TRANSFORMING ", inputQueryArg)
                 Object.assign(inputQueryArg, transformGraphQLSelection(inputQueryArg.selectionSetGraphQL))
-                console.log("transformed " + inputQueryArg)
+                console.log("transformed ", inputQueryArg)
             }
 
             accum.push(inputQueryArg as unknown as DdbQueryInput)
@@ -445,7 +445,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             throw new Error(`${process.env.ringToken}: [baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
         }
 
-        return Object.assign(args[0], {
+        const getInput = Object.assign({}, args[0], {
             pks: args[0].pks.reduce<DdbTableItemKey[]>((accum, item) => {
                 if (item.id) {
                     if (!item.meta) {
@@ -461,6 +461,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         },
         // !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
         !!args[0].loadPeersLevel || (!!args[0].peersPropsToLoad && args[0].peersPropsToLoad.length>0) ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
+        console.log("transformed ",getInput)
+        return getInput
+
     }
     /**
      * making use of dynamodb batchGetItems

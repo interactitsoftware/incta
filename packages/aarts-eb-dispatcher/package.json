@@ -1,16 +1,16 @@
 {
   "name": "aarts-eb-dispatcher",
-  "version": "1.0.439",
+  "version": "1.0.447",
   "description": "dispatches events to bus, decorating them with a client token",
   "main": "./dist/aartsSnsDispatcher.js",
   "dependencies": {
     "@types/aws-lambda": "^8.10.63",
     "@types/node": "^13.13.25",
     "@types/request": "^2.48.5",
-    "aarts-eb-types": "^0.2.454",
-    "aarts-handler": "^0.3.439",
-    "aarts-types": "^0.2.455",
-    "aarts-utils": "^0.2.455",
+    "aarts-eb-types": "^0.2.462",
+    "aarts-handler": "^0.3.447",
+    "aarts-types": "^0.2.463",
+    "aarts-utils": "^0.2.463",
     "aws-sdk": "^2.771.0",
     "typescript": "^3.9.7"
   },

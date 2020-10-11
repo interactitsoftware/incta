@@ -1,6 +1,6 @@
 'use strict'
 
-import { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMap } from 'aws-sdk/clients/dynamodb'
+import { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMap, ExpressionAttributeNameMap } from 'aws-sdk/clients/dynamodb'
 import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME, versionString, ddbRequest } from './DynamoDbClient';
 import { DynamoItem } from './BaseItemManager';
 import { MixinConstructor } from 'aarts-types/Mixin';
@@ -19,7 +19,11 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
             [DB_NAME]: {
                 Keys: keys,
                 // ProjectionExpression: !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? args.projectionExpression : undefined
-                ProjectionExpression: args.projectionExpression
+                ProjectionExpression: args.projectionExpression ? args.projectionExpression.split(",").map(key => `#${key}`, []).join(",") : undefined,
+                ExpressionAttributeNames: args.projectionExpression ? args.projectionExpression.split(",").reduce<ExpressionAttributeNameMap>((accum, key) => {
+                    accum[`#${key}`] = `${key}`
+                    return accum
+                }, {}) : undefined,
             }
         },
         ReturnConsumedCapacity: 'TOTAL',
@@ -48,7 +52,7 @@ export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: nu
     if (loadPeersLevel === 0) return
 
     const __type = (resultItem as unknown as DynamoItem).__typename as string
-    const __refkeysToItems = (((global.domainAdapter.lookupItems as unknown) as Map<string, MixinConstructor<typeof DynamoItem>>).get(__type)?.__refkeys as RefKey<Record<string, any>>[]).filter(k => !!k.ref && (peersPropsToLoad === undefined || peersPropsToLoad.indexOf(k.key) > -1))
+    const __refkeysToItems = (((global.domainAdapter.lookupItems as unknown) as Map<string, MixinConstructor<typeof DynamoItem>>).get(__type)?.__refkeys as RefKey<Record<string, any>>[]).filter(k => !!k.ref && (peersPropsToLoad === undefined || peersPropsToLoad.indexOf(k.key) > -1 || peersPropsToLoad.indexOf(`${k.key[0].toUpperCase()}${k.key.slice(1)}`) > -1))
     const keysToLoad = __refkeysToItems.reduce<{ key: string, pk: { id: string, meta: string } }[]>((accum, i) => {
         if (Object.keys(resultItem).indexOf(i.key) > -1 && !!resultItem[i.key]) {
             accum.push({ key: i.key, pk: { id: resultItem[i.key], meta: `${versionString(0)}|${resultItem[i.key].substr(0, resultItem[i.key].indexOf("|"))}` } })
@@ -67,6 +71,6 @@ export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: nu
     })
 
     for (const refKeyToItem of keysToLoad) {
-        resultItem[`${refKeyToItem.key.split("_").map(word => word[0].toUpperCase() + word.slice(1)).join('')}`] = loadedItemsFromKeys.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
+        resultItem[`${refKeyToItem.key[0].toUpperCase()}${refKeyToItem.key.slice(1)}`] = loadedItemsFromKeys.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
     }
 }
