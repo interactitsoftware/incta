@@ -436,7 +436,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     }
     /**
      * 
-     * @param args holds get checkins, transforming incomming args for dynamodb getItem
+     * @param args holds gate checks, transforming incomming args for dynamodb getItem
      * @param identity 
      */
     async *baseValidateGet(args: DdbGetInput[], identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
@@ -459,7 +459,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 return accum
             }, [])
         },
-        !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
+        // !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
+        !!args[0].loadPeersLevel || (!!args[0].peersPropsToLoad && args[0].peersPropsToLoad.length>0) ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
     }
     /**
      * making use of dynamodb batchGetItems
