@@ -1,9 +1,10 @@
 # aarts
-Serverless application, with end to end developer experience - from automated testing to CI/CD pipelines. Project is open source and looking for contributors and sponsors. It targets cost optimization and configurable speed to cost ratio, *at any scale*. Current achievements are processing 250K events for 30 minutes at ~$50 (depending on the processing needed). Because its serverless, if the app is not used, it won't generate any costs, while still, always available.
+Serverless application, with end to end developer experience. Project is open source and looking for contributors and sponsors. It targets cost optimization and configurable speed to cost ratio, *at any scale*. Because its serverless, if the app is not used, it won't generate any costs, while still, always available.
 
-Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage. It is modularized into npm packages, so client applications may focus only on domain logic. Please refer to the example-app in this repo 
+Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage. 
 
-The code in this repo is for educational purposes/bootstrapping only. Performance is always the highest prioirity, however due to the generic nature of the repo, there are aspects of the code not directly suitable for production use. A significant cost and data model optimizations can be made, once it is about a concrete business problem
+Performance is always the highest prioirity, however further cost and data model optimizations can be made, once it is about a concrete business problem
+
 
 __*(WIP)*__ __aarts-cli__
 - `aarts init-project <project-name>` - creates skeleton for project
@@ -18,6 +19,7 @@ For using it in your business domain, you may fork the repo and tweak the logic 
 This is a monorepo, home of multiple npm packages:
 - `aarts-types`
 - `aarts-dynamodb`
+- `aarts-dynamodb-events`
 - `aarts-handler`
 - `aarts-eb-types`
 - `aarts-eb-notifier`
@@ -27,7 +29,7 @@ This is a monorepo, home of multiple npm packages:
 It also hosts example apps with the intention to demonstrate how above npm packages can work toghether
 
 # Features
-- Async generators, who can yield (validation, or whatever) messages
+- Async generators, yielding (validation, or whatever) messages
 - Graphql queries, allowing for getting all data needed at once
 - [single dynamo table design](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html#bp-general-nosql-design-concepts) implementation
 - optimistic locking implementation
@@ -38,7 +40,21 @@ It also hosts example apps with the intention to demonstrate how above npm packa
 
 
 ## Prerequisites
-- aws cli, nodejs, typescript, jest
-- aws sam local, docker, NoSQL AWS Workbench - for rapid local development
+- [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-html)
+- [docker](https://docs.docker.com/desktop/)
+- [nodejs](https://nodejs.org/en/download/)
+- `npm i -g typescript node-ts jest`
+- [NoSQL AWS Workbench](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.settingup.html)
+- [aws sam](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (optional, currently dev testing is mainly via jest)
+
+### Create local dynamo test table
+- `aws dynamodb create-table --cli-input-json file://local-dev-table-def.json --endpoint-url http://localhost:8000`
+
+### trouble shooting
+- first do a cleanup:
+- `find . -name "node_modules" -exec rm -rf '{}' +`
+- `find . -name "package-lock.json" -exec rm -rf '{}' +`
+
+
 
 

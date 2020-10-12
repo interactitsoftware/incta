@@ -102,14 +102,19 @@ describe('utility.functions', () => {
     const peersQuerInput1 = transformGraphQLSelection(testGraphql1)
     const peersQuerInput11 = transformGraphQLSelection(testGraphql11)
     expect(peersQuerInput1).toEqual(peersQuerInput11)
+    expect(peersQuerInput1.loadPeersLevel).toBe(2)
+    expect(peersQuerInput1.peersPropsToLoad).toStrictEqual(["Country", "FromAirport"])
 
     const peersQuerInput2 = transformGraphQLSelection(testGraphql2)
     const peersQuerInput21 = transformGraphQLSelection(testGraphql21)
+    expect(peersQuerInput2).toEqual(peersQuerInput21)
+    expect(peersQuerInput2.loadPeersLevel).toBe(5)
+    expect(peersQuerInput2.peersPropsToLoad).toStrictEqual(["Tourist", "Country","Airplane","Flight","ToAirport"])
 
     expect(peersQuerInput2).toEqual(peersQuerInput21)
   })
 
-  test('transformGraphQLQuery calculates proper values, ignoring fragments', () => {
+  test('transformGraphQLQuery deals with FIRST LEVEL fragments - if nested fragments it may not calc correctly', () => {
     const transformed = transformGraphQLSelection(
       `{aaa
         ...on Airplane
@@ -121,10 +126,10 @@ describe('utility.functions', () => {
       }`)
     expect(transformed.loadPeersLevel).toEqual(1)
     expect(transformed.peersPropsToLoad).toEqual(["A"])
-    expect(transformed.projectionExpression).toEqual("__typename,aaa,bbb,ccc")
+    expect(transformed.projectionExpression).toEqual("__typename,aaa,bbb,ccc,a")  // ensure ids loadPeers appended at the end (in this case A)
   })
 
-  test.only('transformGraphQLQuery takes the most nested selection for loadPeersLevel', () => {
+  test('transformGraphQLQuery takes the most nested selection for loadPeersLevel', () => {
     const transformed = transformGraphQLSelection(
       `{aaa
         ...on Airplane
@@ -150,6 +155,6 @@ describe('utility.functions', () => {
       }`)
     expect(transformed.loadPeersLevel).toEqual(4)
     expect(transformed.peersPropsToLoad).toEqual(["A","B","C","D","E","F","G"])
-    expect(transformed.projectionExpression).toEqual("__typename,aaa,bbb,xxx,mostNested,ccc")
+    expect(transformed.projectionExpression).toEqual("__typename,aaa,bbb,xxx,mostNested,ccc,a,b,c,d,e,f,g") // ensure ids loadPeers appended at the end (om this case: A B C D E F G)
   })
 })

@@ -13,7 +13,7 @@
                 "utility.functions"
             ],
             "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
+            "internalConsoleOptions": "openOnFirstSessionStart",
 
         }
     ]

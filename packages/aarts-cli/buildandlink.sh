@@ -144,7 +144,6 @@ cd $AARTS_HOME/example-app/airtours-appsync/airtours-appsync
 # npm link aarts-eb-handler
 # npm link aarts-eb-notifier
 # npm link aarts-eb-dispatcher
-# npm link aarts-eb-dispatcher-tester
 npm install && npm update
 npm version patch
 npm run build_lin
@@ -153,8 +152,6 @@ npm run build_lin
 # echo            AARTS_EXAMPLE_APPSYNC_INFRA
 # echo ------------------------------------------------
 # cd $AARTS_HOME/example-app/airtours-appsync/infra/aarts-lambdas/dispatcher
-# npm install && npm update
-# cd $AARTS_HOME/example-app/airtours-appsync/infra/aarts-lambdas/dispatcher-tester
 # npm install && npm update
 # cd $AARTS_HOME/example-app/airtours-appsync/infra/aarts-lambdas/notifier
 # npm install && npm update

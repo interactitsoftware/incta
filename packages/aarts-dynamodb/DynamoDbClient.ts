@@ -72,7 +72,9 @@ export const transformGraphQLSelection = (graphqlQuery: string | undefined): Ddb
             continue
         } else if (words[i] === "}") {
             loadPeersLevels.push(nesting)
-            nesting--
+            if (nesting >= 1) {
+                nesting--
+            }
         }
         else {
             if (!words[i].startsWith("_") && `${words[i][0].toUpperCase()}${words[i].slice(1)}` === words[i]) {
@@ -82,8 +84,9 @@ export const transformGraphQLSelection = (graphqlQuery: string | undefined): Ddb
             }
         }
     }
-    result.projectionExpression = Array.from(new Set(prjExp)).join(",")
+    
     result.peersPropsToLoad = Array.from(new Set(result.peersPropsToLoad))
+    result.projectionExpression = Array.from(new Set(prjExp.concat(result.peersPropsToLoad.map(p => `${p[0].toLowerCase()}${p.slice(1)}`)))).join(",")
     result.loadPeersLevel = Math.max(...loadPeersLevels)
     return result
 }

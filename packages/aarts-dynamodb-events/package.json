@@ -1,17 +1,17 @@
 {
   "name": "aarts-dynamodb-events",
-  "version": "1.0.447",
+  "version": "1.0.453",
   "description": "upon a dynamo stream event, calls respective callbacks on respective item managers",
   "main": "./dist/dynamoEventsProcessor.js",
   "dependencies": {
     "@types/aws-lambda": "^8.10.63",
     "@types/node": "^13.13.25",
     "@types/request": "^2.48.5",
-    "aarts-dynamodb": "^0.4.453",
-    "aarts-eb-types": "^0.2.462",
-    "aarts-handler": "^0.3.447",
-    "aarts-types": "^0.2.463",
-    "aarts-utils": "^0.2.463",
+    "aarts-dynamodb": "^0.4.459",
+    "aarts-eb-types": "^0.2.468",
+    "aarts-handler": "^0.3.453",
+    "aarts-types": "^0.2.469",
+    "aarts-utils": "^0.2.469",
     "aws-sdk": "^2.771.0",
     "typescript": "^3.9.7"
   },
