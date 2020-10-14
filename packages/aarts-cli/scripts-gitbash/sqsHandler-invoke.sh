@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# Invokes sqs handler, but expects sns event
+# Invokes sqs worker, but expects sns event
 # In here the sns event gets transformed to sqs message and the sqs handler is called with it 
 #
 AWS_PROFILE=${AWS_PROFILE:=default}

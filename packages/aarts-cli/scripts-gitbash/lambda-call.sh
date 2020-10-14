@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Can be used to call either dispatcher(sns publisher) or handler (sqs events handler)
+# Can be used to call either handler(sns publisher) or worker (sqs events handler)
 # One need to pass file path to sns (interface AppSyncEvent) event or SQS event respectiveley
 # USING AWS lambda invoke approach in this script, i.e one should have aarts-local-server.sh running beforehand
 

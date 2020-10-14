@@ -1,57 +1,95 @@
 #!/bin/bash
 
 CLIENT_PROJECT_PATH=$(pwd)
-echo CLIENT_PROJECT_PATH=$CLIENT_PROJECT_PATH
-AARTS_INFRA_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+AARTS_INFRA_PATH="$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"/"$(dirname "$(readlink "$0")")")"
+
 echo AARTS_INFRA_PATH=$AARTS_INFRA_PATH
+echo CLIENT_PROJECT_PATH=$CLIENT_PROJECT_PATH
 
 #defaults
 STACK_NAME=$(printf '%s\n' "${PWD##*/}" | sed 's/[\|_0123456789]//g' | sed 's/\.//g')
-AWS_PROFILE=akrsmv
+AWS_PROFILE=${AWS_PROFILE:=akrsmv}
 DEBUG_MODE=
 
 #-------------------------------------------------------
 #                       FUNCTIONS
 #-------------------------------------------------------
 
-run_lambda_server() {
-    echo "sam local start-lambda..."
-    get_paths
-    link_client_app
+ln_cross_platform() {
+    windows() { [[ -n "$WINDIR" ]]; }
+    if [[ -z "$2" ]]; then
+        # Link-checking mode.
+        if windows; then
+            echo Link-checking mode: WINDOWS
+            fsutil reparsepoint query "$1" >/dev/null
+        else
+            [[ -L "$1" ]]
+        fi
+    else
+        # Link-creation mode.
+        if windows; then
+            echo Link-creation mode: windows
+            # Windows needs to be told if it's a directory or not. Infer that.
+            # Also: note that we convert `/` to `\`. In this case it's necessary.
+            if [[ -d "$2" ]]; then
+                cmd <<<"mklink /D /J \"$1\" \"${2//\//\\}\\"" > /dev/null
+        else
+            cmd <<< "mklink \"$1\" \"${2//\//\\}\\"" >/dev/null
+            fi
+        else
+            # You know what? I think ln's parameters are backwards.
+            ln -s "$2" "$1"
+        fi
+    fi
+}
+
+cdk_synth() {
     cd $AARTS_INFRA_PATH
-    cdk synth --no-staging --profile $AWS_PROFILE >template.yml
+    cdk synth -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --no-staging --profile $AWS_PROFILE >template.yml
+}
+
+sam_invoke_worker() {
+    echo sam_invoke_worker
+}
+sam_invoke_handler() {
+    cd $AARTS_INFRA_PATH
+    DISPATCHER=$(node getlambdanames dispatcher)
+    link_client_app
+
+    cdk_synth
+    cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sam local invoke $DISPATCHER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/snsDispatcher-invoke.out 2>&1
+}
+
+aws_invoke_worker() {
+    echo aws_invoke_worker
+}
+aws_invoke_handler() {
+    echo aws_invoke_handler
+}
+
+sam_start_lambda() {
+    echo "sam local start-lambda..."
+    # get_paths
+    link_client_app
+    cdk_synth
+    cd $AARTS_INFRA_PATH
     # this is simulating a lambda environment in a docker container locally (NOTE: without the SQS/SNS, only lambda).
     sam local start-lambda --log-file sam-lambda-service.out --template template.yml --region ddblocal --docker-network sam-local --env-vars env-constants-local.json
     # important on calling lambda from another lambda, in sam local environment
     # https://github.com/awslabs/aws-sam-cli/issues/510#issuecomment-554687309
 }
 
-get_paths() {
-    windows() { [[ -n "$WINDIR" ]]; }
-    if windows; then
-        TARGET_BASE_PATH=$(cmd //c cd)
-        cd $AARTS_INFRA_PATH
-        LINK_BASE_PATH=$(cmd //c cd)
-    else
-        TARGET_BASE_PATH=CLIENT_PROJECT_PATH
-        cd $AARTS_INFRA_PATH
-        LINK_BASE_PATH=AARTS_INFRA_PATH
-    fi
-    echo AARTS_INFRA_PATH=$TARGET_BASE_PATH
-    echo LINK_BASE_PATH=$LINK_BASE_PATH
-}
-
 link_client_app() {
     mkdir -p $AARTS_INFRA_PATH/node-modules-layer/nodejs
     rm -fr $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules
-    $AARTS_INFRA_PATH/ln-cross-platform.sh $LINK_BASE_PATH/node-modules-layer/nodejs/node_modules $TARGET_BASE_PATH/node_modules
+    ln_cross_platform $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules $CLIENT_PROJECT_PATH/node_modules
 }
 
 deploy() {
-    get_paths
+    # get_paths
     link_client_app
     cd $AARTS_INFRA_PATH
-    cdk deploy -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --require-approval never --profile $AWS_PROFILE
+    cdk deploy -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --profile $AWS_PROFILE --require-approval never
     cd $CLIENT_PROJECT_PATH
 }
 
@@ -84,8 +122,6 @@ interactive() {
 
 }
 #-----------------------------------------------------
-
-#-------------------------------------------------------
 #                 ENTRY POINT
 #-------------------------------------------------------
 while [ "$1" != "" ]; do
@@ -93,8 +129,20 @@ while [ "$1" != "" ]; do
     deploy)
         ACTION=DEPLOY
         ;;
-    run-lambda-server)
-        ACTION=RUN_LAMBDA_SERVER
+    sam-start-lambda)
+        ACTION=SAM_START_LAMBDA
+        ;;
+    aws-invoke-handler)
+        ACTION=AWS_INVOKE_HANDLER
+        ;;
+    aws-invoke-worker)
+        ACTION=AWS_INVOKE_WORKER
+        ;;
+    sam-invoke-handler)
+        ACTION=SAM_INVOKE_HANDLER
+        ;;
+    sam-invoke-worker)
+        ACTION=SAM_INVOKE_WORKER
         ;;
     --cache-clean)
         cache_clean
@@ -107,6 +155,10 @@ while [ "$1" != "" ]; do
     --profile)
         shift
         AWS_PROFILE="$1"
+        ;;
+    --test-event)
+        shift
+        TEST_EVENT="$1"
         ;;
     -d | --debug-mode)
         DEBUG_MODE=1
@@ -145,8 +197,24 @@ DEPLOY)
     deploy
     exit
     ;;
-RUN_LAMBDA_SERVER)
-    run_lambda_server
+SAM_START_LAMBDA)
+    sam_start_lambda
+    exit
+    ;;
+AWS_INVOKE_HANDLER)
+    aws_invoke_handler
+    exit
+    ;;
+AWS_INVOKE_WORKER)
+    aws_invoke_worker
+    exit
+    ;;
+SAM_INVOKE_HANDLER)
+    sam_invoke_handler
+    exit
+    ;;
+SAM_INVOKE_WORKER)
+    sam_invoke_worker
     exit
     ;;
 *)

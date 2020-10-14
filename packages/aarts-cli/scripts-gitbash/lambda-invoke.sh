@@ -1,6 +1,6 @@
 
 #!/bin/sh
-# Can be used to invoke either dispatcher(sns publisher) or handler (sqs events handler)
+# Can be used to invoke either handler(sns publisher) or worker (sqs events handler)
 # One need to pass file path to sns (interface AppSyncEvent) event or SQS event respectiveley
 # USING SAM local invoke approach in this script, i.e a single lambda will be spinned in docker and then terminated
 

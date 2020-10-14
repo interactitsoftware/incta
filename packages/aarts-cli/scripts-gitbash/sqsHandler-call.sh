@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Can be used to call only the sqs handler lambda 
+# Can be used to call only the sqs worker lambda 
 # One need to pass file path to a sns event json (interface AppSyncEvent) and it will be transformed to the right sqs format
 # USING AWS LAMBDA INVOKE approach in this script, i.e one should have sam-lambda-service.sh running beforehand (i.e the sam start-lambda)
 

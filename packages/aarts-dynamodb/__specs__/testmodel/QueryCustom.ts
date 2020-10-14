@@ -18,7 +18,7 @@ export class _specs_QueryCustom {
 
 export class _specs_QueryCustomManager extends BaseDynamoItemManager<_specs_QueryCustomItem> {
     async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        !process.env.DEBUGGER || loginfo('query Received arguments aaaaaaa: ', JSON.stringify(args, null, 4))
+        !process.env.DEBUGGER || loginfo('query Received arguments bbbbbbb: ', JSON.stringify(args, null, 4))
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${item}:QUERY] Begin query method. Doing a gate check of payload` }] })
 
         // get all airports in europe
