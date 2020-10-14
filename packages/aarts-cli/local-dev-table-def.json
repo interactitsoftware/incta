@@ -18,7 +18,7 @@
         }
 
     ],
-    "TableName": "TEST1",
+    "TableName": "TEST2",
     "KeySchema": [
         {
             "AttributeName": "id",

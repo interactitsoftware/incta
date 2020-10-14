@@ -1,0 +1,14 @@
+{
+    "item": "airport",
+    "action": "query",
+    "arguments":{
+      "pk": "airport}airport_size",
+      "range": {"min": 10, "max":12},
+      "ddbIndex": "meta__nmetadata",
+      "limit": 2,
+      "paginationToken": null
+    },
+    "identity": {
+      "username": "akrsmv"
+    }
+}

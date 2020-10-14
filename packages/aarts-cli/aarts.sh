@@ -45,7 +45,7 @@ ln_cross_platform() {
 
 cdk_synth() {
     cd $AARTS_INFRA_PATH
-    cdk synth -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --no-staging --profile $AWS_PROFILE >template.yml
+    cdk synth --no-staging -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --profile $AWS_PROFILE >template.yml
 }
 
 sam_invoke_worker() {
@@ -54,7 +54,14 @@ sam_invoke_worker() {
 sam_invoke_handler() {
     cd $AARTS_INFRA_PATH
     DISPATCHER=$(node getlambdanames dispatcher)
-    link_client_app
+    
+    # link_client_app
+    # NOTE because of issues with symlink / docker, instead of using symlink, a full copy of node_modules is being made (still works fast enough)
+    # https://github.com/aws/aws-sam-cli/issues/756
+    # https://github.com/aws/aws-sam-cli/issues/1481 (closed in favor of the above)
+    mkdir -p $AARTS_INFRA_PATH/node-modules-layer/nodejs
+    rm -fr $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules
+    cp -R $CLIENT_PROJECT_PATH/node_modules $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules 
 
     cdk_synth
     cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sam local invoke $DISPATCHER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/snsDispatcher-invoke.out 2>&1
@@ -69,10 +76,10 @@ aws_invoke_handler() {
 
 sam_start_lambda() {
     echo "sam local start-lambda..."
+    cd $AARTS_INFRA_PATH
     # get_paths
     link_client_app
     cdk_synth
-    cd $AARTS_INFRA_PATH
     # this is simulating a lambda environment in a docker container locally (NOTE: without the SQS/SNS, only lambda).
     sam local start-lambda --log-file sam-lambda-service.out --template template.yml --region ddblocal --docker-network sam-local --env-vars env-constants-local.json
     # important on calling lambda from another lambda, in sam local environment

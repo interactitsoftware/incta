@@ -1,12 +1,13 @@
 # aarts
 Serverless application, with end to end developer experience. Project is open source and looking for contributors and sponsors. It targets cost optimization and configurable speed to cost ratio, *at any scale*. Because its serverless, if the app is not used, it won't generate any costs, while still, always available.
 
-Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage. 
+Aws artifacts(aarts) helps you get up to speed with migrating your existing domain logic to aws serverless lambda, using dynamodb persistent storage.
 
 Performance is always the highest prioirity, however further cost and data model optimizations can be made, once it is about a concrete business problem
 
+__aarts-cli__
 
-__*(WIP)*__ __aarts-cli__
+__*(WIP)*__ 
 - `aarts init-project <project-name>` - creates skeleton for project
 - `aarts new-item` - creates bolierplate code for new item and its manager with CRUD/start actions 
 - `aarts test` - run jest tests
@@ -52,8 +53,10 @@ It also hosts example apps with the intention to demonstrate how above npm packa
 
 ### trouble shooting
 - first do a cleanup:
-- `find . -name "node_modules" -exec rm -rf '{}' +`
-- `find . -name "package-lock.json" -exec rm -rf '{}' +`
+- remove all node_modules `find . -name "node_modules" -exec rm -rf '{}' +`
+- remove all package-lock files: `find . -name "package-lock.json" -exec rm -rf '{}' +`
+- ensure proper line endings: `find . -type f -exec dos2unix -k -s -o {} ';'`
+- rebuild: `cd ./packages/aarts-cli && sh buildandlink.sh`
 
 
 # Recommended way of development is using WS2

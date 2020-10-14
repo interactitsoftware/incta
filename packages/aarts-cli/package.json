@@ -1,6 +1,6 @@
 {
   "name": "aarts-cli",
-  "version": "0.1.794",
+  "version": "0.1.797",
   "bin": {
     "aarts": "aarts.sh",
     "aarts-cdk-typescript": "bin/aarts-cdk-typescript.js"
@@ -16,7 +16,7 @@
     "*.md"
   ],
   "scripts": {
-    "build": "tsc && cp package.json aarts.sh ln-cross-platform.sh env-constants-local.json ./dist && echo {\"app\": \"node bin/aarts-cdk-typescript.js\"} > ./dist/cdk.json",
+    "build": "tsc && cp package.json aarts.sh ln-cross-platform.sh env-constants-local.json ./dist && echo {\\\"app\\\": \\\"node bin/aarts-cdk-typescript.js\\\"} > ./dist/cdk.json",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk"

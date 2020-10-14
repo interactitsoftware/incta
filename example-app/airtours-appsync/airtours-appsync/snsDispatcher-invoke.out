@@ -1,0 +1,63 @@
+Reading invoke payload from stdin (you can also pass it from file with --event)
+Invoking index.dispatcher (nodejs12.x)
+airtoursappsyncModulesBEED5E65 is a local Layer in the template
+Building image...........
+Skip pulling image and use local one: samcli/lambda:nodejs12.x-bf22e263f46417f440b096b12.
+
+Mounting /home/akrsmv/aarts-all/example-app/airtours-appsync/airtours-appsync/dist as /var/task:ro,delegated inside runtime container
+[32mSTART RequestId: 913699c1-a741-1d30-35df-20175658aae2 Version: $LATEST[0m
+2020-10-14T20:52:14.393Z	913699c1-a741-1d30-35df-20175658aae2	INFO	====================== mamnager is  AirplaneManager {
+  lookupItems: Map {
+    'Airport' => [Function: _specs_AirportItem],
+    'Airplane' => [Function: _specs_AirplaneItem],
+    'AirplaneManifacturer' => [Function: _specs_AirplaneManifacturerItem],
+    'AirplaneModel' => [Function: _specs_AirplaneModelItem],
+    'Country' => [Function: _specs_CountryItem],
+    'Flight' => [Function: _specs_FlightItem],
+    'Tourist' => [Function: _specs_TouristItem],
+    'TouristSeason' => [Function: _specs_TouristSeasonItem],
+    'Invoice' => [Function: _specs_InvoiceItem],
+    'Order' => [Function: _specs_OrderItem],
+    'City' => [Function: CityItem],
+    'Pilot' => [Function: PilotItem],
+    'Proc__AirtoursDataImporter' => [Function: _specs_DataImporterItem],
+    'Proc__EraseData' => [Function: _specs_EraseDataItem],
+    'Proc__TestDataGenSingleLambda' => [Function: SingleLambdaTestDataGeneratorItem],
+    'Proc__TestDataGenMultipleLambda' => [Function: MultipleLambdaTestDataGeneratorItem],
+    'Proc__TestDataGenSingleLambdaIdmpt' => [Function: IdmptSingleLambdaTestDataGeneratorItem],
+    'Proc__TestDataGenMultipleLambdaIdmpt' => [Function: IdmptMultipleLambdaTestDataGeneratorItem],
+    'Proc__TestDataGenMultipleLambdaIdmptChunks' => [Function: IdmptChunksMultipleLambdaTestDataGeneratorItem],
+    'Proc__CreateTourists' => [Function: CreateTouristByPublishingEventItem],
+    'Proc__GenerateInvoices' => [Function: GenerateInvoicesItem],
+    'queryCustom' => [Function: _specs_QueryCustomItem]
+  }
+}
+2020-10-14T20:52:14.394Z	913699c1-a741-1d30-35df-20175658aae2	INFO	WILL START TRANSFORMING  {
+  pk: 'airport}airport_size',
+  range: { min: 10, max: 12 },
+  ddbIndex: 'meta__nmetadata',
+  limit: 2,
+  paginationToken: null,
+  selectionSetGraphQL: undefined,
+  selectionSetList: undefined,
+  primaryKeyName: 'meta',
+  rangeKeyName: 'nmetadata'
+}
+2020-10-14T20:52:14.394Z	913699c1-a741-1d30-35df-20175658aae2	INFO	transformed  {
+  pk: 'airport}airport_size',
+  range: { min: 10, max: 12 },
+  ddbIndex: 'meta__nmetadata',
+  limit: 2,
+  paginationToken: null,
+  selectionSetGraphQL: undefined,
+  selectionSetList: undefined,
+  primaryKeyName: 'meta',
+  rangeKeyName: 'nmetadata',
+  loadPeersLevel: 0,
+  peersPropsToLoad: [],
+  projectionExpression: undefined
+}
+[32mEND RequestId: 913699c1-a741-1d30-35df-20175658aae2[0m
+[32mREPORT RequestId: 913699c1-a741-1d30-35df-20175658aae2	Init Duration: 379.74 ms	Duration: 36.68 ms	Billed Duration: 100 ms	Memory Size: 256 MB	Max Memory Used: 78 MB	[0m
+
+[]

@@ -1,0 +1,11 @@
+{
+    "action": "create",
+    "item": "Airport",
+    "jobType":"short",
+    "arguments": {
+        "name": "my org"
+    },
+    "identity": {
+      "username": "akrsmv"
+    }
+  }
