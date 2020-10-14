@@ -40,10 +40,12 @@ export async function* processPayloadAsync(evnt: AartsEvent): AsyncGenerator<Aar
 	})
 
 	!process.env.DEBUGGER || (yield Object.assign({}, evnt, { payload: { resultItems: { message: `[AartsHandler:processPayloadAsync] Checking item manager for type ${evnt.meta.item}` } } }))
-	const manager = evnt.meta.action === "query" || evnt.meta.action === "get" ?
-		Object.values(global.domainAdapter.itemManagers)[0] as unknown as IItemManager<object>
-		:
-		global.domainAdapter.itemManagers[evnt.meta.item] as unknown as IItemManager<object>;
+	let manager = global.domainAdapter.itemManagers[evnt.meta.item] as unknown as IItemManager<object>
+	if (!manager && (evnt.meta.action === "query" || evnt.meta.action === "get")) {
+		manager = Object.values(global.domainAdapter.itemManagers)[0] as unknown as IItemManager<object>
+	}
+
+	console.log("====================== mamnager is ", manager)
 	if (!manager) {
 		return Object.assign({}, evnt,
 			{
@@ -55,7 +57,7 @@ export async function* processPayloadAsync(evnt: AartsEvent): AsyncGenerator<Aar
 			})
 	}
 
-	!process.env.DEBUGGER || (yield Object.assign({}, evnt, { payload: { resultItems: [{ message: `[AartsHandler:processPayloadAsync] Will Invoke ${evnt.meta.item}:${evnt.meta.action} manager action` }] } }))
+	!process.env.DEBUGGER || (yield Object.assign({}, evnt, { payload: { resultItems: [{ message: `[AartsHandler:processPayloadAsync] Will !!!Invoke ${evnt.meta.item}:${evnt.meta.action} manager action` }] } }))
 
 	const asyncGen = manager[evnt.meta.action](evnt.meta.item, evnt)
 	let processor = await asyncGen.next()

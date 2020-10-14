@@ -117,6 +117,7 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
                 }
             }
         } else if (!!resultItems && resultItems.length > 0) {
+            // TODO promise.all !!!
             for (let resultItem of resultItems) {
                 await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad, ddbQueryPayload.projectionExpression)
             }

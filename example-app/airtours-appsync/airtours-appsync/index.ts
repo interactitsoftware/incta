@@ -19,7 +19,7 @@ import {
     SingleLambdaTestDataGeneratorItem,
     IdmptSingleLambdaTestDataGeneratorItem,
     IdmptMultipleLambdaTestDataGeneratorItem,
-    IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem
+    IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem, QueryCustomItem
 } from "./_DynamoItems"
 import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
 import { MultipleLambdaTestDataGeneratorManager } from "./procedures/MultipleLambdaTestDataGenerator"
@@ -29,6 +29,7 @@ import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "./procedures/
 import { CreateTouristByPublishingEventManager } from "./procedures/CreateTouristByPublishingEvent"
 import { _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 import { GenerateInvoicesManager } from "./procedures/GenerateInvoices"
+import { QueryCustomManager } from "./items/QueryCustom"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -52,7 +53,7 @@ allItems.set(IdmptMultipleLambdaTestDataGeneratorItem.__type, IdmptMultipleLambd
 allItems.set(IdmptChunksMultipleLambdaTestDataGeneratorItem.__type, IdmptChunksMultipleLambdaTestDataGeneratorItem)
 allItems.set(CreateTouristByPublishingEventItem.__type, CreateTouristByPublishingEventItem)
 allItems.set(GenerateInvoicesItem.__type, GenerateInvoicesItem)
-
+allItems.set(QueryCustomItem.__type, QueryCustomItem)
 
 const allItemManagers = {
     // taken from _specs_ in aarts-dynamodb's test model
@@ -80,6 +81,9 @@ const allItemManagers = {
     [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
     [CreateTouristByPublishingEventItem.__type]: new CreateTouristByPublishingEventManager(allItems),
     [GenerateInvoicesItem.__type]: new GenerateInvoicesManager(allItems),
+    // custom queries
+    [QueryCustomItem.__type]: new QueryCustomManager(allItems),
+
 }
 
 class DomainAdapter implements IDomainAdapter<DynamoItem> {

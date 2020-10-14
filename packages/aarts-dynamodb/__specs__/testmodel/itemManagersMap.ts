@@ -17,8 +17,10 @@ import {
     _specs_TouristSeasonItem,
     _specs_InvoiceItem,
     _specs_OrderItem,
-    _specs_EraseDataItem
+    _specs_EraseDataItem,
+    _specs_QueryCustomItem
  } from "./_DynamoItems"
+import { _specs_QueryCustomManager } from "./QueryCustom"
 
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
@@ -34,6 +36,7 @@ allItems.set(_specs_TouristSeasonItem.__type, _specs_TouristSeasonItem)
 allItems.set(_specs_InvoiceItem.__type, _specs_InvoiceItem)
 allItems.set(_specs_OrderItem.__type, _specs_OrderItem)
 allItems.set(_specs_EraseDataItem.__type, _specs_EraseDataItem)
+allItems.set(_specs_QueryCustomItem.__type, _specs_QueryCustomItem)
 
 const allItemManagers = {
     "BASE": new BaseDynamoItemManager(allItems),
@@ -49,6 +52,7 @@ const allItemManagers = {
     [_specs_InvoiceItem.__type]: new BaseDynamoItemManager(allItems),
     [_specs_OrderItem.__type]: new BaseDynamoItemManager(allItems),
     [_specs_EraseDataItem.__type]: new BaseDynamoItemManager(allItems),
+    [_specs_QueryCustomItem.__type]: new _specs_QueryCustomManager(allItems),
 }
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
     public lookupItems = allItems

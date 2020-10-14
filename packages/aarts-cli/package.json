@@ -1,6 +1,6 @@
 {
   "name": "aarts-cli",
-  "version": "0.1.765",
+  "version": "0.1.781",
   "bin": {
     "aarts": "aarts.sh",
     "aarts-cdk-typescript": "bin/aarts-cdk-typescript.js"

@@ -3,7 +3,7 @@
   "contributors": [
     "akrsmv"
   ],
-  "version": "0.4.459",
+  "version": "0.4.475",
   "description": "dynamo db transactoinal crud operations with support on refkeys and uniqeness",
   "main": "./dist",
   "types": "./dist/index.d.ts",
@@ -20,9 +20,9 @@
     "url": "https://github.com/akrsmv/aarts-all/tree/master/packages/aarts-dynamodb"
   },
   "dependencies": {
-    "@types/aws-lambda": "^8.10.63",
-    "aarts-types": "^0.2.467",
-    "aarts-utils": "^0.2.469",
+    "@types/aws-lambda": "^8.10.64",
+    "aarts-types": "^0.2.485",
+    "aarts-utils": "^0.2.485",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.771.0",
     "typescript": "^3.9.7"

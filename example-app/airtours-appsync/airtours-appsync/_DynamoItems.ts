@@ -12,7 +12,8 @@ import {
     _specs_InvoiceItem as InvoiceItem,
     _specs_OrderItem as OrderItem,
     _specs_DataImporterItem as DataImportProcedure,
-    _specs_EraseDataItem as EraseDataProcedure
+    _specs_EraseDataItem as EraseDataProcedure,
+    _specs_QueryCustomItem as QueryCustomItem
 } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 // just reuse the __specs__ test model of aarts-dynamodb lib. There are unit tests over it and also a procedure for seedin data, so its a good start for demo app
 export {
@@ -27,7 +28,8 @@ export {
     InvoiceItem,
     OrderItem,
     DataImportProcedure,
-    EraseDataProcedure
+    EraseDataProcedure,
+    QueryCustomItem
 }
 
 // define two domain objects purely from this example app (demonstrate the whole steps needed)

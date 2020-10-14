@@ -43,6 +43,13 @@ export function leaveKeysOnly<T extends Record<string, any>>(obj: T, keysArray: 
         ) as T
 }
 
+
+/**
+ * 
+ * @param graphqlQuery TODO switch to using graphql-tag
+ * https://stackoverflow.com/questions/49047259/how-to-parse-graphql-request-string-into-an-object
+ * Currently complex graphql queries are not optimized
+ */
 export const transformGraphQLSelection = (graphqlQuery: string | undefined): DdbLoadPeersInput => {
     const result: DdbLoadPeersInput = {
         loadPeersLevel: 0,

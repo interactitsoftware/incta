@@ -40,7 +40,7 @@ It also hosts example apps with the intention to demonstrate how above npm packa
 
 
 ## Prerequisites
-- [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-html)
+- [aws cli for Windows](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html)
 - [docker](https://docs.docker.com/desktop/)
 - [nodejs](https://nodejs.org/en/download/)
 - `npm i -g typescript node-ts jest`
@@ -55,6 +55,12 @@ It also hosts example apps with the intention to demonstrate how above npm packa
 - `find . -name "node_modules" -exec rm -rf '{}' +`
 - `find . -name "package-lock.json" -exec rm -rf '{}' +`
 
+
+# Recommended way of development is using WS2
+
+- [setup nodejs](https://docs.microsoft.com/en-us/windows/nodejs/setup-on-wsl2)
+- [install sam for Linux](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
+- [install aws cli for Linux](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html#cliv2-linux-install)
 
 
 
