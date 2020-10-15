@@ -1,6 +1,6 @@
 {
   "name": "aarts-eb-types",
-  "version": "0.2.500",
+  "version": "0.2.508",
   "description": "base types for aarts event bus in aws",
   "main": "./dist/aartsEBUtil.js",
   "types": "./dist/aartsEBUtil.d.ts",
@@ -10,9 +10,9 @@
   "dependencies": {
     "@types/aws-lambda": "^8.10.64",
     "@types/node": "^13.13.25",
-    "aarts-types": "^0.2.501",
-    "aarts-utils": "^0.2.501",
-    "aws-sdk": "^2.771.0",
+    "aarts-types": "^0.2.509",
+    "aarts-utils": "^0.2.509",
+    "aws-sdk": "^2.772.0",
     "typescript": "^3.9.7"
   },
   "devDependencies": {},

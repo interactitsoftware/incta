@@ -1,12 +1,12 @@
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces"
-import { loginfo, versionString } from "aarts-utils/utils"
-import { AirportItem, FlightItem, QueryCustomItem } from "../_DynamoItems"
+import { loginfo, ppjson, versionString } from "aarts-utils/utils"
+import { AirportItem, FlightItem, QueryCustom1Item } from "../_DynamoItems"
 
 
-export class QueryCustomManager extends BaseDynamoItemManager<QueryCustomItem> {
-    public async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+export class QueryCustom1Manager extends BaseDynamoItemManager<QueryCustom1Item> {
+    async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         !process.env.DEBUGGER || loginfo('query Received arguments: ', JSON.stringify(args, null, 4))
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${item}:QUERY] Begin query method. Doing a gate check of payload` }] })
 
@@ -27,7 +27,9 @@ export class QueryCustomManager extends BaseDynamoItemManager<QueryCustomItem> {
         });
 
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${item}:QUERY] End` }] })
-        return { resultItems: (airports.items as DynamoItem[]).concat(flights.items as DynamoItem[]) }
+        const res = (airports.items as DynamoItem[]).concat(flights.items as DynamoItem[])
+        console.log("^^AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^^^ RES ", ppjson(res))
+        return { resultItems: [{items:[res]}] }
     }
 
 }

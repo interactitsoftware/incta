@@ -13,13 +13,13 @@ import {
     // -- defined on a aarts-dynamodb/_specs_ level
     AirplaneItem, CountryItem, CityItem, PilotItem, AirportItem,
     AirplaneManifacturerItem, AirplaneModelItem, FlightItem,
-    TouristItem, TouristSeasonItem, InvoiceItem, OrderItem, DataImportProcedure, EraseDataProcedure,
+    TouristItem, TouristSeasonItem, InvoiceItem, OrderItem, DataImportProcedure, EraseDataProcedure, QueryCustomItem,
     // defined in this lib
     MultipleLambdaTestDataGeneratorItem,
     SingleLambdaTestDataGeneratorItem,
     IdmptSingleLambdaTestDataGeneratorItem,
     IdmptMultipleLambdaTestDataGeneratorItem,
-    IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem, QueryCustomItem
+    IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem, QueryCustom1Item
 } from "./_DynamoItems"
 import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
 import { MultipleLambdaTestDataGeneratorManager } from "./procedures/MultipleLambdaTestDataGenerator"
@@ -28,8 +28,9 @@ import { IdmptMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptM
 import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator"
 import { CreateTouristByPublishingEventManager } from "./procedures/CreateTouristByPublishingEvent"
 import { _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
+import { _specs_QueryCustomManager } from "aarts-dynamodb/__specs__/testmodel/QueryCustom"
 import { GenerateInvoicesManager } from "./procedures/GenerateInvoices"
-import { QueryCustomManager } from "./items/QueryCustom"
+import { QueryCustom1Manager } from "./procedures/QueryCustom1"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -54,6 +55,7 @@ allItems.set(IdmptChunksMultipleLambdaTestDataGeneratorItem.__type, IdmptChunksM
 allItems.set(CreateTouristByPublishingEventItem.__type, CreateTouristByPublishingEventItem)
 allItems.set(GenerateInvoicesItem.__type, GenerateInvoicesItem)
 allItems.set(QueryCustomItem.__type, QueryCustomItem)
+allItems.set(QueryCustom1Item.__type, QueryCustom1Item)
 
 const allItemManagers = {
     // taken from _specs_ in aarts-dynamodb's test model
@@ -81,8 +83,11 @@ const allItemManagers = {
     [MultipleLambdaTestDataGeneratorItem.__type]: new MultipleLambdaTestDataGeneratorManager(allItems),
     [CreateTouristByPublishingEventItem.__type]: new CreateTouristByPublishingEventManager(allItems),
     [GenerateInvoicesItem.__type]: new GenerateInvoicesManager(allItems),
-    // custom queries
-    [QueryCustomItem.__type]: new QueryCustomManager(allItems),
+    // custom queries, defined here
+    [QueryCustom1Item.__type]: new QueryCustom1Manager(allItems),
+    // custom queries, defined in aarts-dynamodb
+    [QueryCustomItem.__type]: new _specs_QueryCustomManager(allItems),
+    
 
 }
 

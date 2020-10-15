@@ -5,59 +5,76 @@ Building image...........
 Skip pulling image and use local one: samcli/lambda:nodejs12.x-bf22e263f46417f440b096b12.
 
 Mounting /home/akrsmv/aarts-all/example-app/airtours-appsync/airtours-appsync/dist as /var/task:ro,delegated inside runtime container
-[32mSTART RequestId: 913699c1-a741-1d30-35df-20175658aae2 Version: $LATEST[0m
-2020-10-14T20:52:14.393Z	913699c1-a741-1d30-35df-20175658aae2	INFO	====================== mamnager is  AirplaneManager {
-  lookupItems: Map {
-    'Airport' => [Function: _specs_AirportItem],
-    'Airplane' => [Function: _specs_AirplaneItem],
-    'AirplaneManifacturer' => [Function: _specs_AirplaneManifacturerItem],
-    'AirplaneModel' => [Function: _specs_AirplaneModelItem],
-    'Country' => [Function: _specs_CountryItem],
-    'Flight' => [Function: _specs_FlightItem],
-    'Tourist' => [Function: _specs_TouristItem],
-    'TouristSeason' => [Function: _specs_TouristSeasonItem],
-    'Invoice' => [Function: _specs_InvoiceItem],
-    'Order' => [Function: _specs_OrderItem],
-    'City' => [Function: CityItem],
-    'Pilot' => [Function: PilotItem],
-    'Proc__AirtoursDataImporter' => [Function: _specs_DataImporterItem],
-    'Proc__EraseData' => [Function: _specs_EraseDataItem],
-    'Proc__TestDataGenSingleLambda' => [Function: SingleLambdaTestDataGeneratorItem],
-    'Proc__TestDataGenMultipleLambda' => [Function: MultipleLambdaTestDataGeneratorItem],
-    'Proc__TestDataGenSingleLambdaIdmpt' => [Function: IdmptSingleLambdaTestDataGeneratorItem],
-    'Proc__TestDataGenMultipleLambdaIdmpt' => [Function: IdmptMultipleLambdaTestDataGeneratorItem],
-    'Proc__TestDataGenMultipleLambdaIdmptChunks' => [Function: IdmptChunksMultipleLambdaTestDataGeneratorItem],
-    'Proc__CreateTourists' => [Function: CreateTouristByPublishingEventItem],
-    'Proc__GenerateInvoices' => [Function: GenerateInvoicesItem],
-    'queryCustom' => [Function: _specs_QueryCustomItem]
-  }
+[32mSTART RequestId: 162e2a47-2083-141d-22f4-45ebafe59d47 Version: $LATEST[0m
+2020-10-15T18:10:10.854Z	162e2a47-2083-141d-22f4-45ebafe59d47	INFO	{
+  ringTokenSource: undefined,
+  message: '[\n' +
+    '    "generated ring token: 6a564dc4-a1d5-493b-b965-9bd68a73c366 for received event",\n' +
+    '    {\n' +
+    '        "action": "create",\n' +
+    '        "item": "Airport",\n' +
+    '        "jobType": "short",\n' +
+    '        "arguments": {\n' +
+    '            "name": "my org"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "akrsmv"\n' +
+    '        }\n' +
+    '    }\n' +
+    ']'
 }
-2020-10-14T20:52:14.394Z	913699c1-a741-1d30-35df-20175658aae2	INFO	WILL START TRANSFORMING  {
-  pk: 'airport}airport_size',
-  range: { min: 10, max: 12 },
-  ddbIndex: 'meta__nmetadata',
-  limit: 2,
-  paginationToken: null,
-  selectionSetGraphQL: undefined,
-  selectionSetList: undefined,
-  primaryKeyName: 'meta',
-  rangeKeyName: 'nmetadata'
+2020-10-15T18:10:10.855Z	162e2a47-2083-141d-22f4-45ebafe59d47	INFO	{
+    "Records": [
+        {
+            "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
+            "receiptHandle": "MessageReceiptHandle",
+            "body": "{\"payload\":{\"action\":\"create\",\"item\":\"Airport\",\"jobType\":\"short\",\"arguments\":{\"name\":\"my org\"},\"identity\":{\"username\":\"akrsmv\"}}}",
+            "attributes": {
+                "ApproximateReceiveCount": "1",
+                "SentTimestamp": "1523232000000",
+                "SenderId": "123456789012",
+                "ApproximateFirstReceiveTimestamp": "1523232000001"
+            },
+            "messageAttributes": {
+                "eventSource": {
+                    "dataType": "String",
+                    "stringValue": "worker:input:short"
+                },
+                "action": {
+                    "dataType": "String",
+                    "stringValue": "create"
+                },
+                "item": {
+                    "dataType": "String",
+                    "stringValue": "Airport"
+                },
+                "ringToken": {
+                    "dataType": "String",
+                    "stringValue": "6a564dc4-a1d5-493b-b965-9bd68a73c366"
+                }
+            },
+            "md5OfBody": "7b270e59b47ff90a553787216d55d91d",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",
+            "awsRegion": "us-east-1"
+        }
+    ]
 }
-2020-10-14T20:52:14.394Z	913699c1-a741-1d30-35df-20175658aae2	INFO	transformed  {
-  pk: 'airport}airport_size',
-  range: { min: 10, max: 12 },
-  ddbIndex: 'meta__nmetadata',
-  limit: 2,
-  paginationToken: null,
-  selectionSetGraphQL: undefined,
-  selectionSetList: undefined,
-  primaryKeyName: 'meta',
-  rangeKeyName: 'nmetadata',
-  loadPeersLevel: 0,
-  peersPropsToLoad: [],
-  projectionExpression: undefined
+2020-10-15T18:10:10.855Z	162e2a47-2083-141d-22f4-45ebafe59d47	INFO	{
+  ringTokenSource: undefined,
+  message: '[\n    "AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER"\n]'
 }
-[32mEND RequestId: 913699c1-a741-1d30-35df-20175658aae2[0m
-[32mREPORT RequestId: 913699c1-a741-1d30-35df-20175658aae2	Init Duration: 379.74 ms	Duration: 36.68 ms	Billed Duration: 100 ms	Memory Size: 256 MB	Max Memory Used: 78 MB	[0m
-
-[]
+2020-10-15T18:10:10.855Z	162e2a47-2083-141d-22f4-45ebafe59d47	INFO	{
+  ringTokenSource: undefined,
+  message: '[\n' +
+    '    "AWS_SAM_LOCAL INVOCATION. SQS HANDLER FUNCTION NAME IS airtoursappsyncHandlerShortWorker8BBC8914"\n' +
+    ']'
+}
+2020-10-15T18:10:10.856Z	162e2a47-2083-141d-22f4-45ebafe59d47	INFO	{
+  ringTokenSource: undefined,
+  message: '[\n' +
+    '    "sqsEVENT simulated: ",\n' +
+    '    "{\\"Records\\":[{\\"messageId\\":\\"19dd0b57-b21e-4ac1-bd88-01bbb068cb78\\",\\"receiptHandle\\":\\"MessageReceiptHandle\\",\\"body\\":\\"{\\\\\\"payload\\\\\\":{\\\\\\"action\\\\\\":\\\\\\"create\\\\\\",\\\\\\"item\\\\\\":\\\\\\"Airport\\\\\\",\\\\\\"jobType\\\\\\":\\\\\\"short\\\\\\",\\\\\\"arguments\\\\\\":{\\\\\\"name\\\\\\":\\\\\\"my org\\\\\\"},\\\\\\"identity\\\\\\":{\\\\\\"username\\\\\\":\\\\\\"akrsmv\\\\\\"}}}\\",\\"attributes\\":{\\"ApproximateReceiveCount\\":\\"1\\",\\"SentTimestamp\\":\\"1523232000000\\",\\"SenderId\\":\\"123456789012\\",\\"ApproximateFirstReceiveTimestamp\\":\\"1523232000001\\"},\\"messageAttributes\\":{\\"eventSource\\":{\\"dataType\\":\\"String\\",\\"stringValue\\":\\"worker:input:short\\"},\\"action\\":{\\"dataType\\":\\"String\\",\\"stringValue\\":\\"create\\"},\\"item\\":{\\"dataType\\":\\"String\\",\\"stringValue\\":\\"Airport\\"},\\"ringToken\\":{\\"dataType\\":\\"String\\",\\"stringValue\\":\\"6a564dc4-a1d5-493b-b965-9bd68a73c366\\"}},\\"md5OfBody\\":\\"7b270e59b47ff90a553787216d55d91d\\",\\"eventSource\\":\\"aws:sqs\\",\\"eventSourceARN\\":\\"arn:aws:sqs:us-east-1:123456789012:MyQueue\\",\\"awsRegion\\":\\"us-east-1\\"}]}"\n' +
+    ']'
+}
+Function 'EventsDispatcher09BE5065' timed out after 10 seconds

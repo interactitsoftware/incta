@@ -1,0 +1,11 @@
+{
+    "action": "query",
+    "item": "queryCustom",
+    "jobType":"short",
+    "arguments": {
+        "name": "my org"
+    },
+    "identity": {
+      "username": "akrsmv"
+    }
+  }

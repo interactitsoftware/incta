@@ -1,0 +1,9 @@
+{
+    "action": "start",
+    "item": "Proc__EraseData",
+    "jobType": "long",
+    "arguments": {},
+    "identity": {
+      "username": "akrsmv"
+    }
+  }

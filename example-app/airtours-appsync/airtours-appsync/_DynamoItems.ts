@@ -44,6 +44,7 @@ import { IdmptMultipleLambdaTestDataGenerator } from "./procedures/IdmptMultiple
 import { IdmptChunksMultipleLambdaTestDataGenerator } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator";
 import { CreateTouristByPublishingEvent } from "./procedures/CreateTouristByPublishingEvent";
 import { GenerateInvoices } from "./procedures/GenerateInvoices";
+import { _specs_QueryCustom } from "aarts-dynamodb/__specs__/testmodel/QueryCustom";
 
 // ----------------- items defs
 export class CityItem extends DynamoItem(City, "City", [ // the dynamodb wrapper object that we deal with
@@ -91,4 +92,7 @@ export class CreateTouristByPublishingEventItem extends DynamoItem(CreateTourist
 export class GenerateInvoicesItem extends DynamoItem(GenerateInvoices, "Proc__GenerateInvoices", [
     {key: "start_date"},
     {key: "end_date"},
+]) {}
+
+export class QueryCustom1Item extends DynamoItem(_specs_QueryCustom, "queryCustom1", [
 ]) {}

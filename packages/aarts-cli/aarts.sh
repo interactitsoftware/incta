@@ -49,34 +49,54 @@ cdk_synth() {
 }
 
 sam_invoke_worker() {
+    cd $AARTS_INFRA_PATH
     echo sam_invoke_worker
+
+    HANDLER=$(node getlambdanames handler)
+    
+    link_client_app
+    cdk_synth
+    
+    echo $(node ./node-modules-layer/nodejs/node_modules/aarts-eb-dispatcher/samLocalSimulateSQSHandler.js $CLIENT_PROJECT_PATH/$TEST_EVENT) | sam local invoke $HANDLER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/sqsHandler-invoke.out 2>&1
 }
+
 sam_invoke_handler() {
     cd $AARTS_INFRA_PATH
+    echo sam_invoke_handler
+
     DISPATCHER=$(node getlambdanames dispatcher)
     
-    # link_client_app
-    # NOTE because of issues with symlink / docker, instead of using symlink, a full copy of node_modules is being made (still works fast enough)
-    # https://github.com/aws/aws-sam-cli/issues/756
-    # https://github.com/aws/aws-sam-cli/issues/1481 (closed in favor of the above)
-    mkdir -p $AARTS_INFRA_PATH/node-modules-layer/nodejs
-    rm -fr $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules
-    cp -R $CLIENT_PROJECT_PATH/node_modules $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules 
-
+    link_client_app
     cdk_synth
-    cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sam local invoke $DISPATCHER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/snsDispatcher-invoke.out 2>&1
+    
+    cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sam local invoke $DISPATCHER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json >$CLIENT_PROJECT_PATH/snsDispatcher-invoke.out 2>&1
 }
 
 aws_invoke_worker() {
+    cd $AARTS_INFRA_PATH
     echo aws_invoke_worker
+    HANDLER=$(node getlambdanames handler)
+    SQS_EVENT=$(node ./node-modules-layer/nodejs/node_modules/aarts-eb-dispatcher/samLocalSimulateSQSHandler.js $CLIENT_PROJECT_PATH/$TEST_EVENT)
+    QUOTED_SQS_EVENT=\'$(echo $SQS_EVENT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g')\'
+
+    AWS_SAM_INVOKE='aws lambda invoke --function-name '$HANDLER' --endpoint-url '\"http://localhost:3001\"' --no-verify-ssl --payload '$QUOTED_SQS_EVENT' --cli-binary-format raw-in-base64-out '$CLIENT_PROJECT_PATH'/sqsHandler-call.out'
+    eval "$AWS_SAM_INVOKE"
 }
+
 aws_invoke_handler() {
+    cd $AARTS_INFRA_PATH
     echo aws_invoke_handler
+    DISPATCHER=$(node getlambdanames dispatcher)
+    QUOTED_SNS_EVENT=\'$(cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g')\'
+
+    AWS_SAM_INVOKE='aws lambda invoke --function-name '$DISPATCHER' --endpoint-url '\"http://localhost:3001\"' --no-verify-ssl --payload '$QUOTED_SNS_EVENT' --cli-binary-format raw-in-base64-out '$CLIENT_PROJECT_PATH'/snsDispatcher-call.out'
+    eval "$AWS_SAM_INVOKE"
+
 }
 
 sam_start_lambda() {
-    echo "sam local start-lambda..."
     cd $AARTS_INFRA_PATH
+    echo "sam local start-lambda..."
     # get_paths
     link_client_app
     cdk_synth
@@ -89,7 +109,13 @@ sam_start_lambda() {
 link_client_app() {
     mkdir -p $AARTS_INFRA_PATH/node-modules-layer/nodejs
     rm -fr $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules
-    ln_cross_platform $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules $CLIENT_PROJECT_PATH/node_modules
+
+    # ln_cross_platform $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules $CLIENT_PROJECT_PATH/node_modules
+
+    # NOTE: ideally, we would do the above line, however, because of issues with symlink / docker, instead of using symlink, a full copy of node_modules is being made (still works fast enough)
+    # https://github.com/aws/aws-sam-cli/issues/756
+    # https://github.com/aws/aws-sam-cli/issues/1481 (closed in favor of the above)
+    cp -R $CLIENT_PROJECT_PATH/node_modules $AARTS_INFRA_PATH/node-modules-layer/nodejs/node_modules
 }
 
 deploy() {

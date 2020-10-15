@@ -93,6 +93,7 @@ export class AartsAllInfraStack extends Stack {
       ],
       reservedConcurrentExecutions: 25
     });
+    eventBusConstruct.eventDispatcher.addEnvironment("SQS_HANDLER_SHORT", workerInputHandlerShort.function.functionName)
 
     const workerInputHandlerLong = new WorkerConstruct(this, `${props.clientAppName}HandlerLong`, {
       workerName: `${props.clientAppName}HandlerLong`,
@@ -109,6 +110,8 @@ export class AartsAllInfraStack extends Stack {
       ],
       reservedConcurrentExecutions: 25
     })
+    eventBusConstruct.eventDispatcher.addEnvironment("SQS_HANDLER_LONG", workerInputHandlerLong.function.functionName)
+
 
     if (!!this.node.tryGetContext("debug-mode")) {
       workerInputHandlerLong.function.addEnvironment("DEBUGGER", "1")

@@ -68,6 +68,7 @@ const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, 
 	//used sam local runtime
 	const sqsEvent = await samLocalSimulateSQSHandlerFromContent(JSON.stringify(event), ringToken);
 	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
+	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. SQS HANDLER FUNCTION NAME IS " + process.env.SQS_HANDLER_SHORT)
 	!process.env.DEBUGGER || loginfo("sqsEVENT simulated: ", sqsEvent)
 
 	// only run inside local lambda runner
@@ -100,7 +101,7 @@ const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, 
 	// however here, if the synchronous invocation fails dispatcher will DO retry (SAM local limitation?) 
 	await lambda.invoke(
 		{
-			FunctionName: process.env.AARTS_SQS_HANDLER as string,
+			FunctionName: event.jobType === "long" ? process.env.SQS_HANDLER_LONG as string: process.env.SQS_HANDLER_SHORT as string,
 			Payload: sqsEvent
 		}, (err, data) => {
 			console.log("[AWS_SAM_LOCAL]: SNS DISPATCHER PROCESSED EVENT " + sqsEvent)

@@ -38,11 +38,11 @@ export class _specs_QueryCustomManager extends BaseDynamoItemManager<_specs_Quer
         });
 
         !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${item}:QUERY] End` }] })
-        // const res = (airports.items as DynamoItem[]).concat(flights.items as DynamoItem[])
-        // console.log("===========LLLLLLLLLLLLLLLL============= RESULT FROM CUSTOM QUERY", res)
+        const res = (airports.items as DynamoItem[]).concat(flights.items as DynamoItem[])
+        console.log("===========LLLLLLLLLLLLLLLL============= RESULT FROM CUSTOM QUERY", res)
         
         // yield { resultItems: [{items:res}] }
-        return { resultItems: [airports] }
+        return { resultItems: [res] }
     }
 
 }
