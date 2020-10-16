@@ -1,8 +1,8 @@
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
-import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { AirportItem, CountryItem, FlightItem, AirplaneItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem } from "../_DynamoItems"
-import { dispatch } from "aarts-eb-dispatcher/aartsSnsDispatcher"
+import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
+import { AirportItem, CountryItem, FlightItem, AirplaneItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem } from "../__aarts/_DynamoItems"
+import { controller} from "aarts-eb-dispatcher"
 
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
@@ -144,7 +144,7 @@ export class CreateTouristByPublishingEvent {
         if (payloads.length > 0) {
             for (const chunk of chunks(payloads, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
                 
-                await dispatch({
+                await controller({
                     "action": "create",//may not be necessary here ?
                     "item": _specs_TouristItem.__type,//may not be necessary here ?
                     "jobType": "long", //may not be necessary here ?
@@ -198,7 +198,7 @@ export class CreateTouristByPublishingEventManager extends BaseDynamoItemManager
             // })
 
             // instead publish new event
-            await dispatch({
+            await controller({
                 "action": "start",
                 "item": GenerateInvoicesItem.__type,
                 "ringToken": newImage.ringToken as string,

@@ -1,9 +1,9 @@
-import { AirplaneManager } from "./items/Airplane"
-import { AirportManager } from "./items/Airport"
+import { AirplaneManager } from "../items/Airplane"
+import { AirportManager } from "../items/Airport"
 import { DynamoItem, BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
-import { handler } from "aarts-eb-handler/aartsSqsHandler"
-import { handler as notifier } from "aarts-eb-notifier/aartsAppsyncNotifier"
-import { dispatch as dispatcher } from "aarts-eb-dispatcher/aartsSnsDispatcher"
+import { worker } from "aarts-eb-handler"
+import { feeder } from "aarts-eb-notifier"
+import { controller } from "aarts-eb-dispatcher"
 import { IDomainAdapter } from "aarts-types/interfaces"
 import { AnyConstructor } from "aarts-types/Mixin"
 import { dynamoEventsAggregation } from "aarts-dynamodb-events/dynamoEventsAggregation"
@@ -21,16 +21,16 @@ import {
     IdmptMultipleLambdaTestDataGeneratorItem,
     IdmptChunksMultipleLambdaTestDataGeneratorItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem, QueryCustom1Item
 } from "./_DynamoItems"
-import { SingleLambdaTestDataGeneratorManager } from "./procedures/SingleLambdaTestDataGenerator"
-import { MultipleLambdaTestDataGeneratorManager } from "./procedures/MultipleLambdaTestDataGenerator"
-import { IdmptSingleLambdaTestDataGeneratorManager } from "./procedures/IdmptSingleLambdaTestDataGenerator"
-import { IdmptMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptMultipleLambdaTestDataGenerator"
-import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator"
-import { CreateTouristByPublishingEventManager } from "./procedures/CreateTouristByPublishingEvent"
+import { SingleLambdaTestDataGeneratorManager } from "../commands/SingleLambdaTestDataGenerator"
+import { MultipleLambdaTestDataGeneratorManager } from "../commands/MultipleLambdaTestDataGenerator"
+import { IdmptSingleLambdaTestDataGeneratorManager } from "../commands/IdmptSingleLambdaTestDataGenerator"
+import { IdmptMultipleLambdaTestDataGeneratorManager } from "../commands/IdmptMultipleLambdaTestDataGenerator"
+import { IdmptChunksMultipleLambdaTestDataGeneratorManager } from "../commands/IdmptChunksMultipleLambdaTestDataGenerator"
+import { CreateTouristByPublishingEventManager } from "../commands/CreateTouristByPublishingEvent"
 import { _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 import { _specs_QueryCustomManager } from "aarts-dynamodb/__specs__/testmodel/QueryCustom"
-import { GenerateInvoicesManager } from "./procedures/GenerateInvoices"
-import { QueryCustom1Manager } from "./procedures/QueryCustom1"
+import { GenerateInvoicesManager } from "../commands/GenerateInvoices"
+import { QueryCustom1Manager } from "../queries/QueryCustom1"
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
 allItems.set(AirportItem.__type, AirportItem)
@@ -75,7 +75,7 @@ const allItemManagers = {
     //items
     [CityItem.__type]: new BaseDynamoItemManager(allItems),
     [PilotItem.__type]: new BaseDynamoItemManager(allItems),
-    // procedures
+    //commands
     [SingleLambdaTestDataGeneratorItem.__type]: new SingleLambdaTestDataGeneratorManager(allItems),
     [IdmptSingleLambdaTestDataGeneratorItem.__type]: new IdmptSingleLambdaTestDataGeneratorManager(allItems),
     [IdmptMultipleLambdaTestDataGeneratorItem.__type]: new IdmptMultipleLambdaTestDataGeneratorManager(allItems),
@@ -99,4 +99,4 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
 
 global.domainAdapter = new DomainAdapter()
 
-export { dispatcher, handler, notifier, dynamoEventsAggregation, dynamoEventsCallback }
+export { controller, worker, feeder, dynamoEventsAggregation, dynamoEventsCallback }

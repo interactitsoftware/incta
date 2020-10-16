@@ -50,58 +50,58 @@ cdk_synth() {
 
 sam_invoke_worker() {
     cd $AARTS_INFRA_PATH
-    echo sam_invoke_worker
+    echo "sam local invoke worker..."
 
-    HANDLER=$(node getlambdanames handler)
+    WORKER=$(node getlambdanames worker)
     
     link_client_app
     cdk_synth
     
-    echo $(node ./node-modules-layer/nodejs/node_modules/aarts-eb-dispatcher/samLocalSimulateSQSHandler.js $CLIENT_PROJECT_PATH/$TEST_EVENT) | sam local invoke $HANDLER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/sqsHandler-invoke.out 2>&1
+    echo $(node ./node-modules-layer/nodejs/node_modules/aarts-eb-dispatcher/samLocalSimulateSQSHandler.js $CLIENT_PROJECT_PATH/$TEST_EVENT) | sam local invoke $WORKER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/local.out/worker.out 2>&1
 }
 
-sam_invoke_handler() {
+sam_invoke_controller() {
     cd $AARTS_INFRA_PATH
-    echo sam_invoke_handler
+    echo "sam local invoke controller..."
 
-    DISPATCHER=$(node getlambdanames dispatcher)
+    CONTROLLER=$(node getlambdanames controller)
     
     link_client_app
     cdk_synth
     
-    cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sam local invoke $DISPATCHER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json >$CLIENT_PROJECT_PATH/snsDispatcher-invoke.out 2>&1
+    cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sam local invoke $CONTROLLER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/local.out/controller.out 2>&1
 }
 
 aws_invoke_worker() {
     cd $AARTS_INFRA_PATH
-    echo aws_invoke_worker
-    HANDLER=$(node getlambdanames handler)
+    echo "aws lambda invoke worker..."
+    WORKER=$(node getlambdanames worker)
     SQS_EVENT=$(node ./node-modules-layer/nodejs/node_modules/aarts-eb-dispatcher/samLocalSimulateSQSHandler.js $CLIENT_PROJECT_PATH/$TEST_EVENT)
     QUOTED_SQS_EVENT=\'$(echo $SQS_EVENT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g')\'
 
-    AWS_SAM_INVOKE='aws lambda invoke --function-name '$HANDLER' --endpoint-url '\"http://localhost:3001\"' --no-verify-ssl --payload '$QUOTED_SQS_EVENT' --cli-binary-format raw-in-base64-out '$CLIENT_PROJECT_PATH'/sqsHandler-call.out'
+    AWS_SAM_INVOKE='aws lambda invoke --function-name '$WORKER' --endpoint-url '\"http://localhost:3001\"' --no-verify-ssl --payload '$QUOTED_SQS_EVENT' --cli-binary-format raw-in-base64-out '$CLIENT_PROJECT_PATH'/local.out/worker.out'
     eval "$AWS_SAM_INVOKE"
 }
 
-aws_invoke_handler() {
+aws_invoke_controller() {
     cd $AARTS_INFRA_PATH
-    echo aws_invoke_handler
-    DISPATCHER=$(node getlambdanames dispatcher)
+    echo "aws lambda invoke controller..."
+    CONTROLLER=$(node getlambdanames controller)
     QUOTED_SNS_EVENT=\'$(cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g')\'
 
-    AWS_SAM_INVOKE='aws lambda invoke --function-name '$DISPATCHER' --endpoint-url '\"http://localhost:3001\"' --no-verify-ssl --payload '$QUOTED_SNS_EVENT' --cli-binary-format raw-in-base64-out '$CLIENT_PROJECT_PATH'/snsDispatcher-call.out'
+    AWS_SAM_INVOKE='aws lambda invoke --function-name '$CONTROLLER' --endpoint-url '\"http://localhost:3001\"' --no-verify-ssl --payload '$QUOTED_SNS_EVENT' --cli-binary-format raw-in-base64-out '$CLIENT_PROJECT_PATH'/local.out/controller.out'
     eval "$AWS_SAM_INVOKE"
 
 }
 
-sam_start_lambda() {
+start_local_lambda() {
     cd $AARTS_INFRA_PATH
     echo "sam local start-lambda..."
     # get_paths
     link_client_app
     cdk_synth
     # this is simulating a lambda environment in a docker container locally (NOTE: without the SQS/SNS, only lambda).
-    sam local start-lambda --log-file sam-lambda-service.out --template template.yml --region ddblocal --docker-network sam-local --env-vars env-constants-local.json
+    sam local start-lambda --log-file $CLIENT_PROJECT_PATH/local.out/sam-lambda.out --template template.yml --region ddblocal --docker-network sam-local --env-vars env-constants-local.json
     # important on calling lambda from another lambda, in sam local environment
     # https://github.com/awslabs/aws-sam-cli/issues/510#issuecomment-554687309
 }
@@ -127,10 +127,13 @@ deploy() {
 }
 
 usage() {
-    echo "usage: aarts deploy [[--stack-name <stack-name>] | [--profile <aws_profile>] | [--help]]"
+    echo "deploying to AWS:                    aarts deploy [[-d | --debug][--stack-name | -n <stack-name>][--profile | -p <aws_profile>]]"
+    echo "start local lambda environment:      aarts start-local-lambda"
+    echo "start local dynamodb:                aarts start-local-dynamodb"
+    echo "process event in local lambda env:   aarts process --test-event <test-event>"
 }
 
-cache_clean() {
+clean_cache() {
     echo cleaning up cached deploys
     rm -fr $AARTS_INFRA_PATH/cdk.out
 }
@@ -162,30 +165,33 @@ while [ "$1" != "" ]; do
     deploy)
         ACTION=DEPLOY
         ;;
-    sam-start-lambda)
-        ACTION=SAM_START_LAMBDA
+    start-local-lambda)
+        ACTION=START_LOCAL_LAMBDA
         ;;
-    aws-invoke-handler)
-        ACTION=AWS_INVOKE_HANDLER
+    process) # shorthand
+        ACTION=AWS_INVOKE_CONTROLLER
+        ;;
+    aws-invoke-controller)
+        ACTION=AWS_INVOKE_CONTROLLER
         ;;
     aws-invoke-worker)
         ACTION=AWS_INVOKE_WORKER
         ;;
-    sam-invoke-handler)
-        ACTION=SAM_INVOKE_HANDLER
+    sam-invoke-controller)
+        ACTION=SAM_INVOKE_CONTROLLER
         ;;
     sam-invoke-worker)
         ACTION=SAM_INVOKE_WORKER
         ;;
-    --cache-clean)
-        cache_clean
+    clean-cache)
+        clean_cache
         exit
         ;;
-    -n | --stack-name)
+    --stack-name | -n)
         shift
         STACK_NAME="$1"
         ;;
-    --profile)
+    --profile | -p)
         shift
         AWS_PROFILE="$1"
         ;;
@@ -193,13 +199,13 @@ while [ "$1" != "" ]; do
         shift
         TEST_EVENT="$1"
         ;;
-    -d | --debug-mode)
+    --debug | -d )
         DEBUG_MODE=1
         ;;
-    -i | --interactive)
+    --interactive | -i)
         interactive=1
         ;;
-    -h | --help)
+    --help | -h)
         usage
         exit
         ;;
@@ -230,20 +236,20 @@ DEPLOY)
     deploy
     exit
     ;;
-SAM_START_LAMBDA)
-    sam_start_lambda
+START_LOCAL_LAMBDA)
+    start_local_lambda
     exit
     ;;
-AWS_INVOKE_HANDLER)
-    aws_invoke_handler
+AWS_INVOKE_CONTROLLER)
+    aws_invoke_controller
     exit
     ;;
 AWS_INVOKE_WORKER)
     aws_invoke_worker
     exit
     ;;
-SAM_INVOKE_HANDLER)
-    sam_invoke_handler
+SAM_INVOKE_CONTROLLER)
+    sam_invoke_controller
     exit
     ;;
 SAM_INVOKE_WORKER)

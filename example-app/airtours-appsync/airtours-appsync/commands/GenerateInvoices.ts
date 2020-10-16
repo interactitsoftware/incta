@@ -1,6 +1,6 @@
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { GenerateInvoicesItem } from "../_DynamoItems"
+import { GenerateInvoicesItem } from "../__aarts/_DynamoItems"
 
 
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";

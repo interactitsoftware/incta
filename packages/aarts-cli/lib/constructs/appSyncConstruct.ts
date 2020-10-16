@@ -54,7 +54,7 @@ type Mutation {
     create(item: String!, payload: AWSJSON!): AWSJSON
     update(item: String!, payload: AWSJSON!): AWSJSON
     delete(item: String!, payload: AWSJSON!): AWSJSON
-    notify(item: String!, action: String!, identity: String!, ringToken: String!, eventSource: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
+    feed(item: String!, action: String!, identity: String!, ringToken: String!, eventSource: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
 }
 
 type Query {
@@ -63,7 +63,7 @@ type Query {
 }
 
 type Subscription {
-    inbox(item: String, action: String, identity: String, ringToken: String, eventSource: String): Notification @aws_subscribe(mutations: ["notify"])
+    inbox(item: String, action: String, identity: String, ringToken: String, eventSource: String): Notification @aws_subscribe(mutations: ["feed"])
 }
 
 type Notification @aws_iam @aws_cognito_user_pools{

@@ -9,13 +9,13 @@
 
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
-import { SingleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../_DynamoItems"
+import { SingleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../__aarts/_DynamoItems"
 import AWS from "aws-sdk";
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem, _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { names } from "./random-names/names";
 import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
 import { loginfo, uuid } from "aarts-utils/utils";
-import { processPayload } from "aarts-eb-handler/aartsSqsHandler";
+import { processPayload } from "aarts-eb-handler";
 
 export class SingleLambdaTestDataGenerator {
 
@@ -630,7 +630,7 @@ export class SingleLambdaTestDataGenerator {
 
         return await lambda.invoke(
             {
-                FunctionName: process.env.AARTS_SQS_HANDLER as string,
+                FunctionName: process.env.AARTS_WORKER_LONG as string,
                 Payload: sqsEvent
             }, (err, data) => {
                 console.log("[AWS_SAM_LOCAL]: SNS DISPATCHER PROCESSED EVENT " + sqsEvent)

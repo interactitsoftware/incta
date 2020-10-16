@@ -13,7 +13,7 @@ import { IItemManagerKeys } from "aarts-types/interfaces";
  * - ringToken = uuid()
  * If invoked in the context of SAM LOCAL it will call the sqs handler synchronously, skiping the SNS publish part
  */
-export const dispatch = async (event: AppSyncEvent | DynamoDBStreamEvent, context?: Context): Promise<any> => {
+export const controller = async (event: AppSyncEvent | DynamoDBStreamEvent, context?: Context): Promise<any> => {
 	const ringToken: string = (event as { ringToken: string }).ringToken || uuid()
 	// log the ringToken
 	if (!!(event as { ringToken: string }).ringToken) {
@@ -101,7 +101,7 @@ const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, 
 	// however here, if the synchronous invocation fails dispatcher will DO retry (SAM local limitation?) 
 	await lambda.invoke(
 		{
-			FunctionName: event.jobType === "long" ? process.env.SQS_HANDLER_LONG as string: process.env.SQS_HANDLER_SHORT as string,
+			FunctionName: event.jobType === "long" ? process.env.AARTS_WORKER_LONG as string: process.env.AARTS_WORKER_SHORT as string,
 			Payload: sqsEvent
 		}, (err, data) => {
 			console.log("[AWS_SAM_LOCAL]: SNS DISPATCHER PROCESSED EVENT " + sqsEvent)

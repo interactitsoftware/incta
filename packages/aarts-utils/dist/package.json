@@ -1,6 +1,6 @@
 {
   "name": "aarts-utils",
-  "version": "0.2.509",
+  "version": "0.2.518",
   "description": "utility functions used by aarts libraries",
   "main": "./dist",
   "types": "./dist/index.d.ts",
@@ -9,7 +9,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^14.11.8",
+    "@types/node": "^14.11.10",
     "typescript": "^3.9.7"
   },
   "scripts": {

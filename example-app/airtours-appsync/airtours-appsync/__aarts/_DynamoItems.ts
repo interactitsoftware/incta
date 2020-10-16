@@ -33,17 +33,17 @@ export {
 }
 
 // define two domain objects purely from this example app (demonstrate the whole steps needed)
-import { City } from "./items/City";  // the plain js objects (domain items)
-import { Pilot } from "./items/Pilot";
-// define procedures - i.e normal dynamo items, which have their managers implementing the start method 
-import { SingleLambdaTestDataGenerator } from "./procedures/SingleLambdaTestDataGenerator";
-import { IdmptSingleLambdaTestDataGenerator } from "./procedures/IdmptSingleLambdaTestDataGenerator";
-// import { EraseData } from "./procedures/EraseData";
-import { MultipleLambdaTestDataGenerator } from "./procedures/MultipleLambdaTestDataGenerator";
-import { IdmptMultipleLambdaTestDataGenerator } from "./procedures/IdmptMultipleLambdaTestDataGenerator";
-import { IdmptChunksMultipleLambdaTestDataGenerator } from "./procedures/IdmptChunksMultipleLambdaTestDataGenerator";
-import { CreateTouristByPublishingEvent } from "./procedures/CreateTouristByPublishingEvent";
-import { GenerateInvoices } from "./procedures/GenerateInvoices";
+import { City } from "../items/City";  // the plain js objects (domain items)
+import { Pilot } from "../items/Pilot";
+// define commands - i.e normal dynamo items, which have their managers implementing the start method 
+import { SingleLambdaTestDataGenerator } from "../commands/SingleLambdaTestDataGenerator";
+import { IdmptSingleLambdaTestDataGenerator } from "../commands/IdmptSingleLambdaTestDataGenerator";
+// import { EraseData } from "../commands/EraseData";
+import { MultipleLambdaTestDataGenerator } from "../commands/MultipleLambdaTestDataGenerator";
+import { IdmptMultipleLambdaTestDataGenerator } from "../commands/IdmptMultipleLambdaTestDataGenerator";
+import { IdmptChunksMultipleLambdaTestDataGenerator } from "../commands/IdmptChunksMultipleLambdaTestDataGenerator";
+import { CreateTouristByPublishingEvent } from "../commands/CreateTouristByPublishingEvent";
+import { GenerateInvoices } from "../commands/GenerateInvoices";
 import { _specs_QueryCustom } from "aarts-dynamodb/__specs__/testmodel/QueryCustom";
 
 // ----------------- items defs
@@ -58,7 +58,7 @@ export class PilotItem extends DynamoItem(Pilot, "Pilot", [ // the dynamodb wrap
     {key: "country", ref:"country"}
 ]) { }  
 
-// --------------- procedures defs
+// --------------- commands defs
 export class SingleLambdaTestDataGeneratorItem extends DynamoItem(SingleLambdaTestDataGenerator, "Proc__TestDataGenSingleLambda", [
     {key: "start_date"},
     {key: "end_date"},

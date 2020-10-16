@@ -65,5 +65,7 @@ It also hosts example apps with the intention to demonstrate how above npm packa
 - [install sam for Linux](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 - [install aws cli for Linux](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html#cliv2-linux-install)
 
+# Useful
+[git 2fa with wsl2](https://gist.github.com/evillgenius75/613a44aa407300a08d0e3faea4c9df6b)
 
 

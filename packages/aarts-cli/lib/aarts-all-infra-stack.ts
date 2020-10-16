@@ -9,8 +9,6 @@ import { AppSyncConstruct } from './constructs/appSyncConstruct';
 import { AppSyncLocalDatasourceConstruct } from './constructs/AppSyncLocalDatasourceConstruct';
 import { AartsResolver, AppSyncLambdaDataSourceConstruct } from './constructs/appSyncLambdaDataSourceConstruct';
 import { WorkerConstruct } from './constructs/workerConstruct';
-import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
-import lambda = require('@aws-cdk/aws-lambda')
 import { DynamoEventsConstruct } from './constructs/dynamoEventsConstruct';
 
 let clientAppName: string, clientAppDirName: string
@@ -54,7 +52,7 @@ export class AartsAllInfraStack extends Stack {
     })
 
     const appSyncLambdaDatasourceConstruct = new AppSyncLambdaDataSourceConstruct(this, "Mutation", {
-      lambdaFunction: eventBusConstruct.eventDispatcher,
+      lambdaFunction: eventBusConstruct.controller,
       appSyncConstruct: appSyncConstruct,
       mutateResolvers: new Set<AartsResolver>([
         { name: 'start', jobType: "long" },
@@ -78,10 +76,10 @@ export class AartsAllInfraStack extends Stack {
       eventBusConstruct, dynamoDbConstruct, nodeModulesLayer
     })
 
-    const workerInputHandlerShort = new WorkerConstruct(this, `${props.clientAppName}HandlerShort`, {
-      workerName: `${props.clientAppName}HandlerShort`,
+    const workerInputShort = new WorkerConstruct(this, `${props.clientAppName}WorkerShort`, {
+      workerName: `${props.clientAppName}WorkerShort`,
       functionTimeout: Duration.seconds(10),
-      functionHandler: "index.handler",
+      functionHandler: "__aarts/index.worker",
       functionImplementationPath: join(props.clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
@@ -93,12 +91,12 @@ export class AartsAllInfraStack extends Stack {
       ],
       reservedConcurrentExecutions: 25
     });
-    eventBusConstruct.eventDispatcher.addEnvironment("SQS_HANDLER_SHORT", workerInputHandlerShort.function.functionName)
+    eventBusConstruct.controller.addEnvironment("WORKER_SHORT", workerInputShort.function.functionName)
 
-    const workerInputHandlerLong = new WorkerConstruct(this, `${props.clientAppName}HandlerLong`, {
-      workerName: `${props.clientAppName}HandlerLong`,
+    const workerInputLong = new WorkerConstruct(this, `${props.clientAppName}WorkerLong`, {
+      workerName: `${props.clientAppName}WorkerLong`,
       functionTimeout: Duration.minutes(10),
-      functionHandler: "index.handler",
+      functionHandler: "__aarts/index.worker",
       functionImplementationPath: join(props.clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
@@ -110,13 +108,13 @@ export class AartsAllInfraStack extends Stack {
       ],
       reservedConcurrentExecutions: 25
     })
-    eventBusConstruct.eventDispatcher.addEnvironment("SQS_HANDLER_LONG", workerInputHandlerLong.function.functionName)
+    eventBusConstruct.controller.addEnvironment("WORKER_LONG", workerInputLong.function.functionName)
 
 
     if (!!this.node.tryGetContext("debug-mode")) {
-      workerInputHandlerLong.function.addEnvironment("DEBUGGER", "1")
-      workerInputHandlerShort.function.addEnvironment("DEBUGGER", "1")
-      eventBusConstruct.eventDispatcher.addEnvironment("DEBUGGER", "1")
+      workerInputLong.function.addEnvironment("DEBUGGER", "1")
+      workerInputShort.function.addEnvironment("DEBUGGER", "1")
+      eventBusConstruct.controller.addEnvironment("DEBUGGER", "1")
       dynamoEventsConstruct.dynamoEventsAggregation.addEnvironment("DEBUGGER", "1")
       dynamoEventsConstruct.dynamoEventsCallback.addEnvironment("DEBUGGER", "1")
       appSyncLocalDatasourceConstruct.notifierFunctionConstruct.function.addEnvironment("DEBUGGER", "1")

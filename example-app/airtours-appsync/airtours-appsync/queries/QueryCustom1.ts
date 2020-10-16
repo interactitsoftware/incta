@@ -2,7 +2,7 @@ import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManage
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces"
 import { loginfo, ppjson, versionString } from "aarts-utils/utils"
-import { AirportItem, FlightItem, QueryCustom1Item } from "../_DynamoItems"
+import { AirportItem, FlightItem, QueryCustom1Item } from "../__aarts/_DynamoItems"
 
 
 export class QueryCustom1Manager extends BaseDynamoItemManager<QueryCustom1Item> {

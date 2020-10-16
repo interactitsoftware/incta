@@ -1,8 +1,8 @@
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
-import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem, GenerateInvoicesItem } from "../_DynamoItems"
-import { dispatch } from "aarts-eb-dispatcher/aartsSnsDispatcher"
+import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem, GenerateInvoicesItem } from "../__aarts/_DynamoItems"
+import { controller} from "aarts-eb-dispatcher"
 import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
 import AWS from "aws-sdk";
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem, _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
@@ -11,7 +11,7 @@ import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
 import { names } from "./random-names/names";
 import { chunks, loginfo, ppjson } from "aarts-utils/utils";
 import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
-import { processPayload } from "aarts-eb-handler/aartsSqsHandler";
+import { processPayload } from "aarts-eb-handler";
 
 const tourist_payloads: any[] = []
 
@@ -851,7 +851,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
         if (tourist_payloads.length > 0) {
             for (const chunk of chunks(tourist_payloads, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
                 
-                await dispatch({
+                await controller({
                     "action": "create",//may not be necessary here ?
                     "item": _specs_TouristItem.__type,//may not be necessary here ?
                     "jobType": "long", //may not be necessary here ?
@@ -937,7 +937,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
 
         return await lambda.invoke(
             {
-                FunctionName: process.env.AARTS_SQS_HANDLER as string,
+                FunctionName: process.env.AARTS_WORKER_LONG as string,
                 Payload: sqsEvent
             }, (err, data) => {
                 console.log("[AWS_SAM_LOCAL]: SNS DISPATCHER PROCESSED EVENT " + sqsEvent)
@@ -980,7 +980,7 @@ export class IdmptChunksMultipleLambdaTestDataGeneratorManager extends BaseDynam
             // })
 
             // instead publish new event
-            await dispatch({
+            await controller({
                 "action": "start",
                 "item": GenerateInvoicesItem.__type,
                 "ringToken": newImage.ringToken as string,

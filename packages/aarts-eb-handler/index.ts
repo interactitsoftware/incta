@@ -7,7 +7,7 @@ import { prepareAartsEventForDispatch } from 'aarts-eb-types/prepareAartsEventFo
 import { prepareAppSyncEventForDispatch } from 'aarts-eb-types/prepareAppSyncEventForDispatch'
 
 
-export const handler = async (message: SQSEvent, context: Context): Promise<any> => {
+export const worker = async (message: SQSEvent, context: Context): Promise<any> => {
 	!process.env.DEBUGGER || loginfo('received SQS message: ', ppjson(message))
 	for (const record of message.Records) {
 		const aartsEvent: AartsEvent = Object.assign(JSON.parse(record.body),

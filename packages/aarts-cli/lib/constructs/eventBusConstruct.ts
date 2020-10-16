@@ -19,7 +19,7 @@ export interface EventBusConstructProps {
 export class EventBusConstruct extends cdk.Construct {
 
     public readonly eventBus: sns.Topic
-    public readonly eventDispatcher: lambda.Function
+    public readonly controller: lambda.Function
 
     constructor(scope: cdk.Construct, id: string, props: EventBusConstructProps) {
         super(scope, id);
@@ -69,11 +69,11 @@ export class EventBusConstruct extends cdk.Construct {
             //#endregion
         }
 
-        this.eventDispatcher = new lambda.Function(this, "Dispatcher", {
+        this.controller = new lambda.Function(this, "Controller", {
             runtime: lambda.Runtime.NODEJS_12_X,
-            functionName: `${clientAppName}EventDispatcher`,
+            functionName: `${clientAppName}Controller`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
-            handler: 'index.dispatcher',
+            handler: '__aarts/index.controller',
             memorySize: 256,
             timeout: cdk.Duration.seconds(10),
             layers: [props.nodeModulesLayer],
@@ -83,8 +83,8 @@ export class EventBusConstruct extends cdk.Construct {
             // out of single create events (which got failed, and retried)
             retryAttempts: 0
         })
-        this.grantAccess(this.eventDispatcher)
-        props.dynamoDbConstruct.grantAccess(this.eventDispatcher)
+        this.grantAccess(this.controller)
+        props.dynamoDbConstruct.grantAccess(this.controller)
     }
 
     grantAccess(lambdaFunction: lambda.Function) {

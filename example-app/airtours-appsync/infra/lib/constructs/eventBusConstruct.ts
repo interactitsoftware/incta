@@ -71,7 +71,7 @@ export class EventBusConstruct extends cdk.Construct {
             runtime: lambda.Runtime.NODEJS_12_X,
             functionName: `${clientAppName}EventDispatcher`,
             code: Code.fromAsset(join("..", clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
-            handler: 'index.dispatcher',
+            handler: '__aarts/index.dispatcher',
             memorySize: 256,
             timeout: cdk.Duration.seconds(10),
             environment: { "DEBUGGER": "1"}, //"ENV_ONE": "ENV_ONE_VALUE", "ENV_TWO": "ENV_TWO_VALUE"

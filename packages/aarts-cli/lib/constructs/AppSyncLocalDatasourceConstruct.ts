@@ -53,10 +53,10 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
         (notifyLocalResolver.node.defaultChild as CfnResolver).dataSourceName = localCfnDS.name
         notifyLocalResolver.node.addDependency(localCfnDS);
 
-        this.notifierFunctionConstruct = new WorkerConstruct(this, "Notify", {
-            workerName: `${clientAppName}Notifier`,
+        this.notifierFunctionConstruct = new WorkerConstruct(this, "Feeder", {
+            workerName: `${clientAppName}Feeder`,
             functionTimeout: Duration.seconds(10),
-            functionHandler: "index.notifier",
+            functionHandler: "__aarts/index.feeder",
             functionImplementationPath: join(clientAppDirName, "dist"),
             functionRuntime: Runtime.NODEJS_12_X,
             eventBusConstruct: props.eventBusConstruct,
@@ -69,7 +69,7 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
         this.notifierFunctionConstruct.function.addToRolePolicy(new PolicyStatement({
             actions: ["appsync:GraphQL"],
             effect: Effect.ALLOW,
-            resources: [`${props.appSyncConstruct.graphQLApi.arn}/types/Mutation/fields/notify`]
+            resources: [`${props.appSyncConstruct.graphQLApi.arn}/types/Mutation/fields/feed`]
         }));
     }
 }

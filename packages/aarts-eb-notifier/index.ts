@@ -5,7 +5,7 @@ import appsync = require('aws-appsync');
 const gql = require('graphql-tag');
 require('cross-fetch/polyfill');
 
-export const handler = async (event: SQSEvent, context: Context): Promise<any> => {
+export const feeder = async (event: SQSEvent, context: Context): Promise<any> => {
     console.log("appsync-notifier function received event: " + JSON.stringify(event, undefined, 2));
     //console.log("process.env.APPSYNC_ENDPOINT_URL: " + process.env.APPSYNC_ENDPOINT_URL);
     //console.log("process.env.AWS_REGION: " + process.env.AWS_REGION);
