@@ -33,6 +33,11 @@ Performance is of highest prioirity, however significant further cost and data m
 ### Create local dynamo test table
 - `aws dynamodb create-table --cli-input-json file://local-dev-table-def.json --endpoint-url http://localhost:8000`
 
+# TODOs
+- start using [lerna](https://github.com/lerna/lerna)
+- boilerplate code generation in aarts-cli. Goal is to be able to bootstrap a project from single data-model.json file
+- Graphql schema, query, mutations generation from whitin cdk, based on the client app's data-model.json 
+
 ### trouble shooting
 - first do a cleanup:
 - remove all node_modules `find . -name "node_modules" -exec rm -rf '{}' +`
