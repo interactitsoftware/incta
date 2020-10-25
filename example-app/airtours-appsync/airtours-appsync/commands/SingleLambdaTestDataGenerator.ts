@@ -7,14 +7,15 @@
  * DISABLE SAVING OF PROCEDURES
  */
 
-import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+import { DynamoItem } from "aarts-dynamodb"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
-import { SingleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../__aarts/_DynamoItems"
+import { SingleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../__bootstrap/_DynamoItems"
 import AWS from "aws-sdk";
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem, _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { names } from "./random-names/names";
 import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
-import { loginfo, uuid } from "aarts-utils/utils";
+import { loginfo, uuid } from "aarts-utils";
 import { processPayload } from "aarts-eb-handler";
 
 export class SingleLambdaTestDataGenerator {
@@ -603,7 +604,7 @@ export class SingleLambdaTestDataGenerator {
             retryDelayOptions: {
                 //TODO figure out good enough backoff function
                 customBackoff: (retryCount: number, err) => {
-                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR ", err)
                     // expecting to retry
                     // 1st attempt: 110 ms
                     // 2nd attempt: 200 ms

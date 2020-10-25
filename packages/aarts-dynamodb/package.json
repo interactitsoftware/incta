@@ -3,10 +3,10 @@
   "contributors": [
     "akrsmv"
   ],
-  "version": "0.4.509",
+  "version": "0.4.570",
   "description": "dynamo db transactoinal crud operations with support on refkeys and uniqeness",
-  "main": "./dist",
-  "types": "./dist/index.d.ts",
+  "main": "index.js",
+  "types": "./index.d.ts",
   "files": [
     "*.js",
     "*.d.ts",
@@ -21,17 +21,17 @@
   },
   "dependencies": {
     "@types/aws-lambda": "^8.10.64",
-    "aarts-types": "^0.2.519",
-    "aarts-utils": "^0.2.519",
+    "aarts-types": "^0.2.578",
+    "aarts-utils": "^0.2.578",
     "aws-lambda": "^1.0.6",
-    "aws-sdk": "^2.773.0",
+    "aws-sdk": "^2.778.0",
     "typescript": "^3.9.7"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",
-    "@types/node": "^14.11.10",
-    "jest": "^26.5.3",
-    "ts-jest": "^26.4.1"
+    "@types/node": "^14.14.2",
+    "jest": "^26.6.1",
+    "ts-jest": "^26.4.2"
   },
   "scripts": {
     "build_win": "npm run clean_win && tsc && copy package.json README.md test-model.svg .\\dist",

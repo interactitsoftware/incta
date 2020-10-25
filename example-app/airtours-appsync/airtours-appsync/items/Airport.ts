@@ -1,9 +1,9 @@
-import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces";
 
 // using the one from the aarts-dynamodb/__specs__
 import {_specs_AirportItem as AirportItem} from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
-import { loginfo } from "aarts-utils/utils"
+import { loginfo } from "aarts-utils"
 
 // Although we are reusing dynamoitem definition from the __specs__ we are redefining the manager for that object here
 export class AirportManager extends BaseDynamoItemManager<AirportItem> {

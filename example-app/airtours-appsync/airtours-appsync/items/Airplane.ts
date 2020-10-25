@@ -1,6 +1,6 @@
-import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
-import { ppjson } from "aarts-utils/utils"
+import { loginfo, ppjson } from "aarts-utils"
 
 // using the one from the aarts-dynamodb/__specs__
 import {_specs_AirplaneItem as AirplaneItem} from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
@@ -9,7 +9,7 @@ import {_specs_AirplaneItem as AirplaneItem} from "aarts-dynamodb/__specs__/test
 export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
     async *validateCreate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneItem, undefined> {
 
-        !process.env.DEBUGGER || (yield { resultItems: [{ message: `[airplaneManager/validateCreate]: BEGIN validateCreate method`}]})
+        !process.env.DEBUGGER || loginfo(`[airplaneManager/validateCreate]: BEGIN validateCreate method`)
             // example domain validations
             const errors: string[] = []
 
@@ -31,14 +31,14 @@ export class AirplaneManager extends BaseDynamoItemManager<AirplaneItem> {
                 console.log('INVALID airplane: ', errors)
                 throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
             } else {
-                !process.env.DEBUGGER || (yield { resultItems: [{ message:  `[airplaneManager/validateCreate]: END successful`}]})
+                !process.env.DEBUGGER || loginfo(`[airplaneManager/validateCreate]: END successful`)
                 console.log('valid airplane', airplane)
                 return airplane
             }
     }
 
     async *validateUpdate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneItem, undefined> {
-            !process.env.DEBUGGER || (yield { resultItems: [{ message:  "AirplaneItem validator validating " + ppjson(airplane)}]})
+            !process.env.DEBUGGER || loginfo("AirplaneItem validator validating ", airplane)
             return airplane
     }
 

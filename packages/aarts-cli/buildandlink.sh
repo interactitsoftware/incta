@@ -8,7 +8,7 @@ echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-utils
 npm install && npm update
 npm version patch
-npm run build_lin
+npm run build
 cd dist
 npm publish -m "dev update"
 
@@ -98,14 +98,15 @@ npm publish -m "dev update"
 # npm link
 
 echo ------------------------------------------------
-echo            AARTS_CLI
+echo            AARTS_ITEM_MANAGER
 echo ------------------------------------------------
-cd $AARTS_HOME/packages/aarts-cli
-npm install && npm update 
+cd $AARTS_HOME/packages/aarts-item-manager
+npm install && npm update
 npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
+# npm link
 
 echo ------------------------------------------------
 echo            AARTS_EB_NOTIFIER
@@ -116,6 +117,40 @@ npm version patch
 npm run build_lin
 npm publish -m "dev update"
 # npm link
+
+echo ------------------------------------------------
+echo            AARTS_MODEL_BUILDER
+echo ------------------------------------------------
+cd $AARTS_HOME/packages/aarts-model-builder
+# npm link aarts-dynamodb
+# npm link aarts-eb-handler
+# npm link aarts-eb-notifier
+# npm link aarts-eb-dispatcher
+npm install && npm update
+npm version patch
+npm run build
+cd dist
+npm publish -m "dev update"
+
+echo ------------------------------------------------
+echo            AARTS_CLI
+echo ------------------------------------------------
+cd $AARTS_HOME/packages/aarts-cli
+npm install && npm update 
+npm version patch
+npm run build
+cd dist
+npm publish -m "dev update"
+
+echo ------------------------------------------------
+echo            CREATE_AARTS_APP
+echo ------------------------------------------------
+cd $AARTS_HOME/packages/create-aarts-app
+npm install && npm update 
+npm version patch
+npm run build
+cd dist
+npm publish -m "dev update"
 
 # echo ------------------------------------------------
 # echo            AARTS_EXAMPLE

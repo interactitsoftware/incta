@@ -1,9 +1,9 @@
 import { DynamoDB, AWSError } from 'aws-sdk'
 import { Request } from 'aws-sdk/lib/request'
 import { AttributeMap, BatchGetItemOutput, BatchWriteItemOutput, QueryOutput, TransactWriteItemsOutput, UpdateItemOutput } from 'aws-sdk/clients/dynamodb';
-import { DynamoItem } from './BaseItemManager';
-import { ppjson, versionString } from 'aarts-utils/utils';
+import { ppjson, versionString } from 'aarts-utils';
 import { DdbLoadPeersInput } from './interfaces';
+import { DynamoItem } from './DynamoItem';
 
 export const offline_options = {
     region: 'ddblocal',

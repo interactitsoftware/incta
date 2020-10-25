@@ -2,10 +2,10 @@
 
 import { DynamoDB } from 'aws-sdk'
 import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList, AttributeMap, UpdateItemInput } from 'aws-sdk/clients/dynamodb'
-import { DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, refkeyitemmeta, ddbRequest, leaveKeysOnly } from './DynamoDbClient';
-import { loginfo, ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson } from 'aarts-utils';
 import { RefKey } from './interfaces';
+import { DynamoItem } from './DynamoItem';
 
 
 export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, itemUpdates: Partial<T>, __item_refkeys: RefKey<T>[]): Promise<T> => {
@@ -70,7 +70,6 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
             }, {})
 
     //#region DEBUG msg
-    !process.env.DEBUGGER || loginfo("================================================")
     !process.env.DEBUGGER || loginfo('existing item ', existingItem)
     !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
     !process.env.DEBUGGER || loginfo("drevisionsUpdates ", drevisionsUpdates)
@@ -83,7 +82,6 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     !process.env.DEBUGGER || loginfo("updateExpressionNames ", updateExpressionNames)
     !process.env.DEBUGGER || loginfo("updateExpressionValues ", updateExpressionValues)
     !process.env.DEBUGGER || loginfo("updateExprHistory ", updateExprHistory)
-    !process.env.DEBUGGER || loginfo("================================================")
     //#endregion
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
@@ -197,7 +195,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     delete itemUpdates.revisions
     try {
         const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", result)
     } catch (err) {
         throw new Error(ppjson({ request: params, error: err }))
     }

@@ -1,0 +1,20 @@
+{
+    "action": "create",
+    "item": "Tourist",
+    "arguments": {
+        "fname": "abc",
+        "lname": "abc",
+        "id_card": 5,
+        "tourist_season": "abc",
+        "ticket_type": "abc",
+        "airplane": "abc",
+        "flight": "abc",
+        "from_airport": "abc",
+        "to_airport": "abc",
+        "from_country": "abc",
+        "to_country": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

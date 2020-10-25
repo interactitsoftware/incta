@@ -3,10 +3,10 @@
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { DynamoDB } from 'aws-sdk'
 import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, deletedVersionString, ddbRequest } from './DynamoDbClient';
-import { loginfo, ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson } from 'aarts-utils';
 import { RefKey } from './interfaces';
+import { DynamoItem } from './DynamoItem';
 
 
 export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, __item_refkeys: RefKey<T>[]): Promise<T> => {
@@ -22,13 +22,11 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
 
 
     //#region DEBUG msg
-    !process.env.DEBUGGER || loginfo("================================================")
     !process.env.DEBUGGER || loginfo('existing item ', existingItem)
     !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
     !process.env.DEBUGGER || loginfo("drevisionsUpdates ", drevisionsUpdates)
     !process.env.DEBUGGER || loginfo("ditemUpdates ", ditemUpdates)
     !process.env.DEBUGGER || loginfo("dexistingItemkey ", dexistingItemkey)
-    !process.env.DEBUGGER || loginfo("================================================")
     //#endregion
 
     const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Object.keys(ditemUpdates).filter(uk => uk != "revisions").map(uk => `#${uk} = :${uk}`).join(", ")}`
@@ -116,7 +114,7 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
 
     try {
         const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", result)
     } catch (err) {
         throw new Error(ppjson({ request: params, error: err }))
     }

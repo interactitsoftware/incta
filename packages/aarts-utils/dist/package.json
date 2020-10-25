@@ -1,23 +1,21 @@
 {
   "name": "aarts-utils",
-  "version": "0.2.519",
+  "version": "0.2.579",
   "description": "utility functions used by aarts libraries",
-  "main": "./dist",
-  "types": "./dist/index.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "repository": {
-    "url": "https://github.com/akrsmv/aarts-core.git"
+    "url": "https://github.com/akrsmv/aarts-all.git"
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^14.11.10",
+    "@types/node": "^14.14.2",
     "typescript": "^3.9.7"
   },
   "scripts": {
-    "build_win": "npm run clean_win && tsc && copy package.json .\\dist",
-    "build_lin": "npm run clean_lin && tsc && cp package.json ./dist",
+    "build": "npm run clean && tsc && cp package.json ./dist",
     "watch": "tsc -w",
-    "clean_lin": "rm -fr ./dist",
-    "clean_win": "rmdir /Q /S dist",
+    "clean": "rm -fr ./dist",
     "test": "jest"
   },
   "author": "akrsmv",

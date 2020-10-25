@@ -2,13 +2,13 @@
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { TransactWriteItemsInput, TransactWriteItem, TransactWriteItemList } from 'aws-sdk/clients/dynamodb'
-import { DynamoItem } from './BaseItemManager';
 import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest, versionString, toAttributeMapKeysOnly } from './DynamoDbClient';
-import { loginfo, ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson } from 'aarts-utils';
 import { RefKey } from './interfaces';
+import { DynamoItem } from './DynamoItem';
 
 export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
-    !process.env.DEBUGGER || loginfo(`In transactPutItem. refkeys ${ppjson(__item_refkeys)}`)
+    !process.env.DEBUGGER || loginfo(`In transactPutItem. refkeys:`, __item_refkeys)
 
 
     // New approach where reffered item is being loaded in same key as the corresponding refkey but with Upper case first letter
@@ -73,7 +73,7 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     // write item to the database
     try {
         const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", result)
     } catch (err) {
         throw new Error(ppjson({request: params, error: err}))
     }

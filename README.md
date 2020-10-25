@@ -9,7 +9,7 @@ Performance is of highest prioirity, however significant further cost and data m
 - local development environment, using `aws-cli` `sam` `local dynamodb`
 - infrastructure as code, using `aws-cdk`
 - push notifications, using `Appsync` and `GraphQL subscriptions`. Aarts workers are javascript async generators. All yielded messages (for ex. validations, etc) can be forwarded to client applications, via the `feeder` lambda
-- __aarts-cli__ __*(WIP)*__
+- __bootstrap-cli__ __*(WIP)*__
 - Graphql queries, allowing for getting all data needed at once
 - [single dynamo table design](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html#bp-general-nosql-design-concepts) implementation
 - optimistic locking
@@ -47,6 +47,8 @@ Performance is of highest prioirity, however significant further cost and data m
 
 # Useful
 [git 2fa with wsl2](https://gist.github.com/evillgenius75/613a44aa407300a08d0e3faea4c9df6b)
+[Linux GUI apps with wsl2](https://techcommunity.microsoft.com/t5/windows-dev-appconsult/running-wsl-gui-apps-on-windows-10/ba-p/1493242)
+[Linux GUI appImage with wsl2](https://discourse.appimage.org/t/run-appimage-on-windows/177)
 
 This is a monorepo, home of multiple npm packages:
 - `aarts-types`

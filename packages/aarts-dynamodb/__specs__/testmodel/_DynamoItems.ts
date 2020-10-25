@@ -1,4 +1,4 @@
-import { DynamoItem } from "../../BaseItemManager";
+import { DynamoItem } from "../../DynamoItem";
 import { _specs_Airport } from "./Airport";
 import { _specs_Flight } from "./Flight";
 import { _specs_Airplane, _specs_AirplaneModel, _specs_AirplaneManifacturer } from "./Airplane";
@@ -9,7 +9,6 @@ import { _specs_TouristSeason } from "./TouristSeason";
 import { _specs_Invoice } from "./Invoice";
 import { _specs_Order } from "./Order";
 import { _specs_EraseData } from "./EraseData";
-import { _specs_QueryCustom } from "./QueryCustom";
 
 const __type__Country: string = "Country"
 const __type__Flight: string = "Flight"
@@ -104,6 +103,4 @@ export class _specs_EraseDataItem extends DynamoItem(_specs_EraseData, "Proc__Er
     {key: "end_date"},
 ]) {}
 
-// example item, hat allows for custom queries, i.e its Manager overwrites directly the query method
-export class _specs_QueryCustomItem extends DynamoItem(_specs_QueryCustom, "queryCustom", []) {}
 

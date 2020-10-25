@@ -1,14 +1,15 @@
-import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
-import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
+import { queryItems } from "aarts-dynamodb"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+import { DynamoItem } from "aarts-dynamodb"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
-import { AirportItem, CountryItem, FlightItem, AirplaneItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem } from "../__aarts/_DynamoItems"
+import { AirportItem, CountryItem, FlightItem, AirplaneItem, CreateTouristByPublishingEventItem, GenerateInvoicesItem } from "../__bootstrap/_DynamoItems"
 import { controller} from "aarts-eb-dispatcher"
 
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
 import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
-import { chunks, loginfo, ppjson } from "aarts-utils/utils";
-import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
+import { chunks, loginfo, ppjson } from "aarts-utils";
+import { AppSyncEvent } from "aarts-eb-types";
 
 const payloads: any[] = []
 export class CreateTouristByPublishingEvent {
@@ -174,9 +175,9 @@ export class CreateTouristByPublishingEventManager extends BaseDynamoItemManager
     }
 
     public onUpdate = async (__type: string, newImage: DynamoItem) => {
-        !process.env.DEBUGGER || loginfo(`IN SPECIFIC OnCreate METHOD: ${ppjson(newImage)}`);
+        !process.env.DEBUGGER || loginfo(`IN SPECIFIC OnCreate METHOD:`, newImage);
         if (!!newImage && newImage.revisions === 1 && newImage.success === true) {
-            !process.env.DEBUGGER || loginfo(`WILL START GENERATE INVOICES: ${ppjson(newImage)}`);
+            !process.env.DEBUGGER || loginfo(`WILL START GENERATE INVOICES:`, newImage);
             // if the procedure completed
             
             // do not call directly the generator, you need it in a separate lambda (+ you will need to cycle through its yields, if directly invoked)
@@ -211,7 +212,7 @@ export class CreateTouristByPublishingEventManager extends BaseDynamoItemManager
                 }
             })
         } else {
-            !process.env.DEBUGGER || loginfo(`onUpdate fired for ${__type} but conditions to fire next procedures were not met: ${ppjson(newImage)}`)
+            !process.env.DEBUGGER || loginfo(`onUpdate fired for ${__type} but conditions to fire next procedures were not met:}`, newImage)
         }
 
     }

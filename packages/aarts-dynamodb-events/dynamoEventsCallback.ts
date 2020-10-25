@@ -1,6 +1,6 @@
 import { Context, DynamoDBStreamEvent } from "aws-lambda";
 import { IItemManagerCallback } from "aarts-types/interfaces";
-import { ppjson, versionString } from "aarts-utils/utils"
+import { ppjson, versionString } from "aarts-utils"
 
 export const dynamoEventsCallback = async (event: DynamoDBStreamEvent, context: Context, cb: Function) => {
 	let result = {}

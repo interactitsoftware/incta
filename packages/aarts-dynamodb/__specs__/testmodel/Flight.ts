@@ -12,7 +12,6 @@ export class _specs_Flight {
         //     return accum
         // },{}))
     }
-
     //-- ref keys
     public airplane?: string
     public from_airport?: string

@@ -10,11 +10,52 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                "utility.functions"
+                ""
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "openOnFirstSessionStart",
-
+        },
+        {
+            "name": "Item Manager Tests",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}/packages/aarts-item-manager",
+            "program": "${workspaceRoot}/packages/aarts-item-manager/node_modules/jest/bin/jest.js",
+            "args": [
+                "--runInBand",
+                "--testNamePattern",
+                ""
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "openOnFirstSessionStart",
+        },
+        {
+            "name": "Model Builder Tests",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}/packages/aarts-model-builder",
+            "program": "${workspaceRoot}/packages/aarts-model-builder/node_modules/jest/bin/jest.js",
+            "args": [
+                "--runInBand",
+                "--testNamePattern",
+                "cqr.generator"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "openOnFirstSessionStart",
+        },
+        {
+            "name": "Create Aarts App",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}/packages/create-aarts-app",
+            "program": "${workspaceRoot}/packages/create-aarts-app/node_modules/jest/bin/jest.js",
+            "args": [
+                "--runInBand",
+                "--testNamePattern",
+                ""
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "openOnFirstSessionStart",
         }
     ]
 }

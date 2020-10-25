@@ -1,8 +1,7 @@
-import { chunks } from "aarts-utils/utils"
+import { chunks } from "aarts-utils"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
 import { WriteRequest, ScanOutput } from "aws-sdk/clients/dynamodb";
 import { _specs_EraseDataItem } from "./_DynamoItems";
-import { BaseDynamoItemManager } from "../../BaseItemManager";
 import { DB_NAME, dynamoDbClient } from "../../DynamoDbClient";
 
 export class _specs_EraseData {

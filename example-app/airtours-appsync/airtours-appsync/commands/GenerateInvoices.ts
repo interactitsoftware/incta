@@ -1,13 +1,14 @@
-import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+import { DynamoItem } from "aarts-dynamodb"
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces";
-import { GenerateInvoicesItem } from "../__aarts/_DynamoItems"
+import { GenerateInvoicesItem } from "../__bootstrap/_DynamoItems"
 
 
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
 import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
-import { transactUpdateItem } from "aarts-dynamodb/dynamodb-transactUpdateItem";
-import { versionString } from "aarts-dynamodb/DynamoDbClient";
+import { transactUpdateItem } from "aarts-dynamodb";
+import { versionString } from "aarts-dynamodb";
 import { MixinConstructor } from "aarts-types/Mixin";
 
 

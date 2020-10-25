@@ -1,0 +1,15 @@
+{
+    "action": "create",
+    "item": "Airport",
+    "arguments": {
+        "name": "abc",
+        "airport_size": 5,
+        "country": "abc",
+        "branch": "abc",
+        "type": "abc",
+        "code": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

@@ -30,10 +30,10 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
             description: 'loopback datasource',
         });
 
-        const notifyLocalResolver = new Resolver(this, `LocalResolver`, {
+        const feederLocalResolver = new Resolver(this, `LocalResolver`, {
 
             api: props.appSyncConstruct.graphQLApi,
-            fieldName: 'notify',
+            fieldName: 'feed',
             typeName: 'Mutation',
             requestMappingTemplate: MappingTemplate.fromString(
 `{
@@ -50,13 +50,13 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
 }`),
             responseMappingTemplate: MappingTemplate.fromString("$util.toJson($ctx.result)"),
         });
-        (notifyLocalResolver.node.defaultChild as CfnResolver).dataSourceName = localCfnDS.name
-        notifyLocalResolver.node.addDependency(localCfnDS);
+        (feederLocalResolver.node.defaultChild as CfnResolver).dataSourceName = localCfnDS.name
+        feederLocalResolver.node.addDependency(localCfnDS);
 
         this.notifierFunctionConstruct = new WorkerConstruct(this, "Feeder", {
             workerName: `${clientAppName}Feeder`,
             functionTimeout: Duration.seconds(10),
-            functionHandler: "__aarts/index.feeder",
+            functionHandler: "__bootstrap/index.feeder",
             functionImplementationPath: join(clientAppDirName, "dist"),
             functionRuntime: Runtime.NODEJS_12_X,
             eventBusConstruct: props.eventBusConstruct,

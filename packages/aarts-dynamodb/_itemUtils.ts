@@ -2,7 +2,7 @@ import { batchGetItem } from "./dynamodb-batchGetItem";
 import { queryItems } from "./dynamodb-queryItems";
 import { DomainItem } from "./interfaces";
 import { versionString } from "./DynamoDbClient"
-import { DynamoItem } from "./BaseItemManager";
+import { DynamoItem } from "./DynamoItem";
 
 export const getItemsByRefkeyValue = async <T extends DynamoItem>(__type: string, refkeyName: string, refkeyValue: string | number): Promise<DynamoItem[]> => {
     const prefix = typeof refkeyValue === 'number' ? 'n' : typeof refkeyValue === 'string' ? 's' : undefined
@@ -25,6 +25,12 @@ export const getItemById = async <T extends DynamoItem>(__type: string, id: stri
     } else return [] as T[]
 }
 
+/**
+ * 
+ * @param __type 
+ * TODO sharding here
+ * 
+ */
 export const getItemsOfType = async <T extends DynamoItem>(__type: string) => {
     if (!!__type) {
         return ((await queryItems({
@@ -37,10 +43,10 @@ export const getItemsOfType = async <T extends DynamoItem>(__type: string) => {
 }
 
 export const setItemRefkeyToPayload = async (__type: string, payload: DomainItem, refkeyName: string, errorsArray: string[]) => {
-    //examine payload's country property for assigning it to the organization to be created
+    //examine payload's country property for assigning it to the domain item to be created
     // if no refkeyName prop in payload -> pass successful
     // if refkeyName prop exists try loading by id, 
-    // if above fails, try loading by payload[refkeyName], i.e try locating a refkey on the target item,
+    // if above fails, try loading by payload[refkeyName], i.e try locating a refkey with this value on the target item,
     // if both attempts fail -> push error to array
     if (!!payload.country) {
         const itemByIdResults = await getItemById(__type, payload[refkeyName])

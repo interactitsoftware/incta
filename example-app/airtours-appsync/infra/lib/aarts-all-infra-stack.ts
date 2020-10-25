@@ -75,7 +75,7 @@ export class AartsAllInfraStack extends Stack {
     const workerInputHandlerShort = new WorkerConstruct(this, `${clientAppName}HandlerShort`, {
       workerName: `${clientAppName}HandlerShort`,
       functionTimeout: Duration.seconds(10),
-      functionHandler: "__aarts/index.handler",
+      functionHandler: "__bootstrap/index.handler",
       functionImplementationPath: join("..", clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
@@ -91,7 +91,7 @@ export class AartsAllInfraStack extends Stack {
     const workerInputHandlerLong = new WorkerConstruct(this, `${clientAppName}HandlerLong`, {
       workerName: `${clientAppName}HandlerLong`,
       functionTimeout: Duration.minutes(10),
-      functionHandler: "__aarts/index.handler",
+      functionHandler: "__bootstrap/index.handler",
       functionImplementationPath: join("..", clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,

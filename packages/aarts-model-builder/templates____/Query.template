@@ -1,0 +1,12 @@
+import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { ##ITEM##Item } from "../__bootstrap/_DynamoItems"
+import { AartsPayload, AartsEvent, IIdentity, IItemManager  } from "aarts-types/interfaces"
+import { ppjson } from "aarts-utils"
+
+export class ##ITEM##Query extends BaseDynamoItemManager<##ITEM##Item> {
+    // Queries are BaseDynamoItemManagers with overwritten query method. Code will not call validateQuery and baseValidateQuery in this case
+    async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+
+        return { resultItems: [{}] }
+    }
+}

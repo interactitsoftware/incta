@@ -3,16 +3,17 @@
  * make this lambda only firing events for create
  */
 
-import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+import { DynamoItem } from "aarts-dynamodb"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
-import { MultipleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../__aarts/_DynamoItems"
+import { MultipleLambdaTestDataGeneratorItem, AirportItem, CountryItem } from "../__bootstrap/_DynamoItems"
 import { controller} from "aarts-eb-dispatcher"
-import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
+import { AppSyncEvent } from "aarts-eb-types";
 import AWS from "aws-sdk";
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem, _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { names } from "./random-names/names";
 import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
-import { loginfo } from "aarts-utils/utils";
+import { loginfo } from "aarts-utils";
 import { processPayload } from "aarts-eb-handler";
 
 export class MultipleLambdaTestDataGenerator {
@@ -462,7 +463,7 @@ const dynamo_q2_2022 = await this.createItem(
             retryDelayOptions: {
                 //TODO figure out good enough backoff function
                 customBackoff: (retryCount: number, err) => {
-                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR ", err)
                     // expecting to retry
                     // 1st attempt: 110 ms
                     // 2nd attempt: 200 ms

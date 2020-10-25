@@ -29,7 +29,7 @@ export class DynamoEventsConstruct extends cdk.Construct {
             runtime: Runtime.NODEJS_12_X,
             functionName: `${clientAppName}dynamoEventsAggregation`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
-            handler: '__aarts/index.dynamoEventsAggregation',
+            handler: '__bootstrap/index.dynamoEventsAggregation',
             memorySize: 256,
             timeout: Duration.seconds(60),
             layers: [props.nodeModulesLayer],
@@ -44,8 +44,8 @@ export class DynamoEventsConstruct extends cdk.Construct {
         props.dynamoDbConstruct.grantAccess(this.dynamoEventsAggregation)
 
 
-        const dlq = new Queue(this, "AggregationDEADLETTER", {
-            queueName: `dynamoEventsAggregation-DEADLETTER`
+        const dlq = new Queue(this, `${clientAppName}AggregationDEADLETTER`, {
+            queueName: `${clientAppName}dynamoEventsAggregation-DEADLETTER`
         })
         dlq.grantSendMessages(this.dynamoEventsAggregation)
 
@@ -66,7 +66,7 @@ export class DynamoEventsConstruct extends cdk.Construct {
             runtime: Runtime.NODEJS_12_X,
             functionName: `${clientAppName}dynamoEventsCallback`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
-            handler: '__aarts/index.dynamoEventsCallback',
+            handler: '__bootstrap/index.dynamoEventsCallback',
             memorySize: 256,
             timeout: Duration.seconds(60),
             layers: [props.nodeModulesLayer],
@@ -81,8 +81,8 @@ export class DynamoEventsConstruct extends cdk.Construct {
         props.dynamoDbConstruct.grantAccess(this.dynamoEventsCallback)
 
 
-        const dlqCb = new Queue(this, "CallbackDEADLETTER", {
-            queueName: `dynamoEventsCallback-DEADLETTER`
+        const dlqCb = new Queue(this, `${clientAppName}CallbackDEADLETTER`, {
+            queueName: `${clientAppName}dynamoEventsCallback-DEADLETTER`
         })
         dlqCb.grantSendMessages(this.dynamoEventsCallback)
 

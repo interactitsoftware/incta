@@ -1,15 +1,16 @@
-import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
-import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
+import { queryItems } from "aarts-dynamodb"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+import { DynamoItem } from "aarts-dynamodb"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
-import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem, GenerateInvoicesItem } from "../__aarts/_DynamoItems"
+import { AirportItem, CountryItem, AirplaneManifacturerItem, AirplaneModelItem, IdmptChunksMultipleLambdaTestDataGeneratorItem, GenerateInvoicesItem } from "../__bootstrap/_DynamoItems"
 import { controller} from "aarts-eb-dispatcher"
-import { AppSyncEvent } from "aarts-eb-types/aartsEBUtil";
+import { AppSyncEvent } from "aarts-eb-types";
 import AWS from "aws-sdk";
 import { _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem, _specs_AirplaneItem, _specs_FlightItem, _specs_TouristItem, _specs_TouristSeasonItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems";
 import { _specs_Airport } from "aarts-dynamodb/__specs__/testmodel/Airport";
 import { _specs_Country } from "aarts-dynamodb/__specs__/testmodel/Country";
 import { names } from "./random-names/names";
-import { chunks, loginfo, ppjson } from "aarts-utils/utils";
+import { chunks, loginfo, ppjson } from "aarts-utils";
 import { _specs_TouristSeason } from "aarts-dynamodb/__specs__/testmodel/TouristSeason";
 import { processPayload } from "aarts-eb-handler";
 
@@ -910,7 +911,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
             retryDelayOptions: {
                 //TODO figure out good enough backoff function
                 customBackoff: (retryCount: number, err) => {
-                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+                    !process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR ", err)
                     // expecting to retry
                     // 1st attempt: 110 ms
                     // 2nd attempt: 200 ms

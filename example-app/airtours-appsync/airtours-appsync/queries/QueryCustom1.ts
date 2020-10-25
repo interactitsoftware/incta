@@ -1,14 +1,14 @@
-import { BaseDynamoItemManager, DynamoItem } from "aarts-dynamodb/BaseItemManager"
+import { DynamoItem } from "aarts-dynamodb"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { queryItems } from "aarts-dynamodb/dynamodb-queryItems"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces"
-import { loginfo, ppjson, versionString } from "aarts-utils/utils"
-import { AirportItem, FlightItem, QueryCustom1Item } from "../__aarts/_DynamoItems"
+import { loginfo, ppjson, versionString } from "aarts-utils"
+import { AirportItem, FlightItem, QueryCustom1Item } from "../__bootstrap/_DynamoItems"
 
 
 export class QueryCustom1Manager extends BaseDynamoItemManager<QueryCustom1Item> {
     async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        !process.env.DEBUGGER || loginfo('query Received arguments: ', JSON.stringify(args, null, 4))
-        !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${item}:QUERY] Begin query method. Doing a gate check of payload` }] })
+        !process.env.DEBUGGER || loginfo(`[${item}:QUERY] Received arguments:`, args)
 
         // get all airports in europe
         const airports = await queryItems({
@@ -26,9 +26,9 @@ export class QueryCustom1Manager extends BaseDynamoItemManager<QueryCustom1Item>
             ddbIndex: "meta__smetadata"
         });
 
-        !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${item}:QUERY] End` }] })
         const res = (airports.items as DynamoItem[]).concat(flights.items as DynamoItem[])
-        console.log("^^AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^^^ RES ", ppjson(res))
+        !process.env.DEBUGGER || loginfo(`[${item}:QUERY] End. Result: `, res)
+        
         return { resultItems: [{items:[res]}] }
     }
 

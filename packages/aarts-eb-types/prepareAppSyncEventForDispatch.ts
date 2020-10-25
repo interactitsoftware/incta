@@ -1,4 +1,4 @@
-import { AppSyncEvent } from "./aartsEBUtil"
+import { AppSyncEvent } from "./BusUtil"
 
 export const prepareAppSyncEventForDispatch = (event: AppSyncEvent, ringToken: string) => {
 	return {
@@ -8,7 +8,7 @@ export const prepareAppSyncEventForDispatch = (event: AppSyncEvent, ringToken: s
 			"eventSource": {
 				DataType: 'String',
 				// defaults should be fire an "input", with "s" worker type;
-				StringValue: `worker:${event.eventType === "output" ? "output" : "input"}:${event.jobType === "long"? "long" : "short"}`
+				StringValue: `worker:${event.eventType === "output" ? "output" : "input"}:${event.jobType === "long" || event.action === "start"? "long" : "short"}`
 			},
 			"action": {
 				DataType: 'String',

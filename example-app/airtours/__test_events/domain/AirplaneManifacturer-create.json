@@ -1,0 +1,11 @@
+{
+    "action": "create",
+    "item": "AirplaneManifacturer",
+    "arguments": {
+        "country": "abc",
+        "name": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

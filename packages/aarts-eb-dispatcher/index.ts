@@ -1,10 +1,10 @@
 import { Context, DynamoDBStreamEvent } from "aws-lambda";
 import AWS = require("aws-sdk");
-import { publish, AppSyncEvent } from "aarts-eb-types/aartsEBUtil"
+import { publish, AppSyncEvent } from "aarts-eb-types"
 import { samLocalSimulateSQSHandlerFromContent } from "./samLocalSimulateSQSHandlerFromContent";
 import { processPayload } from "aarts-handler/aartsHandler"
 import { prepareAppSyncEventForDispatch } from "aarts-eb-types/prepareAppSyncEventForDispatch"
-import { loginfo, ppjson, uuid } from "aarts-utils/utils";
+import { loginfo, ppjson, uuid } from "aarts-utils";
 import { IItemManagerKeys } from "aarts-types/interfaces";
 
 /**
@@ -58,7 +58,22 @@ const processAppSyncEvent = async (event: AppSyncEvent, ringToken: string, conte
 		// PROD runtime execution ends here
 
 	} else {
-		result = await samLocalSupport_callSqsHandlerSynchronously(event, ringToken)
+		// try calling synchronously a worker, simulating sqs event
+		// result = await samLocalSupport_callSqsHandlerSynchronously(event, ringToken)
+		
+		// within the same lamnbda, process the payload
+		result = await processPayload({
+			meta: {
+				ringToken: ringToken,
+				eventSource: `worker:${event.eventType === "output" ? event.eventType : "input"}:${event.jobType}`,
+				action: event.action as IItemManagerKeys,
+				item: event.item
+			},
+			payload: {
+				arguments: event.arguments,
+				identity: event.identity,
+			}
+		}, context)
 	}
 
 	return result
@@ -68,7 +83,8 @@ const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, 
 	//used sam local runtime
 	const sqsEvent = await samLocalSimulateSQSHandlerFromContent(JSON.stringify(event), ringToken);
 	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
-	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. SQS HANDLER FUNCTION NAME IS " + process.env.SQS_HANDLER_SHORT)
+	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. SQS WORKER SHORT IS " + process.env.WORKER_SHORT)
+	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. SQS WORKER LONG IS " + process.env.WORKER_LONG)
 	!process.env.DEBUGGER || loginfo("sqsEVENT simulated: ", sqsEvent)
 
 	// only run inside local lambda runner
@@ -80,10 +96,12 @@ const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, 
 		// and: https://github.com/awslabs/aws-sam-cli/issues/510#issuecomment-554687309
 
 		sslEnabled: false,
-		maxRetries: 2,
+		// is it because a lambda should return some standard output ({status_code : 200 } etc), 
+		// that even a succesful lambda in aws, retries with SAM LOCAL (if set maxRetries is > 1)
+		maxRetries: 1, 
 		retryDelayOptions: {
 			customBackoff: (retryCount: number, err) => {
-				!process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR " + JSON.stringify(err, null, 4))
+				!process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR ", err)
 				// expecting to retry
 				// 1st attempt: 110 ms
 				// 2nd attempt: 200 ms
@@ -101,7 +119,7 @@ const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, 
 	// however here, if the synchronous invocation fails dispatcher will DO retry (SAM local limitation?) 
 	await lambda.invoke(
 		{
-			FunctionName: event.jobType === "long" ? process.env.AARTS_WORKER_LONG as string: process.env.AARTS_WORKER_SHORT as string,
+			FunctionName: event.jobType === "long" ? process.env.WORKER_LONG as string: process.env.WORKER_SHORT as string,
 			Payload: sqsEvent
 		}, (err, data) => {
 			console.log("[AWS_SAM_LOCAL]: SNS DISPATCHER PROCESSED EVENT " + sqsEvent)

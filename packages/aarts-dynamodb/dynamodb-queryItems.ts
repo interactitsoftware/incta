@@ -4,9 +4,9 @@
 import { batchGetItem, populateRefKeys } from './dynamodb-batchGetItem'
 import DynamoDB, { AttributeMap, AttributeValue, QueryOutput } from 'aws-sdk/clients/dynamodb'
 import { dynamoDbClient, fromAttributeMapArray, DB_NAME, toAttributeMap, fromAttributeMap, ddbRequest } from './DynamoDbClient';
-import { DynamoItem } from './BaseItemManager';
 import { DdbQueryInput, DdbQueryOutput, DdbGSIItemKey, RefKey } from './interfaces';
-import { loginfo, ppjson, versionString } from 'aarts-utils/utils';
+import { loginfo, ppjson, versionString } from 'aarts-utils';
+import { DynamoItem } from './DynamoItem';
 
 export const queryItems = async <T extends DdbQueryInput, TResult extends DynamoItem>(ddbQueryPayload: T): Promise<DdbQueryOutput<TResult>> => {
 
@@ -70,14 +70,12 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
             }, {}))
     }
 
-    !process.env.DEBUGGER || loginfo("================================================")
     !process.env.DEBUGGER || loginfo("dqueryKeys ", dqueryKeys)
     !process.env.DEBUGGER || loginfo("keyConditionExpression ", dkeyConditionExpression)
     !process.env.DEBUGGER || loginfo("dfilter ", dfilter)
     !process.env.DEBUGGER || loginfo("dfilterExpression ", dfilterExpression)
     !process.env.DEBUGGER || loginfo("dexpressionAttributeNames ", dexpressionAttributeNames)
     !process.env.DEBUGGER || loginfo("dexpressionAttributeValues ", dexpressionAttributeValues)
-    !process.env.DEBUGGER || loginfo("================================================")
 
     const params: DynamoDB.QueryInput = {
         TableName: DB_NAME,
@@ -94,7 +92,7 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
 
     try {
         const result = await ddbRequest(dynamoDbClient.query(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== QueryOutput: ", ppjson(result))
+        !process.env.DEBUGGER || loginfo("====DDB==== QueryOutput: ", result)
         let resultItems = fromAttributeMapArray((result as QueryOutput).Items as AttributeMap[]) as DynamoItem[]
 
         if (!!ddbQueryPayload.ddbIndex && !!resultItems && resultItems.length > 0) {

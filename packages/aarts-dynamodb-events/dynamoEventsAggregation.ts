@@ -1,8 +1,8 @@
 import { Context, DynamoDBStreamEvent } from "aws-lambda";
-import { loginfo, ppjson, uuid, versionString } from "aarts-utils/utils"
+import { loginfo, ppjson, uuid, versionString } from "aarts-utils"
 import { AttributeMap, TransactWriteItemList, TransactWriteItemsInput } from "aws-sdk/clients/dynamodb";
 import { DB_NAME, ddbRequest, dynamoDbClient, fromAttributeMap } from "aarts-dynamodb/DynamoDbClient"
-import { DynamoItem } from "aarts-dynamodb/BaseItemManager"
+import { DynamoItem } from "aarts-dynamodb/DynamoItem"
 
 export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, context: Context, cb: Function) => {
 	let result = {}
@@ -48,7 +48,7 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 				ClientRequestToken: uuid()
 			}
 			const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-			!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
+			!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", resultUpdateProcEvents)
 		}
 		//#endregion
 
@@ -89,7 +89,7 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapOld.get(typestateOld)}` } },
 					ReturnValues: "ALL_NEW"
 				}))
-				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByOldState))
+				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", resultUpdateAggrTotalByOldState)
 			}
 
 
@@ -105,7 +105,7 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapNew.get(typestateNew)}` } },
 					ReturnValues: "ALL_NEW"
 				}))
-				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByNewState))
+				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", resultUpdateAggrTotalByNewState)
 			}
 
 
@@ -135,7 +135,7 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapNew.get(typestateNew)}` } },
 					ReturnValues: "ALL_NEW"
 				}))
-				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByNewState))
+				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", resultUpdateAggrTotalByNewState)
 			}
 		}
 		//#endregion

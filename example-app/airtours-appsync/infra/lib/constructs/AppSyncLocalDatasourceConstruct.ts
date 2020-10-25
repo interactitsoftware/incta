@@ -56,7 +56,7 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
         this.notifierFunctionConstruct = new WorkerConstruct(this, "Feeder", {
             workerName: `${clientAppName}Feeder`,
             functionTimeout: Duration.seconds(10),
-            functionHandler: "__aarts/index.feeder",
+            functionHandler: "__bootstrap/index.feeder",
             functionImplementationPath: join("..", clientAppDirName, "dist"),
             functionRuntime: Runtime.NODEJS_12_X,
             eventBusConstruct: props.eventBusConstruct,

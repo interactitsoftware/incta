@@ -2,10 +2,10 @@
 
 import { AttributeMap, BatchGetItemInput, BatchGetItemOutput, BatchGetResponseMap, ExpressionAttributeNameMap } from 'aws-sdk/clients/dynamodb'
 import { dynamoDbClient, toAttributeMapArray, fromAttributeMapArray, DB_NAME, versionString, ddbRequest } from './DynamoDbClient';
-import { DynamoItem } from './BaseItemManager';
 import { MixinConstructor } from 'aarts-types/Mixin';
 import { DdbGetInput, DdbTableItemKey, RefKey } from './interfaces';
-import { loginfo, ppjson } from 'aarts-utils/utils';
+import { loginfo, ppjson } from 'aarts-utils';
+import { DynamoItem } from './DynamoItem';
 
 export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Promise<T[]> => {
     const keys: AttributeMap[] = toAttributeMapArray(args.pks.map(i => { return { id: i.id, meta: i.meta } }))
@@ -31,7 +31,7 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
 
     try {
         const result = await ddbRequest(dynamoDbClient.batchGetItem(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== BatchGetItemOutput: ", ppjson(result))
+        !process.env.DEBUGGER || loginfo("====DDB==== BatchGetItemOutput: ", result)
 
         let resultItems = fromAttributeMapArray(((result as BatchGetItemOutput).Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[]
 
@@ -50,6 +50,11 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
 
 export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: number, peersPropsToLoad: string[] | undefined, projectionExpression: string | undefined) => {
     if (loadPeersLevel === 0) return
+
+    if (!global.domainAdapter && !global.domainAdapter.lookupItems) {
+        // skip population of other items if meta info is not present
+        return resultItem
+    }
 
     const __type = (resultItem as unknown as DynamoItem).__typename as string
     const __refkeysToItems = (((global.domainAdapter.lookupItems as unknown) as Map<string, MixinConstructor<typeof DynamoItem>>).get(__type)?.__refkeys as RefKey<Record<string, any>>[]).filter(k => !!k.ref && (peersPropsToLoad === undefined || peersPropsToLoad.indexOf(k.key) > -1 || peersPropsToLoad.indexOf(`${k.key[0].toUpperCase()}${k.key.slice(1)}`) > -1))

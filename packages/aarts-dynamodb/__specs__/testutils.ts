@@ -1,10 +1,10 @@
-import { DynamoItem } from "../BaseItemManager"
 import { dynamoDbClient, DB_NAME, fromAttributeMapArray, versionString, refkeyitemmeta } from "../DynamoDbClient"
-import { chunks } from "aarts-utils/utils"
+import { chunks } from "aarts-utils"
 import { WriteRequest } from "aws-sdk/clients/dynamodb"
 import { AnyConstructor } from "aarts-types/Mixin"
 import { transactPutItem } from "../dynamodb-transactPutItem"
 import { RefKey, DomainItem } from "../interfaces"
+import { DynamoItem } from "../DynamoItem"
 
 
 export const queryForId = async (id: string) => {

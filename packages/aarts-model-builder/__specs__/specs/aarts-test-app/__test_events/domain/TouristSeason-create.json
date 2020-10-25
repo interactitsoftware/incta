@@ -1,0 +1,11 @@
+{
+    "action": "create",
+    "item": "TouristSeason",
+    "arguments": {
+        "code": "abc",
+        "price_flight_per_hour": 5
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

@@ -73,9 +73,9 @@ export class EventBusConstruct extends cdk.Construct {
             runtime: lambda.Runtime.NODEJS_12_X,
             functionName: `${clientAppName}Controller`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
-            handler: '__aarts/index.controller',
+            handler: '__bootstrap/index.controller',
             memorySize: 256,
-            timeout: cdk.Duration.seconds(10),
+            timeout: cdk.Duration.seconds(60),
             layers: [props.nodeModulesLayer],
 
             // IMPORTANT we dont want retry on a dispatcher level, reties should be only on sqs handler level

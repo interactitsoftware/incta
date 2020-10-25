@@ -1,18 +1,18 @@
 {
   "name": "aarts-types",
-  "version": "0.2.519",
+  "version": "0.2.579",
   "description": "base types for aarts - aws lambda/dynamodb transactional support",
-  "main": "./dist",
-  "types": "./dist/index.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "repository": {
-    "url": "https://github.com/akrsmv/aarts-core.git"
+    "url": "https://github.com/akrsmv/aarts-all.git"
   },
   "dependencies": {
     "@types/aws-lambda": "^8.10.64",
     "aws-lambda": "^1.0.6"
   },
   "devDependencies": {
-    "@types/node": "^14.11.10",
+    "@types/node": "^14.14.2",
     "typescript": "^3.9.7"
   },
   "scripts": {

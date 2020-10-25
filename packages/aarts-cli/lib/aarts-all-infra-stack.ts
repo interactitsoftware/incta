@@ -72,14 +72,14 @@ export class AartsAllInfraStack extends Stack {
       nodeModulesLayer
     })
 
-    const dynamoEventsConstruct = new DynamoEventsConstruct(this, "DynamoEvents", {
+    const dynamoEventsConstruct = new DynamoEventsConstruct(this, `${props.clientAppName}DynamoEvents`, {
       eventBusConstruct, dynamoDbConstruct, nodeModulesLayer
     })
 
     const workerInputShort = new WorkerConstruct(this, `${props.clientAppName}WorkerShort`, {
       workerName: `${props.clientAppName}WorkerShort`,
       functionTimeout: Duration.seconds(10),
-      functionHandler: "__aarts/index.worker",
+      functionHandler: "__bootstrap/index.worker",
       functionImplementationPath: join(props.clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
@@ -91,12 +91,11 @@ export class AartsAllInfraStack extends Stack {
       ],
       reservedConcurrentExecutions: 25
     });
-    eventBusConstruct.controller.addEnvironment("WORKER_SHORT", workerInputShort.function.functionName)
 
     const workerInputLong = new WorkerConstruct(this, `${props.clientAppName}WorkerLong`, {
       workerName: `${props.clientAppName}WorkerLong`,
       functionTimeout: Duration.minutes(10),
-      functionHandler: "__aarts/index.worker",
+      functionHandler: "__bootstrap/index.worker",
       functionImplementationPath: join(props.clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
@@ -108,8 +107,9 @@ export class AartsAllInfraStack extends Stack {
       ],
       reservedConcurrentExecutions: 25
     })
-    eventBusConstruct.controller.addEnvironment("WORKER_LONG", workerInputLong.function.functionName)
 
+    eventBusConstruct.controller.addEnvironment("WORKER_LONG", workerInputLong.function.functionName)
+    eventBusConstruct.controller.addEnvironment("WORKER_SHORT", workerInputShort.function.functionName)
 
     if (!!this.node.tryGetContext("debug-mode")) {
       workerInputLong.function.addEnvironment("DEBUGGER", "1")
