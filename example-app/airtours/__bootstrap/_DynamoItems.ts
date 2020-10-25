@@ -1,5 +1,4 @@
 import { DynamoItem } from "aarts-dynamodb/DynamoItem"
-import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { Country } from "./items/Country"
 import { Airport } from "./items/Airport"
 import { Flight } from "./items/Flight"

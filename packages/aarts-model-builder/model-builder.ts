@@ -224,7 +224,6 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     //#region _DynamoItems
     let _DynamoItemsContents = `import { DynamoItem } from "aarts-dynamodb/DynamoItem"` + "\n"
-        + `import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"` + "\n"
 
     for (const item of Object.keys(model.Items).concat(Object.keys(model.Commands)).concat(Object.keys(model.Queries))) {
         _DynamoItemsContents += `import { ${item} } from "./items/${item}"` + "\n"
@@ -273,7 +272,7 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
         })
         _DynamoItemsContents += "]) { }\n"
     }
-    console.log(`...Generating _DynamoItems.ts:`
+    console.log(`...Generating _DynamoItems.ts: `
         + await recordFile(join(cwd, "__bootstrap"), "_DynamoItems.ts", _DynamoItemsContents))
     //#endregion
 

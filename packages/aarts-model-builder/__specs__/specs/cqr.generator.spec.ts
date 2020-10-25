@@ -37,6 +37,7 @@ describe('cqr.generator', () => {
     
     expect(existsSync(join(outputDir, "__bootstrap", "items", "Airport.ts"))).toBe(true)
     expect(readFileSync(join(outputDir, "__bootstrap", "items", "Airport.ts")).toString()).toBe("export class Airport {\n"
+    + "    constructor(...args: any[]) { }\n"
     + "    public country?: string\n"
     + "    public type?: number\n"
     + "    public isPublic?: boolean\n"
@@ -44,13 +45,10 @@ describe('cqr.generator', () => {
     
     expect(existsSync(join(outputDir, "__bootstrap", "items", "Airplane.ts"))).toBe(true)
     expect(readFileSync(join(outputDir, "__bootstrap", "items", "Airplane.ts")).toString()).toBe("export class Airplane {\n"
+    + "    constructor(...args: any[]) { }\n"
     + "    public model?: string\n"
     + "    public code?: number\n"
     + "}")
-
-    expect(console.log).toHaveBeenCalledWith('Generating Airplane.ts...');
-    expect(console.log).toHaveBeenCalledWith('Generating Airport.ts...');
-    expect(console.log).toHaveBeenCalledWith('Generating _DynamoItems.ts...');
     
     return true
   })

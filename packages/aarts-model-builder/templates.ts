@@ -15,7 +15,7 @@ export class ##ITEM##Domain extends BaseDynamoItemManager<##ITEM##Item> {
         const errors: string[] = []
         if (errors.length > 0) {
             yield { resultItems: [{ message: \`Create ##ITEM## Failed\` }, errors] }
-            throw new Error(\`\${process.env.ringToken}: \${errors.join(";;")}\`)
+            throw new Error(\`\${errors.join(";;")}\`)
         } else {
             yield { resultItems: [{ message: \`Successfuly created ##ITEM##\` }] }
             return ##ITEM_LOWERC##
@@ -30,7 +30,7 @@ export class ##ITEM##Domain extends BaseDynamoItemManager<##ITEM##Item> {
         const errors: string[] = []
         if (errors.length > 0) {
             yield { resultItems: [{ message: \`Update ##ITEM## Failed\` }, errors] }
-            throw new Error(\`\${process.env.ringToken}: \${errors.join(";;")}\`)
+            throw new Error(\`\${errors.join(";;")}\`)
         } else {
             yield { resultItems: [{ message: \`Successfuly updated ##ITEM##\` }] }
             return ##ITEM_LOWERC##
@@ -45,7 +45,7 @@ export class ##ITEM##Domain extends BaseDynamoItemManager<##ITEM##Item> {
         const errors: string[] = []
         if (errors.length > 0) {
             yield { resultItems: [{ message: \`Delete ##ITEM## Failed\` }, errors] }
-            throw new Error(\`\${process.env.ringToken}: \${errors.join(";;")}\`)
+            throw new Error(\`\${errors.join(";;")}\`)
         } else {
             yield { resultItems: [{ message: \`Successfuly deleted ##ITEM##\` }] }
             return ##ITEM_LOWERC##
@@ -90,7 +90,7 @@ export class ##ITEM##Command extends BaseDynamoItemManager<##ITEM##Item> {
         
         if (errors.length > 0) {
             yield { resultItems: [{ message: \`Start ##ITEM## Failed\` }, errors] }
-            throw new Error(\`\${process.env.ringToken}: \${errors.join(";;")}\`)
+            throw new Error(\`\${errors.join(";;")}\`)
         }
 
         // if this method returns without throwing error, the execute method will be called 

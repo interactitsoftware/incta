@@ -13,10 +13,10 @@ export class AirportDomain extends BaseDynamoItemManager<AirportItem> {
     async *validateCreate(airport: AirportItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirportItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Airport Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create Airport Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Airport` }] }
+            yield { resultItems: [{ message: `Successfuly created Airport` }] }
             return airport
         }
     }
@@ -28,8 +28,8 @@ export class AirportDomain extends BaseDynamoItemManager<AirportItem> {
     async *validateUpdate(airport: AirportItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirportItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Airport Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update Airport Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated Airport` }] }
             return airport
@@ -43,10 +43,10 @@ export class AirportDomain extends BaseDynamoItemManager<AirportItem> {
     async *validateDelete(airport: AirportItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirportItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Airport Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Delete Airport Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Airport` }] }
+            yield { resultItems: [{ message: `Successfuly deleted Airport` }] }
             return airport
         }
     }

@@ -13,10 +13,10 @@ export class AirplaneDomain extends BaseDynamoItemManager<AirplaneItem> {
     async *validateCreate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Airplane Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create Airplane Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Airplane` }] }
+            yield { resultItems: [{ message: `Successfuly created Airplane` }] }
             return airplane
         }
     }
@@ -28,8 +28,8 @@ export class AirplaneDomain extends BaseDynamoItemManager<AirplaneItem> {
     async *validateUpdate(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Airplane Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update Airplane Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated Airplane` }] }
             return airplane
@@ -43,10 +43,10 @@ export class AirplaneDomain extends BaseDynamoItemManager<AirplaneItem> {
     async *validateDelete(airplane: AirplaneItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Airplane Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Delete Airplane Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Airplane` }] }
+            yield { resultItems: [{ message: `Successfuly deleted Airplane` }] }
             return airplane
         }
     }

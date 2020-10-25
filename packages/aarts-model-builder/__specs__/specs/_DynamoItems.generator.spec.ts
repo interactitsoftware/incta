@@ -31,10 +31,10 @@ describe('_DynamoItems.generator', () => {
       Queries: {}
     }, outputDir)
 
-    expect(console.log).toHaveBeenCalledWith('Generating _DynamoItems.ts...');
+    expect(console.log).toHaveBeenCalledWith(`...Generating globalDefinitions: ${join(__dirname, "aarts-test-app", "__bootstrap", "globalDefinitions.ts")}`);
     
     expect(readFileSync(join(outputDir, "__bootstrap", "_DynamoItems.ts")).toString()).toBe(
-    `import { DynamoItem, BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"` + "\n"
+    `import { DynamoItem } from "aarts-dynamodb/DynamoItem"` + "\n"
     + `import { Airplane } from "./items/Airplane"` + "\n"
     + `import { Airport } from "./items/Airport"` + "\n"
     + `` + "\n"
@@ -69,10 +69,24 @@ describe('_DynamoItems.generator', () => {
       Queries: {}
     }, outputDir)
 
-    expect(console.log).toHaveBeenCalledWith('Generating _DynamoItems.ts...');
+    expect(console.log).toHaveBeenCalledWith(`...Generating globalDefinitions: ${join(__dirname, "aarts-test-app", "__bootstrap", "globalDefinitions.ts")}`);
+    expect(console.log).toHaveBeenCalledWith(`Analysing model`);
+    expect(console.log).toHaveBeenCalledWith(`...Generating POJO object for Airplane: ${join(__dirname, "aarts-test-app", "__bootstrap", "items", "Airplane.ts")}`);
+    expect(console.log).toHaveBeenCalledWith(`...Generating test event for Airplane domain: ${join(__dirname, "aarts-test-app", "__test_events", "domain", "Airplane-create.json")}`);
+    expect(console.log).toHaveBeenCalledWith(`...Generating test event for Airplane domain: ${join(__dirname, "aarts-test-app", "__test_events", "domain", "Airplane-update.json")}`);
     
+    expect(console.log).toHaveBeenCalledWith(`...Generating POJO object for Airport: ${join(__dirname, "aarts-test-app", "__bootstrap", "items", "Airport.ts")}`);
+    expect(console.log).toHaveBeenCalledWith(`...Generating test event for Airport domain: ${join(__dirname, "aarts-test-app", "__test_events", "domain", "Airport-create.json")}`);
+    expect(console.log).toHaveBeenCalledWith(`...Generating test event for Airport domain: ${join(__dirname, "aarts-test-app", "__test_events", "domain", "Airport-update.json")}`);
+
+    expect(console.log).toHaveBeenCalledWith(`...Generating generic test event - delete of domain item: ${join(__dirname, "aarts-test-app", "__test_events", "delete.json")}`);
+    expect(console.log).toHaveBeenCalledWith(`...Generating generic test event - get domain items: ${join(__dirname, "aarts-test-app", "__test_events", "get.json")}`);
+    expect(console.log).toHaveBeenCalledWith(`...Generating generic test event - query for domain item: ${join(__dirname, "aarts-test-app", "__test_events", "query.json")}`);
+    
+    expect(console.log).toHaveBeenCalledWith(`...Generating _DynamoItems.ts: ${join(__dirname, "aarts-test-app", "__bootstrap", "_DynamoItems.ts")}`);
+   
     expect(readFileSync(join(outputDir, "__bootstrap", "_DynamoItems.ts")).toString()).toBe(
-    `import { DynamoItem, BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"` + "\n"
+    `import { DynamoItem } from "aarts-dynamodb/DynamoItem"` + "\n"
     + `import { Airplane } from "./items/Airplane"` + "\n"
     + `import { Airport } from "./items/Airport"` + "\n"
     + `` + "\n"

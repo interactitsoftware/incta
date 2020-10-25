@@ -13,10 +13,10 @@ export class AirplaneManifacturerDomain extends BaseDynamoItemManager<AirplaneMa
     async *validateCreate(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneManifacturerItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update AirplaneManifacturer Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create AirplaneManifacturer Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated AirplaneManifacturer` }] }
+            yield { resultItems: [{ message: `Successfuly created AirplaneManifacturer` }] }
             return airplaneManifacturer
         }
     }
@@ -28,8 +28,8 @@ export class AirplaneManifacturerDomain extends BaseDynamoItemManager<AirplaneMa
     async *validateUpdate(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneManifacturerItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update AirplaneManifacturer Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update AirplaneManifacturer Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated AirplaneManifacturer` }] }
             return airplaneManifacturer
@@ -43,10 +43,10 @@ export class AirplaneManifacturerDomain extends BaseDynamoItemManager<AirplaneMa
     async *validateDelete(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneManifacturerItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update AirplaneManifacturer Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Delete AirplaneManifacturer Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated AirplaneManifacturer` }] }
+            yield { resultItems: [{ message: `Successfuly deleted AirplaneManifacturer` }] }
             return airplaneManifacturer
         }
     }

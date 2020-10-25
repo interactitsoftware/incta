@@ -4,12 +4,9 @@
     "arguments": {
         "id": "id-of-item-to-be-updated",
         "revisions": "sending-latest-rev-of-updated-item-mandatory",
-        "name": "abc",
-        "airport_size": 5,
         "country": "abc",
-        "branch": "abc",
-        "type": "abc",
-        "code": "abc"
+        "type": 5,
+        "isPublic": true
     },
     "identity": {
         "username": "testuser"

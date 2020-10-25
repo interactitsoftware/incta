@@ -13,10 +13,10 @@ export class FlightDomain extends BaseDynamoItemManager<FlightItem> {
     async *validateCreate(flight: FlightItem, identity: IIdentity): AsyncGenerator<AartsPayload, FlightItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Flight Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create Flight Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Flight` }] }
+            yield { resultItems: [{ message: `Successfuly created Flight` }] }
             return flight
         }
     }
@@ -28,8 +28,8 @@ export class FlightDomain extends BaseDynamoItemManager<FlightItem> {
     async *validateUpdate(flight: FlightItem, identity: IIdentity): AsyncGenerator<AartsPayload, FlightItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Flight Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update Flight Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated Flight` }] }
             return flight
@@ -43,10 +43,10 @@ export class FlightDomain extends BaseDynamoItemManager<FlightItem> {
     async *validateDelete(flight: FlightItem, identity: IIdentity): AsyncGenerator<AartsPayload, FlightItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Flight Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Delete Flight Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Flight` }] }
+            yield { resultItems: [{ message: `Successfuly deleted Flight` }] }
             return flight
         }
     }

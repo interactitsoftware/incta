@@ -1,4 +1,5 @@
 export class Invoice {
+    constructor(...args: any[]) { }
     public invoice_nr?: string
     public card_id?: string
     public tourist?: string

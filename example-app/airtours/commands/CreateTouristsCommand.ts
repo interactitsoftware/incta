@@ -1,8 +1,7 @@
 import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
-import { AirplaneItem, AirportItem, CountryItem, FlightItem, CreateTouristsItem, TouristItem } from "../__bootstrap/_DynamoItems"
+import { AirplaneItem, AirportItem, CountryItem, CreateTouristsItem, FlightItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { AartsEvent, AartsPayload, IIdentity, IItemManager  } from "aarts-types/interfaces"
-import { DynamoItem, getItemsByRefkeyValue, queryItems } from "aarts-dynamodb"
-import { ppjson } from "aarts-utils"
+import { getItemsByRefkeyValue, DynamoItem } from "aarts-dynamodb"
 
 
 export class CreateTouristsCommand extends BaseDynamoItemManager<CreateTouristsItem> {
@@ -16,6 +15,11 @@ export class CreateTouristsCommand extends BaseDynamoItemManager<CreateTouristsI
         const errors: string[] = []
 
         // here you can apply further domain logic on permissions, authorizations etc
+        
+        if (errors.length > 0) {
+            yield { resultItems: [{ message: `Start CreateTourists Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
+        }
 
         // if this method returns without throwing error, the execute method will be called 
         return proc

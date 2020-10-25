@@ -1,4 +1,5 @@
 export class Tourist {
+    constructor(...args: any[]) { }
     public fname?: string
     public lname?: string
     public id_card?: number

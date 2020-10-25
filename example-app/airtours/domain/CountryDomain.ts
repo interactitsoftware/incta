@@ -13,10 +13,10 @@ export class CountryDomain extends BaseDynamoItemManager<CountryItem> {
     async *validateCreate(country: CountryItem, identity: IIdentity): AsyncGenerator<AartsPayload, CountryItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Country Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create Country Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Country` }] }
+            yield { resultItems: [{ message: `Successfuly created Country` }] }
             return country
         }
     }
@@ -28,8 +28,8 @@ export class CountryDomain extends BaseDynamoItemManager<CountryItem> {
     async *validateUpdate(country: CountryItem, identity: IIdentity): AsyncGenerator<AartsPayload, CountryItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Country Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update Country Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated Country` }] }
             return country
@@ -43,10 +43,10 @@ export class CountryDomain extends BaseDynamoItemManager<CountryItem> {
     async *validateDelete(country: CountryItem, identity: IIdentity): AsyncGenerator<AartsPayload, CountryItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Country Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Delete Country Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Country` }] }
+            yield { resultItems: [{ message: `Successfuly deleted Country` }] }
             return country
         }
     }

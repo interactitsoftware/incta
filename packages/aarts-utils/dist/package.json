@@ -1,6 +1,6 @@
 {
   "name": "aarts-utils",
-  "version": "0.2.579",
+  "version": "0.2.580",
   "description": "utility functions used by aarts libraries",
   "main": "./index.js",
   "types": "./index.d.ts",

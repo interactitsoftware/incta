@@ -1,4 +1,5 @@
-import { DynamoItem, BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { DynamoItem } from "aarts-dynamodb/DynamoItem"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { Country } from "./items/Country"
 import { Airport } from "./items/Airport"
 import { Flight } from "./items/Flight"
@@ -9,14 +10,14 @@ import { Tourist } from "./items/Tourist"
 import { TouristSeason } from "./items/TouristSeason"
 import { Invoice } from "./items/Invoice"
 import { Order } from "./items/Order"
-import { Proc__EraseData } from "./items/Proc__EraseData"
-import { Proc__TestDataGenSingleLambda } from "./items/Proc__TestDataGenSingleLambda"
-import { Proc__TestDataGenSingleLambdaIdmpt } from "./items/Proc__TestDataGenSingleLambdaIdmpt"
-import { Proc__TestDataGenMultipleLambdaIdmpt } from "./items/Proc__TestDataGenMultipleLambdaIdmpt"
-import { Proc__TestDataGenMultipleLambdaIdmptChunks } from "./items/Proc__TestDataGenMultipleLambdaIdmptChunks"
-import { Proc__TestDataGenMultipleLambda } from "./items/Proc__TestDataGenMultipleLambda"
-import { Proc__CreateTourists } from "./items/Proc__CreateTourists"
-import { Proc__GenerateInvoices } from "./items/Proc__GenerateInvoices"
+import { EraseData } from "./items/EraseData"
+import { TestDataGenSingleLambda } from "./items/TestDataGenSingleLambda"
+import { TestDataGenSingleLambdaIdmpt } from "./items/TestDataGenSingleLambdaIdmpt"
+import { TestDataGenMultipleLambdaIdmpt } from "./items/TestDataGenMultipleLambdaIdmpt"
+import { TestDataGenMultipleLambdaIdmptChunks } from "./items/TestDataGenMultipleLambdaIdmptChunks"
+import { TestDataGenMultipleLambda } from "./items/TestDataGenMultipleLambda"
+import { CreateTourists } from "./items/CreateTourists"
+import { GenerateInvoices } from "./items/GenerateInvoices"
 import { FlightsInvolvingCountry } from "./items/FlightsInvolvingCountry"
 
 const __type__Country: string = "Country"
@@ -29,15 +30,15 @@ const __type__Tourist: string = "Tourist"
 const __type__TouristSeason: string = "TouristSeason"
 const __type__Invoice: string = "Invoice"
 const __type__Order: string = "Order"
-const __type__Proc__EraseData: string = "Proc__EraseData"
-const __type__Proc__TestDataGenSingleLambda: string = "Proc__TestDataGenSingleLambda"
-const __type__Proc__TestDataGenSingleLambdaIdmpt: string = "Proc__TestDataGenSingleLambdaIdmpt"
-const __type__Proc__TestDataGenMultipleLambdaIdmpt: string = "Proc__TestDataGenMultipleLambdaIdmpt"
-const __type__Proc__TestDataGenMultipleLambdaIdmptChunks: string = "Proc__TestDataGenMultipleLambdaIdmptChunks"
-const __type__Proc__TestDataGenMultipleLambda: string = "Proc__TestDataGenMultipleLambda"
-const __type__Proc__CreateTourists: string = "Proc__CreateTourists"
-const __type__Proc__GenerateInvoices: string = "Proc__GenerateInvoices"
 const __type__FlightsInvolvingCountry: string = "FlightsInvolvingCountry"
+const __type__EraseData: string = "P__EraseData"
+const __type__TestDataGenSingleLambda: string = "P__TestDataGenSingleLambda"
+const __type__TestDataGenSingleLambdaIdmpt: string = "P__TestDataGenSingleLambdaIdmpt"
+const __type__TestDataGenMultipleLambdaIdmpt: string = "P__TestDataGenMultipleLambdaIdmpt"
+const __type__TestDataGenMultipleLambdaIdmptChunks: string = "P__TestDataGenMultipleLambdaIdmptChunks"
+const __type__TestDataGenMultipleLambda: string = "P__TestDataGenMultipleLambda"
+const __type__CreateTourists: string = "P__CreateTourists"
+const __type__GenerateInvoices: string = "P__GenerateInvoices"
 
 export class CountryItem extends DynamoItem(Country, __type__Country, [
     { key:"name", unique: true },
@@ -103,21 +104,21 @@ export class OrderItem extends DynamoItem(Order, __type__Order, [
     { key:"flight" , ref: __type__Flight},
     { key:"tourist_season" , ref: __type__TouristSeason},
 ]) { }
-export class Proc__EraseDataItem extends DynamoItem(Proc__EraseData, __type__Proc__EraseData, [
+export class EraseDataItem extends DynamoItem(EraseData, __type__EraseData, [
 ]) { }
-export class Proc__TestDataGenSingleLambdaItem extends DynamoItem(Proc__TestDataGenSingleLambda, __type__Proc__TestDataGenSingleLambda, [
+export class TestDataGenSingleLambdaItem extends DynamoItem(TestDataGenSingleLambda, __type__TestDataGenSingleLambda, [
 ]) { }
-export class Proc__TestDataGenSingleLambdaIdmptItem extends DynamoItem(Proc__TestDataGenSingleLambdaIdmpt, __type__Proc__TestDataGenSingleLambdaIdmpt, [
+export class TestDataGenSingleLambdaIdmptItem extends DynamoItem(TestDataGenSingleLambdaIdmpt, __type__TestDataGenSingleLambdaIdmpt, [
 ]) { }
-export class Proc__TestDataGenMultipleLambdaIdmptItem extends DynamoItem(Proc__TestDataGenMultipleLambdaIdmpt, __type__Proc__TestDataGenMultipleLambdaIdmpt, [
+export class TestDataGenMultipleLambdaIdmptItem extends DynamoItem(TestDataGenMultipleLambdaIdmpt, __type__TestDataGenMultipleLambdaIdmpt, [
 ]) { }
-export class Proc__TestDataGenMultipleLambdaIdmptChunksItem extends DynamoItem(Proc__TestDataGenMultipleLambdaIdmptChunks, __type__Proc__TestDataGenMultipleLambdaIdmptChunks, [
+export class TestDataGenMultipleLambdaIdmptChunksItem extends DynamoItem(TestDataGenMultipleLambdaIdmptChunks, __type__TestDataGenMultipleLambdaIdmptChunks, [
 ]) { }
-export class Proc__TestDataGenMultipleLambdaItem extends DynamoItem(Proc__TestDataGenMultipleLambda, __type__Proc__TestDataGenMultipleLambda, [
+export class TestDataGenMultipleLambdaItem extends DynamoItem(TestDataGenMultipleLambda, __type__TestDataGenMultipleLambda, [
 ]) { }
-export class Proc__CreateTouristsItem extends DynamoItem(Proc__CreateTourists, __type__Proc__CreateTourists, [
+export class CreateTouristsItem extends DynamoItem(CreateTourists, __type__CreateTourists, [
 ]) { }
-export class Proc__GenerateInvoicesItem extends DynamoItem(Proc__GenerateInvoices, __type__Proc__GenerateInvoices, [
+export class GenerateInvoicesItem extends DynamoItem(GenerateInvoices, __type__GenerateInvoices, [
 ]) { }
 export class FlightsInvolvingCountryItem extends DynamoItem(FlightsInvolvingCountry, __type__FlightsInvolvingCountry, [
 ]) { }

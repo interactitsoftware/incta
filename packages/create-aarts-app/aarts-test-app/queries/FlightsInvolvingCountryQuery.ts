@@ -1,5 +1,5 @@
 
-import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { FlightsInvolvingCountryItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, AartsEvent, IIdentity, IItemManager  } from "aarts-types/interfaces"
 import { ppjson } from "aarts-utils"

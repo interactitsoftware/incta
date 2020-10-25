@@ -1,42 +1,57 @@
-import { BaseDynamoItemManager } from "aarts-dynamodb/BaseItemManager"
+import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { DdbGetInput, DdbQueryInput } from "aarts-dynamodb/interfaces"
 import { AirplaneModelItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
 import { ppjson } from "aarts-utils"
 
 export class AirplaneModelDomain extends BaseDynamoItemManager<AirplaneModelItem> {
+    /**
+     * Validating the query parameters and user identity.
+     * Yielded objects should be of the form:
+     * yield { resultItems: [{ message: `message here` }] }
+     */
     async *validateCreate(airplaneModel: AirplaneModelItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneModelItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update AirplaneModel Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create AirplaneModel Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated AirplaneModel` }] }
+            yield { resultItems: [{ message: `Successfuly created AirplaneModel` }] }
             return airplaneModel
         }
     }
+    /**
+     * Validating the query parameters and user identity.
+     * Yielded objects should be of the form:
+     * yield { resultItems: [{ message: `message here` }] }
+     */
     async *validateUpdate(airplaneModel: AirplaneModelItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneModelItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update AirplaneModel Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
-        } else {
-            yield { resultItems: [{ message: `Successfuly updated AirplaneModel` }] }
-            return airplaneModel
-        }
-    }
-    async *validateDelete(airplaneModel: AirplaneModelItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneModelItem, undefined> {
-        const errors: string[] = []
-        if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update AirplaneModel Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update AirplaneModel Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated AirplaneModel` }] }
             return airplaneModel
         }
     }
     /**
-     * Placeholder for validating the query parameters and user identity.
+     * Validating the query parameters and user identity.
+     * Yielded objects should be of the form:
+     * yield { resultItems: [{ message: `message here` }] }
+     */
+    async *validateDelete(airplaneModel: AirplaneModelItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneModelItem, undefined> {
+        const errors: string[] = []
+        if (errors.length > 0) {
+            yield { resultItems: [{ message: `Delete AirplaneModel Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
+        } else {
+            yield { resultItems: [{ message: `Successfuly deleted AirplaneModel` }] }
+            return airplaneModel
+        }
+    }
+    /**
+     * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
      * yield { resultItems: [{ message: `message here` }] }
      */
@@ -44,7 +59,7 @@ export class AirplaneModelDomain extends BaseDynamoItemManager<AirplaneModelItem
         return args
     }
     /**
-     * Placeholder for validating the get parameters and user identity.
+     * Validating the get parameters and user identity.
      * Yielded objects should be of the form:
      * yield { resultItems: [{ message: `message here` }] }
      */

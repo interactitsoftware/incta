@@ -13,10 +13,10 @@ export class InvoiceDomain extends BaseDynamoItemManager<InvoiceItem> {
     async *validateCreate(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<AartsPayload, InvoiceItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Invoice Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create Invoice Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Invoice` }] }
+            yield { resultItems: [{ message: `Successfuly created Invoice` }] }
             return invoice
         }
     }
@@ -28,8 +28,8 @@ export class InvoiceDomain extends BaseDynamoItemManager<InvoiceItem> {
     async *validateUpdate(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<AartsPayload, InvoiceItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Invoice Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update Invoice Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated Invoice` }] }
             return invoice
@@ -43,10 +43,10 @@ export class InvoiceDomain extends BaseDynamoItemManager<InvoiceItem> {
     async *validateDelete(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<AartsPayload, InvoiceItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Invoice Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Delete Invoice Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Invoice` }] }
+            yield { resultItems: [{ message: `Successfuly deleted Invoice` }] }
             return invoice
         }
     }

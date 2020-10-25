@@ -13,10 +13,10 @@ export class OrderDomain extends BaseDynamoItemManager<OrderItem> {
     async *validateCreate(order: OrderItem, identity: IIdentity): AsyncGenerator<AartsPayload, OrderItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Order Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create Order Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Order` }] }
+            yield { resultItems: [{ message: `Successfuly created Order` }] }
             return order
         }
     }
@@ -28,8 +28,8 @@ export class OrderDomain extends BaseDynamoItemManager<OrderItem> {
     async *validateUpdate(order: OrderItem, identity: IIdentity): AsyncGenerator<AartsPayload, OrderItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Order Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update Order Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated Order` }] }
             return order
@@ -43,10 +43,10 @@ export class OrderDomain extends BaseDynamoItemManager<OrderItem> {
     async *validateDelete(order: OrderItem, identity: IIdentity): AsyncGenerator<AartsPayload, OrderItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Order Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Delete Order Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Order` }] }
+            yield { resultItems: [{ message: `Successfuly deleted Order` }] }
             return order
         }
     }

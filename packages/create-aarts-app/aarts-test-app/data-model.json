@@ -79,14 +79,25 @@
         }
     },
     "Commands": {
-        "Proc__EraseData": {},
-        "Proc__TestDataGenSingleLambda": {},
-        "Proc__TestDataGenSingleLambdaIdmpt": {},
-        "Proc__TestDataGenMultipleLambdaIdmpt": {},
-        "Proc__TestDataGenMultipleLambdaIdmptChunks": {},
-        "Proc__TestDataGenMultipleLambda": {},
-        "Proc__CreateTourists": {},
-        "Proc__GenerateInvoices": {}
+        "EraseData": {},
+        "TestDataGenSingleLambda": {},
+        "TestDataGenSingleLambdaIdmpt": {},
+        "TestDataGenMultipleLambdaIdmpt": {},
+        "TestDataGenMultipleLambdaIdmptChunks": {},
+        "TestDataGenMultipleLambda": {},
+        "CreateTourists": {
+          "touristsToCreate":  { "type": "number" },
+          "fname": { "type": "string" },
+          "lname": { "type": "string" },
+          "toAirportName": { "type": "string" },
+          "fromAirportName": { "type": "string" },
+          "toCountryName": { "type": "string" },
+          "fromCountryName": { "type": "string" },
+          "airplaneCode": { "type": "string" },
+          "flightCode": { "type": "string" },
+          "iban": { "type": "string" }
+        },
+        "GenerateInvoices": {}
     },
     "Queries": {
         "FlightsInvolvingCountry": {}

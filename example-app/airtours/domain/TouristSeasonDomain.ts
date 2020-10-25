@@ -13,10 +13,10 @@ export class TouristSeasonDomain extends BaseDynamoItemManager<TouristSeasonItem
     async *validateCreate(touristSeason: TouristSeasonItem, identity: IIdentity): AsyncGenerator<AartsPayload, TouristSeasonItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update TouristSeason Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Create TouristSeason Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated TouristSeason` }] }
+            yield { resultItems: [{ message: `Successfuly created TouristSeason` }] }
             return touristSeason
         }
     }
@@ -28,8 +28,8 @@ export class TouristSeasonDomain extends BaseDynamoItemManager<TouristSeasonItem
     async *validateUpdate(touristSeason: TouristSeasonItem, identity: IIdentity): AsyncGenerator<AartsPayload, TouristSeasonItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update TouristSeason Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Update TouristSeason Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
             yield { resultItems: [{ message: `Successfuly updated TouristSeason` }] }
             return touristSeason
@@ -43,10 +43,10 @@ export class TouristSeasonDomain extends BaseDynamoItemManager<TouristSeasonItem
     async *validateDelete(touristSeason: TouristSeasonItem, identity: IIdentity): AsyncGenerator<AartsPayload, TouristSeasonItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update TouristSeason Failed  ${ppjson(errors)}` }] }
-            throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+            yield { resultItems: [{ message: `Delete TouristSeason Failed` }, errors] }
+            throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated TouristSeason` }] }
+            yield { resultItems: [{ message: `Successfuly deleted TouristSeason` }] }
             return touristSeason
         }
     }

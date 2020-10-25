@@ -1,6 +1,6 @@
 {
   "name": "aarts-dynamodb-events",
-  "version": "1.0.563",
+  "version": "1.0.564",
   "description": "upon a dynamo stream event, calls respective callbacks on respective item managers",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -8,11 +8,11 @@
     "@types/aws-lambda": "^8.10.64",
     "@types/node": "^13.13.28",
     "@types/request": "^2.48.5",
-    "aarts-dynamodb": "^0.4.569",
+    "aarts-dynamodb": "^0.4.570",
     "aarts-eb-types": "^0.2.578",
-    "aarts-handler": "^0.3.563",
-    "aarts-types": "^0.2.578",
-    "aarts-utils": "^0.2.578",
+    "aarts-handler": "^0.3.564",
+    "aarts-types": "^0.2.579",
+    "aarts-utils": "^0.2.579",
     "aws-sdk": "^2.778.0",
     "typescript": "^3.9.7"
   },

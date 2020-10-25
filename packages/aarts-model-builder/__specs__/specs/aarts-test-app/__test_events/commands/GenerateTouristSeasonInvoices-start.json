@@ -1,0 +1,11 @@
+{
+    "action": "start",
+    "item": "GenerateTouristSeasonInvoices",
+    "arguments": {
+        "startDate": "abc",
+        "endDate": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

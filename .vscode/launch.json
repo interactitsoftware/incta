@@ -38,7 +38,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                "cqr.generator"
+                ""
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "openOnFirstSessionStart",

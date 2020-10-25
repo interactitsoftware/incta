@@ -1,4 +1,5 @@
 export class Flight {
+    constructor(...args: any[]) { }
     public airplane?: string
     public from_airport?: string
     public to_airport?: string

@@ -132,10 +132,12 @@ npm run build
 cd dist
 npm publish -m "dev update"
 
+
+
 echo ------------------------------------------------
-echo            AARTS_CLI
+echo            CREATE_AARTS_APP
 echo ------------------------------------------------
-cd $AARTS_HOME/packages/aarts-cli
+cd $AARTS_HOME/packages/create-aarts-app
 npm install && npm update 
 npm version patch
 npm run build
@@ -143,9 +145,9 @@ cd dist
 npm publish -m "dev update"
 
 echo ------------------------------------------------
-echo            CREATE_AARTS_APP
+echo            AARTS_CLI
 echo ------------------------------------------------
-cd $AARTS_HOME/packages/create-aarts-app
+cd $AARTS_HOME/packages/aarts-cli
 npm install && npm update 
 npm version patch
 npm run build
