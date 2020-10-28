@@ -2,6 +2,11 @@
     "action": "create",
     "item": "TouristSeason",
     "arguments": {
+        "discounts": {
+            "vip": 5,
+            "class_2": 5,
+            "class_1": 5
+        },
         "code": "abc",
         "price_flight_per_hour": 5
     },

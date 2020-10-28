@@ -1,0 +1,8 @@
+{
+    "action": "start",
+    "item": "GenerateInvoices",
+    "arguments": {},
+    "identity": {
+        "username": "testuser"
+    }
+}

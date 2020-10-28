@@ -56,6 +56,11 @@
             "to_country":{"type": "string", "indexed": true, "ref": "Country"}
         },
         "TouristSeason": {
+            "discounts": {
+                "vip": { "type": "number"},
+                "class_2": { "type": "number"},
+                "class_1": { "type": "number"}
+            },
             "code": {"type": "string", "indexed": true, "unique": true},
             "price_flight_per_hour": {"type": "number"}
         },

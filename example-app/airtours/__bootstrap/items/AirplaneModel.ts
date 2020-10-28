@@ -1,6 +1,6 @@
 export class AirplaneModel {
     constructor(...args: any[]) { }
-    public manifacturer?: string
-    public country?: string
-    public name?: string
+    manifacturer?: string
+    country?: string
+    name?: string
 }

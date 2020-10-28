@@ -1,0 +1,12 @@
+{
+    "action": "create",
+    "item": "Country",
+    "arguments": {
+        "name": "abc",
+        "currency": "abc",
+        "code": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

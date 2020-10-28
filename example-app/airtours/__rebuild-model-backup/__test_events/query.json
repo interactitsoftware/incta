@@ -1,0 +1,14 @@
+{
+    "action": "query",
+    "item": "any-domain-item",
+    "arguments": {
+        "pk": "PK value for the search",
+        "range": "RANGE value for the search, not applied is begins_with",
+        "ddbIndex": "meta__id | meta__smetadata | meta__nmentadata | smetadata__meta | nmetadata__meta",
+        "loadPeersLevel": 1,
+        "peersPropsToLoad": []
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

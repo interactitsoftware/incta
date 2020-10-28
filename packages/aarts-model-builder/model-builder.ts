@@ -31,28 +31,32 @@ const buildPojo = (modelItem: DataModelObject, indent: string = _indent): string
 }
 
 const sampleModelObject = (model: DataModelObject) => {
-    return Object.keys(model).reduce((accum, prop) => {
-        switch (model[prop].type) {
-            case "number":
-                //@ts-ignore
-                accum[prop] = 5
-                break
-            case "string":
-                //@ts-ignore
-                accum[prop] = "abc"
-                break
-            case "boolean":
-                //@ts-ignore
-                accum[prop] = true
-                break
-            case "Date":
-                //@ts-ignore
-                accum[prop] = new Date().toISOString()
-                break
-            default:
-                //@ts-ignore
-                accum[prop] = null
-                break
+    return Object.keys(model).reduce<Record<string, any>>((accum, prop) => {
+        if (!!model[prop].type) {
+            switch (model[prop].type) {
+                case "number":
+                    //@ts-ignore
+                    accum[prop] = 5
+                    break
+                case "string":
+                    //@ts-ignore
+                    accum[prop] = "abc"
+                    break
+                case "boolean":
+                    //@ts-ignore
+                    accum[prop] = true
+                    break
+                case "Date":
+                    //@ts-ignore
+                    accum[prop] = new Date().toISOString()
+                    break
+                default:
+                    //@ts-ignore
+                    accum[prop] = null
+                    break
+            } 
+        } else {
+            accum[prop] = sampleModelObject(model[prop] as DataModelObject)
         }
         return accum
     }, {})

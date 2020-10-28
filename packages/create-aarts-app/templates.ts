@@ -1,5 +1,5 @@
-export const jestConfigJs = 
-`
+export const jestConfigJs =
+  `
 module.exports = {
     "roots": [
       "<rootDir>"
@@ -19,8 +19,8 @@ module.exports = {
   }
 `
 
-export const packageJson = 
-`
+export const packageJson =
+  `
 {
     "name": "##APP##",
     "version": "1.0.0",
@@ -37,8 +37,8 @@ export const packageJson =
   }
 `
 
-export const dataModelJson = 
-`{
+export const dataModelJson =
+  `{
     "Items": {
         "Country": {
             "name": { "type": "string", "indexed": true, "unique": true },
@@ -96,6 +96,11 @@ export const dataModelJson =
             "to_country":{"type": "string", "indexed": true, "ref": "Country"}
         },
         "TouristSeason": {
+            "discounts": {
+                "vip": { "type": "number"},
+                "class_2": { "type": "number"},
+                "class_1": { "type": "number"}
+            },
             "code": {"type": "string", "indexed": true, "unique": true},
             "price_flight_per_hour": {"type": "number"}
         },
@@ -145,8 +150,8 @@ export const dataModelJson =
 }
 `
 
-export const tsconfigJson = 
-`
+export const tsconfigJson =
+  `
 {
     "compilerOptions": {
       "incremental": true,

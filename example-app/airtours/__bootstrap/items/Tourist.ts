@@ -1,14 +1,14 @@
 export class Tourist {
     constructor(...args: any[]) { }
-    public fname?: string
-    public lname?: string
-    public id_card?: number
-    public tourist_season?: string
-    public ticket_type?: string
-    public airplane?: string
-    public flight?: string
-    public from_airport?: string
-    public to_airport?: string
-    public from_country?: string
-    public to_country?: string
+    fname?: string
+    lname?: string
+    id_card?: number
+    tourist_season?: string
+    ticket_type?: string
+    airplane?: string
+    flight?: string
+    from_airport?: string
+    to_airport?: string
+    from_country?: string
+    to_country?: string
 }

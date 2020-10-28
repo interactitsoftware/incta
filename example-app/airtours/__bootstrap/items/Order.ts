@@ -1,10 +1,10 @@
 export class Order {
     constructor(...args: any[]) { }
-    public invoice?: string
-    public flight?: string
-    public tourist_season?: string
-    public price?: number
-    public quantity?: number
-    public discount?: number
-    public vat?: number
+    invoice?: string
+    flight?: string
+    tourist_season?: string
+    price?: number
+    quantity?: number
+    discount?: number
+    vat?: number
 }

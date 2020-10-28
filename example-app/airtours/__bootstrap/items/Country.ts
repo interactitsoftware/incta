@@ -1,6 +1,6 @@
 export class Country {
     constructor(...args: any[]) { }
-    public name?: string
-    public currency?: string
-    public code?: string
+    name?: string
+    currency?: string
+    code?: string
 }
