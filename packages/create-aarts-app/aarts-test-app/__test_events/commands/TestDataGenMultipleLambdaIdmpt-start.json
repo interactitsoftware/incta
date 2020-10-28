@@ -1,8 +1,0 @@
-{
-    "action": "start",
-    "item": "TestDataGenMultipleLambdaIdmpt",
-    "arguments": {},
-    "identity": {
-        "username": "testuser"
-    }
-}

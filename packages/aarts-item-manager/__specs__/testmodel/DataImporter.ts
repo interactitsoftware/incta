@@ -34,7 +34,7 @@ export class _specs_DataImporterManager extends BaseDynamoItemManager<_specs_Dat
         // can apply further domain logic on permissions, authorizations etc
         // if this method returns without throwing error, the execute method will be called 
 
-        proc.arguments.start_date = Date.now()
+        proc.arguments.start_date = new Date().toISOString()
         return proc
     }
 

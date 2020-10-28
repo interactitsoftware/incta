@@ -20,7 +20,7 @@ export class GenerateInvoices {
     public succsess?: number
     public error?: number
     
-    public start_date?: number
+    public start_date?: string
     public end_date?: number
 
     public ringToken?: string
@@ -55,7 +55,7 @@ export class GenerateInvoicesManager extends BaseDynamoItemManager<GenerateInvoi
     async *validateStart(proc: AartsPayload<GenerateInvoicesItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         proc.arguments.total_events = proc.arguments.touristsToCreate
-        proc.arguments.start_date = Date.now()
+        proc.arguments.start_date = new Date().toISOString()
         // can apply some domain logic on permissions, authorizations etc
         return proc
     }
@@ -66,7 +66,7 @@ export class GenerateInvoicesManager extends BaseDynamoItemManager<GenerateInvoi
         await transactUpdateItem(
             newImage,
             {
-                end_date: Date.now(),
+                end_date: new Date().toISOString(),
                 success: true,
                 revisions: 0,
                 ringToken: newImage.ringToken,

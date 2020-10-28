@@ -38,7 +38,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                ""
+                "buildPojo"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "openOnFirstSessionStart",

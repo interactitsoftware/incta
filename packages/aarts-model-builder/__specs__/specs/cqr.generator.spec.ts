@@ -53,7 +53,7 @@ describe('cqr.generator', () => {
     return true
   })
 
-  test('writes all cqr items as specified test data-model', async () => {
+  test.only('writes all cqr items as specified test data-model', async () => {
     // await builder(dataModel, outputDir)
     await builder(require("../test-model/MODEL"), outputDir)
 
@@ -85,14 +85,14 @@ describe('cqr.generator', () => {
     expect(existsSync(join(outputDir, "domain", "OrderDomain.ts"))).toBe(true)
 
     expect(shell.ls(join(outputDir, "commands")).length).toBe(8)
-    expect(existsSync(join(outputDir, "commands", "Proc__EraseDataCommand.ts"))).toBe(true)
-    expect(existsSync(join(outputDir, "commands", "Proc__TestDataGenSingleLambdaCommand.ts"))).toBe(true)
-    expect(existsSync(join(outputDir, "commands", "Proc__TestDataGenSingleLambdaIdmptCommand.ts"))).toBe(true)
-    expect(existsSync(join(outputDir, "commands", "Proc__TestDataGenMultipleLambdaIdmptCommand.ts"))).toBe(true)
-    expect(existsSync(join(outputDir, "commands", "Proc__TestDataGenMultipleLambdaIdmptChunksCommand.ts"))).toBe(true)
-    expect(existsSync(join(outputDir, "commands", "Proc__TestDataGenMultipleLambdaCommand.ts"))).toBe(true)
-    expect(existsSync(join(outputDir, "commands", "Proc__CreateTouristsCommand.ts"))).toBe(true)
-    expect(existsSync(join(outputDir, "commands", "Proc__GenerateInvoicesCommand.ts"))).toBe(true)
+    expect(existsSync(join(outputDir, "commands", "EraseDataCommand.ts"))).toBe(true)
+    expect(existsSync(join(outputDir, "commands", "TestDataGenSingleLambdaCommand.ts"))).toBe(true)
+    expect(existsSync(join(outputDir, "commands", "TestDataGenSingleLambdaIdmptCommand.ts"))).toBe(true)
+    expect(existsSync(join(outputDir, "commands", "TestDataGenMultipleLambdaIdmptCommand.ts"))).toBe(true)
+    expect(existsSync(join(outputDir, "commands", "TestDataGenMultipleLambdaIdmptChunksCommand.ts"))).toBe(true)
+    expect(existsSync(join(outputDir, "commands", "TestDataGenMultipleLambdaCommand.ts"))).toBe(true)
+    expect(existsSync(join(outputDir, "commands", "CreateTouristsCommand.ts"))).toBe(true)
+    expect(existsSync(join(outputDir, "commands", "GenerateInvoicesCommand.ts"))).toBe(true)
 
     expect(shell.ls(join(outputDir, "queries")).length).toBe(1)
     expect(existsSync(join(outputDir, "queries", "FlightsInvolvingCountryQuery.ts"))).toBe(true)

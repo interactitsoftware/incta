@@ -32,7 +32,7 @@ export class IdmptChunksMultipleLambdaTestDataGenerator {
     public processed_events: number = 0
     public succsess?: number
     public error?: number
-    public start_date?: number
+    public start_date?: string
     public end_date?: number
 
     public touristsToCreate?: number
@@ -951,7 +951,7 @@ export class IdmptChunksMultipleLambdaTestDataGeneratorManager extends BaseDynam
     async *validateStart(proc: AartsPayload<IdmptChunksMultipleLambdaTestDataGeneratorItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         proc.arguments.total_events = 54 + (proc.arguments.touristsToCreate? proc.arguments.touristsToCreate > 100 ? proc.arguments.touristsToCreate: 100 : 0)
-        proc.arguments.start_date = Date.now()
+        proc.arguments.start_date = new Date().toISOString()
         // can apply some domain logic on permissions, authorizations etc
         return proc
     }

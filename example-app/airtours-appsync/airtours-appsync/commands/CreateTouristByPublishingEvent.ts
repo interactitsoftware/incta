@@ -20,7 +20,7 @@ export class CreateTouristByPublishingEvent {
     public succsess?: number
     public error?: number
     
-    public start_date?: number
+    public start_date?: string
     public end_date?: number
 
     public touristsToCreate?: number
@@ -104,7 +104,7 @@ export class CreateTouristByPublishingEvent {
     }
 
     public async start(__type: string, args: AartsEvent) {
-        this.start_date = Date.now()
+        this.start_date = new Date().toISOString()
 
         
 
@@ -169,7 +169,7 @@ export class CreateTouristByPublishingEventManager extends BaseDynamoItemManager
     async *validateStart(proc: AartsPayload<CreateTouristByPublishingEventItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         proc.arguments.total_events = proc.arguments.touristsToCreate
-        proc.arguments.start_date = Date.now()
+        proc.arguments.start_date = new Date().toISOString()
         // can apply some domain logic on permissions, authorizations etc
         return proc
     }

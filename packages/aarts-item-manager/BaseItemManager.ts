@@ -72,7 +72,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                         await transactUpdateItem(
                             P__from_db[0],
                             {
-                                end_date: Date.now(),
+                                end_date: new Date().toISOString(),
                                 item_state: "success",
                                 ringToken: newImage.ringToken,
                                 revisions: P__from_db[0].revisions,
@@ -244,7 +244,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                         P__from_db[0],
                         // procedure,
                         {
-                            synchronours_end_date: Date.now(),
+                            synchronours_end_date: new Date().toISOString(),
                             ...procedureResult,
                             revisions: P__from_db[0].revisions
                         },

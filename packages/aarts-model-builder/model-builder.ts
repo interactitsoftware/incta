@@ -12,13 +12,22 @@ export type ItemPropertyValue = {
 }
 
 export interface DataModelObject {
-    [x: string]: ItemPropertyValue
+    [x: string]: ItemPropertyValue | DataModelObject
 }
 
 export interface DataModel {
     Items: { [x: string]: DataModelObject }
     Commands: { [x: string]: DataModelObject }
     Queries: { [x: string]: DataModelObject }
+}
+
+const buildPojo = (modelItem: DataModelObject, indent: string = _indent): string => {
+
+    return Object.keys(modelItem).reduce((pojoContents, prop) => !!modelItem[prop].type ?
+        pojoContents += `${indent}${prop}?: ${modelItem[prop].type}` + "\n"
+        :
+        pojoContents += `${indent}${prop}?: {` + "\n" + buildPojo(modelItem[prop] as DataModelObject, indent + _indent) + `${indent}}` + "\n",
+        "")
 }
 
 const sampleModelObject = (model: DataModelObject) => {
@@ -48,7 +57,7 @@ const sampleModelObject = (model: DataModelObject) => {
         return accum
     }, {})
 }
-
+export const _indent = '    '
 export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     const aartsFolderName = "__bootstrap"
@@ -89,11 +98,10 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
     //#region items
     for (const item of Object.keys(model.Items)) {
         let itemContents = `export class ${item} {` + "\n"
-            + `    constructor(...args: any[]) { }` + "\n"
-        Object.keys(model.Items[item]).forEach(prop => {
-            itemContents += `    public ${prop}?: ${model.Items[item][prop].type}` + "\n"
-        })
-        itemContents += "}"
+            + `${_indent}constructor(...args: any[]) { }` + "\n"
+            + buildPojo(model.Items[item])
+            + "}"
+
         console.log(`...Generating POJO object for ${item}: ${await recordFile(join(cwd, aartsFolderName, "items"), `${item}.ts`, itemContents)}`)
         console.log(`...Generating test event for ${item} domain: ` +
             (await recordFile(join(cwd, "__test_events", "domain"), `${item}-create.json`, ppjson({

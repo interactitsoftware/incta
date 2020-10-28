@@ -11,7 +11,7 @@ export class ##ITEM##Command extends BaseDynamoItemManager<##ITEM##Item> {
     async *validateStart(proc: AartsPayload<##ITEM##Item>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         const errors: string[] = []
         proc.arguments.total_events = // calculated based on command input
-        proc.arguments.start_date = Date.now()
+        proc.arguments.start_date = new Date().toISOString()
         // can apply further domain logic on permissions, authorizations etc
         // if this method returns without throwing error, the execute method will be called 
         return proc

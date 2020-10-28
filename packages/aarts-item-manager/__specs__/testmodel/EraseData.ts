@@ -12,7 +12,7 @@ export class _specs_EraseData {
     public succsess?: number
     public error?: number
     public processed_events?: boolean
-    public start_date?: number
+    public start_date?: string
     public end_date?: number
 
     public async start(__type: string, args: AartsEvent) {

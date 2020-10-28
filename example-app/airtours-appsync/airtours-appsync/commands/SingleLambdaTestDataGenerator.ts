@@ -25,7 +25,7 @@ export class SingleLambdaTestDataGenerator {
     public processed_events: number = 0
     public succsess?: number
     public error?: number
-    public start_date?: number
+    public start_date?: string
     public end_date?: number
 
     public touristsToCreate?:number
@@ -41,9 +41,9 @@ export class SingleLambdaTestDataGenerator {
         this.total_events = 47 + (this.touristsToCreate || 0)
     }
     public async start(__type: string, args: AartsEvent) {
-        this.start_date = Date.now()
+        this.start_date = new Date().toISOString()
         
-        this.start_date = Date.now()
+        this.start_date = new Date().toISOString()
         // 7 countries
         const bg_country = { name: "Bulgaria", currency: "BGN", code: "BG" }
         const sr_country = { name: "Serbia", currency: "RSD", code: "SR" }
@@ -645,7 +645,7 @@ export class SingleLambdaTestDataGeneratorManager extends BaseDynamoItemManager<
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         proc.arguments.total_events = 54 + (proc.arguments.touristsToCreate || 0)
-        proc.arguments.start_date = Date.now()
+        proc.arguments.start_date = new Date().toISOString()
         return proc
     }
 

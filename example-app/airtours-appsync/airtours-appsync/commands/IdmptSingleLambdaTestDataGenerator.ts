@@ -24,7 +24,7 @@ export class IdmptSingleLambdaTestDataGenerator {
     public processed_events: number = 0
     public succsess?: number
     public error?: number
-    public start_date?: number
+    public start_date?: string
     public end_date?: number
     public on_finish?: string[] = ['Proc__produce_tourists_csv','Proc__send_welcome_email']
 
@@ -70,7 +70,7 @@ export class IdmptSingleLambdaTestDataGenerator {
     }
 
     public async start(__type: string, args: AartsEvent) {
-        this.start_date = Date.now()
+        this.start_date = new Date().toISOString()
 
         const alreadyProcessed = await queryItems({
             ddbIndex: "smetadata__meta",
@@ -952,7 +952,7 @@ export class IdmptSingleLambdaTestDataGeneratorManager extends BaseDynamoItemMan
         const errors: string[] = []
         // can apply some domain logic on permissions, authorizations etc
         proc.arguments.total_events = 54 + (proc.arguments.touristsToCreate || 0)
-        proc.arguments.start_date = Date.now()
+        proc.arguments.start_date = new Date().toISOString()
         return proc
     }
 

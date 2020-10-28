@@ -1,8 +1,8 @@
 import cdk = require('@aws-cdk/core');
-import { Function} from '@aws-cdk/aws-lambda';
+import { Function } from '@aws-cdk/aws-lambda';
 import { AuthorizationType, GraphqlApi, UserPoolDefaultAction } from '@aws-cdk/aws-appsync';
 import { CognitoConstruct } from './cognitoConstruct';
-import { clientAppName } from "../aarts-all-infra-stack"
+import { clientAppDirName, clientAppName } from "../aarts-all-infra-stack"
 
 export interface AppSyncConstructProps {
     cognitoConstruct: CognitoConstruct
@@ -40,9 +40,52 @@ export class AppSyncConstruct extends cdk.Construct {
         // ((this.graphQLApi.node.defaultChild as CfnGraphQLApi).additionalAuthenticationProviders as Array<CfnGraphQLApi.AdditionalAuthenticationProviderProperty>).push({
         //     authenticationType: 'AWS_IAM',
         // });
+        this.graphQLApi.schema.definition = gqlSchemaTemplate
+            .replace(/##MUTATION##/g, "")
+            .replace(/##QUERY##/g, "")
+            .replace(/##SUBSCRIPTION##/g, "")
+            .replace(/##DOMAINTYPE##/g, "")
 
-        this.graphQLApi.schema.definition = `
+        //         this.graphQLApi.schema.definition = `
 
+        // schema {
+        //     query: Query
+        //     mutation: Mutation
+        //     subscription: Subscription
+        // }
+
+        // type Mutation {
+        //     start(item: String!, payload: AWSJSON): AWSJSON
+        //     create(item: String!, payload: AWSJSON!): AWSJSON
+        //     update(item: String!, payload: AWSJSON!): AWSJSON
+        //     delete(item: String!, payload: AWSJSON!): AWSJSON
+        //     feed(item: String!, action: String!, identity: String!, ringToken: String!, eventSource: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
+        // }
+
+        // type Query {
+        //     get(item: String, payload: AWSJSON!): AWSJSON 
+        //     query(item: String, payload: AWSJSON!): AWSJSON
+        // }
+
+        // type Subscription {
+        //     inbox(item: String, action: String, identity: String, ringToken: String, eventSource: String): Notification @aws_subscribe(mutations: ["feed"])
+        // }
+
+        // type Notification @aws_iam @aws_cognito_user_pools{
+        //     item: String!
+        //     action: String!
+        //     identity: String!
+        //     ringToken: String!
+        //     eventSource: String!
+        //     body: String!
+        //     sentAt: String!
+        // }
+        // `
+    }
+}
+
+const gqlSchemaTemplate =
+    `
 schema {
     query: Query
     mutation: Mutation
@@ -55,15 +98,21 @@ type Mutation {
     update(item: String!, payload: AWSJSON!): AWSJSON
     delete(item: String!, payload: AWSJSON!): AWSJSON
     feed(item: String!, action: String!, identity: String!, ringToken: String!, eventSource: String!, body: String!): Notification @aws_iam @aws_cognito_user_pools
+
+    ##MUTATION##
 }
 
 type Query {
     get(item: String, payload: AWSJSON!): AWSJSON 
     query(item: String, payload: AWSJSON!): AWSJSON
+
+    ##QUERY##
 }
 
 type Subscription {
     inbox(item: String, action: String, identity: String, ringToken: String, eventSource: String): Notification @aws_subscribe(mutations: ["feed"])
+
+    ##SUBSCRIPTION##
 }
 
 type Notification @aws_iam @aws_cognito_user_pools{
@@ -75,6 +124,6 @@ type Notification @aws_iam @aws_cognito_user_pools{
     body: String!
     sentAt: String!
 }
+
+##DOMAINTYPE##
 `
-    }
-}

@@ -1,8 +1,0 @@
-{
-    "action": "start",
-    "item": "TestDataGenSingleLambda",
-    "arguments": {},
-    "identity": {
-        "username": "testuser"
-    }
-}
