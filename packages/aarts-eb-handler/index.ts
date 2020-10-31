@@ -75,7 +75,7 @@ export const processPayload = async (input: AartsEvent, context?: Context): Prom
 		!processor.done && (await publish(prepareAartsEventForDispatch(Object.assign({}, input, { payload: { resultItems: processor.value.payload.resultItems, identity: input.payload.identity } }))))
 	} while (!processor.done)
 
-	!process.env.DEBUGGER || loginfo("returning from AartsSQSHandler.processPayload " + processor.value)
+	!process.env.DEBUGGER || loginfo("returning from AartsSQSHandler.processPayload", processor.value)
 
 	return Object.assign({}, input, { payload: { resultItems: processor.value.payload.resultItems, identity: input.payload.identity } })
 }

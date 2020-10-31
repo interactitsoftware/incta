@@ -100,7 +100,8 @@ export class _specs_DataImporterItem extends DynamoItem(_specs_DataImporter, "Pr
 
 export class _specs_EraseDataItem extends DynamoItem(_specs_EraseData, "Proc__EraseData", [
     {key: "start_date"},
-    {key: "end_date"},
+    {key: "async_end_date"},
+    {key: "sync_end_date"},
 ]) {}
 
 // example item, hat allows for custom queries, i.e its Manager overwrites directly the query method

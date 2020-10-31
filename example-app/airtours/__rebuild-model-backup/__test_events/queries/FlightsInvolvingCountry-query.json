@@ -1,6 +1,6 @@
 {
-    "action": "start",
-    "item": "TestDataGenSingleLambda",
+    "action": "query",
+    "item": "FlightsInvolvingCountry",
     "arguments": {},
     "identity": {
         "username": "testuser"

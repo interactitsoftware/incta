@@ -4,7 +4,6 @@ import { _specs_Flight } from "./Flight";
 import { _specs_Airplane, _specs_AirplaneModel, _specs_AirplaneManifacturer } from "./Airplane";
 import { _specs_Country } from "./Country";
 import { _specs_Tourist } from "./Tourist";
-import { _specs_DataImporter } from "./DataImporter";
 import { _specs_TouristSeason } from "./TouristSeason";
 import { _specs_Invoice } from "./Invoice";
 import { _specs_Order } from "./Order";
@@ -90,12 +89,6 @@ export class _specs_InvoiceItem extends DynamoItem(_specs_Invoice, __type__Invoi
 
 export class _specs_OrderItem extends DynamoItem(_specs_Order, __type__Order, [
     {key: "invoice", unique: true}
-]) { }
-
-// Concept of persisting "procedures" has been removed, better would be to have this on a higher level not in this library - OBSOLATE, procedure concept included and evolved, this particular proc is bit obsolate
-export class _specs_DataImporterItem extends DynamoItem(_specs_DataImporter, "Proc__AirtoursDataImporter", [
-    {key: "exit_code"},
-    {key: "date_started"},
 ]) { }
 
 export class _specs_EraseDataItem extends DynamoItem(_specs_EraseData, "Proc__EraseData", [

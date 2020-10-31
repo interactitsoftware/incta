@@ -1,4 +1,5 @@
- # Example app
+ # This App Is obsolate, in favor of aarts-create-app and aarts-model-builder
+ ## left here as some code is still a useful refenrence
  
 #### in order to run the example you need only this folder. There are now npm packages for aarts-* specific code
 ##### TODO consider a separate repo

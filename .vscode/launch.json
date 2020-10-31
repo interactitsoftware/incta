@@ -2,6 +2,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Airtours example app Tests",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}/example-app/airtours",
+            "program": "${workspaceRoot}/example-app/airtours/node_modules/jest/bin/jest.js",
+            "args": [
+                "--runInBand",
+                "--testNamePattern",
+                ""
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "openOnFirstSessionStart",
+        },
+        {
             "name": "Dynamodb Tests",
             "type": "node",
             "request": "launch",

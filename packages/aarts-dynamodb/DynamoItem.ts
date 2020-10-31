@@ -40,6 +40,14 @@ export const DynamoItem =
              * id of last event that modified the record
              */
             public ringToken?: string
+            /**
+             * processing errors, could be overwriten in client apps
+             */
+            public processingMessages?: {
+                severity: string,
+                message: string,
+                properties: string
+            }[]
         }
 
         return DynamoItem

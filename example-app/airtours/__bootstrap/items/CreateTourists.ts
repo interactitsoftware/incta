@@ -1,6 +1,7 @@
 import { DynamoCommandItem } from "aarts-item-manager/BaseItemManager"
 export class CreateTourists  extends DynamoCommandItem {
     constructor(...args: any[]) { super(args) }
+    public useNamesLength?: number
     public touristsToCreate?: number
     public fname?: string
     public lname?: string

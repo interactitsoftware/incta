@@ -7,6 +7,7 @@
         "fname": "abc",
         "lname": "abc",
         "id_card": 5,
+        "iban": "abc",
         "tourist_season": "abc",
         "ticket_type": "abc",
         "airplane": "abc",

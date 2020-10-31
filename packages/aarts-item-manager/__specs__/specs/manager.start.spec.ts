@@ -1,11 +1,11 @@
-import { _specs_AirplaneItem, _specs_DataImporterItem, _specs_FlightItem, _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
+import { _specs_AirplaneItem, _specs_FlightItem, _specs_AirplaneManifacturerItem, _specs_AirplaneModelItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 import { clearDynamo } from "aarts-dynamodb/__specs__/testutils"
 import { _specs_Airplane } from "aarts-dynamodb/__specs__/testmodel/Airplane"
 
 import { dynamoDbClient, DB_NAME } from "aarts-dynamodb"
 import { ScanOutput } from "aws-sdk/clients/dynamodb"
-import { _specs_DataImporter } from "aarts-dynamodb/__specs__/testmodel/DataImporter"
 import { domainAdapter } from "../testmodel/itemManagersMap"
+import { _specs_DataImporterItem } from "../testmodel/_DynamoItems"
 
 describe('manager.start', () => {
 

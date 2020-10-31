@@ -10,6 +10,12 @@ import { DynamoItem } from './DynamoItem';
 
 export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, itemUpdates: Partial<T>, __item_refkeys: RefKey<T>[]): Promise<T> => {
 
+    //#region DEBUG msg
+    !process.env.DEBUGGER || loginfo('START TransactUpdateItem')
+    !process.env.DEBUGGER || loginfo('existing item ', existingItem)
+    !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
+    //#endregion
+
     // --> check for any refs loaded and unload them before updating starts
     const itemRefs = __item_refkeys.filter(k => !!k.ref).map(k => k.ref)
     for (const prop in Object.keys(itemUpdates)) {
@@ -70,8 +76,6 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
             }, {})
 
     //#region DEBUG msg
-    !process.env.DEBUGGER || loginfo('existing item ', existingItem)
-    !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
     !process.env.DEBUGGER || loginfo("drevisionsUpdates ", drevisionsUpdates)
     !process.env.DEBUGGER || loginfo("ditemUpdates ", ditemUpdates)
     !process.env.DEBUGGER || loginfo("dKeysToDelete ", dKeysToDelete)

@@ -5,8 +5,8 @@ A very rough analogy for `aarts-dynamodb` would be: "this is the mongoose in mon
 
 ## Opinion of the Author
 
-When building a generic library on top of dynamo, you presumably do not know anything about the specific use case, thus the specific access patterns. I.e all the relational joins needed, which (when having in mind specific business case) may be implemented by storing data into application-defined partions(employee partition, order partition etc) are not possible. I.e, when you do not know the specific use case, you cannot define a partition, say with a PK=employee_1. That's why for aarts-dynamodb, __in the table__ (remark* - in the table), each item has its own partition. The only things that can reside in an item's partition (remark* again - speaking about __the table__) are its previous versions, and the various copies of the most current version, which enable querying and access patterns.
-We have to recall that this is a generic library, so query and access patterns are __defined on an application level__ - by the client that uses the generic library. 
+When building a generic library on top of dynamo, you presumably do not know anything about the specific use case, thus the specific access patterns. I.e all the relational joins needed, which (when having in mind specific business case) may be implemented by storing data into application-defined partions(employee partition, order partition etc) are not possible. I.e, when you do not know the specific use case, you cannot define a partition, say with a PK=employee_1. That's why for aarts-dynamodb, __in the table__ (remark* - in the table), each item has its own partition. The only things that can reside in an item's partition (remark* again - speaking about __the table__) are its previous versions, and the various refkeys/copies of the most current version, which enable querying and access patterns.
+We have to recall that this is a generic library, so query and access patterns are __defined on an application level__ - by the client that uses the generic library.
 
 The various copies of the most recent item's version are always maintained consistent with the original (v_0) item by employing per item transactions.
 Using thransactions on an item level, requires us to define a higher level unit of work, "procedure" - a procedure will be comprosed of multiple events for CRUD over items, and should be eventually consistent - ensured by the client application logic. Aarts-dynamodb will only take care of registering events comming from different procedures (will perform base aggregations)
@@ -102,6 +102,7 @@ example NOT OK limits
 
 
 # Improve (TODOs)
+- reuse test objects from aarts-dynamodb and leave only command/query objects here
 - implement functionality around the `ref` property of a refkey - all specified refkeys to be loaded, with their full contents to be able to be returned, by a single request (currently only their ids are returned)
 - consider filling smetadata key on the main item level (v_0) with the item's id. This way, the first reverse GSI lookup (PK|RANGE<->RANGE|PK) can be utilized from the GSI meta__smetadata, eliminating the need of the 5th GSI meta__id (verify other functionality will operate as before!)
 - Improve higher level (Managers) querying ease of use

@@ -16,12 +16,16 @@ import { AppSyncEvent } from "aarts-eb-types"
 import { controller } from "aarts-eb-dispatcher"
 import { processPayload } from "aarts-eb-handler";
 
+/**
+ * NOTE constructor does nothing here
+ * Do not instantiate directly, Rather instantiate corresp command item
+ */
 export class DynamoCommandItem {
     constructor(...args: any[]) { }
     total_events: number = 0
-    start_date?: Date
-    sync_end_date?: Date
-    async_end_date?: Date
+    start_date?: string
+    sync_end_date?: string
+    async_end_date?: string
     processed_events?: number
 }
 
@@ -174,19 +178,20 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             //#endregion
             let procedureResult
             try {
-                const start = new Date()
+                const startDate = new Date()
                 procedureResult = await this.execute(__type, args)
                 procedureResult.total_events = this.eventsForAsyncProcessing.length
-                procedureResult.start_date = start
+                procedureResult.start_date = startDate.toISOString()
                 if (this.eventsForAsyncProcessing.length > 0) {
                     if (!process.env["AWS_SAM_LOCAL"]) {
                         // used runtime in aws
                         for (const chunk of chunks(this.eventsForAsyncProcessing, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
                             console.log("procedure: " + procedure.id)
                             await controller({
-                                "action": "x",//may not be necessary here ?
-                                "item": "x",//may not be necessary here ?
-                                "jobType": "long", //may not be necessary here ?
+                                //"x" values not necessary here. Can it be deleted or for typescript not complaining to leave it ?
+                                "action": "x",
+                                "item": "x",
+                                "jobType": "long", 
                                 "ringToken": procedure.ringToken as string,
                                 "arguments": chunk.map(c => {
                                     Object.assign(c, { ringToken: procedure.ringToken })
@@ -198,7 +203,6 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                                     } else {
                                         Object.assign(c.arguments, { procedure: procedure.id, ringToken: procedure.ringToken })
                                     }
-                                    console.log("IN TA++THA LOOP " + ppjson(c))
                                     return c
                                 }),
                                 "identity": {
@@ -233,18 +237,21 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             } finally {
                 //#region saving state AFTER procedure ended
                 if (procedureResult) {
-                    delete procedureResult["processed_events"] // important to remove this as it was asynchronously modified from other events
+                    delete procedureResult["processed_events"] // important to remove this as it may be already asynchronously modified in db from other events
+                    if (!procedureResult.total_events){
+                        procedureResult.item_state = 'success'
+                    }
                 }
-                // if a procedure is not firing any events it must set the success property itself?
                 // load latest procedure contents
                 // TODO what if async update of procedure sneak in between getting from db and the consequent update? retries?
                 const P__from_db = await getItemById(procedure.__typename, procedure.id)
+                console.log("WILL SAVE PRIOR STARTING ", ppjson(procedureResult))
                 if (!!P__from_db && !!P__from_db[0]) {
                     await transactUpdateItem(
                         P__from_db[0],
                         // procedure,
                         {
-                            synchronours_end_date: new Date().toISOString(),
+                            sync_end_date: new Date().toISOString(),
                             ...procedureResult,
                             revisions: P__from_db[0].revisions
                         },

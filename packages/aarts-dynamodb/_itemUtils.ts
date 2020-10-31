@@ -42,25 +42,29 @@ export const getItemsOfType = async <T extends DynamoItem>(__type: string) => {
     } else return [] as T[]
 }
 
-export const setItemRefkeyToPayload = async (__type: string, payload: DomainItem, refkeyName: string, errorsArray: string[]) => {
-    //examine payload's country property for assigning it to the domain item to be created
+export const setItemRefkeyToPayload = async (__type: string, payload: DomainItem, refkeyName: string, errorsArray: string[]) : Promise<boolean> => {
+    //examine payload's 'refkeyName' property for assigning it to the 'payload', which would be used for domain item creation
     // if no refkeyName prop in payload -> pass successful
-    // if refkeyName prop exists try loading by id, 
+    // if refkeyName prop exists try loading by id, if success, return true
     // if above fails, try loading by payload[refkeyName], i.e try locating a refkey with this value on the target item,
-    // if both attempts fail -> push error to array
-    if (!!payload.country) {
+    // if both attempts fail -> push error to array (if present) and return false
+    if (!!payload[refkeyName]) {
         const itemByIdResults = await getItemById(__type, payload[refkeyName])
         if (itemByIdResults.length === 1) {
-            payload.item = itemByIdResults[0].id
+            payload[refkeyName] = itemByIdResults[0].id
+            return true
         } else {
             const itemByNameResults = await getItemsByRefkeyValue(__type, refkeyName, payload[refkeyName])
             if (itemByNameResults.length === 1) {
-                payload.item = itemByNameResults[0].id
+                payload[refkeyName] = itemByNameResults[0].id
+                return true
             } else if (itemByNameResults.length > 1){
-                errorsArray.push(`[Refkey set] failed, because provided value ${payload[refkeyName]} for refkey ${refkeyName} points to multiple items and cannot take decision`)
+                errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because provided value ${payload[refkeyName]} for refkey ${refkeyName} points to multiple items and cannot take decision`)
             } else if (itemByNameResults.length === 0) {
-                errorsArray.push(`[Refkey set] failed, because provided value ${payload[refkeyName]} for refkey ${refkeyName} was not found`)
+                errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because provided value ${payload[refkeyName]} for refkey ${refkeyName} was not found`)
             }
         }
     }
+    payload[refkeyName] = undefined
+    return false
 }

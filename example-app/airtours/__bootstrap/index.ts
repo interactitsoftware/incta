@@ -18,12 +18,9 @@ import { TouristSeasonItem } from "./_DynamoItems"
 import { InvoiceItem } from "./_DynamoItems"
 import { OrderItem } from "./_DynamoItems"
 import { EraseDataItem } from "./_DynamoItems"
-import { TestDataGenSingleLambdaItem } from "./_DynamoItems"
-import { TestDataGenSingleLambdaIdmptItem } from "./_DynamoItems"
-import { TestDataGenMultipleLambdaIdmptItem } from "./_DynamoItems"
-import { TestDataGenMultipleLambdaIdmptChunksItem } from "./_DynamoItems"
-import { TestDataGenMultipleLambdaItem } from "./_DynamoItems"
+import { TestDataGeneratorItem } from "./_DynamoItems"
 import { CreateTouristsItem } from "./_DynamoItems"
+import { CreateTouristsProperlyItem } from "./_DynamoItems"
 import { GenerateInvoicesItem } from "./_DynamoItems"
 import { FlightsInvolvingCountryItem } from "./_DynamoItems"
 
@@ -38,12 +35,9 @@ import { TouristSeasonDomain } from "../domain/TouristSeasonDomain"
 import { InvoiceDomain } from "../domain/InvoiceDomain"
 import { OrderDomain } from "../domain/OrderDomain"
 import { EraseDataCommand } from "../commands/EraseDataCommand"
-import { TestDataGenSingleLambdaCommand } from "../commands/TestDataGenSingleLambdaCommand"
-import { TestDataGenSingleLambdaIdmptCommand } from "../commands/TestDataGenSingleLambdaIdmptCommand"
-import { TestDataGenMultipleLambdaIdmptCommand } from "../commands/TestDataGenMultipleLambdaIdmptCommand"
-import { TestDataGenMultipleLambdaIdmptChunksCommand } from "../commands/TestDataGenMultipleLambdaIdmptChunksCommand"
-import { TestDataGenMultipleLambdaCommand } from "../commands/TestDataGenMultipleLambdaCommand"
+import { TestDataGeneratorCommand } from "../commands/TestDataGeneratorCommand"
 import { CreateTouristsCommand } from "../commands/CreateTouristsCommand"
+import { CreateTouristsProperlyCommand } from "../commands/CreateTouristsProperlyCommand"
 import { GenerateInvoicesCommand } from "../commands/GenerateInvoicesCommand"
 import { FlightsInvolvingCountryQuery } from "../queries/FlightsInvolvingCountryQuery"
 
@@ -59,12 +53,9 @@ allItems.set(TouristSeasonItem.__type, TouristSeasonItem)
 allItems.set(InvoiceItem.__type, InvoiceItem)
 allItems.set(OrderItem.__type, OrderItem)
 allItems.set(EraseDataItem.__type, EraseDataItem)
-allItems.set(TestDataGenSingleLambdaItem.__type, TestDataGenSingleLambdaItem)
-allItems.set(TestDataGenSingleLambdaIdmptItem.__type, TestDataGenSingleLambdaIdmptItem)
-allItems.set(TestDataGenMultipleLambdaIdmptItem.__type, TestDataGenMultipleLambdaIdmptItem)
-allItems.set(TestDataGenMultipleLambdaIdmptChunksItem.__type, TestDataGenMultipleLambdaIdmptChunksItem)
-allItems.set(TestDataGenMultipleLambdaItem.__type, TestDataGenMultipleLambdaItem)
+allItems.set(TestDataGeneratorItem.__type, TestDataGeneratorItem)
 allItems.set(CreateTouristsItem.__type, CreateTouristsItem)
+allItems.set(CreateTouristsProperlyItem.__type, CreateTouristsProperlyItem)
 allItems.set(GenerateInvoicesItem.__type, GenerateInvoicesItem)
 allItems.set(FlightsInvolvingCountryItem.__type, FlightsInvolvingCountryItem)
 
@@ -81,12 +72,9 @@ const allItemManagers = {
     [InvoiceItem.__type]: new InvoiceDomain(allItems),
     [OrderItem.__type]: new OrderDomain(allItems),
     [EraseDataItem.__type]: new EraseDataCommand(allItems),
-    [TestDataGenSingleLambdaItem.__type]: new TestDataGenSingleLambdaCommand(allItems),
-    [TestDataGenSingleLambdaIdmptItem.__type]: new TestDataGenSingleLambdaIdmptCommand(allItems),
-    [TestDataGenMultipleLambdaIdmptItem.__type]: new TestDataGenMultipleLambdaIdmptCommand(allItems),
-    [TestDataGenMultipleLambdaIdmptChunksItem.__type]: new TestDataGenMultipleLambdaIdmptChunksCommand(allItems),
-    [TestDataGenMultipleLambdaItem.__type]: new TestDataGenMultipleLambdaCommand(allItems),
+    [TestDataGeneratorItem.__type]: new TestDataGeneratorCommand(allItems),
     [CreateTouristsItem.__type]: new CreateTouristsCommand(allItems),
+    [CreateTouristsProperlyItem.__type]: new CreateTouristsProperlyCommand(allItems),
     [GenerateInvoicesItem.__type]: new GenerateInvoicesCommand(allItems),
     [FlightsInvolvingCountryItem.__type]: new FlightsInvolvingCountryQuery(allItems),
 
@@ -97,5 +85,7 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
     public itemManagerCallbacks = allItemManagers
 }
 global.domainAdapter = new DomainAdapter()
+
+export const domainAdapter = global.domainAdapter
 
 export { controller, worker, feeder, dynamoEventsAggregation, dynamoEventsCallback }

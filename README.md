@@ -49,17 +49,8 @@ Performance is of highest prioirity, however significant further cost and data m
 [git 2fa with wsl2](https://gist.github.com/evillgenius75/613a44aa407300a08d0e3faea4c9df6b)
 [Linux GUI apps with wsl2](https://techcommunity.microsoft.com/t5/windows-dev-appconsult/running-wsl-gui-apps-on-windows-10/ba-p/1493242)
 [Linux GUI appImage with wsl2](https://discourse.appimage.org/t/run-appimage-on-windows/177)
+[dynamo marshaller](https://awslabs.github.io/dynamodb-data-mapper-js/packages/dynamodb-data-marshaller/)
+[sns-sqs and dlqs](https://aws.amazon.com/blogs/compute/designing-durable-serverless-apps-with-dlqs-for-amazon-sns-amazon-sqs-aws-lambda/)
 
-This is a monorepo, home of multiple npm packages:
-- `aarts-types`
-- `aarts-dynamodb`
-- `aarts-dynamodb-events`
-- `aarts-handler`
-- `aarts-eb-types`
-- `aarts-eb-notifier`
-- `aarts-eb-handler`
-- `aarts-eb-dispatcher`
-
-It also hosts example apps with the intention to demonstrate how above npm packages can work toghether
 
 

@@ -1,28 +1,24 @@
 import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
-import { AirplaneItem, AirplaneManifacturerItem, AirplaneModelItem, AirportItem, CountryItem, FlightItem, TestDataGenMultipleLambdaIdmptChunksItem, TouristItem, TouristSeasonItem } from "../__bootstrap/_DynamoItems"
+import { AirplaneItem, AirplaneManifacturerItem, AirplaneModelItem, AirportItem, CountryItem, FlightItem, TestDataGeneratorItem, TouristItem, TouristSeasonItem } from "../__bootstrap/_DynamoItems"
 import { AartsEvent, AartsPayload, IIdentity, IItemManager } from "aarts-types/interfaces"
+import { queryItems, DynamoItem } from "aarts-dynamodb"
 import { processPayload } from "aarts-eb-handler"
-import { DynamoItem, queryItems } from "aarts-dynamodb"
-import { controller } from "aarts-eb-dispatcher"
-import { chunks } from "aarts-utils"
-import { names } from "./random-names/names"
+import { uuid } from "aarts-utils"
 import { TouristSeason } from "../__bootstrap/items/TouristSeason"
+import { names } from "./random-names/names"
 
 
-export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemManager<TestDataGenMultipleLambdaIdmptChunksItem> {
+export class TestDataGeneratorCommand extends BaseDynamoItemManager<TestDataGeneratorItem> {
 
     /**
     * Command parameters preparation and/or validation
     */
-    async *validateStart(proc: AartsPayload<TestDataGenMultipleLambdaIdmptChunksItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        proc.arguments.start_date = new Date().toISOString()
-
-        const errors: string[] = []
+    async *validateStart(proc: AartsPayload<TestDataGeneratorItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
 
         // here you can apply further domain logic on permissions, authorizations etc
-
+        const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Start TestDataGenMultipleLambdaIdmptChunks Failed` }, errors] }
+            yield { resultItems: [{ message: `Start TestDataGenerator Failed` }, errors] }
             throw new Error(`${errors.join(";;")}`)
         }
 
@@ -31,9 +27,9 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
     }
 
     /**
-    * Command Implementation
-    */
-    async execute(__type: string, args: AartsEvent): Promise<TestDataGenMultipleLambdaIdmptChunksItem> {
+* Command Implementation
+*/
+    async execute(__type: string, args: AartsEvent): Promise<TestDataGeneratorItem> {
 
         const alreadyProcessed = await queryItems({
             ddbIndex: "smetadata__meta",
@@ -479,7 +475,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -505,7 +501,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -526,7 +522,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -547,7 +543,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -568,7 +564,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -589,7 +585,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -610,7 +606,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -631,7 +627,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -652,7 +648,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -673,7 +669,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -694,7 +690,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -715,7 +711,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -736,7 +732,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -757,7 +753,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -778,7 +774,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -799,7 +795,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -820,7 +816,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -841,7 +837,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -863,7 +859,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
@@ -884,14 +880,15 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             const fn = names[~~(Math.random() * namesLenght)]
             const ln = names[~~(Math.random() * namesLenght)]
             let id_card = 0
-            for (const ch of `${fn}${ln}`) {
+            for (const ch of `${uuid()}`) { // NOTE: was `${fn}${ln}`) { // this can cause uq constraint errors
                 id_card += ch.charCodeAt(0)
             }
             await this.eventsForAsyncProcessing.push({
                 "action": "create",
                 "item": TouristItem.__type,
                 "arguments": {
-                    id_card: id_card,
+                    // some random id card. NOTE still possible for large nr of tourists to generate same id_card, in this case second insert will be error as id_card is set to be unique
+                    id_card: id_card + ~~(Math.random()*10000), 
                     fname: fn,
                     lname: ln,
                     ticket_type: ["class_1", "class_2", "vip"][~~(Math.random() * 3)],
@@ -901,7 +898,7 @@ export class TestDataGenMultipleLambdaIdmptChunksCommand extends BaseDynamoItemM
             })
         }
 
-        return args.payload.arguments as TestDataGenMultipleLambdaIdmptChunksItem
+        return args.payload.arguments as TestDataGeneratorItem
     }
 
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {

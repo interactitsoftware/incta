@@ -1,25 +1,31 @@
-import { chunks } from "aarts-utils"
+import { chunks, ppjson } from "aarts-utils"
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces";
 import { WriteRequest, ScanOutput } from "aws-sdk/clients/dynamodb";
 import { _specs_EraseDataItem } from "./_DynamoItems";
-import { BaseDynamoItemManager } from "../../BaseItemManager";
+import { BaseDynamoItemManager, DynamoCommandItem } from "../../BaseItemManager";
 import { DB_NAME, dynamoDbClient } from "aarts-dynamodb";
 
-export class _specs_EraseData {
+export class _specs_EraseData  extends DynamoCommandItem {
+    
+}
 
-    // todo employ these props, wrap clearDynamo in try catch if error record it in the props, so it goes to dynamo for auditing
-    public total_events: number = 0
-    public succsess?: number
-    public error?: number
-    public processed_events?: boolean
-    public start_date?: string
-    public end_date?: number
+export class _specs_EraseDataManager extends BaseDynamoItemManager<_specs_EraseDataItem> {
 
-    public async start(__type: string, args: AartsEvent) {
+    async *validateStart(proc: AartsPayload<_specs_EraseDataItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+        console.log("VALIDATE STARTING " + ppjson(proc))
+        const errors: string[] = []
+        // can apply further domain logic on permissions, authorizations etc
+        // if this method returns without throwing error, the execute method will be called 
 
-        await clearDynamo();
+        proc.arguments.start_date = new Date().toISOString()
+        return proc
+    }
 
-        return null; // ->> when we are erasing dynamo we want a clear dynamo db so we are not saving state of this procedure
+    async execute(__type: string, args: AartsEvent): Promise<_specs_EraseDataItem> {
+
+        await clearDynamo()
+
+        return args.payload.arguments as _specs_EraseDataItem
     }
 }
 

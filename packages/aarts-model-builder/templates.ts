@@ -82,12 +82,9 @@ export class ##ITEM##Command extends BaseDynamoItemManager<##ITEM##Item> {
     * Command parameters preparation and/or validation
     */
     async *validateStart(proc: AartsPayload<##ITEM##Item>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        proc.arguments.start_date = new Date().toISOString()
-
-        const errors: string[] = []
 
         // here you can apply further domain logic on permissions, authorizations etc
-        
+        const errors: string[] = []
         if (errors.length > 0) {
             yield { resultItems: [{ message: \`Start ##ITEM## Failed\` }, errors] }
             throw new Error(\`\${errors.join(";;")}\`)

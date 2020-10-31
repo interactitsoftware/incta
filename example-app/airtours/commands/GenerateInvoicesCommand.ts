@@ -9,12 +9,9 @@ export class GenerateInvoicesCommand extends BaseDynamoItemManager<GenerateInvoi
     * Command parameters preparation and/or validation
     */
     async *validateStart(proc: AartsPayload<GenerateInvoicesItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        proc.arguments.start_date = new Date().toISOString()
-
-        const errors: string[] = []
 
         // here you can apply further domain logic on permissions, authorizations etc
-        
+        const errors: string[] = []
         if (errors.length > 0) {
             yield { resultItems: [{ message: `Start GenerateInvoices Failed` }, errors] }
             throw new Error(`${errors.join(";;")}`)

@@ -1,11 +1,12 @@
 import { seedAirtoursData } from "./testDataSeeder"
 import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces"
-import { BaseDynamoItemManager } from "../../BaseItemManager"
+import { BaseDynamoItemManager, DynamoCommandItem } from "../../BaseItemManager"
 import { _specs_AirportItem, _specs_DataImporterItem } from "./_DynamoItems"
 import { ppjson } from "aarts-utils"
 
-export class _specs_DataImporter {
+export class _specs_DataImporter extends DynamoCommandItem {
     constructor(...args: any[]) {
+        super()
         // client domain items left with a requirement to have a rest constructor,
         // however below code is executed already on a DynamoItem level,
         // and having it here again will cause a nested object with same props
@@ -17,12 +18,6 @@ export class _specs_DataImporter {
         //     return accum
         // },{}))
     }
-    total_events: number = 0
-    start_date?: Date
-    sync_end_date?: Date
-    async_end_date?: Date
-    processed_events?: number
-    errors?: string[]
 }
 
 
@@ -41,8 +36,6 @@ export class _specs_DataImporterManager extends BaseDynamoItemManager<_specs_Dat
     async execute(__type: string, args: AartsEvent): Promise<_specs_DataImporterItem> {
 
         await seedAirtoursData()
-
-
 
         return args.payload.arguments as _specs_DataImporterItem
     }

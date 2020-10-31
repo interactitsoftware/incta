@@ -1,6 +1,6 @@
 {
     "action": "start",
-    "item": "TestDataGenMultipleLambdaIdmptChunks",
+    "item": "GenerateInvoices",
     "arguments": {},
     "identity": {
         "username": "testuser"

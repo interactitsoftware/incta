@@ -127,7 +127,12 @@ export function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemU
             {}
         )
 }
-
+/**
+ * 
+ * item TODO support complex objects, string->dates conversiong etc
+ * start here
+ * https://awslabs.github.io/dynamodb-data-mapper-js/packages/dynamodb-data-marshaller/
+ */
 export const fromAttributeMap = <T>(item: AttributeMap | undefined) => DynamoDB.Converter.unmarshall(
     item || {},
     dynamoDbConverterOptions
@@ -169,7 +174,7 @@ export const ddbRequest = async (
     request.on('error', (response, httpResponse) => {
         console.error(`${process.env.ringToken}: Error calling dynamo: ${ppjson(response)}`);
         try {
-            cancellationReasons = JSON.parse(httpResponse.httpResponse.body.toString()).CancellationReasons;
+            cancellationReasons = JSON.parse(httpResponse.httpResponse && httpResponse.httpResponse.body && httpResponse.httpResponse.body.toString()).CancellationReasons;
             console.log(cancellationReasons, ppjson(cancellationReasons))
         } catch (err) {
             // suppress this just in case some types of errors aren't JSON parseable

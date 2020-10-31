@@ -3,6 +3,7 @@ export class Tourist {
     fname?: string
     lname?: string
     id_card?: number
+    iban?: string
     tourist_season?: string
     ticket_type?: string
     airplane?: string

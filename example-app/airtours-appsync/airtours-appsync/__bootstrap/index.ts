@@ -15,7 +15,7 @@ import {
     // -- defined on a aarts-dynamodb/_specs_ level
     AirplaneItem, CountryItem, CityItem, PilotItem, AirportItem,
     AirplaneManifacturerItem, AirplaneModelItem, FlightItem,
-    TouristItem, TouristSeasonItem, InvoiceItem, OrderItem, DataImportProcedure, EraseDataProcedure,
+    TouristItem, TouristSeasonItem, InvoiceItem, OrderItem, EraseDataProcedure,
     // defined in this lib
     MultipleLambdaTestDataGeneratorItem,
     SingleLambdaTestDataGeneratorItem,
@@ -47,7 +47,6 @@ allItems.set(InvoiceItem.__type, InvoiceItem)
 allItems.set(OrderItem.__type, OrderItem)
 allItems.set(CityItem.__type, CityItem)
 allItems.set(PilotItem.__type, PilotItem)
-allItems.set(DataImportProcedure.__type, DataImportProcedure)
 allItems.set(EraseDataProcedure.__type, EraseDataProcedure)
 allItems.set(SingleLambdaTestDataGeneratorItem.__type, SingleLambdaTestDataGeneratorItem)
 allItems.set(MultipleLambdaTestDataGeneratorItem.__type, MultipleLambdaTestDataGeneratorItem)
@@ -71,7 +70,6 @@ const allItemManagers = {
     [TouristSeasonItem.__type]: new BaseDynamoItemManager(allItems),
     [InvoiceItem.__type]: new BaseDynamoItemManager(allItems),
     [OrderItem.__type]: new BaseDynamoItemManager(allItems),
-    [DataImportProcedure.__type]: new BaseDynamoItemManager(allItems),
     [EraseDataProcedure.__type]: new BaseDynamoItemManager(allItems),
     //defined here
     //items

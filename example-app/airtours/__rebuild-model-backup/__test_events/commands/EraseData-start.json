@@ -1,6 +1,6 @@
 {
     "action": "start",
-    "item": "TestDataGenMultipleLambdaIdmpt",
+    "item": "EraseData",
     "arguments": {},
     "identity": {
         "username": "testuser"
