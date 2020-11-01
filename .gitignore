@@ -2,3 +2,4 @@
 **/dist
 **/coverage
 **/aarts-test-app
+**/__rebuild-model-backup
