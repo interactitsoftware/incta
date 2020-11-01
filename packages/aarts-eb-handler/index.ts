@@ -16,8 +16,8 @@ export const worker = async (message: SQSEvent, context: Context): Promise<any> 
 					item: record.messageAttributes["item"].stringValue as string,
 					action: record.messageAttributes["action"].stringValue as IItemManagerKeys,
 					ringToken: record.messageAttributes["ringToken"].stringValue as string,
-					eventSource: record.messageAttributes["eventSource"].stringValue as string
-
+					eventSource: record.messageAttributes["eventSource"].stringValue as string,
+					sqsMsgId: record.messageId
 				}
 			})
 		!process.env.DEBUGGER || loginfo('parsed aartsEvent from SQS is ', aartsEvent)

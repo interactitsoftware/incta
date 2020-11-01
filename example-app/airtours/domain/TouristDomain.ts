@@ -1,10 +1,10 @@
 import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { DdbGetInput, DdbQueryInput } from "aarts-dynamodb/interfaces"
-import { TouristItem } from "../__bootstrap/_DynamoItems"
+import { AirplaneItem, AirportItem, CountryItem, FlightItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
 import { ppjson } from "aarts-utils"
-import { bool } from "aws-sdk/clients/signer"
-import { setItemRefkeyToPayload } from "aarts-dynamodb/_itemUtils"
+import { setDomainRefkeyFromPayload } from "aarts-dynamodb/_itemUtils"
+import { names } from "../commands/random-names/names"
 
 export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
     /**
@@ -16,14 +16,21 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
         const errors: string[] = []
 
         // domain logic for tourist creation
-        await setItemRefkeyToPayload(TouristItem.__type, tourist, 'to_country', errors)
-        await setItemRefkeyToPayload(TouristItem.__type, tourist, 'from_country', errors)
-        await setItemRefkeyToPayload(TouristItem.__type, tourist, 'to_airport', errors)
-        await setItemRefkeyToPayload(TouristItem.__type, tourist, 'from_airport', errors)
-        await setItemRefkeyToPayload(TouristItem.__type, tourist, 'flight', errors)
-        await setItemRefkeyToPayload(TouristItem.__type, tourist, 'airplane', errors)
+        await setDomainRefkeyFromPayload(CountryItem.__type, tourist, 'to_country', 'name', errors)
+        await setDomainRefkeyFromPayload(CountryItem.__type, tourist, 'from_country', 'name', errors)
+        await setDomainRefkeyFromPayload(AirportItem.__type, tourist, 'to_airport', 'name', errors)
+        await setDomainRefkeyFromPayload(AirportItem.__type, tourist, 'from_airport', 'name', errors)
+        await setDomainRefkeyFromPayload(FlightItem.__type, tourist,  'flight', 'flight_code', errors)
+        await setDomainRefkeyFromPayload(AirplaneItem.__type, tourist, 'airplane', 'reg_uq_str', errors)
+        
+        // -- test simulating errored commands
+        if (tourist.fname === names[0]) {
+            yield { resultItems: [{ message: "Sorry tourists with that name already exists [just simulating error here]" }, errors] }
+            throw new Error("Sorry tourists with that name already exists [just simulating error here]")
+        }
+        // -- end test
 
-        if (tourist.strict) {
+        if (tourist.strictDomainMode) {
             // do not tolerate missing pieces
             // examine payload for missing fields or directly examine the errors array and throw error
             if (errors.length > 0) {
@@ -108,4 +115,3 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
         return args
     }
 }
-

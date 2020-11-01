@@ -9,17 +9,33 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 	console.log("received", ppjson(event))
 
 	try {
-		//#region // -------------------- AGGREGATE PROCEDURE's PROCESSED EVENTS --------------------
-		const countersProcEventsMap = new Map<string, number>()
+		//#region // -------------------- AGGREGATE PROCEDURE's PROCESSED/ERRORED EVENTS --------------------
+		const countersProcEventsMap = new Map<string, { success: number, errored: number }>()
 		for (const rec of event.Records.filter(record =>
-			(!!record.dynamodb?.NewImage && record.dynamodb?.NewImage["meta"] && (record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(versionString(0))))) { // fire only for main items
+			(!!record.dynamodb?.NewImage && record.dynamodb?.NewImage["meta"]
+				// fire only for main items
+				&& ((record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(versionString(0))
+					|| // or for errored procedures
+					(record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith("errored"))
+			)
+		)) {
 			const newImage = fromAttributeMap(rec.dynamodb?.NewImage as AttributeMap) as DynamoItem
-			console.log("new Image: " +  ppjson(newImage))
-			if (!!newImage["procedure"] && newImage.ringToken === newImage["procedure"].substr(newImage["procedure"].indexOf("|") + 1)) {
-				if (countersProcEventsMap.has(newImage["procedure"])) {
-					countersProcEventsMap.set(newImage["procedure"], (countersProcEventsMap.get(newImage["procedure"]) as number) + 1)
+			console.log("new Image: " + ppjson(newImage))
+			if (!!newImage["__proc"] && !!newImage["meta"] && newImage.ringToken === newImage["__proc"].substr(newImage["__proc"].indexOf("|") + 1)) {
+				if (countersProcEventsMap.has(newImage["__proc"])) {
+					if ((newImage["meta"] as string).startsWith("errored")) {
+						//@ts-ignore, above we check for presence
+						countersProcEventsMap.get(newImage["__proc"]).errored++
+					} else {
+						//@ts-ignore, above we check for presence
+						countersProcEventsMap.get(newImage["__proc"]).success++
+					}
 				} else {
-					countersProcEventsMap.set(newImage["procedure"], 1)
+					if ((newImage["meta"] as string).startsWith("errored")) {
+						countersProcEventsMap.set(newImage["__proc"], { success: 0, errored: 1 })
+					} else {
+						countersProcEventsMap.set(newImage["__proc"], { success: 1, errored: 0 })
+					}
 				}
 			}
 		}
@@ -34,9 +50,9 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 							id: { S: id },
 							meta: { S: `${versionString(0)}|${id.substr(0, id.indexOf("|"))}` },
 						}),
-						UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc`,
-						ExpressionAttributeNames: { [`#processed_events`]: "processed_events" },
-						ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${countersProcEventsMap.get(id)}` } }
+						UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_success, #errored_events = if_not_exists(#errored_events, :zero) + :inc_errored`,
+						ExpressionAttributeNames: { [`#processed_events`]: "processed_events", [`#errored_events`]: "errored_events" },
+						ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc_success": { "N": `${countersProcEventsMap.get(id)?.success}` }, ":inc_errored": { "N": `${countersProcEventsMap.get(id)?.errored}` } }
 					}
 				}
 			]
@@ -59,22 +75,22 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 			for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY"
 				&& !!record.dynamodb?.NewImage && !!record.dynamodb?.OldImage
 				&& (record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(versionString(0))
-				&& (((record.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || {S: "undefined"}).S) !== (((record.dynamodb?.OldImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S))) { // fire only for main items
+				&& (((record.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || { S: "undefined" }).S) !== (((record.dynamodb?.OldImage as { item_state: { S: string } })["item_state"] || { S: "undefined" }).S))) { // fire only for main items
 
 				// update aggregations
 				// total items of this type and state
-					const oldCounter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || {S:"undefined"}).S}|${((rec.dynamodb?.OldImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
-					const newCounter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || {S:"undefined"}).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
-					if (typesByStatusesMapNew.has(newCounter)) {
-						typesByStatusesMapNew.set(newCounter, (typesByStatusesMapNew.get(newCounter) as number) + 1)
-					} else {
-						typesByStatusesMapNew.set(newCounter, 1)
-					}
-					if (typesByStatusesMapOld.has(oldCounter)) {
-						typesByStatusesMapOld.set(oldCounter, (typesByStatusesMapOld.get(oldCounter) as number) + 1)
-					} else {
-						typesByStatusesMapOld.set(oldCounter, 1)
-					}
+				const oldCounter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || { S: "undefined" }).S}|${((rec.dynamodb?.OldImage as { item_state: { S: string } })["item_state"] || { S: "undefined" }).S}`
+				const newCounter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || { S: "undefined" }).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || { S: "undefined" }).S}`
+				if (typesByStatusesMapNew.has(newCounter)) {
+					typesByStatusesMapNew.set(newCounter, (typesByStatusesMapNew.get(newCounter) as number) + 1)
+				} else {
+					typesByStatusesMapNew.set(newCounter, 1)
+				}
+				if (typesByStatusesMapOld.has(oldCounter)) {
+					typesByStatusesMapOld.set(oldCounter, (typesByStatusesMapOld.get(oldCounter) as number) + 1)
+				} else {
+					typesByStatusesMapOld.set(oldCounter, 1)
+				}
 			}
 
 			for (const typestateOld of typesByStatusesMapOld.keys()) {
@@ -114,7 +130,7 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 			for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT"
 				&& !!record.dynamodb?.NewImage && (record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(`v_0`))) { // fire only for main items
 
-				const counter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || {S:"undefined"}).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || {S:"undefined"}).S}`
+				const counter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || { S: "undefined" }).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || { S: "undefined" }).S}`
 
 				if (typesByStatusesMapNew.has(counter)) {
 					typesByStatusesMapNew.set(counter, (typesByStatusesMapNew.get(counter) as number) + 1)

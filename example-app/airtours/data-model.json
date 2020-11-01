@@ -296,10 +296,10 @@
             }
         },
         "CreateTourists": {
-            "useNamesLength": {
+            "touristsToCreate": {
                 "type": "number"
             },
-            "touristsToCreate": {
+            "useNamesLength": {
                 "type": "number"
             },
             "fname": {
@@ -331,18 +331,40 @@
             }
         },
         "CreateTouristsProperly": {
-            "touristsToCreate": { "type": "number" },
-            "useNamesLength": { "type": "number"},
-            "fname": { "type": "string" },
-            "lname": { "type": "string" },
-            "iban": { "type": "string" },
-            "toAirport": { "type": "string" },
-            "fromAirport": { "type": "string" },
-            "toCountry": { "type": "string" },
-            "fromCountry": { "type": "string" },
-            "airplane": { "type": "string" },
-            "flight": { "type": "string" }
-          },
+            "touristsToCreate": {
+                "type": "number"
+            },
+            "useNamesLength": {
+                "type": "number"
+            },
+            "fname": {
+                "type": "string"
+            },
+            "lname": {
+                "type": "string"
+            },
+            "iban": {
+                "type": "string"
+            },
+            "toAirport": {
+                "type": "string"
+            },
+            "fromAirport": {
+                "type": "string"
+            },
+            "toCountry": {
+                "type": "string"
+            },
+            "fromCountry": {
+                "type": "string"
+            },
+            "airplane": {
+                "type": "string"
+            },
+            "flight": {
+                "type": "string"
+            }
+        },
         "GenerateInvoices": {}
     },
     "Queries": {

@@ -27,6 +27,8 @@ export class DynamoCommandItem {
     sync_end_date?: string
     async_end_date?: string
     processed_events?: number
+    errored_events?: number
+    strictDomainMode?: boolean
 }
 
 export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager<T> {
@@ -68,8 +70,9 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             // mark procedures as done when total_events=processed_events
             // TODO refine it not to cycle indefinetley
-            if (newImage.id.startsWith("P__") && (newImage.revisions === 0 || newImage.revisions === 1) && (newImage["processed_events"] as number) >= (newImage["total_events"] as number)) {
-                console.log("ISSUING UPDATE-SUCCESS TO PROCEDURE ", ppjson(newImage))
+            if (newImage.id.startsWith("P__") && (newImage.revisions === 0 || newImage.revisions === 1) 
+            && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) >= (newImage["total_events"] as number)) {
+                console.log(`ISSUING UPDATE-${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
                 const P__from_db = await getItemById(newImage.__typename, newImage.id)
                 if (!!P__from_db && !!P__from_db[0]) {
                     try { // swallow errors for now
@@ -77,7 +80,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                             P__from_db[0],
                             {
                                 end_date: new Date().toISOString(),
-                                item_state: "success",
+                                item_state: `${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'success' : 'error'}`,
                                 ringToken: newImage.ringToken,
                                 revisions: P__from_db[0].revisions,
                                 id: newImage.id,
@@ -147,12 +150,12 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             !process.env.DEBUGGER || loginfo(`[${__type.replace("P__", "")}:baseValidateStart] output: `, processorBase.value)
             !processorBase.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}]` }, { output: processorBase.value }] })
         } while (!processorBase.done)
-        
+
 
         const dynamoItems = []
         for (const arg of processorBase.value.arguments) {
             let procedure = new proto(arg) as unknown as IProcedure<T> & DynamoItem
-            procedure.id = `${procedure.__typename}|${procedure.ringToken}` // TODO unify in some more general place. Using the ringToken as the GUID part of a procedure, avoiding one more refkey "procedure"
+            procedure.id = `${procedure.__typename}|${procedure.ringToken}` // TODO unify in some more general place. Using the ringToken as the GUID part of a procedure, avoiding one more refkey "__proc"
 
             const asyncGenDomain = this.validateStart(Object.assign(processorBase.value, { arguments: procedure }))
             let processorDomain
@@ -161,7 +164,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 !process.env.DEBUGGER || loginfo(`[${__type.replace("P__", "")}:validateStart] output: `, processorDomain.value)
                 !processorDomain.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}]` }, { output: processorDomain.value }] })
             } while (!processorDomain.done)
-            
+
             dynamoItems.push(processorDomain.value)
 
             !process.env.DEBUGGER || loginfo(`[${__type}:START] Procedure applicable for Starting.`)
@@ -186,22 +189,22 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                     if (!process.env["AWS_SAM_LOCAL"]) {
                         // used runtime in aws
                         for (const chunk of chunks(this.eventsForAsyncProcessing, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
-                            console.log("procedure: " + procedure.id)
+                            console.log("__proc: " + procedure.id)
                             await controller({
                                 //"x" values not necessary here. Can it be deleted or for typescript not complaining to leave it ?
                                 "action": "x",
                                 "item": "x",
-                                "jobType": "long", 
+                                "jobType": "long",
                                 "ringToken": procedure.ringToken as string,
                                 "arguments": chunk.map(c => {
                                     Object.assign(c, { ringToken: procedure.ringToken })
                                     if (Array.isArray(c.arguments)) {
                                         c.arguments.forEach(arg => {
                                             Object.assign(arg, { ringToken: procedure.ringToken })
-                                            Object.assign(arg.arguments, { procedure: procedure.id, ringToken: procedure.ringToken })
+                                            Object.assign(arg.arguments, { __proc: procedure.id, ringToken: procedure.ringToken })
                                         })
                                     } else {
-                                        Object.assign(c.arguments, { procedure: procedure.id, ringToken: procedure.ringToken })
+                                        Object.assign(c.arguments, { __proc: procedure.id, ringToken: procedure.ringToken })
                                     }
                                     return c
                                 }),
@@ -221,7 +224,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                                     item: evnt.item
                                 },
                                 payload: {
-                                    arguments: Object.assign(evnt.arguments, { procedure: procedure.id, ringToken: procedure.ringToken }),
+                                    arguments: Object.assign(evnt.arguments, { __proc: procedure.id, ringToken: procedure.ringToken }),
                                     identity: evnt.identity,
                                 }
                             }, undefined)
@@ -238,7 +241,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 //#region saving state AFTER procedure ended
                 if (procedureResult) {
                     delete procedureResult["processed_events"] // important to remove this as it may be already asynchronously modified in db from other events
-                    if (!procedureResult.total_events){
+                    if (!procedureResult.total_events) {
                         procedureResult.item_state = 'success'
                     }
                 }
@@ -584,53 +587,71 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         //     !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateCreate] output: `, baseValidateResult)
         //     yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: baseValidateResult }] }
         // }
-        const asyncGenBase = this.baseValidateCreate(__type, args)
-        let processorBase
-        do {
-            processorBase = await asyncGenBase.next()
-            !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateCreate] output: `, processorBase.value)
-            !processorBase.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: processorBase.value }] })
-        } while (!processorBase.done)
-
-        const proto = this.lookupItems.get(__type)
-
-        if (!proto) {
-            throw new Error(`${process.env.ringToken}: [${__type}:CREATE] Not able to locate dynamo item prototype for item ${__type}`)
-        }
-
-        const dynamoItems = []
-        for (const arg of args.payload.arguments) {
-
-            !process.env.DEBUGGER || loginfo("Arguments from payload to be merged with itemToCreate: ", arg)
-            const itemToCreate = Object.assign({}, new proto(), arg)
-            !process.env.DEBUGGER || loginfo("itemToCreate: ", itemToCreate)
-
-            !process.env.DEBUGGER || loginfo(`[${__type}] Calling domain's validateCreate method, Args: `, { itemToCreate }, { identity: args.payload.identity })
-
-            const asyncGenDomain = this.validateCreate(itemToCreate, args.payload.identity)
-            let processorDomain
+        try {
+            const asyncGenBase = this.baseValidateCreate(__type, args)
+            let processorBase
             do {
-                processorDomain = await asyncGenDomain.next()
-                !process.env.DEBUGGER || loginfo(`[${__type}:validateCreate] output: `, processorDomain.value)
-                !processorDomain.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: processorDomain.value }] })
-            } while (!processorDomain.done)
+                processorBase = await asyncGenBase.next()
+                !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateCreate] output: `, processorBase.value)
+                !processorBase.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: processorBase.value }] })
+            } while (!processorBase.done)
 
-            dynamoItems.push(processorDomain.value)
-        }
+            const proto = this.lookupItems.get(__type)
 
-        !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Item applicable for saving.`)
-
-        const asyncGenSave = this.save(__type, Object.assign({}, args.payload, { arguments: dynamoItems }))
-        let processorSave = await asyncGenSave.next()
-        !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Saving item result: `, processorSave.value.arguments)
-        do {
-            if (!processorSave.done) {
-                processorSave = await asyncGenSave.next()
-                !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Saving item result: `, processorSave.value.arguments)
+            if (!proto) {
+                throw new Error(`${process.env.ringToken}: [${__type}:CREATE] Not able to locate dynamo item prototype for item ${__type}`)
             }
-        } while (!processorSave.done)
 
-        return { resultItems: dynamoItems, identity: args.payload.identity }
+            const dynamoItems = []
+            for (const arg of args.payload.arguments) {
+
+                !process.env.DEBUGGER || loginfo("Arguments from payload to be merged with itemToCreate: ", arg)
+                const itemToCreate = Object.assign({}, new proto(), arg)
+                !process.env.DEBUGGER || loginfo("itemToCreate: ", itemToCreate)
+
+                !process.env.DEBUGGER || loginfo(`[${__type}] Calling domain's validateCreate method, Args: `, { itemToCreate }, { identity: args.payload.identity })
+
+                const asyncGenDomain = this.validateCreate(itemToCreate, args.payload.identity)
+                let processorDomain
+                do {
+                    processorDomain = await asyncGenDomain.next()
+                    !process.env.DEBUGGER || loginfo(`[${__type}:validateCreate] output: `, processorDomain.value)
+                    !processorDomain.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: processorDomain.value }] })
+                } while (!processorDomain.done)
+
+                dynamoItems.push(processorDomain.value)
+            }
+
+            !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Item applicable for saving.`)
+
+
+            const asyncGenSave = this.save(__type, Object.assign({}, args.payload, { arguments: dynamoItems }))
+            let processorSave = await asyncGenSave.next()
+            !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Saving item result: `, processorSave.value.arguments)
+            do {
+                if (!processorSave.done) {
+                    processorSave = await asyncGenSave.next()
+                    !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Saving item result: `, processorSave.value.arguments)
+                }
+            } while (!processorSave.done)
+            return { resultItems: dynamoItems, identity: args.payload.identity }
+        } catch (err) {
+            if (!!args.payload.arguments[0].__proc) {
+                // so this operation is part of a procedure, record an errored event
+                await dynamoDbClient.putItem({
+                    Item: {
+                        id: { S: args.payload.arguments[0].__proc },
+                        __proc: {S: args.payload.arguments[0].__proc},
+                        meta: { S: `errored|${args.meta.sqsMsgId || args.meta.ringToken}` },
+                        err: { S: `${err && err.message ? err.message : err}` },
+                        stack: { S: `${err && err.stack ? err.stack.slice(0,500) : ''}` },
+                        ringToken: {S: args.meta.ringToken}
+                    },
+                    TableName: DB_NAME
+                }).promise()
+            }
+            throw err
+        }
     }
     //#endregion
 

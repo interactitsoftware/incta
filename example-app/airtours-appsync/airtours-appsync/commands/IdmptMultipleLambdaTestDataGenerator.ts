@@ -49,7 +49,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
                 "payload": {
                     "arguments": {
                         ...itemBody,
-                        procedure: (this as DynamoItem).id
+                        __proc: (this as DynamoItem).id
 
                     },
                     "identity": {
@@ -708,7 +708,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
             "item": __type,
             "ringToken": ringToken,
             "arguments": {
-                "procedure": (this as DynamoItem).id,
+                "__proc": (this as DynamoItem).id,
                 ...itemBody
             },
             "identity": {
@@ -751,7 +751,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
             "action": "create",
             "item": "country",
             "arguments": {
-                "procedure": (this as DynamoItem).id,
+                "__proc": (this as DynamoItem).id,
                 "name": name,
                 "code": code,
                 "currency": currency

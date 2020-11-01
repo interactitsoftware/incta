@@ -55,6 +55,7 @@ export class CreateTouristsProperlyCommand extends BaseDynamoItemManager<CreateT
                 to_airport: payload.toAirport,
                 from_country: payload.fromCountry,
                 to_country: payload.toCountry,
+                strictDomainMode: payload.strictDomainMode
             }
 
             this.eventsForAsyncProcessing.push({

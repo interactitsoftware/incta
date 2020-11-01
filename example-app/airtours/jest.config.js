@@ -14,5 +14,5 @@ module.exports = {
     "setupFilesAfterEnv": ["./__specs__/setup/envVars.js"],
     "testPathIgnorePatterns": ["/node_modules/"],
     "collectCoverage": true,
-    "testTimeout": 300000
+    "testTimeout": 30000
   }

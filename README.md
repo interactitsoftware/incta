@@ -51,6 +51,7 @@ Performance is of highest prioirity, however significant further cost and data m
 [Linux GUI appImage with wsl2](https://discourse.appimage.org/t/run-appimage-on-windows/177)
 [dynamo marshaller](https://awslabs.github.io/dynamodb-data-mapper-js/packages/dynamodb-data-marshaller/)
 [sns-sqs and dlqs](https://aws.amazon.com/blogs/compute/designing-durable-serverless-apps-with-dlqs-for-amazon-sns-amazon-sqs-aws-lambda/)
+[sns-sqs and dlqs2](https://lumigo.io/blog/sqs-and-lambda-the-missing-guide-on-failure-modes/)
 
 
 

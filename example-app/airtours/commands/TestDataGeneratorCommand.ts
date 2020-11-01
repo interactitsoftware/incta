@@ -887,8 +887,7 @@ export class TestDataGeneratorCommand extends BaseDynamoItemManager<TestDataGene
                 "action": "create",
                 "item": TouristItem.__type,
                 "arguments": {
-                    // some random id card. NOTE still possible for large nr of tourists to generate same id_card, in this case second insert will be error as id_card is set to be unique
-                    id_card: id_card + ~~(Math.random()*10000), 
+                    id_card: id_card,
                     fname: fn,
                     lname: ln,
                     ticket_type: ["class_1", "class_2", "vip"][~~(Math.random() * 3)],
@@ -922,7 +921,7 @@ export class TestDataGeneratorCommand extends BaseDynamoItemManager<TestDataGene
                 "payload": {
                     "arguments": {
                         ...itemBody,
-                        procedure: (this as DynamoItem).id
+                        __proc: (this as DynamoItem).id
 
                     },
                     "identity": {

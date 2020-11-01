@@ -568,7 +568,7 @@ export class SingleLambdaTestDataGenerator {
         return (await processPayload({
             "payload": {
                 "arguments": {
-                    "procedure": (this as DynamoItem).id,
+                    "__proc": (this as DynamoItem).id,
                     ...itemBody
                 },
                 "identity": {
@@ -619,7 +619,7 @@ export class SingleLambdaTestDataGenerator {
             "action": "create",
             "item": "country",
             "arguments": {
-                "procedure": (this as DynamoItem).id,
+                "__proc": (this as DynamoItem).id,
                 "name": name,
                 "code": code,
                 "currency": currency

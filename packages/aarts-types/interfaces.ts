@@ -15,7 +15,8 @@ export interface AartsMeta {
     item: string,
     action: IItemManagerKeys,
     ringToken: string,
-    eventSource: string
+    eventSource: string,
+    sqsMsgId?: string
 }
 
 export interface AartsPayload<T = any> {

@@ -42,29 +42,44 @@ export const getItemsOfType = async <T extends DynamoItem>(__type: string) => {
     } else return [] as T[]
 }
 
-export const setItemRefkeyToPayload = async (__type: string, payload: DomainItem, refkeyName: string, errorsArray: string[]) : Promise<boolean> => {
-    //examine payload's 'refkeyName' property for assigning it to the 'payload', which would be used for domain item creation
-    // if no refkeyName prop in payload -> pass successful
-    // if refkeyName prop exists try loading by id, if success, return true
-    // if above fails, try loading by payload[refkeyName], i.e try locating a refkey with this value on the target item,
-    // if both attempts fail -> push error to array (if present) and return false
-    if (!!payload[refkeyName]) {
-        const itemByIdResults = await getItemById(__type, payload[refkeyName])
+/**
+ * Utily method helping the creation of _whatever_ domain item, which has a refKey property 'domainRefkey', pointing to the id key of another domain item of type __type.
+ * 
+ *  Examine payload's 'domainRefkey' property for assigning it to the 'Domain''s 'domainRefkey', which would be used for domain item creation
+ * - NOTE that this method accepts payload, but the same object is also referred as domain, i.e the same payload is used as DTO for domain item creation
+ * - If no domainRefkey prop in payload, do nothing and return _true_
+ * - If domainRefkey prop exists try loading by id, if success, set the found id to it and return _true_
+ * - If above fails, try loading by payload[domainRefkey], i.e try locating a refkey with this value on the target item, specified by __type,
+ * - If both attempts fail -> clean the payload[domainRefkey] and push error to array (if present) and return _false_
+ * 
+ * @param __type Domain item type, where the _domainRefkey_ points to
+ * @param payload input payload object, which is also used for Domain item creation
+ * @param domainRefkey property name of the payload, that points to another domain item
+ * @param errorsArray optional string array where explanatory error message woould be pushed
+ */
+export const setDomainRefkeyFromPayload = async (__type: string, payload: DomainItem, domainRefkey: string, targetDomainRefkey?: string | undefined, errorsArray?: string[] | undefined): Promise<boolean> => {
+
+    if (!!payload[domainRefkey]) {
+        if (!targetDomainRefkey) {
+            // support case where both the domain and target domain ref key names are same
+            targetDomainRefkey = domainRefkey
+        }
+        const itemByIdResults = await getItemById(__type, payload[domainRefkey])
         if (itemByIdResults.length === 1) {
-            payload[refkeyName] = itemByIdResults[0].id
+            payload[domainRefkey] = itemByIdResults[0].id
             return true
         } else {
-            const itemByNameResults = await getItemsByRefkeyValue(__type, refkeyName, payload[refkeyName])
-            if (itemByNameResults.length === 1) {
-                payload[refkeyName] = itemByNameResults[0].id
+            const itemByTargetRefkeyResults = await getItemsByRefkeyValue(__type, targetDomainRefkey, payload[domainRefkey])
+            if (itemByTargetRefkeyResults.length === 1) {
+                payload[domainRefkey] = itemByTargetRefkeyResults[0].id
                 return true
-            } else if (itemByNameResults.length > 1){
-                errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because provided value ${payload[refkeyName]} for refkey ${refkeyName} points to multiple items and cannot take decision`)
-            } else if (itemByNameResults.length === 0) {
-                errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because provided value ${payload[refkeyName]} for refkey ${refkeyName} was not found`)
+            } else if (itemByTargetRefkeyResults.length > 1) {
+                errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because no target was found by id, and provided value ${payload[domainRefkey]} for ${__type}'s refkey ${targetDomainRefkey} points to multiple items and cannot take decision`)
+            } else if (itemByTargetRefkeyResults.length === 0) {
+                errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because no target was found by id, and provided value ${payload[domainRefkey]} for ${__type}'s refkey ${targetDomainRefkey} was not found`)
             }
         }
     }
-    payload[refkeyName] = undefined
+    payload[domainRefkey] = undefined
     return false
 }

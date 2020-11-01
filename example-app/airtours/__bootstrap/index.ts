@@ -85,7 +85,6 @@ class DomainAdapter implements IDomainAdapter<DynamoItem> {
     public itemManagerCallbacks = allItemManagers
 }
 global.domainAdapter = new DomainAdapter()
-
 export const domainAdapter = global.domainAdapter
 
 export { controller, worker, feeder, dynamoEventsAggregation, dynamoEventsCallback }

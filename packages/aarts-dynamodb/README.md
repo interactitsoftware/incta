@@ -9,7 +9,7 @@ When building a generic library on top of dynamo, you presumably do not know any
 We have to recall that this is a generic library, so query and access patterns are __defined on an application level__ - by the client that uses the generic library. 
 
 The various copies of the most recent item's version are always maintained consistent with the original (v_0) item by employing per item transactions.
-Using thransactions on an item level, requires us to define a higher level unit of work, "procedure" - a procedure will be comprosed of multiple events for CRUD over items, and should be eventually consistent - ensured by the client application logic. Aarts-dynamodb will only take care of registering events comming from different procedures (will perform base aggregations)
+Using thransactions on an item level, requires us to define a higher level unit of work, "__proc" - a procedure will be comprosed of multiple events for CRUD over items, and should be eventually consistent - ensured by the client application logic. Aarts-dynamodb will only take care of registering events comming from different procedures (will perform base aggregations)
 
 If we go back to that remark* above, about the joins and partitions: Yes, on the main table, one can say there are no "rds joins" possible, because of the partitions structure etc. However, lets see what happens on the GSI level: When the client applications define their own keys of interest (aka refkeys), `aarts-dynamodb` will ensure those keys are present in corresponding GSI fields (meta/smetadata or meta/nmetadata). So, actually, "rds joins" __are implemented on a GSI level__.
 

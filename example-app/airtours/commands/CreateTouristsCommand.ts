@@ -1,19 +1,21 @@
 import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { AirplaneItem, AirportItem, CountryItem, CreateTouristsItem, FlightItem, TouristItem } from "../__bootstrap/_DynamoItems"
-import { AartsEvent, AartsPayload, IIdentity, IItemManager } from "aarts-types/interfaces"
+import { AartsEvent, AartsPayload, IIdentity, IItemManager  } from "aarts-types/interfaces"
 import { getItemsByRefkeyValue, DynamoItem } from "aarts-dynamodb"
-import { names } from "./random-names/names"
 
 
 export class CreateTouristsCommand extends BaseDynamoItemManager<CreateTouristsItem> {
-
+    
     /**
     * Command parameters preparation and/or validation
     */
     async *validateStart(proc: AartsPayload<CreateTouristsItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+        proc.arguments.start_date = new Date().toISOString()
+
+        const errors: string[] = []
 
         // here you can apply further domain logic on permissions, authorizations etc
-        const errors: string[] = []
+        
         if (errors.length > 0) {
             yield { resultItems: [{ message: `Start CreateTourists Failed` }, errors] }
             throw new Error(`${errors.join(";;")}`)
@@ -26,7 +28,7 @@ export class CreateTouristsCommand extends BaseDynamoItemManager<CreateTouristsI
     /**
     * Command Implementation
     */
-    async execute(__type: string, args: AartsEvent): Promise<CreateTouristsItem> {
+    async execute(__type: string, args: AartsEvent) : Promise<CreateTouristsItem> { 
 
         for (let i = 0; i < Number(args.payload.arguments.touristsToCreate || 10); i++) {
             const flightsFound = await getItemsByRefkeyValue<FlightItem>(FlightItem.__type, "flight_code", args.payload.arguments.flightCode as string)
@@ -36,24 +38,10 @@ export class CreateTouristsCommand extends BaseDynamoItemManager<CreateTouristsI
             const fromCountriesFound = await getItemsByRefkeyValue<CountryItem>(CountryItem.__type, "name", args.payload.arguments.fromCountryName as string)
             const toCountriesFound = await getItemsByRefkeyValue<CountryItem>(CountryItem.__type, "name", args.payload.arguments.toCountryName as string)
 
-            const namesLenght = args.payload.arguments.useNamesLength || names.length
-            const fname = args.payload.arguments.fname ?
-                args.payload.arguments.fname :
-                names[~~(Math.random() * namesLenght)]
-            const lname = args.payload.arguments.lname ?
-                args.payload.arguments.lname :
-                names[~~(Math.random() * namesLenght)]
-            let generatedIban = 0
-            for (const ch of `${fname}${lname}`) {
-                generatedIban += ch.charCodeAt(0)
-            }
             const touristToCreate = {
-                iban: args.payload.arguments.iban ? `${args.payload.arguments.iban}` : `BGSOF${generatedIban}`,
-                // some random id card. NOTE still possible for large nr of tourists to generate same id_card, 
-                // in this case second insert will be error as id_card is set to be unique
-                id_card: (~~(Math.random() * 1000000) + ~~(Math.random() * 1000000) + ~~(Math.random() * 1000000)),
-                fname,
-                lname,
+                iban: args.payload.arguments.iban ? `${args.payload.arguments.iban}${i}` : undefined,
+                fname: `${args.payload.arguments.fname}${i}`,
+                lname: `${args.payload.arguments.lname}${i}`,
                 flight: !!flightsFound && flightsFound.length > 0 ? (flightsFound[0] as DynamoItem).id : undefined,
                 airplane: !!airplaneFound && airplaneFound.length > 0 ? (airplaneFound[0] as DynamoItem).id : undefined,
                 from_airport: !!fromAirportsFound && fromAirportsFound.length > 0 ? (fromAirportsFound[0] as DynamoItem).id : undefined,

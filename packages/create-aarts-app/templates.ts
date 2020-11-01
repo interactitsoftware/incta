@@ -23,8 +23,11 @@ export const testSetupEnvs=
 `
 process.env.AWS_SAM_LOCAL="1"
 process.env.DB_NAME="TEST1"
+// process.env.CopyEntireItemToGSIs="1" // needs further work around creating the test data base on each test run, to respect this value
 // process.env.DEBUGGER="1" //may print lots of logs
 process.env.DDB_LOCAL_URL="http://localhost:8000"
+// no need to exists in aws, its just the format really. From here the code deduce the region
+process.env.EVENT_BUS_TOPIC="arn:aws:sns:eu-west-1:216788398771:airtours-EventsBus45DE4339-1SL08CMA81PYM"
 `
 
 export const packageJson =
@@ -44,6 +47,40 @@ export const packageJson =
     "license": "ISC"
   }
 `
+
+export const testutils = 
+`
+import { chunks } from "aarts-utils"
+import { WriteRequest } from "aws-sdk/clients/dynamodb"
+import { dynamoDbClient, DB_NAME } from "aarts-dynamodb";
+
+export const clearDynamo = async () => {
+    let scanResult
+    do {
+        let scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
+        const items = scanResult.Items && chunks(scanResult.Items, 25)
+        if (items) {
+            for (const chunk of items) {
+                await dynamoDbClient.batchWriteItem({
+                    RequestItems: {
+                        [DB_NAME]: chunk.reduce<WriteRequest[]>((accum, item) => {
+                            accum.push({
+                                DeleteRequest: {
+                                    Key: { id: { S: item.id.S }, meta: { S: item.meta.S } }
+                                }
+                            })
+                            return accum
+                        }, [])
+                    }
+                }).promise()
+            }
+        }
+
+        scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
+
+    } while (scanResult && scanResult.LastEvaluatedKey)
+}
+` 
 
 export const dataModelJson = {
   "Items": {

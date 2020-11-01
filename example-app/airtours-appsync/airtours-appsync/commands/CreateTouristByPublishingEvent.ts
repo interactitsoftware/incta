@@ -44,7 +44,7 @@ export class CreateTouristByPublishingEvent {
             "item": __type,
             "ringToken": ringToken,
             "arguments": {
-                "procedure": (this as DynamoItem).id,
+                "__proc": (this as DynamoItem).id,
                 ...itemBody
             },
             "identity": {
@@ -136,7 +136,7 @@ export class CreateTouristByPublishingEvent {
             //     "item": _specs_TouristItem.__type,
             //     "ringToken": args.meta.ringToken as string,
             //     "jobType": "short",
-            //     "arguments": { ...touristToCreate, procedure: (this as DynamoItem).id },
+            //     "arguments": { ...touristToCreate, __proc: (this as DynamoItem).id },
             //     "identity": args.payload.identity
             // })
         }

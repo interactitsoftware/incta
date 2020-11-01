@@ -70,9 +70,9 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     shell.mkdir("-p", join(cwd, aartsFolderName))
     await recordFile(join(cwd, aartsFolderName), "README.md", "Folder contents is managed by aarts-cli.\nYou should not edit manually.\nRather, edit the model-json in the root of your app.")
-    shell.mkdir("-p", join(cwd, "__specs__/commands"))
-    shell.mkdir("-p", join(cwd, "__specs__/queries"))
-    shell.mkdir("-p", join(cwd, "__specs__/domain"))
+    shell.mkdir("-p", join(cwd, "__specs__", "specs", "commands"))
+    shell.mkdir("-p", join(cwd, "__specs__", "specs", "queries"))
+    shell.mkdir("-p", join(cwd, "__specs__", "specs", "domain"))
     shell.mkdir("-p", join(cwd, "__test_events/commands"))
     shell.mkdir("-p", join(cwd, "__test_events/queries"))
     shell.mkdir("-p", join(cwd, "__test_events/domain"))
@@ -313,6 +313,7 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
         + `    public itemManagerCallbacks = allItemManagers` + "\n"
         + "}\n"
         + "global.domainAdapter = new DomainAdapter()\n"
+        + "export const domainAdapter = global.domainAdapter\n"
         + "\n"
         + "export { controller, worker, feeder, dynamoEventsAggregation, dynamoEventsCallback }\n"
     for (const item of Object.keys(model.Items)) {

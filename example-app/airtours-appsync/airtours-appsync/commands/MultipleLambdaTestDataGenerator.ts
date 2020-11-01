@@ -404,7 +404,7 @@ const dynamo_q2_2022 = await this.createItem(
         return (await processPayload({
             "payload": {
                 "arguments": {
-                    "procedure": (this as DynamoItem).id,
+                    "__proc": (this as DynamoItem).id,
                     ...itemBody
                 },
                 "identity": {
@@ -435,7 +435,7 @@ const dynamo_q2_2022 = await this.createItem(
             "item": __type,
             "ringToken": ringToken,
             "arguments": {
-                "procedure": (this as DynamoItem).id,
+                "__proc": (this as DynamoItem).id,
                 ...itemBody
             },
             "identity": {
@@ -478,7 +478,7 @@ const dynamo_q2_2022 = await this.createItem(
             "action": "create",
             "item": "country",
             "arguments": {
-                "procedure": (this as DynamoItem).id,
+                "__proc": (this as DynamoItem).id,
                 "name": name,
                 "code": code,
                 "currency": currency

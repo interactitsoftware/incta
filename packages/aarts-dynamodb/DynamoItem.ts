@@ -43,6 +43,7 @@ export const DynamoItem =
             /**
              * processing errors, could be overwriten in client apps
              */
+            strictDomainMode?: boolean
             public processingMessages?: {
                 severity: string,
                 message: string,

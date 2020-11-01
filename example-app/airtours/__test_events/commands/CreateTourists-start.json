@@ -2,8 +2,8 @@
     "action": "start",
     "item": "CreateTourists",
     "arguments": {
-        "useNamesLength": 5,
         "touristsToCreate": 5,
+        "useNamesLength": 5,
         "fname": "abc",
         "lname": "abc",
         "toAirportName": "abc",

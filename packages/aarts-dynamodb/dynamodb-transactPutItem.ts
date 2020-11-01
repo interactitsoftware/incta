@@ -75,7 +75,7 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
         const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
         !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", result)
     } catch (err) {
-        throw new Error(ppjson({request: params, error: err}))
+        throw new Error(/*ppjson({request: params, error: err})*/err)
     }
         
     return item
