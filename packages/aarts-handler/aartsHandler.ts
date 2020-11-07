@@ -11,13 +11,10 @@ export const handler = async (evnt: AartsEvent, context: Context): Promise<any> 
 export async function processPayload(evnt: AartsEvent, context?: Context): Promise<any> {
 
 	const asyncGen = processPayloadAsync(evnt)
-	let processor = await asyncGen.next()
-	!process.env.DEBUGGER || loginfo(`[${evnt.meta.item}:${evnt.meta.action}] `, processor.value.payload.resultItems)
+	let processor
 	do {
-		if (!processor.done) {
-			processor = await asyncGen.next()
-			!process.env.DEBUGGER || loginfo(`[${evnt.meta.item}:${evnt.meta.action}] `, processor.value.payload.resultItems)
-		}
+		processor = await asyncGen.next()
+		!process.env.DEBUGGER || loginfo(`[${evnt.meta.item}:${evnt.meta.action}] `, processor.value.payload.resultItems)
 	} while (!processor.done)
 
 	return Object.assign({}, evnt, {
@@ -30,7 +27,7 @@ export async function processPayload(evnt: AartsEvent, context?: Context): Promi
 export async function* processPayloadAsync(evnt: AartsEvent): AsyncGenerator<AartsEvent, AartsEvent, undefined> {
 	// stop sending debug messages over the bus
 	// process.env.DO_NOT_PRINT_RECEIVED_AARTS_PAYLOAD || (yield Object.assign({}, evnt, { payload: { resultItems: [{ message: `[AartsHandler:processPayloadAsync] Received payload: ${ppjson(evnt)}` }] } }))
-	
+
 	process.env.DO_NOT_PRINT_RECEIVED_AARTS_PAYLOAD || loginfo(`[AartsHandler:processPayloadAsync] Received payload: `, evnt)
 	const payloadsArray = Array.isArray(evnt.payload.arguments) ? evnt.payload.arguments : [evnt.payload.arguments]
 	Object.assign(evnt, {
@@ -42,7 +39,7 @@ export async function* processPayloadAsync(evnt: AartsEvent): AsyncGenerator<Aar
 	})
 
 	// !process.env.DEBUGGER || (yield Object.assign({}, evnt, { payload: { resultItems: { message: `[AartsHandler:processPayloadAsync] Checking item manager for type ${evnt.meta.item}` } } }))
-	
+
 	!process.env.DEBUGGER || loginfo(`[AartsHandler:processPayloadAsync] Checking item manager for type ${evnt.meta.item}`)
 	if (evnt.meta.action === "start") {
 		evnt.meta.item = "P__" + evnt.meta.item
@@ -51,7 +48,7 @@ export async function* processPayloadAsync(evnt: AartsEvent): AsyncGenerator<Aar
 	if (!manager && (evnt.meta.action === "query" || evnt.meta.action === "get")) {
 		manager = Object.values(global.domainAdapter.itemManagers)[0] as unknown as IItemManager<object>
 	}
-	
+
 
 	if (!manager) {
 		return Object.assign({}, evnt,
