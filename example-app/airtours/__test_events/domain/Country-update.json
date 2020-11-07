@@ -6,7 +6,8 @@
         "revisions": "sending-latest-rev-of-updated-item-mandatory",
         "name": "abc",
         "currency": "abc",
-        "code": "abc"
+        "code": "abc",
+        "date_created": "abc"
     },
     "identity": {
         "username": "testuser"

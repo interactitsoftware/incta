@@ -14,6 +14,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     !process.env.DEBUGGER || loginfo('START TransactUpdateItem')
     !process.env.DEBUGGER || loginfo('existing item ', existingItem)
     !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
+    !process.env.DEBUGGER || loginfo('itemUpdates ', __item_refkeys)
     //#endregion
 
     // --> check for any refs loaded and unload them before updating starts

@@ -52,6 +52,7 @@ Performance is of highest prioirity, however significant further cost and data m
 [dynamo marshaller](https://awslabs.github.io/dynamodb-data-mapper-js/packages/dynamodb-data-marshaller/)
 [sns-sqs and dlqs](https://aws.amazon.com/blogs/compute/designing-durable-serverless-apps-with-dlqs-for-amazon-sns-amazon-sqs-aws-lambda/)
 [sns-sqs and dlqs2](https://lumigo.io/blog/sqs-and-lambda-the-missing-guide-on-failure-modes/)
+[the saga pattern and lambda](https://theburningmonk.com/2017/07/applying-the-saga-pattern-with-aws-lambda-and-step-functions/)
 
 
 

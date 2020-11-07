@@ -4,7 +4,8 @@
     "arguments": {
         "name": "abc",
         "currency": "abc",
-        "code": "abc"
+        "code": "abc",
+        "date_created": "abc"
     },
     "identity": {
         "username": "testuser"

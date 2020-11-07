@@ -21,6 +21,8 @@ import { EraseDataItem } from "./_DynamoItems"
 import { TestDataGeneratorItem } from "./_DynamoItems"
 import { CreateTouristsItem } from "./_DynamoItems"
 import { CreateTouristsProperlyItem } from "./_DynamoItems"
+import { DBMigration_AddCreatedIndexItem } from "./_DynamoItems"
+import { DBMigration_AddCreatedIndexForAirportItem } from "./_DynamoItems"
 import { GenerateInvoicesItem } from "./_DynamoItems"
 import { FlightsInvolvingCountryItem } from "./_DynamoItems"
 
@@ -38,6 +40,8 @@ import { EraseDataCommand } from "../commands/EraseDataCommand"
 import { TestDataGeneratorCommand } from "../commands/TestDataGeneratorCommand"
 import { CreateTouristsCommand } from "../commands/CreateTouristsCommand"
 import { CreateTouristsProperlyCommand } from "../commands/CreateTouristsProperlyCommand"
+import { DBMigration_AddCreatedIndexCommand } from "../commands/DBMigration_AddCreatedIndexCommand"
+import { DBMigration_AddCreatedIndexForAirportCommand } from "../commands/DBMigration_AddCreatedIndexForAirportCommand"
 import { GenerateInvoicesCommand } from "../commands/GenerateInvoicesCommand"
 import { FlightsInvolvingCountryQuery } from "../queries/FlightsInvolvingCountryQuery"
 
@@ -56,6 +60,8 @@ allItems.set(EraseDataItem.__type, EraseDataItem)
 allItems.set(TestDataGeneratorItem.__type, TestDataGeneratorItem)
 allItems.set(CreateTouristsItem.__type, CreateTouristsItem)
 allItems.set(CreateTouristsProperlyItem.__type, CreateTouristsProperlyItem)
+allItems.set(DBMigration_AddCreatedIndexItem.__type, DBMigration_AddCreatedIndexItem)
+allItems.set(DBMigration_AddCreatedIndexForAirportItem.__type, DBMigration_AddCreatedIndexForAirportItem)
 allItems.set(GenerateInvoicesItem.__type, GenerateInvoicesItem)
 allItems.set(FlightsInvolvingCountryItem.__type, FlightsInvolvingCountryItem)
 
@@ -75,6 +81,8 @@ const allItemManagers = {
     [TestDataGeneratorItem.__type]: new TestDataGeneratorCommand(allItems),
     [CreateTouristsItem.__type]: new CreateTouristsCommand(allItems),
     [CreateTouristsProperlyItem.__type]: new CreateTouristsProperlyCommand(allItems),
+    [DBMigration_AddCreatedIndexItem.__type]: new DBMigration_AddCreatedIndexCommand(allItems),
+    [DBMigration_AddCreatedIndexForAirportItem.__type]: new DBMigration_AddCreatedIndexForAirportCommand(allItems),
     [GenerateInvoicesItem.__type]: new GenerateInvoicesCommand(allItems),
     [FlightsInvolvingCountryItem.__type]: new FlightsInvolvingCountryQuery(allItems),
 

@@ -1,0 +1,8 @@
+{
+    "action": "start",
+    "item": "DBMigration_AddCreatedIndex",
+    "arguments": {},
+    "identity": {
+        "username": "testuser"
+    }
+}

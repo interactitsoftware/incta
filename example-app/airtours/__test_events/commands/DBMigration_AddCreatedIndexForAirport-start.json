@@ -1,0 +1,8 @@
+{
+    "action": "start",
+    "item": "DBMigration_AddCreatedIndexForAirport",
+    "arguments": {},
+    "identity": {
+        "username": "testuser"
+    }
+}

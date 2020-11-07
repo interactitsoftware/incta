@@ -12,43 +12,30 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 		//#region // -------------------- AGGREGATE PROCEDURE's PROCESSED/ERRORED EVENTS --------------------
 		const countersProcEventsMap = new Map<string, { success: number, errored: number }>()
 		for (const rec of event.Records.filter(record =>
-			(
-				!!record.dynamodb?.NewImage
-				&&
-				!!record.dynamodb?.NewImage["meta"]
-				&&
-				!!record.dynamodb?.NewImage["__proc"]
-				&&
-				!!record.dynamodb?.NewImage["ringToken"]
+			(!!record.dynamodb?.NewImage && record.dynamodb?.NewImage["meta"]
 				// fire only for main items
-				&& (
-					(record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(versionString(0))
+				&& ((record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(versionString(0))
 					|| // or for errored procedures
-					(record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith("errored")
-					|| // or for items that are refkeys, added as part of DB migrations (only those will have __proc and ringtoken)
-					(record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.indexOf("}") > 0)
-				&& 
-				// fire only for items which were indeed changed as part of a parocedure
-				//(__proc key can become obsolate as it remains in the item, thats why compare it to the ringToken, which is always updated)
-				((record.dynamodb?.NewImage as { ringToken: { S: string } })["ringToken"].S as string) === ((record.dynamodb?.NewImage as { __proc: { S: string } })["__proc"].S as string).substr(((record.dynamodb?.NewImage as { __proc: { S: string } })["__proc"].S as string).indexOf("|") + 1)
+					(record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith("errored"))
 			)
 		)) {
-			// TODO make it faster, remove the fromAttributeMap call and directly use the record only
 			const newImage = fromAttributeMap(rec.dynamodb?.NewImage as AttributeMap) as DynamoItem
-			!process.env.DEBUGGER || loginfo("new Image: ", newImage)
-			if (countersProcEventsMap.has(newImage["__proc"])) {
-				if ((newImage["meta"] as string).startsWith("errored")) {
-					//@ts-ignore, above we check for presence
-					countersProcEventsMap.get(newImage["__proc"]).errored++
+			console.log("new Image: " + ppjson(newImage))
+			if (!!newImage["__proc"] && !!newImage["meta"] && newImage.ringToken === newImage["__proc"].substr(newImage["__proc"].indexOf("|") + 1)) {
+				if (countersProcEventsMap.has(newImage["__proc"])) {
+					if ((newImage["meta"] as string).startsWith("errored")) {
+						//@ts-ignore, above we check for presence
+						countersProcEventsMap.get(newImage["__proc"]).errored++
+					} else {
+						//@ts-ignore, above we check for presence
+						countersProcEventsMap.get(newImage["__proc"]).success++
+					}
 				} else {
-					//@ts-ignore, above we check for presence
-					countersProcEventsMap.get(newImage["__proc"]).success++
-				}
-			} else {
-				if ((newImage["meta"] as string).startsWith("errored")) {
-					countersProcEventsMap.set(newImage["__proc"], { success: 0, errored: 1 })
-				} else {
-					countersProcEventsMap.set(newImage["__proc"], { success: 1, errored: 0 })
+					if ((newImage["meta"] as string).startsWith("errored")) {
+						countersProcEventsMap.set(newImage["__proc"], { success: 0, errored: 1 })
+					} else {
+						countersProcEventsMap.set(newImage["__proc"], { success: 1, errored: 0 })
+					}
 				}
 			}
 		}

@@ -8,7 +8,10 @@ import { RefKey } from './interfaces';
 import { DynamoItem } from './DynamoItem';
 
 export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
+    const ditem = toAttributeMap(item)
     !process.env.DEBUGGER || loginfo(`In transactPutItem. refkeys:`, __item_refkeys)
+    !process.env.DEBUGGER || loginfo(`item to create:`, item)
+    !process.env.DEBUGGER || loginfo(`ditem:`, ditem)
 
 
     // New approach where reffered item is being loaded in same key as the corresponding refkey but with Upper case first letter
@@ -23,7 +26,7 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     }
     // <-- 
 
-    const ditem = toAttributeMap(item)
+    
 
     const itemTransactWriteItemList: TransactWriteItemList = [
         {

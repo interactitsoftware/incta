@@ -13,9 +13,17 @@
                 "type": "string",
                 "indexed": true,
                 "unique": true
+            },
+            "date_created": {
+                "type": "string",
+                "indexed": true
             }
         },
         "Airport": {
+            "date_created": {
+                "type": "string",
+                "indexed": true
+            },
             "name": {
                 "type": "string",
                 "indexed": true,
@@ -364,6 +372,10 @@
             "flight": {
                 "type": "string"
             }
+        },
+        "DBMigration_AddCreatedIndex": {
+        },
+        "DBMigration_AddCreatedIndexForAirport": {
         },
         "GenerateInvoices": {}
     },

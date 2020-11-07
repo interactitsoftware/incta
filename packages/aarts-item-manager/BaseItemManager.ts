@@ -31,6 +31,15 @@ export class DynamoCommandItem {
     strictDomainMode?: boolean
 }
 
+
+/**
+ * TODO 
+ * - remove the arrays support (which is anyways not completed and only cause chaos)
+ * - remove *save method and directly call transactPut
+ * - add if (__type == BASE) also for update method
+ * - wrap the update also in a try catch for tracing __proc keys
+ * - conider this try catch on some higher level?
+ */
 export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager<T> {
 
     public lookupItems: Map<string, AnyConstructor<DynamoItem & DomainItem>>
@@ -70,8 +79,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             // mark procedures as done when total_events=processed_events
             // TODO refine it not to cycle indefinetley
-            if (newImage.id.startsWith("P__") && (newImage.revisions === 0 || newImage.revisions === 1) 
-            && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) >= (newImage["total_events"] as number)) {
+            if (newImage.id.startsWith("P__") && (newImage.revisions === 0 || newImage.revisions === 1)
+                && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) >= (newImage["total_events"] as number)) {
                 console.log(`ISSUING UPDATE-${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
                 const P__from_db = await getItemById(newImage.__typename, newImage.id)
                 if (!!P__from_db && !!P__from_db[0]) {
@@ -582,12 +591,18 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      */
     async *create(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
         !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Begin create method. Doing a gate check of payload. Received args: `, args)
-
-        // for await (const baseValidateResult of this.baseValidateCreate(__type, args)) {
-        //     !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateCreate] output: `, baseValidateResult)
-        //     yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: baseValidateResult }] }
-        // }
         try {
+            if (__type === "BASE") {
+                !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Begin create method. type is BASE! Directly calling transact put without any checks`, args)
+                const result = await transactPutItem(args.payload.arguments[0], [])
+                return { resultItems: [result], identity: args.payload.identity }
+            }
+
+            // for await (const baseValidateResult of this.baseValidateCreate(__type, args)) {
+            //     !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateCreate] output: `, baseValidateResult)
+            //     yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: baseValidateResult }] }
+            // }
+
             const asyncGenBase = this.baseValidateCreate(__type, args)
             let processorBase
             do {
@@ -641,11 +656,11 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 await dynamoDbClient.putItem({
                     Item: {
                         id: { S: args.payload.arguments[0].__proc },
-                        __proc: {S: args.payload.arguments[0].__proc},
+                        __proc: { S: args.payload.arguments[0].__proc },
                         meta: { S: `errored|${args.meta.sqsMsgId || args.meta.ringToken}` },
                         err: { S: `${err && err.message ? err.message : err}` },
-                        stack: { S: `${err && err.stack ? err.stack.slice(0,500) : ''}` },
-                        ringToken: {S: args.meta.ringToken}
+                        stack: { S: `${err && err.stack ? err.stack.slice(0, 500) : ''}` },
+                        ringToken: { S: args.meta.ringToken }
                     },
                     TableName: DB_NAME
                 }).promise()

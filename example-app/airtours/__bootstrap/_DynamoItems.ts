@@ -13,6 +13,8 @@ import { EraseData } from "./items/EraseData"
 import { TestDataGenerator } from "./items/TestDataGenerator"
 import { CreateTourists } from "./items/CreateTourists"
 import { CreateTouristsProperly } from "./items/CreateTouristsProperly"
+import { DBMigration_AddCreatedIndex } from "./items/DBMigration_AddCreatedIndex"
+import { DBMigration_AddCreatedIndexForAirport } from "./items/DBMigration_AddCreatedIndexForAirport"
 import { GenerateInvoices } from "./items/GenerateInvoices"
 import { FlightsInvolvingCountry } from "./items/FlightsInvolvingCountry"
 
@@ -31,13 +33,17 @@ const __type__EraseData: string = "P__EraseData"
 const __type__TestDataGenerator: string = "P__TestDataGenerator"
 const __type__CreateTourists: string = "P__CreateTourists"
 const __type__CreateTouristsProperly: string = "P__CreateTouristsProperly"
+const __type__DBMigration_AddCreatedIndex: string = "P__DBMigration_AddCreatedIndex"
+const __type__DBMigration_AddCreatedIndexForAirport: string = "P__DBMigration_AddCreatedIndexForAirport"
 const __type__GenerateInvoices: string = "P__GenerateInvoices"
 
 export class CountryItem extends DynamoItem(Country, __type__Country, [
     { key:"name", unique: true },
     { key:"code", unique: true },
+    { key:"date_created" },
 ]) { }
 export class AirportItem extends DynamoItem(Airport, __type__Airport, [
+    { key:"date_created" },
     { key:"name", unique: true },
     { key:"airport_size" },
     { key:"country" , ref: __type__Country},
@@ -105,6 +111,10 @@ export class TestDataGeneratorItem extends DynamoItem(TestDataGenerator, __type_
 export class CreateTouristsItem extends DynamoItem(CreateTourists, __type__CreateTourists, [
 ]) { }
 export class CreateTouristsProperlyItem extends DynamoItem(CreateTouristsProperly, __type__CreateTouristsProperly, [
+]) { }
+export class DBMigration_AddCreatedIndexItem extends DynamoItem(DBMigration_AddCreatedIndex, __type__DBMigration_AddCreatedIndex, [
+]) { }
+export class DBMigration_AddCreatedIndexForAirportItem extends DynamoItem(DBMigration_AddCreatedIndexForAirport, __type__DBMigration_AddCreatedIndexForAirport, [
 ]) { }
 export class GenerateInvoicesItem extends DynamoItem(GenerateInvoices, __type__GenerateInvoices, [
 ]) { }
