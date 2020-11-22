@@ -23,11 +23,6 @@ export interface IBaseDynamoItemProps {
     ringToken?: string
 }
 
-export interface DdbQueryOutput<T> {
-    items?: T[],
-    count?: number,
-    lastEvaluatedKey: DdbGSIItemKey
-}
 export interface DdbQueryInput extends DdbLoadPeersInput{
     pk: string | number
     range?: string | number | {min:string|number, max:string|number}
@@ -41,10 +36,12 @@ export interface DdbQueryInput extends DdbLoadPeersInput{
     }[],
     limit?: number
     paginationToken?: DdbGSIItemKey
+    ringToken: string
 } 
 
 export interface DdbGetInput extends DdbLoadPeersInput{
-    pks: DdbTableItemKey[]
+    pks: DdbTableItemKey[],
+    ringToken: string
 }
 
 export interface DdbLoadPeersInput {

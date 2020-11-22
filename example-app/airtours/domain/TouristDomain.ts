@@ -10,9 +10,9 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateCreate(tourist: TouristItem, identity: IIdentity): AsyncGenerator<AartsPayload, TouristItem, undefined> {
+    async *validateCreate(tourist: TouristItem, identity: IIdentity): AsyncGenerator<string, TouristItem, undefined> {
         const errors: string[] = []
 
         // domain logic for tourist creation
@@ -25,7 +25,7 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
         
         // -- test simulating errored commands
         if (tourist.fname === names[0]) {
-            yield { resultItems: [{ message: "Sorry tourists with that name already exists [just simulating error here]" }, errors] }
+            yield "Sorry tourists with that name already exists [just simulating error here]"
             throw new Error("Sorry tourists with that name already exists [just simulating error here]")
         }
         // -- end test
@@ -34,7 +34,7 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
             // do not tolerate missing pieces
             // examine payload for missing fields or directly examine the errors array and throw error
             if (errors.length > 0) {
-                yield { resultItems: [{ message: `Create Tourist Failed` }, errors] }
+                yield `Create Tourist Failed`
                 throw new Error(`${errors.join(";;")}`)
             }
         } else {
@@ -60,58 +60,58 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
             }
         }
 
-        yield { resultItems: [{ message: `Successfuly created Tourist` }] }
+        yield `Successfuly created Tourist`
         return tourist
 
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateUpdate(tourist: TouristItem, identity: IIdentity): AsyncGenerator<AartsPayload, TouristItem, undefined> {
+    async *validateUpdate(tourist: TouristItem, identity: IIdentity): AsyncGenerator<string, TouristItem, undefined> {
         const errors: string[] = []
 
         // domain logic for tourist update
 
 
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Tourist Failed` }, errors] }
+            yield `Update Tourist Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Tourist` }] }
+            yield `Successfuly updated Tourist`
             return tourist
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateDelete(tourist: TouristItem, identity: IIdentity): AsyncGenerator<AartsPayload, TouristItem, undefined> {
+    async *validateDelete(tourist: TouristItem, identity: IIdentity): AsyncGenerator<string, TouristItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Delete Tourist Failed` }, errors] }
+            yield `Delete Tourist Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly deleted Tourist` }] }
+            yield `Successfuly deleted Tourist`
             return tourist
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
         return args
     }
     /**
      * Validating the get parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
 }

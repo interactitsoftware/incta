@@ -1,0 +1,14 @@
+{
+    "action": "create",
+    "item": "Airplane",
+    "arguments": {
+        "reg_uq_str": "abc",
+        "reg_uq_number": 5,
+        "number_of_seats": 5,
+        "model": "abc",
+        "manifacturer": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

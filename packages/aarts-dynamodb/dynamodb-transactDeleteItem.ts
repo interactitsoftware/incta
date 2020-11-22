@@ -9,7 +9,7 @@ import { RefKey } from './interfaces';
 import { DynamoItem } from './DynamoItem';
 
 
-export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, __item_refkeys: RefKey<T>[]): Promise<T> => {
+export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, __item_refkeys: RefKey<T>[], ringToken: string): Promise<T> => {
     let itemUpdates = { id: existingItem.id, meta: existingItem.meta } //i.e all items are to be updated, when deleting
 
     const drevisionsUpdates = toAttributeMap(
@@ -22,11 +22,11 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
 
 
     //#region DEBUG msg
-    !process.env.DEBUGGER || loginfo('existing item ', existingItem)
-    !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
-    !process.env.DEBUGGER || loginfo("drevisionsUpdates ", drevisionsUpdates)
-    !process.env.DEBUGGER || loginfo("ditemUpdates ", ditemUpdates)
-    !process.env.DEBUGGER || loginfo("dexistingItemkey ", dexistingItemkey)
+    !process.env.DEBUGGER || loginfo({ringToken}, 'existing item ', ppjson(existingItem))
+    !process.env.DEBUGGER || loginfo({ringToken}, 'itemUpdates ', ppjson(itemUpdates))
+    !process.env.DEBUGGER || loginfo({ringToken}, "drevisionsUpdates ", ppjson(drevisionsUpdates))
+    !process.env.DEBUGGER || loginfo({ringToken}, "ditemUpdates ", ppjson(ditemUpdates))
+    !process.env.DEBUGGER || loginfo({ringToken}, "dexistingItemkey ", ppjson(dexistingItemkey))
     //#endregion
 
     const updateExpr = `set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision, ${Object.keys(ditemUpdates).filter(uk => uk != "revisions").map(uk => `#${uk} = :${uk}`).join(", ")}`
@@ -113,8 +113,8 @@ export const transactDeleteItem = async <T extends DynamoItem>(existingItem: T, 
     }
 
     try {
-        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", result)
+        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params), ringToken)
+        !process.env.DEBUGGER || loginfo({ringToken}, "====DDB==== TransactWriteItemsOutput: ", ppjson(result))
     } catch (err) {
         throw new Error(ppjson({ request: params, error: err }))
     }

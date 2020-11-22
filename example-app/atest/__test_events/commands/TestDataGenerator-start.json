@@ -1,0 +1,12 @@
+{
+    "action": "start",
+    "item": "TestDataGenerator",
+    "arguments": {
+        "useNamesLength": 5,
+        "touristsToCreate": 5,
+        "on_success": null
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

@@ -6,8 +6,8 @@ import { ppjson } from "aarts-utils"
 
 export class FlightsInvolvingCountryQuery extends BaseDynamoItemManager<FlightsInvolvingCountryItem> {
     // Queries are BaseDynamoItemManagers with overwritten query method. Code will not call validateQuery and baseValidateQuery in this case
-    async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+    async *query(item: string, args: AartsEvent): AsyncGenerator<string, AartsPayload, undefined> {
 
-        return { resultItems: [{}] }
+        return { result: {} }
     }
 }

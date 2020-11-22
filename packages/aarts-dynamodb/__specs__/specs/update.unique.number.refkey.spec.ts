@@ -19,7 +19,8 @@ describe('update.unique.number.refkey', () => {
         id: arrangedItem.id,
         meta: arrangedItem.meta,
         revisions: arrangedItem.revisions,
-        reg_uq_number: 13
+        reg_uq_number: 13,
+        ringToken: 'test-ring-token'
       }, _specs_AirplaneItem.__refkeys).then(async updateResult => {
         expect(updateResult).toBeInstanceOf(_specs_AirplaneItem)
 
@@ -47,7 +48,8 @@ describe('update.unique.number.refkey', () => {
       id: airplane1.id,
       meta: airplane1.meta,
       revisions: airplane1.revisions,
-      reg_uq_number: 21
+      reg_uq_number: 21,
+      ringToken: 'test-ring-token'
     }, _specs_AirplaneItem.__refkeys)).rejects.toThrow()
 
     // const ddbUpdated = await queryForId(airplane1.id)

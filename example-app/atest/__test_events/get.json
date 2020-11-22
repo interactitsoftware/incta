@@ -1,0 +1,14 @@
+{
+    "action": "get",
+    "item": "any-domain-item",
+    "arguments": {
+        "pks": [
+            {
+                "id": "Invoice|2dacef14-b905-43f5-aa24-c5d2d87900b6"
+            }
+        ]
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

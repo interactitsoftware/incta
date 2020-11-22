@@ -14,46 +14,19 @@ describe('manager.start', () => {
     done()
   })
 
-  test('payload.arguments passed must be an array', async () => {
+  test('payload.arguments passed must not be array', async () => {
     const domainItem = new _specs_Airplane({ duration_hours: 15, reg_uq_str: "nomer5", reg_uq_number: 5 })
 
-    const callWithPayloadNotArray = async () => {
+    const callWithPayloadArray = async () => {
       for await (let dataImporterResult of await domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
-        _specs_DataImporterItem.__type,
-        {
-          payload: {
-            arguments: domainItem,
-            identity: "akrsmv"
-          },
-          meta: {
-            item: "notneededfortest",
-            action: "query",
-            eventSource: "notneededfortest",
-            ringToken: "notneededfortest"
-          }
-
-        }
-      )) { }
-    }
-
-    return expect(callWithPayloadNotArray).rejects.toThrow(/\[Proc__AirtoursDataImporter:baseValidateStart\] Payload is not a single element array! \{\}/)
-
-  })
-
-  test('payload.arguments passed must be a single element array', async () => {
-    const domainItem = new _specs_Airplane({ duration_hours: 15, reg_uq_str: "nomer5", reg_uq_number: 5 })
-
-    const callWithPayloadNotArray = async () => {
-      for await (let dataImporterResult of await domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
-        _specs_DataImporterItem.__type,
         {
           payload: {
             arguments: [domainItem, domainItem],
             identity: "akrsmv"
           },
           meta: {
-            item: "notneededfortest",
-            action: "query",
+            item: _specs_DataImporterItem.__type,
+            action: "start",
             eventSource: "notneededfortest",
             ringToken: "notneededfortest"
           }
@@ -62,23 +35,22 @@ describe('manager.start', () => {
       )) { }
     }
 
-    return expect(callWithPayloadNotArray).rejects.toThrow(/Payload is not a single element array/)
+    return expect(callWithPayloadArray).rejects.toThrow(/payload.arguments must not be an array!/)
 
   })
 
-  test('starts corresponding procedure', async () => {
-    const prc_params = { a: "a", b: ["b", 1], d: { d1: "d1", d2: "d2", d3: 1 } }
-    const domainItem = new _specs_DataImporterItem({ prc_params })
+  test.only('starts corresponding procedure', async () => {
+
+    const domainItem = new _specs_DataImporterItem()
     const createGenerator = domainAdapter.itemManagers[_specs_DataImporterItem.__type].start(
-      _specs_DataImporterItem.__type,
       {
         payload: {
-          arguments: [domainItem],
+          arguments: domainItem,
           identity: "akrsmv"
         },
         meta: {
-          item: "notneededfortest",
-          action: "query",
+          item: _specs_DataImporterItem.__type,
+          action: "start",
           eventSource: "notneededfortest",
           ringToken: "notneededfortest"
         }
@@ -92,17 +64,8 @@ describe('manager.start', () => {
       }
     } while (!processorCreate.done)
 
-
-    expect(processorCreate.value.resultItems?.length).toBe(1)
-    if (processorCreate.value.resultItems && processorCreate.value.resultItems[0]) {
-      expect(processorCreate.value.resultItems[0].arguments.prc_params).toEqual(prc_params)
-    } else {
-      throw Error("result items was empty")
-    }
-
     //assert all items created
     const allItems: ScanOutput = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
-
     return expect(allItems.Count).toBe(730) //total items after the test data seeder finishes
   })
 })

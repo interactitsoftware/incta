@@ -8,62 +8,62 @@ export class OrderDomain extends BaseDynamoItemManager<OrderItem> {
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateCreate(order: OrderItem, identity: IIdentity): AsyncGenerator<AartsPayload, OrderItem, undefined> {
+    async *validateCreate(order: OrderItem, identity: IIdentity): AsyncGenerator<string, OrderItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Create Order Failed` }, errors] }
+            yield `Create Order Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly created Order` }] }
+            yield `Successfuly created Order`
             return order
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateUpdate(order: OrderItem, identity: IIdentity): AsyncGenerator<AartsPayload, OrderItem, undefined> {
+    async *validateUpdate(order: OrderItem, identity: IIdentity): AsyncGenerator<string, OrderItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Order Failed` }, errors] }
+            yield `Update Order Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Order` }] }
+            yield `Successfuly updated Order`
             return order
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateDelete(order: OrderItem, identity: IIdentity): AsyncGenerator<AartsPayload, OrderItem, undefined> {
+    async *validateDelete(order: OrderItem, identity: IIdentity): AsyncGenerator<string, OrderItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Delete Order Failed` }, errors] }
+            yield `Delete Order Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly deleted Order` }] }
+            yield `Successfuly deleted Order`
             return order
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
         return args
     }
     /**
      * Validating the get parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield { result: [{ message: `message here` }] }
      */
-    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
 }

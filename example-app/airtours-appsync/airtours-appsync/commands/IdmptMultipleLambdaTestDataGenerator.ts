@@ -62,7 +62,7 @@ export class IdmptMultipleLambdaTestDataGenerator {
                     "eventSource": "worker:input",
                     "ringToken": ringToken
                 }
-            })).payload.resultItems[0]
+            })).payload.result
         }
     }
 

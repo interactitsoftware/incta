@@ -417,7 +417,7 @@ const dynamo_q2_2022 = await this.createItem(
                 "eventSource": "worker:input",
                 "ringToken": ringToken
             }
-        })).payload.resultItems[0]
+        })).payload.result
     }
 
     /**

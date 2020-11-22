@@ -1,6 +1,5 @@
 import * as AWS from "aws-sdk";
 
-
 export interface AppSyncEvent {
     action: string,
     item: string,

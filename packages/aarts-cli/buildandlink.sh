@@ -18,7 +18,7 @@ echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-types
 npm install && npm update
 npm version patch
-npm run build_lin
+npm run build
 cd dist
 npm publish -m "dev update"
 
@@ -30,7 +30,7 @@ echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-eb-types
 npm install && npm update
 npm version patch
-npm run build_lin
+npm run build
 cd dist
 npm publish -m "dev update"
 #npm link
@@ -66,7 +66,7 @@ cd $AARTS_HOME/packages/aarts-handler
 # npm link aarts-types
 npm install && npm update
 npm version patch
-npm run build_lin
+npm run build
 cd dist
 npm publish -m "dev update"
 # npm link
@@ -80,7 +80,7 @@ cd $AARTS_HOME/packages/aarts-eb-handler
 # npm link aarts-handler
 npm install && npm update
 npm version patch
-npm run build_lin
+npm run build
 cd dist
 npm publish -m "dev update"
 # npm link
@@ -132,8 +132,6 @@ npm run build
 cd dist
 npm publish -m "dev update"
 
-
-
 echo ------------------------------------------------
 echo            CREATE_AARTS_APP
 echo ------------------------------------------------
@@ -173,17 +171,17 @@ npm publish -m "dev update"
 # npm run build
 
 
-echo ------------------------------------------------
-echo            AARTS_EXAMPLE_APPSYNC
-echo ------------------------------------------------
-cd $AARTS_HOME/example-app/airtours-appsync/airtours-appsync
-# npm link aarts-dynamodb
-# npm link aarts-eb-handler
-# npm link aarts-eb-notifier
-# npm link aarts-eb-dispatcher
-npm install && npm update
-npm version patch
-npm run build_lin
+# echo ------------------------------------------------
+# echo            AARTS_EXAMPLE_APPSYNC
+# echo ------------------------------------------------
+# cd $AARTS_HOME/example-app/airtours-appsync/airtours-appsync
+# # npm link aarts-dynamodb
+# # npm link aarts-eb-handler
+# # npm link aarts-eb-notifier
+# # npm link aarts-eb-dispatcher
+# npm install && npm update
+# npm version patch
+# npm run build_lin
 
 # echo ------------------------------------------------
 # echo            AARTS_EXAMPLE_APPSYNC_INFRA

@@ -38,7 +38,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                ""
+                "manager.start"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "openOnFirstSessionStart",
@@ -52,7 +52,7 @@
             "args": [
                 "--runInBand",
                 "--testNamePattern",
-                "buildPojo"
+                "cqr.generator"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "openOnFirstSessionStart",

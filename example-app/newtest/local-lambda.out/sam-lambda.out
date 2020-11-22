@@ -1,0 +1,821 @@
+[32mSTART RequestId: 146af69f-cfeb-1f87-f6b7-9d89dac75dfc Version: $LATEST[0m
+2020-11-21T10:38:10.142Z	146af69f-cfeb-1f87-f6b7-9d89dac75dfc	INFO	5c213c2f-3403-4288-b6d2-40540154f0e6 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "5c213c2f-3403-4288-b6d2-40540154f0e6",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "start",\n' +
+    '        "item": "EraseData"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {},\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+[32mEND RequestId: 146af69f-cfeb-1f87-f6b7-9d89dac75dfc[0m
+[32mREPORT RequestId: 146af69f-cfeb-1f87-f6b7-9d89dac75dfc	Init Duration: 618.20 ms	Duration: 12058.61 ms	Billed Duration: 12100 ms	Memory Size: 256 MB	Max Memory Used: 80 MB	[0m
+[32mSTART RequestId: 31c947c5-d57d-16fd-139f-ea24887db4fb Version: $LATEST[0m
+2020-11-21T10:39:34.754Z	31c947c5-d57d-16fd-139f-ea24887db4fb	INFO	2cd43217-033b-44f3-bafc-28d3be6ec14e [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "2cd43217-033b-44f3-bafc-28d3be6ec14e",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "start",\n' +
+    '        "item": "GenerateAirtoursData"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {},\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+[32mEND RequestId: 31c947c5-d57d-16fd-139f-ea24887db4fb[0m
+[32mREPORT RequestId: 31c947c5-d57d-16fd-139f-ea24887db4fb	Init Duration: 381.82 ms	Duration: 8766.56 ms	Billed Duration: 8800 ms	Memory Size: 256 MB	Max Memory Used: 84 MB	[0m
+[32mSTART RequestId: e66939ec-f0ac-1037-8345-80e4b68e67eb Version: $LATEST[0m
+2020-11-21T10:49:20.498Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "start",\n' +
+    '        "item": "GenerateTourists"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "touristsToCreate": 5,\n' +
+    '            "useNamesLength": 5,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "iban": "abc",\n' +
+    '            "toAirport": "abc",\n' +
+    '            "fromAirport": "abc",\n' +
+    '            "toCountry": "abc",\n' +
+    '            "fromCountry": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "flight": "abc"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.536Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1834682,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.536Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1834682,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.584Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1255094,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.584Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1255094,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.633Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1920235,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.633Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1920235,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.683Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 2225439,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.683Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 2225439,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.734Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1562809,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:49:20.735Z	e66939ec-f0ac-1037-8345-80e4b68e67eb	INFO	190b8a0e-8b1e-414d-93e0-42be7d1b3f87 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1562809,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|190b8a0e-8b1e-414d-93e0-42be7d1b3f87",\n' +
+    '            "ringToken": "190b8a0e-8b1e-414d-93e0-42be7d1b3f87"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+[32mEND RequestId: e66939ec-f0ac-1037-8345-80e4b68e67eb[0m
+[32mREPORT RequestId: e66939ec-f0ac-1037-8345-80e4b68e67eb	Init Duration: 374.78 ms	Duration: 317.55 ms	Billed Duration: 400 ms	Memory Size: 256 MB	Max Memory Used: 76 MB	[0m
+[32mSTART RequestId: 7a99c165-85be-1159-9694-e6a3ff068334 Version: $LATEST[0m
+2020-11-21T10:50:03.778Z	7a99c165-85be-1159-9694-e6a3ff068334	INFO	73a89252-d6ac-4b17-8bf4-0120870384e7 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "73a89252-d6ac-4b17-8bf4-0120870384e7",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "start",\n' +
+    '        "item": "EraseData"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {},\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+[32mEND RequestId: 7a99c165-85be-1159-9694-e6a3ff068334[0m
+[32mREPORT RequestId: 7a99c165-85be-1159-9694-e6a3ff068334	Init Duration: 375.63 ms	Duration: 12665.55 ms	Billed Duration: 12700 ms	Memory Size: 256 MB	Max Memory Used: 78 MB	[0m
+[32mSTART RequestId: dd1e1f78-29ec-1806-1b9c-af3721d4d251 Version: $LATEST[0m
+2020-11-21T10:50:41.378Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "start",\n' +
+    '        "item": "GenerateTourists"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "touristsToCreate": 5,\n' +
+    '            "useNamesLength": 5,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "iban": "abc",\n' +
+    '            "toAirport": "abc",\n' +
+    '            "fromAirport": "abc",\n' +
+    '            "toCountry": "abc",\n' +
+    '            "fromCountry": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "flight": "abc"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.409Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1585573,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.409Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 1585573,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.430Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 2086496,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.430Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 2086496,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.456Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 2023361,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.456Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 2023361,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.484Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 2004641,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.484Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 2004641,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.512Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  'Received input ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 545053,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:50:41.513Z	dd1e1f78-29ec-1806-1b9c-af3721d4d251	INFO	36e9b9b5-3e86-4223-a09a-26b297d328c1 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "create",\n' +
+    '        "item": "Tourist"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {\n' +
+    '            "iban": "abc",\n' +
+    '            "id_card": 545053,\n' +
+    '            "fname": "abc",\n' +
+    '            "lname": "abc",\n' +
+    '            "flight": "abc",\n' +
+    '            "airplane": "abc",\n' +
+    '            "from_airport": "abc",\n' +
+    '            "to_airport": "abc",\n' +
+    '            "from_country": "abc",\n' +
+    '            "to_country": "abc",\n' +
+    '            "__proc": "P__GenerateTourists|36e9b9b5-3e86-4223-a09a-26b297d328c1",\n' +
+    '            "ringToken": "36e9b9b5-3e86-4223-a09a-26b297d328c1"\n' +
+    '        },\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+[32mEND RequestId: dd1e1f78-29ec-1806-1b9c-af3721d4d251[0m
+[32mREPORT RequestId: dd1e1f78-29ec-1806-1b9c-af3721d4d251	Init Duration: 385.06 ms	Duration: 192.68 ms	Billed Duration: 200 ms	Memory Size: 256 MB	Max Memory Used: 76 MB	[0m
+[32mSTART RequestId: 318ae15a-4dc7-1b03-2c7f-96da13461f8f Version: $LATEST[0m
+2020-11-21T10:51:37.770Z	318ae15a-4dc7-1b03-2c7f-96da13461f8f	INFO	4daac6bd-0f53-4a75-b31b-791648e9bc65 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "4daac6bd-0f53-4a75-b31b-791648e9bc65",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "start",\n' +
+    '        "item": "EraseData"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {},\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+[32mEND RequestId: 318ae15a-4dc7-1b03-2c7f-96da13461f8f[0m
+[32mREPORT RequestId: 318ae15a-4dc7-1b03-2c7f-96da13461f8f	Init Duration: 367.16 ms	Duration: 1130.56 ms	Billed Duration: 1200 ms	Memory Size: 256 MB	Max Memory Used: 75 MB	[0m
+[32mSTART RequestId: 0aa5c691-71e6-1af1-94e9-27615ca72580 Version: $LATEST[0m
+2020-11-21T10:52:50.552Z	0aa5c691-71e6-1af1-94e9-27615ca72580	INFO	fb3cacc0-c768-4d23-9500-25a442db55c5 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "fb3cacc0-c768-4d23-9500-25a442db55c5",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "start",\n' +
+    '        "item": "GenerateAirtoursData"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {},\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+[32mEND RequestId: 0aa5c691-71e6-1af1-94e9-27615ca72580[0m
+[32mREPORT RequestId: 0aa5c691-71e6-1af1-94e9-27615ca72580	Init Duration: 419.06 ms	Duration: 8368.11 ms	Billed Duration: 8400 ms	Memory Size: 256 MB	Max Memory Used: 83 MB	[0m
+[32mSTART RequestId: 4b8baae4-8c7c-19a5-6ef8-f38fbb6085d7 Version: $LATEST[0m
+2020-11-21T10:54:29.123Z	4b8baae4-8c7c-19a5-6ef8-f38fbb6085d7	INFO	519c8f6e-e617-4c4d-92a9-1c61dccf8133 [
+  '[AartsHandler:processPayloadAsync] Received payload: ',
+  '{\n' +
+    '    "meta": {\n' +
+    '        "ringToken": "519c8f6e-e617-4c4d-92a9-1c61dccf8133",\n' +
+    '        "eventSource": "worker:input:undefined",\n' +
+    '        "action": "start",\n' +
+    '        "item": "GenerateAirtoursData"\n' +
+    '    },\n' +
+    '    "payload": {\n' +
+    '        "arguments": {},\n' +
+    '        "identity": {\n' +
+    '            "username": "testuser"\n' +
+    '        }\n' +
+    '    }\n' +
+    '}'
+]
+2020-11-21T10:54:29.182Z	4b8baae4-8c7c-19a5-6ef8-f38fbb6085d7	ERROR	undefined: Error calling dynamo: {
+    "message": "Transaction cancelled, please refer cancellation reasons for specific reasons [None, None, ConditionalCheckFailed]",
+    "code": "TransactionCanceledException",
+    "time": "2020-11-21T10:54:29.182Z",
+    "requestId": "a467580b-73ee-4471-ab78-9a80668727dc",
+    "statusCode": 400,
+    "retryable": false,
+    "retryDelay": 28.755931429057235
+}
+2020-11-21T10:54:29.182Z	4b8baae4-8c7c-19a5-6ef8-f38fbb6085d7	INFO	[
+  { Code: 'None' },
+  { Code: 'None' },
+  {
+    Item: { meta: [Object], id: [Object] },
+    Code: 'ConditionalCheckFailed',
+    Message: 'The conditional request failed'
+  }
+] [
+    {
+        "Code": "None"
+    },
+    {
+        "Code": "None"
+    },
+    {
+        "Item": {
+            "meta": {
+                "S": "Bulgaria"
+            },
+            "id": {
+                "S": "uq|Country}name"
+            }
+        },
+        "Code": "ConditionalCheckFailed",
+        "Message": "The conditional request failed"
+    }
+]
+[32mEND RequestId: 4b8baae4-8c7c-19a5-6ef8-f38fbb6085d7[0m
+[32mREPORT RequestId: 4b8baae4-8c7c-19a5-6ef8-f38fbb6085d7	Init Duration: 379.75 ms	Duration: 78.50 ms	Billed Duration: 100 ms	Memory Size: 256 MB	Max Memory Used: 75 MB	[0m

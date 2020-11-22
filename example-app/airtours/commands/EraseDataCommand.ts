@@ -19,7 +19,7 @@ export class EraseDataCommand extends BaseDynamoItemManager<EraseDataItem> {
         // here you can apply further domain logic on permissions, authorizations etc
         
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Start EraseData Failed` }, errors] }
+            yield { result: [{ message: `Start EraseData Failed` }, errors] }
             throw new Error(`${errors.join(";;")}`)
         }
 

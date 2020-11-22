@@ -1,8 +1,9 @@
-import { _specs_AirplaneItem, /**_specs_AirplaneRefkeys */ } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
+import { _specs_AirplaneItem } from "aarts-dynamodb/__specs__/testmodel/_DynamoItems"
 import { transactPutItem } from "aarts-dynamodb"
 import { clearDynamo, queryForId } from "aarts-dynamodb/__specs__/testutils"
 import { versionString, refkeyitemmeta } from "aarts-dynamodb"
 import { domainAdapter } from "../testmodel/itemManagersMap"
+import { AirplaneItem } from "../testmodel/_DynamoItems"
 
 describe('manager.update.spec', () => {
 
@@ -14,19 +15,19 @@ describe('manager.update.spec', () => {
 
     return await transactPutItem(airplane, _specs_AirplaneItem.__refkeys).then(async arrangedItem => { // arrange existing item
 
-      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type,
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(
         {
           payload: {
-            arguments: [{ // update arranged item
+            arguments: { // update arranged item
               id: arrangedItem.id,
               meta: arrangedItem.meta,
               revisions: arrangedItem.revisions,
               number_of_seats: 13
-            }],
+            },
             identity: "akrsmv"
           },
           meta: {
-            item: "notneededfortest",
+            item: AirplaneItem.__type,
             action: "query",
             eventSource: "notneededfortest",
             ringToken: "notneededfortest"
@@ -41,11 +42,7 @@ describe('manager.update.spec', () => {
         }
       } while (!updateProcessor.done)
 
-      if (updateProcessor.value.resultItems && updateProcessor.value.resultItems[0]) {
-        expect(updateProcessor.value.resultItems[0].number_of_seats).toBe(11)
-      } else {
-        throw new Error("resultItems was null")
-      }
+      expect((updateProcessor.value.result as _specs_AirplaneItem).number_of_seats).toBe(11)
 
       const createdItems = await queryForId(airplane.id)
 
@@ -65,20 +62,20 @@ describe('manager.update.spec', () => {
       const allBeforeUpdate = await queryForId(airplane.id)
       expect(allBeforeUpdate.length).toBe(4) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats, 4 - ringToken
 
-      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type,
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(
         {
           payload: {
-            arguments: [{ // update arranged item
+            arguments: { // update arranged item
               id: arrangedItem.id,
               meta: arrangedItem.meta,
               revisions: arrangedItem.revisions,
               //@ts-ignore
               number_of_seats: "__del__"
-            }],
+            },
             identity: "akrsmv"
           },
           meta: {
-            item: "notneededfortest",
+            item: AirplaneItem.__type,
             action: "query",
             eventSource: "notneededfortest",
             ringToken: "the new ring token"
@@ -92,10 +89,10 @@ describe('manager.update.spec', () => {
           updateProcessor = await updateGen.next()
         }
       } while (!updateProcessor.done)
-      if (updateProcessor.value.resultItems && updateProcessor.value.resultItems[0]) {
-        expect(updateProcessor.value.resultItems[0]).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1 }))// main item returned, 
+      if (updateProcessor.value.result && updateProcessor.value.result) {
+        expect(updateProcessor.value.result).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1 }))// main item returned, 
       } else {
-        throw new Error("resultItems was null")
+        throw new Error("result was null")
       }
       const all = await queryForId(airplane.id)
       expect(all.length).toBe(4) // 1 main item, 2 history of update, 3 refkey for manifacturer, 4 - ringToken [no 5 - refkey for number_of_seats was deleted]
@@ -117,20 +114,20 @@ describe('manager.update.spec', () => {
       const allBeforeUpdate = await queryForId(airplane.id)
       expect(allBeforeUpdate.length).toBe(3) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats, [ no 4 - ringToken]
 
-      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type,
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(
         {
           payload: {
-            arguments: [{ // update arranged item
+            arguments: { // update arranged item
               id: arrangedItem.id,
               meta: arrangedItem.meta,
               revisions: arrangedItem.revisions,
               //@ts-ignore
               number_of_seats: "__del__"
-            }],
+            },
             identity: "akrsmv"
           },
           meta: {
-            item: "notneededfortest",
+            item: AirplaneItem.__type,
             action: "query",
             eventSource: "notneededfortest",
             ringToken: "the new ring token"
@@ -145,10 +142,10 @@ describe('manager.update.spec', () => {
         }
       } while (!updateProcessor.done)
 
-      if (updateProcessor.value.resultItems && updateProcessor.value.resultItems[0]) {
-        expect(updateProcessor.value.resultItems[0]).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1 })) // main item returned, 
+      if (updateProcessor.value.result && updateProcessor.value.result) {
+        expect(updateProcessor.value.result).toEqual(Object.assign({}, airplane, { number_of_seats: undefined, revisions: 1 })) // main item returned, 
       } else {
-        throw Error("resultItems was empty")
+        throw Error("result was empty")
       }
 
       const all = await queryForId(airplane.id)
@@ -168,8 +165,7 @@ describe('manager.update.spec', () => {
     })
   })
 
-
-  test('update does a single property update which is not a refkey', async () => {
+  test('update a single property update which is not a refkey', async () => {
 
     const airplane = new _specs_AirplaneItem({ number_of_seats: 11, manifacturer: "to", some_other_prop: 14, another_prop: "14" })
 
@@ -178,19 +174,19 @@ describe('manager.update.spec', () => {
       const allBeforeUpdate = await queryForId(airplane.id)
       expect(allBeforeUpdate.length).toBe(3) // 1 main item, 2 refkey for manifacturer, 3 refkey for number_of_seats, [ no 4 - ringToken]
 
-      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(_specs_AirplaneItem.__type,
+      const updateGen = await domainAdapter.itemManagers[_specs_AirplaneItem.__type].update(
         {
           payload: {
-            arguments: [{ // update arranged item
+            arguments: { // update arranged item
               id: arrangedItem.id,
               meta: arrangedItem.meta,
               revisions: arrangedItem.revisions,
               prop_that_is_not_refkey: "tralalala"
-            }],
+            },
             identity: "akrsmv"
           },
           meta: {
-            item: "notneededfortest",
+            item: AirplaneItem.__type,
             action: "update",
             eventSource: "notneededfortest",
             ringToken: "the new ring token"
@@ -204,10 +200,10 @@ describe('manager.update.spec', () => {
           updateProcessor = await updateGen.next()
         }
       } while (!updateProcessor.done)
-      if (updateProcessor.value.resultItems && updateProcessor.value.resultItems[0]) {
-        expect(updateProcessor.value.resultItems[0]).toEqual(Object.assign({}, airplane, { revisions: 1 }))// main item returned, 
+      if (updateProcessor.value.result && updateProcessor.value.result) {
+        expect(updateProcessor.value.result).toEqual(Object.assign({}, airplane, { revisions: 1 }))// main item returned, 
       } else {
-        throw new Error("resultItems was null")
+        throw new Error("result was null")
       }
       const all = await queryForId(airplane.id)
       expect(all.length).toBe(5) // 1 main item, 2 history of update, 3 refkey for manifacturer, 4 - ringToken, 5 - refkey for number_of_seats was deleted

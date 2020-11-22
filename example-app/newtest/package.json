@@ -1,0 +1,31 @@
+{
+  "name": "newtest",
+  "version": "1.0.0",
+  "description": "newtest provisioned by aarts",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rm -fr ./dist",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.9",
+    "aarts-dynamodb": "^0.4.654",
+    "aarts-dynamodb-events": "^1.0.648",
+    "aarts-eb-dispatcher": "^1.0.645",
+    "aarts-eb-handler": "^0.3.648",
+    "aarts-eb-notifier": "^0.1.349",
+    "aarts-item-manager": "^0.4.670",
+    "aarts-types": "^0.2.666",
+    "aarts-utils": "^0.2.661",
+    "aws-sdk": "^2.797.0"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4"
+  }
+}

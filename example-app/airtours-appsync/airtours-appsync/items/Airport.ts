@@ -12,22 +12,22 @@ export class AirportManager extends BaseDynamoItemManager<AirportItem> {
 
             if (airport.airport_size === 100) {
                 errors.push("airport_size: nah 100 is taken")
-                yield { resultItems: [{ message:  "airport_size: nah 100 is taken"}]}
+                yield { result: [{ message:  "airport_size: nah 100 is taken"}]}
             }
             if (airport.airport_size <= 10) {
                 errors.push("airport_size: cannot be le than 10")
-                yield { resultItems: [{ message:   "airport_size: cannot be le than 10"}]}
+                yield { result: [{ message:   "airport_size: cannot be le than 10"}]}
             }
             if (airport.airport_size > 1000) {
                 errors.push("size: cannot be greater than 1000")
-                yield { resultItems: [{ message: "size: cannot be greater than 1000"}]}
+                yield { result: [{ message: "size: cannot be greater than 1000"}]}
             }
 
             if (errors.length > 0) {
                 console.log('INVALID airport: ', errors)
-                throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)
+                throw new Error(`${process.env.ringToken}: ${errors.join(";;")}`)// DONT USE process.env.ringToken - can be overridden between calls
             } else {
-                yield { resultItems: [{ message: "Voila! A valid airport!"}]}
+                yield { result: [{ message: "Voila! A valid airport!"}]}
                 loginfo('valid airport','aaAA', airport, {tralala: "123"}, 5, [1,2,3,'create something'])
                 return airport
             }

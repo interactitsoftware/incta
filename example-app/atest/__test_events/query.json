@@ -1,0 +1,13 @@
+{
+    "action": "query",
+    "item": "any-domain-item",
+    "arguments": {
+        "pk": "Airport|241ae3e3-4525-42c4-85f2-e99d3a7d008c",
+        "ddbIndex": "smetadata__meta",
+        "loadPeersLevel": 1,
+        "peersPropsToLoad": []
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

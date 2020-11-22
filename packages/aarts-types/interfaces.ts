@@ -5,10 +5,10 @@ export type IIdentity = any
 export type IItemManagerKeys = keyof IItemManager<any>
 
 export interface AartsEvent {
-    payload: AartsPayload;
-    meta: AartsMeta;
-    eventType?: "output" | "input" | undefined;
-    jobType?: "short" | "long" | undefined;
+    payload: AartsPayload
+    meta: AartsMeta
+    eventType?: "output" | "input" | undefined
+    jobType?: "short" | "long" | undefined
 }
 
 export interface AartsMeta {
@@ -22,9 +22,15 @@ export interface AartsMeta {
 export interface AartsPayload<T = any> {
     arguments?: any
     identity?: any
-    resultItems?: T[]
+    result?: DBQueryOutput<T> | T
     selectionSetList?: string
 }
+
+export interface DBQueryOutput<T> {
+    items: T[],
+    nextPage?: any
+}
+
 export interface IDomainAdapter<BASE_ITEM> {
     lookupItems: Map<string, AnyConstructor<BASE_ITEM>>
     itemManagers: { [key: string]: IItemManager<BASE_ITEM> }
@@ -38,12 +44,12 @@ export interface IItemManager<TItem = any> {
     
     // this is why for example the create is resolving not just to DynamoItems (=TItem[]) (which is only of interest)
     // but is also carying the identity (=AartsPayload) - > TODO revise this, return objects may be narrowed down
-    create(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
-    update(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
-    delete(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
-    start(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
-    get(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
-    query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload<TItem>, AartsPayload<TItem>, undefined>
+    create(args: AartsEvent): AsyncGenerator<string, AartsPayload<TItem>, undefined>
+    update(args: AartsEvent): AsyncGenerator<string, AartsPayload<TItem>, undefined>
+    delete(args: AartsEvent): AsyncGenerator<string, AartsPayload<TItem>, undefined>
+    start(args: AartsEvent): AsyncGenerator<string, AartsPayload<TItem>, undefined>
+    get(args: AartsEvent): AsyncGenerator<string, AartsPayload<TItem>, undefined>
+    query(args: AartsEvent): AsyncGenerator<string, AartsPayload<TItem>, undefined>
 }
 
 export interface IItemManagerCallback<TItem = any> {

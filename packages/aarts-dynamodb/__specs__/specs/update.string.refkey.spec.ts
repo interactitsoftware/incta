@@ -19,7 +19,8 @@ describe('update string refkey', () => {
       id: arrangedItem.id,
       meta: arrangedItem.meta,
       revisions: arrangedItem.revisions,
-      tourist_season: "season-2"
+      tourist_season: "season-2",
+      ringToken: 'test-ring-token'
     }, _specs_FlightItem.__refkeys)
 
     expect(updateResult).toBeInstanceOf(_specs_FlightItem)

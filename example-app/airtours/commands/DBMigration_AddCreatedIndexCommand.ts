@@ -15,7 +15,7 @@ export class DBMigration_AddCreatedIndexCommand extends BaseDynamoItemManager<DB
         // here you can apply further domain logic on permissions, authorizations etc
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Start DBMigration_AddCreatedIndex Failed` }, errors] }
+            yield { result: [{ message: `Start DBMigration_AddCreatedIndex Failed` }, errors] }
             throw new Error(`${errors.join(";;")}`)
         }
 

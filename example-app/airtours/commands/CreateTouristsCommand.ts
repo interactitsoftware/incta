@@ -9,7 +9,7 @@ export class CreateTouristsCommand extends BaseDynamoItemManager<CreateTouristsI
     /**
     * Command parameters preparation and/or validation
     */
-    async *validateStart(proc: AartsPayload<CreateTouristsItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+    async *validateStart(proc: CreateTouristsItem, identity: IIdentity): AsyncGenerator<string, CreateTouristsItem, undefined> {
         proc.arguments.start_date = new Date().toISOString()
 
         const errors: string[] = []
@@ -17,7 +17,7 @@ export class CreateTouristsCommand extends BaseDynamoItemManager<CreateTouristsI
         // here you can apply further domain logic on permissions, authorizations etc
         
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Start CreateTourists Failed` }, errors] }
+            yield `Start CreateTourists Failed`
             throw new Error(`${errors.join(";;")}`)
         }
 
@@ -28,7 +28,7 @@ export class CreateTouristsCommand extends BaseDynamoItemManager<CreateTouristsI
     /**
     * Command Implementation
     */
-    async execute(__type: string, args: AartsEvent) : Promise<CreateTouristsItem> { 
+    async execute(__type: string, args: CreateTouristsItem) : Promise<CreateTouristsItem> { 
 
         for (let i = 0; i < Number(args.payload.arguments.touristsToCreate || 10); i++) {
             const flightsFound = await getItemsByRefkeyValue<FlightItem>(FlightItem.__type, "flight_code", args.payload.arguments.flightCode as string)

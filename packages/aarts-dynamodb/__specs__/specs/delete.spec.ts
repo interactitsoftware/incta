@@ -18,7 +18,7 @@ describe('delete item', () => {
     expect(allBeforeDelete.length).toBe(2)
     expect(airplane.revisions).toBe(0)
 
-    const deleteResult = await transactDeleteItem(airplane, _specs_AirplaneItem.__refkeys)
+    const deleteResult = await transactDeleteItem(airplane, _specs_AirplaneItem.__refkeys, "test-ringToken")
     expect(deleteResult).toEqual(airplane)
     expect(airplane.revisions).toBe(1)
     

@@ -63,5 +63,5 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": ["**/*.d.ts", "dist", "node_modules", "aarts-test-app"]
+  "exclude": ["**/*.d.ts", "dist", "node_modules", "**/aarts-test-app"]
 }

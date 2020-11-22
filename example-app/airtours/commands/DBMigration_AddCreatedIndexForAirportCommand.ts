@@ -9,12 +9,12 @@ export class DBMigration_AddCreatedIndexForAirportCommand extends BaseDynamoItem
     /**
     * Command parameters preparation and/or validation
     */
-    async *validateStart(proc: AartsPayload<DBMigration_AddCreatedIndexForAirportItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+    async *validateStart(proc: DBMigration_AddCreatedIndexForAirportItem): AsyncGenerator<string, DBMigration_AddCreatedIndexForAirportItem, undefined> {
 
         // here you can apply further domain logic on permissions, authorizations etc
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Start DBMigration_AddCreatedIndexForAirport Failed` }, errors] }
+            yield `Start DBMigration_AddCreatedIndexForAirport Failed`
             throw new Error(`${errors.join(";;")}`)
         }
 

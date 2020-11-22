@@ -13,7 +13,7 @@ export class GenerateInvoicesCommand extends BaseDynamoItemManager<GenerateInvoi
         // here you can apply further domain logic on permissions, authorizations etc
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Start GenerateInvoices Failed` }, errors] }
+            yield { result: [{ message: `Start GenerateInvoices Failed` }, errors] }
             throw new Error(`${errors.join(";;")}`)
         }
 

@@ -9,10 +9,9 @@ import { DynamoItem } from './DynamoItem';
 
 export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: RefKey<T>[]): Promise<T> => {
     const ditem = toAttributeMap(item)
-    !process.env.DEBUGGER || loginfo(`In transactPutItem. refkeys:`, __item_refkeys)
-    !process.env.DEBUGGER || loginfo(`item to create:`, item)
-    !process.env.DEBUGGER || loginfo(`ditem:`, ditem)
-
+    !process.env.DEBUGGER || loginfo({ringToken: item.ringToken as string}, `In transactPutItem. refkeys:`, ppjson(__item_refkeys))
+    !process.env.DEBUGGER || loginfo({ringToken: item.ringToken as string}, `item to create:`, ppjson(item))
+    !process.env.DEBUGGER || loginfo({ringToken: item.ringToken as string}, `ditem:`, ppjson(ditem))
 
     // New approach where reffered item is being loaded in same key as the corresponding refkey but with Upper case first letter
     // --> check for any refs loaded and unload them before creating starts
@@ -25,8 +24,6 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
         }
     }
     // <-- 
-
-    
 
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
@@ -75,8 +72,8 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
 
     // write item to the database
     try {
-        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", result)
+        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params), item.ringToken as string)
+        !process.env.DEBUGGER || loginfo({ringToken: item.ringToken as string}, "====DDB==== TransactWriteItemsOutput: ", ppjson(result))
     } catch (err) {
         throw new Error(/*ppjson({request: params, error: err})*/err)
     }

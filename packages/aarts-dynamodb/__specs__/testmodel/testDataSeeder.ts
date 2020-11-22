@@ -64,7 +64,7 @@ export const seedAirtoursData = async () : Promise<number> => {
     const flight_pt_mw = await transactPutItem(new _specs_FlightItem({ tourist_season: "2021/Q3", duration_hours: 5, flight_code: "F19", airplane: plane_tu144_reg333.id, from_airport: ru_airport_pt.id, to_airport: ru_airport_mw.id, from_country: ru_country.id, to_country: ru_country.id }), _specs_FlightItem.__refkeys)
     const flight_pt_sf = await transactPutItem(new _specs_FlightItem({ tourist_season: "2021/Q3", duration_hours: 7, flight_code: "F20", airplane: plane_mc21_reg111.id, from_airport: ru_airport_pt.id, to_airport: bg_airport_sf.id, from_country: ru_country.id, to_country: bg_country.id }), _specs_FlightItem.__refkeys)
   
-    // // many tourists
+    // // many tourists (392 in total)
     // //flight_sf_mw
     for (let i = 0; i < 2; i++) {
       await transactPutItem(new _specs_TouristItem({ flight: flight_sf_mw.id, airplane: plane_mc21_reg111.id, from_airport: bg_airport_sf.id, to_airport: ru_airport_mw.id, from_country: bg_country.id, to_country: ru_country.id }))

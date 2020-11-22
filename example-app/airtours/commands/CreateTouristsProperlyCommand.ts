@@ -15,7 +15,7 @@ export class CreateTouristsProperlyCommand extends BaseDynamoItemManager<CreateT
         // here you can apply further domain logic on permissions, authorizations etc
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Start CreateTouristsProperly Failed` }, errors] }
+            yield { result: [{ message: `Start CreateTouristsProperly Failed` }, errors] }
             throw new Error(`${errors.join(";;")}`)
         }
 

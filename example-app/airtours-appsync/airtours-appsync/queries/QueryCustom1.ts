@@ -29,7 +29,7 @@ export class QueryCustom1Manager extends BaseDynamoItemManager<QueryCustom1Item>
         const res = (airports.items as DynamoItem[]).concat(flights.items as DynamoItem[])
         !process.env.DEBUGGER || loginfo(`[${item}:QUERY] End. Result: `, res)
         
-        return { resultItems: [{items:[res]}] }
+        return { result: [{items:[res]}] }
     }
 
 }

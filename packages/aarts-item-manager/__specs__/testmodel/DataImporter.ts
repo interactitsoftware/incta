@@ -1,8 +1,8 @@
-import { seedAirtoursData } from "./testDataSeeder"
-import { AartsEvent, AartsPayload, IIdentity } from "aarts-types/interfaces"
+import { IIdentity } from "aarts-types/interfaces"
 import { BaseDynamoItemManager, DynamoCommandItem } from "../../BaseItemManager"
-import { _specs_AirportItem, _specs_DataImporterItem } from "./_DynamoItems"
 import { ppjson } from "aarts-utils"
+import { _specs_DataImporterItem } from "./_DynamoItems"
+import { seedAirtoursData } from "aarts-dynamodb/__specs__/testmodel/testDataSeeder"
 
 export class _specs_DataImporter extends DynamoCommandItem {
     constructor(...args: any[]) {
@@ -23,21 +23,19 @@ export class _specs_DataImporter extends DynamoCommandItem {
 
 export class _specs_DataImporterManager extends BaseDynamoItemManager<_specs_DataImporterItem> {
 
-    async *validateStart(proc: AartsPayload<_specs_DataImporterItem>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+    async *validateStart(proc: _specs_DataImporterItem, identity: IIdentity): AsyncGenerator<string, _specs_DataImporterItem, never> {
         console.log("VALIDATE STARTING " + ppjson(proc))
         const errors: string[] = []
         // can apply further domain logic on permissions, authorizations etc
         // if this method returns without throwing error, the execute method will be called 
-
-        proc.arguments.start_date = new Date().toISOString()
         return proc
     }
 
-    async execute(__type: string, args: AartsEvent): Promise<_specs_DataImporterItem> {
+    async execute(proc: _specs_DataImporterItem, ringToken: string): Promise<_specs_DataImporterItem> {
 
         await seedAirtoursData()
 
-        return args.payload.arguments as _specs_DataImporterItem
+        return proc
     }
 }
 

@@ -11,10 +11,10 @@ import { DynamoItem } from './DynamoItem';
 export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, itemUpdates: Partial<T>, __item_refkeys: RefKey<T>[]): Promise<T> => {
 
     //#region DEBUG msg
-    !process.env.DEBUGGER || loginfo('START TransactUpdateItem')
-    !process.env.DEBUGGER || loginfo('existing item ', existingItem)
-    !process.env.DEBUGGER || loginfo('itemUpdates ', itemUpdates)
-    !process.env.DEBUGGER || loginfo('itemUpdates ', __item_refkeys)
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, 'START TransactUpdateItem')
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, 'existing item ', ppjson(existingItem))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, 'itemUpdates ', ppjson(itemUpdates))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, 'itemUpdates ', ppjson(__item_refkeys))
     //#endregion
 
     // --> check for any refs loaded and unload them before updating starts
@@ -41,15 +41,15 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
     if (Object.keys(ditemUpdates).length === 0 || (Object.keys(ditemUpdates).length === 1 && "revisions" in ditemUpdates)) {
         // no new updates, only revision passed
-        throw new Error(`${process.env.ringToken}: no new update for id[${existingItem.id}]`)
+        throw new Error(`${itemUpdates.ringToken as string}: no new update for id[${existingItem.id}]`)
     }
     if (!!ditemUpdates["__typename"]) {
         // forbid changing item's type
-        throw new Error(`${process.env.ringToken}: changing __typename is forbidden`)
+        throw new Error(`${itemUpdates.ringToken as string}: changing __typename is forbidden`)
     }
     if (!ditemUpdates["revisions"]) {
         // forbid changing item if revisions is not passed
-        throw new Error(`${process.env.ringToken}: changing item without passing revisions is forbidden`)
+        throw new Error(`${itemUpdates.ringToken as string}: changing item without passing revisions is forbidden`)
     }
 
     const updateExpr = "set #revisions = if_not_exists(#revisions, :start_revision) + :inc_revision"
@@ -77,17 +77,17 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
             }, {})
 
     //#region DEBUG msg
-    !process.env.DEBUGGER || loginfo("drevisionsUpdates ", drevisionsUpdates)
-    !process.env.DEBUGGER || loginfo("ditemUpdates ", ditemUpdates)
-    !process.env.DEBUGGER || loginfo("dKeysToDelete ", dKeysToDelete)
-    !process.env.DEBUGGER || loginfo("dKeysTuUpdate ", dKeysTuUpdate)
-    !process.env.DEBUGGER || loginfo("drefkeyUpdates ", drefkeyUpdates)
-    !process.env.DEBUGGER || loginfo("dexistingItemkey ", dexistingItemkey)
-    !process.env.DEBUGGER || loginfo("updateExpr ", updateExpr)
-    !process.env.DEBUGGER || loginfo("updateExpressionNames ", updateExpressionNames)
-    !process.env.DEBUGGER || loginfo("updateExpressionValues ", updateExpressionValues)
-    !process.env.DEBUGGER || loginfo("updateExprHistory ", updateExprHistory)
-    //#endregion
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "drevisionsUpdates ", ppjson(drevisionsUpdates))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "ditemUpdates ", ppjson(ditemUpdates))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "dKeysToDelete ", ppjson(dKeysToDelete))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "dKeysTuUpdate ", ppjson(dKeysTuUpdate))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "drefkeyUpdates ", ppjson(drefkeyUpdates))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "dexistingItemkey ", ppjson(dexistingItemkey))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "updateExpr ", ppjson(updateExpr))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "updateExpressionNames ", ppjson(updateExpressionNames))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "updateExpressionValues ", ppjson(updateExpressionValues))
+    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "updateExprHistory ", ppjson(updateExprHistory))
+    //#endregion{ringToken: itemUpdates.ringToken as string}, 
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
             Update: {
@@ -133,9 +133,9 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                 const dmetadataupdateExpressionValues: Record<AttributeName, AttributeValue> =
                     !!drefkeyUpdates[key].S ? { ":smetadata": drefkeyUpdates[key] } : { ":nmetadata": drefkeyUpdates[key] }
 
-                !process.env.DEBUGGER || loginfo(`Updating refkey: ${key} of ${existingItem.__typename}: `);
-                !process.env.DEBUGGER || loginfo(`dmetadataupdateExpressionNames:`, dmetadataupdateExpressionNames);
-                !process.env.DEBUGGER || loginfo(`dmetadataupdateExpressionValues:`, dmetadataupdateExpressionValues);
+                !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, `Updating refkey: ${key} of ${existingItem.__typename}: `);
+                !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, `dmetadataupdateExpressionNames:`, ppjson(dmetadataupdateExpressionNames));
+                !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, `dmetadataupdateExpressionValues:`, ppjson(dmetadataupdateExpressionValues));
 
                 accum.push({
                     Update: {
@@ -179,7 +179,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                 return accum
             }, [])).concat(
                 Object.keys(dKeysToDelete).reduce<TransactWriteItem[]>((accum, key) => {
-                    !process.env.DEBUGGER || loginfo(`refkey ${key} marked for delete`)
+                    !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, `refkey ${key} marked for delete`)
                     accum.push({
                         Delete: {
                             Key: { id: dexistingItemkey.id, meta: { S: `${existingItem.__typename}}${key}` } },
@@ -199,8 +199,8 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
     delete itemUpdates.revisions
     try {
-        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== TransactWriteItemsOutput: ", result)
+        const result = await ddbRequest(dynamoDbClient.transactWriteItems(params), itemUpdates.ringToken as string)
+        !process.env.DEBUGGER || loginfo({ringToken: itemUpdates.ringToken as string}, "====DDB==== TransactWriteItemsOutput: ", ppjson(result))
     } catch (err) {
         throw new Error(ppjson({ request: params, error: err }))
     }

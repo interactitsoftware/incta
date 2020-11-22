@@ -8,62 +8,62 @@ export class InvoiceDomain extends BaseDynamoItemManager<InvoiceItem> {
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateCreate(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<AartsPayload, InvoiceItem, undefined> {
+    async *validateCreate(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<string, InvoiceItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Create Invoice Failed` }, errors] }
+            yield `Create Invoice Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly created Invoice` }] }
+            yield `Successfuly created Invoice`
             return invoice
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateUpdate(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<AartsPayload, InvoiceItem, undefined> {
+    async *validateUpdate(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<string, InvoiceItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Invoice Failed` }, errors] }
+            yield `Update Invoice Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Invoice` }] }
+            yield `Successfuly updated Invoice`
             return invoice
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateDelete(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<AartsPayload, InvoiceItem, undefined> {
+    async *validateDelete(invoice: InvoiceItem, identity: IIdentity): AsyncGenerator<string, InvoiceItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Delete Invoice Failed` }, errors] }
+            yield `Delete Invoice Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly deleted Invoice` }] }
+            yield `Successfuly deleted Invoice`
             return invoice
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
         return args
     }
     /**
      * Validating the get parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
 }

@@ -1,0 +1,8 @@
+{
+    "action": "start",
+    "item": "EraseData",
+    "arguments": {},
+    "identity": {
+        "username": "testuser"
+    }
+}

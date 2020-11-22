@@ -12,7 +12,7 @@ describe('buildPojo', () => {
     done()
   })
 
-  test.only('writes 2 domain items as specified in input dataModel object', async () => {
+  test('writes 2 domain items as specified in input dataModel object', async () => {
     console.log = jest.fn();
 
     await builder({

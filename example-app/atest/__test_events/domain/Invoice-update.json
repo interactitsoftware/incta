@@ -1,0 +1,18 @@
+{
+    "action": "update",
+    "item": "Invoice",
+    "arguments": {
+        "id": "Invoice|94032ce5-342a-45a3-88b5-e32dacbf5e3d",
+        "revisions": 0,
+        "invoice_nr": "abc",
+        "card_id": "abc",
+        "tourist": "abc",
+        "lname": "abc",
+        "fname": "John",
+        "address1": "abc",
+        "address2": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

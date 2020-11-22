@@ -4,14 +4,14 @@ import { AttributeMap, TransactWriteItemList, TransactWriteItemsInput } from "aw
 import { DB_NAME, ddbRequest, dynamoDbClient, fromAttributeMap } from "aarts-dynamodb/DynamoDbClient"
 import { DynamoItem } from "aarts-dynamodb/DynamoItem"
 
-export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, context: Context, cb: Function) => {
+export const dynamoEventsAggregation = async (evnt: DynamoDBStreamEvent, context: Context, cb: Function) => {
 	let result = {}
-	console.log("received", ppjson(event))
+	!process.env.DEBUGGER || loginfo({ringToken: "aarts-dynamodb-events"}, "received", ppjson(evnt))
 
 	try {
 		//#region // -------------------- AGGREGATE PROCEDURE's PROCESSED/ERRORED EVENTS --------------------
 		const countersProcEventsMap = new Map<string, { success: number, errored: number }>()
-		for (const rec of event.Records.filter(record =>
+		for (const rec of evnt.Records.filter(record =>
 			(
 				!!record.dynamodb?.NewImage
 				&&
@@ -35,7 +35,7 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 		)) {
 			// TODO make it faster, remove the fromAttributeMap call and directly use the record only
 			const newImage = fromAttributeMap(rec.dynamodb?.NewImage as AttributeMap) as DynamoItem
-			!process.env.DEBUGGER || loginfo("new Image: ", newImage)
+			!process.env.DEBUGGER || loginfo({ringToken: "aarts-dynamodb-events"}, "new Image: ", ppjson(newImage))
 			if (countersProcEventsMap.has(newImage["__proc"])) {
 				if ((newImage["meta"] as string).startsWith("errored")) {
 					//@ts-ignore, above we check for presence
@@ -76,8 +76,8 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 				ReturnItemCollectionMetrics: "SIZE",
 				ClientRequestToken: uuid()
 			}
-			const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.transactWriteItems(params))
-			!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", resultUpdateProcEvents)
+			const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.transactWriteItems(params), "aarts-dynamodb-events")
+			!process.env.DEBUGGER || loginfo({ringToken: "aarts-dynamodb-events"}, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
 		}
 		//#endregion
 
@@ -85,7 +85,7 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 		if (!process.env.DO_NOT_AGGREGATE) {
 			const typesByStatusesMapNew = new Map<string, number>()
 			const typesByStatusesMapOld = new Map<string, number>()
-			for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY"
+			for (const rec of evnt.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY"
 				&& !!record.dynamodb?.NewImage && !!record.dynamodb?.OldImage
 				&& (record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(versionString(0))
 				&& (((record.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || { S: "undefined" }).S) !== (((record.dynamodb?.OldImage as { item_state: { S: string } })["item_state"] || { S: "undefined" }).S))) { // fire only for main items
@@ -117,8 +117,8 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 					ExpressionAttributeNames: { [`#count`]: "count" },
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapOld.get(typestateOld)}` } },
 					ReturnValues: "ALL_NEW"
-				}))
-				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", resultUpdateAggrTotalByOldState)
+				}), "aarts-dynamodb-events")
+				!process.env.DEBUGGER || loginfo({ringToken: "aarts-dynamodb-events"}, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByOldState))
 			}
 
 
@@ -133,14 +133,14 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 					ExpressionAttributeNames: { [`#count`]: "count" },
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapNew.get(typestateNew)}` } },
 					ReturnValues: "ALL_NEW"
-				}))
-				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", resultUpdateAggrTotalByNewState)
+				}), "aarts-dynamodb-events")
+				!process.env.DEBUGGER || loginfo({ringToken: "aarts-dynamodb-events"}, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByNewState))
 			}
 
 
 			// ----------- AGGREGATE NEW RECORDS ----------------
 			typesByStatusesMapNew.clear()
-			for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT"
+			for (const rec of evnt.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "INSERT"
 				&& !!record.dynamodb?.NewImage && (record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith(`v_0`))) { // fire only for main items
 
 				const counter = `${((rec.dynamodb?.NewImage as { __typename: { S: string } })["__typename"] || { S: "undefined" }).S}|${((rec.dynamodb?.NewImage as { item_state: { S: string } })["item_state"] || { S: "undefined" }).S}`
@@ -163,8 +163,8 @@ export const dynamoEventsAggregation = async (event: DynamoDBStreamEvent, contex
 					ExpressionAttributeNames: { [`#count`]: "count" },
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapNew.get(typestateNew)}` } },
 					ReturnValues: "ALL_NEW"
-				}))
-				!process.env.DEBUGGER || loginfo("====DDB==== UpdateItemOutput: ", resultUpdateAggrTotalByNewState)
+				}), "aarts-dynamodb-events")
+				!process.env.DEBUGGER || loginfo({ringToken: "aarts-dynamodb-events"}, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByNewState))
 			}
 		}
 		//#endregion

@@ -25,7 +25,7 @@ describe('CreateTouristsProperly', () => {
     for await (let res of await manager.start(CreateTouristsProperlyItem.__type, {
       meta: { action: "start", eventSource: "worker:input", item: TouristItem.__type, ringToken: uuid() },
       payload: {
-        arguments: [{
+        arguments: {
           "touristsToCreate": 10,
           "useNamesLength": 1,
           "toAirport": "Sofia airport",
@@ -34,7 +34,7 @@ describe('CreateTouristsProperly', () => {
           "fromCountry": "Russia",
           "airplane": "abc-airplane",
           "flight": "abc-flight"
-        }],
+        },
         identity: {
           username: "testuser"
         }

@@ -8,63 +8,58 @@ import { ppjson } from "aarts-utils"
 export class ##ITEM##Domain extends BaseDynamoItemManager<##ITEM##Item> {
     /**
      * Validating the query parameters and user identity.
-     * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: \`message here\` }] }
+     * Each yielded string will be sent via AppSync as push notification
      */
-    async *validateCreate(##ITEM_LOWERC##: ##ITEM##Item, identity: IIdentity): AsyncGenerator<AartsPayload, ##ITEM##Item, undefined> {
+    async *validateCreate(##ITEM_LOWERC##: ##ITEM##Item, identity: IIdentity, ringToken: string): AsyncGenerator<string, ##ITEM##Item, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: \`Create ##ITEM## Failed\` }, errors] }
+            yield \`Create ##ITEM## Failed\`
             throw new Error(\`\${errors.join(";;")}\`)
         } else {
-            yield { resultItems: [{ message: \`Successfuly created ##ITEM##\` }] }
+            yield \`Successfuly created ##ITEM##\`
             return ##ITEM_LOWERC##
         }
     }
     /**
      * Validating the query parameters and user identity.
-     * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: \`message here\` }] }
+     * Each yielded string will be sent via AppSync as push notification
      */
-    async *validateUpdate(##ITEM_LOWERC##: ##ITEM##Item, identity: IIdentity): AsyncGenerator<AartsPayload, ##ITEM##Item, undefined> {
+    async *validateUpdate(##ITEM_LOWERC##: ##ITEM##Item, identity: IIdentity, ringToken: string): AsyncGenerator<string, ##ITEM##Item, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: \`Update ##ITEM## Failed\` }, errors] }
+            yield \`Update ##ITEM## Failed\`
             throw new Error(\`\${errors.join(";;")}\`)
         } else {
-            yield { resultItems: [{ message: \`Successfuly updated ##ITEM##\` }] }
+            yield \`Successfuly updated ##ITEM##\`
             return ##ITEM_LOWERC##
         }
     }
     /**
      * Validating the query parameters and user identity.
-     * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: \`message here\` }] }
+     * Each yielded string will be sent via AppSync as push notification
      */
-    async *validateDelete(##ITEM_LOWERC##: ##ITEM##Item, identity: IIdentity): AsyncGenerator<AartsPayload, ##ITEM##Item, undefined> {
+    async *validateDelete(##ITEM_LOWERC##: ##ITEM##Item, identity: IIdentity, ringToken: string): AsyncGenerator<string, ##ITEM##Item, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: \`Delete ##ITEM## Failed\` }, errors] }
+            yield \`Delete ##ITEM## Failed\`
             throw new Error(\`\${errors.join(";;")}\`)
         } else {
-            yield { resultItems: [{ message: \`Successfuly deleted ##ITEM##\` }] }
+            yield \`Successfuly deleted ##ITEM##\`
             return ##ITEM_LOWERC##
         }
     }
     /**
      * Validating the query parameters and user identity.
-     * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: \`message here\` }] }
+     * Each yielded string will be sent via AppSync as push notification
      */
-    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async *validateQuery(args: DdbQueryInput, identity: IIdentity, ringToken: string): AsyncGenerator<string, DdbQueryInput, undefined> {
         return args
     }
     /**
      * Validating the get parameters and user identity.
-     * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: \`message here\` }] }
+     * Each yielded string will be sent via AppSync as push notification
      */
-    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity, ringToken: string): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
 }
@@ -81,13 +76,13 @@ export class ##ITEM##Command extends BaseDynamoItemManager<##ITEM##Item> {
     /**
     * Command parameters preparation and/or validation
     */
-    async *validateStart(proc: AartsPayload<##ITEM##Item>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+    async *validateStart(proc: ##ITEM##Item, identity: IIdentity, ringToken: string): AsyncGenerator<string, ##ITEM##Item, undefined> {
 
         // here you can apply further domain logic on permissions, authorizations etc
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: \`Start ##ITEM## Failed\` }, errors] }
-            throw new Error(\`\${errors.join(";;")}\`)
+            yield \`Start ##ITEM## Failed\`
+            throw new Error(\`\${ringToken}: \${errors.join(";;")}\`)
         }
 
         // if this method returns without throwing error, the execute method will be called 
@@ -97,12 +92,12 @@ export class ##ITEM##Command extends BaseDynamoItemManager<##ITEM##Item> {
     /**
     * Command Implementation
     */
-    async execute(__type: string, args: AartsEvent) : Promise<##ITEM##Item> { 
+    async execute(proc: ##ITEM##Item, identity: IIdentity, ringToken: string) : Promise<##ITEM##Item> { 
 
         // command implementation goes here
         // if you need to perform transactional work on another lambda use this.eventsForAsyncProcessing.push(evnt: AppsyncEvent)
 
-        return args.payload.arguments as ##ITEM##Item
+        return proc
     }
 }
 `
@@ -116,9 +111,9 @@ import { ppjson } from "aarts-utils"
 
 export class ##ITEM##Query extends BaseDynamoItemManager<##ITEM##Item> {
     // Queries are BaseDynamoItemManagers with overwritten query method. Code will not call validateQuery and baseValidateQuery in this case
-    async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
+    async *query(args: AartsEvent): AsyncGenerator<string, AartsPayload<##ITEM##Item>, undefined> {
 
-        return { resultItems: [{}] }
+        return { result: { items:[], nextPage: null } }
     }
 }
 `

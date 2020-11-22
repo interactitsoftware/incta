@@ -1,0 +1,15 @@
+{
+    "action": "delete",
+    "item": "Invoice",
+    "arguments": {
+        "pks": [
+            {
+                "id": "Invoice|94032ce5-342a-45a3-88b5-e32dacbf5e3d",
+                "revisions": 1
+            }
+        ]
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

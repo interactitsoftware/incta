@@ -8,62 +8,62 @@ export class CountryDomain extends BaseDynamoItemManager<CountryItem> {
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateCreate(country: CountryItem, identity: IIdentity): AsyncGenerator<AartsPayload, CountryItem, undefined> {
+    async *validateCreate(country: CountryItem, identity: IIdentity): AsyncGenerator<string, CountryItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Create Country Failed` }, errors] }
+            yield `Create Country Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly created Country` }] }
+            yield `Successfuly created Country`
             return country
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateUpdate(country: CountryItem, identity: IIdentity): AsyncGenerator<AartsPayload, CountryItem, undefined> {
+    async *validateUpdate(country: CountryItem, identity: IIdentity): AsyncGenerator<string, CountryItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Country Failed` }, errors] }
+            yield `Update Country Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Country` }] }
+            yield `Successfuly updated Country`
             return country
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateDelete(country: CountryItem, identity: IIdentity): AsyncGenerator<AartsPayload, CountryItem, undefined> {
+    async *validateDelete(country: CountryItem, identity: IIdentity): AsyncGenerator<string, CountryItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Delete Country Failed` }, errors] }
+            yield `Delete Country Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly deleted Country` }] }
+            yield `Successfuly deleted Country`
             return country
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
         return args
     }
     /**
      * Validating the get parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
 }

@@ -1,0 +1,8 @@
+{
+    "action": "query",
+    "item": "TouristFlightsForSeason",
+    "arguments": {},
+    "identity": {
+        "username": "testuser"
+    }
+}

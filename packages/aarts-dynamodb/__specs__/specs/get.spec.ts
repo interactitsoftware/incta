@@ -31,15 +31,15 @@ describe('get', () => {
         {id:airport.id, meta: airport.meta},
         {id:airport2.id, meta: airport2.meta},
         {id:"some not existing", meta: "some not existing"}
-      ]
+      ],
+      ringToken: 'test-ring-token'
     })
 
-    expect(getResult.length).toBe(4)
-    expect(getResult.filter(r=>r.__typename === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 11).length).toBe(1)
-    expect(getResult.filter(r=>r.__typename === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 13).length).toBe(1)
-    expect(getResult.filter(r=>r.__typename === _specs_AirportItem.__type).filter(r => r.airport_size === 200).length).toBe(1)
-    expect(getResult.filter(r=>r.__typename === _specs_AirportItem.__type).filter(r => r.airport_size === 300).length).toBe(1)
-    
+    expect(getResult.items.length).toBe(4)
+    expect(getResult.items.filter(r=>r.__typename === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 11).length).toBe(1)
+    expect(getResult.items.filter(r=>r.__typename === _specs_AirplaneItem.__type).filter(r => r.number_of_seats === 13).length).toBe(1)
+    expect(getResult.items.filter(r=>r.__typename === _specs_AirportItem.__type).filter(r => r.airport_size === 200).length).toBe(1)
+    expect(getResult.items.filter(r=>r.__typename === _specs_AirportItem.__type).filter(r => r.airport_size === 300).length).toBe(1)
   })
 })
 

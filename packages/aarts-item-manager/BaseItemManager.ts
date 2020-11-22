@@ -1,20 +1,21 @@
-import { DB_NAME, ddbRequest, dynamoDbClient, fromAttributeMap, transformGraphQLSelection, versionString } from "aarts-dynamodb";
+import { DB_NAME, dynamoDbClient, fromAttributeMap, transformGraphQLSelection, versionString } from "aarts-dynamodb";
 import { DynamoItem } from "aarts-dynamodb/DynamoItem"
 import { batchGetItem } from "aarts-dynamodb";
 import { transactUpdateItem } from "aarts-dynamodb";
 import { transactPutItem } from "aarts-dynamodb";
 import { queryItems } from "aarts-dynamodb";
 import { transactDeleteItem } from "aarts-dynamodb";
-import { AnyConstructor, Mixin, MixinConstructor } from "aarts-types/Mixin"
-import { uuid, ppjson, loginfo, chunks } from "aarts-utils"
+import { AnyConstructor, MixinConstructor } from "aarts-types/Mixin"
+import { ppjson, loginfo, chunks } from "aarts-utils"
 import { AartsEvent, AartsPayload, IIdentity, IItemManager, IItemManagerKeys } from "aarts-types/interfaces"
-import { DdbQueryInput, RefKey, IBaseDynamoItemProps, IProcedure, DdbTableItemKey, DomainItem, DdbGetInput } from "aarts-dynamodb";
+import { DdbQueryInput, DdbTableItemKey, DomainItem, DdbGetInput } from "aarts-dynamodb";
 import { StreamRecord } from "aws-lambda";
 import { AttributeMap } from "aws-sdk/clients/dynamodb";
 import { getItemById } from "aarts-dynamodb";
 import { AppSyncEvent } from "aarts-eb-types"
 import { controller } from "aarts-eb-dispatcher"
 import { processPayload } from "aarts-eb-handler";
+import { DBQueryOutput } from 'aarts-types';
 
 /**
  * NOTE constructor does nothing here
@@ -28,17 +29,18 @@ export class DynamoCommandItem {
     async_end_date?: string
     processed_events?: number
     errored_events?: number
-    strictDomainMode?: boolean
+    errors?: string
 }
 
 
 /**
  * TODO 
- * - remove the arrays support (which is anyways not completed and only cause chaos)
- * - remove *save method and directly call transactPut
+ * - [OK]remove the arrays support (which is anyways not completed and only cause chaos)
+ * - [OK]remove *save method and directly call transactPut
  * - add if (__type == BASE) also for update method
  * - wrap the update also in a try catch for tracing __proc keys
- * - conider this try catch on some higher level?
+ * - consider this try catch on some higher level?
+ * - maintain DBmigration commands separatley from other commands
  */
 export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager<T> {
 
@@ -61,13 +63,13 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 // break from cycle: dynamodb update -> stream event ->dynamodb update -> etc.. 
                 return
             }
-            !process.env.DEBUGGER || loginfo("_onCreate CALL BACK FIRED for streamRecord ", newImage)
+            !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, "_onCreate CALL BACK FIRED for streamRecord ", ppjson(newImage))
 
             if (typeof this.onCreate === "function") {
-                !process.env.DEBUGGER || loginfo("CALLING ON CREATE CALL BACK for item ", newImage.__typename)
+                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, "CALLING ON CREATE CALL BACK for item ", newImage.__typename)
                 await this.onCreate(__type, newImage)
             } else {
-                !process.env.DEBUGGER || loginfo(`No specific onCreate method was found in manager of ${__type}`)
+                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `No specific onCreate method was found in manager of ${__type}`)
             }
         }
     }
@@ -75,23 +77,23 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         if (dynamodbStreamRecord !== undefined) {
             const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
             const oldImage = fromAttributeMap(dynamodbStreamRecord?.OldImage as AttributeMap) as DynamoItem
-            !process.env.DEBUGGER || loginfo("_onUpdate CALL BACK FIRED for streamRecord ", newImage)
+            !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, "_onUpdate CALL BACK FIRED for streamRecord ", ppjson(newImage))
 
             // mark procedures as done when total_events=processed_events
             // TODO refine it not to cycle indefinetley
             if (newImage.id.startsWith("P__") && (newImage.revisions === 0 || newImage.revisions === 1)
                 && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) >= (newImage["total_events"] as number)) {
-                console.log(`ISSUING UPDATE-${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
-                const P__from_db = await getItemById(newImage.__typename, newImage.id)
-                if (!!P__from_db && !!P__from_db[0]) {
+                !process.env.DEBUGGER || loginfo({ringToken: newImage.ringToken as string}, `ISSUING UPDATE-${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
+                const P__from_db = await getItemById(newImage.__typename, newImage.id, newImage.ringToken as string)
+                if (!!P__from_db) {
                     try { // swallow errors for now
                         await transactUpdateItem(
-                            P__from_db[0],
+                            P__from_db,
                             {
                                 end_date: new Date().toISOString(),
                                 item_state: `${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'success' : 'error'}`,
                                 ringToken: newImage.ringToken,
-                                revisions: P__from_db[0].revisions,
+                                revisions: P__from_db.revisions,
                                 id: newImage.id,
                                 meta: newImage.meta,
                             },
@@ -106,7 +108,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             if (typeof this.onUpdate === "function") {
                 await this.onUpdate(__type, newImage)
             } else {
-                !process.env.DEBUGGER || loginfo(`No specific onUpdate method was found in manager of ${__type}`)
+                !process.env.DEBUGGER || loginfo({ringToken: newImage.ringToken as string}, `No specific onUpdate method was found in manager of ${__type}`)
             }
         }
     }
@@ -114,167 +116,153 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
     //#region START
     /**
-     * implemeneted in client item managers - can add or ammend a query according to business logic
+     * 
+     * @param __type Base method called at the begginig of starting a procedure
+     * Validates and decorates input with necessary props
+     * @param args 
+     */
+    async __validateStart(evnt: AartsEvent): Promise<T> {
+        !process.env.DEBUGGER || loginfo({ringToken: evnt.meta.ringToken}, `[${evnt.meta.item}:__validateStart] START. checking for mandatory item keys: `, ppjson(evnt.payload))
+
+        if (Array.isArray(evnt.payload.arguments)) throw new Error("payload.arguments must not be an array!")
+
+        const proto = this.lookupItems.get(evnt.meta.item)
+
+        if (!proto) {
+            throw new Error(`${evnt.meta.ringToken}: [${evnt.meta.item}:START] Not able to locate dynamo item prototype for item ${evnt.meta.item}`)
+        }
+
+        return Object.assign(
+            new proto(evnt.payload.arguments) as T,
+            {
+                id: `${evnt.meta.item}|${evnt.meta.ringToken}`,
+                ringToken: evnt.meta.ringToken
+            })
+    }
+
+    /**
+     * implemeneted in client item managers 
      * @param args 
      * @param identity 
      */
-    async *validateStart(payload: AartsPayload<T>): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        return payload
-    }
-
-    async *baseValidateStart(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateStart] START. checking for mandatory item keys: `, args.payload)
-        if (!Array.isArray(args.payload.arguments) || args.payload.arguments.length > 1) {
-            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateStart] Payload is not a single element array! ${ppjson(args.payload.arguments)}`)
-        }
-
-        // TODO excerpt seting up the procedure object and assigning the ringToken in here, not in the start method as it is now
-
-        args.payload.arguments[0]["ringToken"] = args.meta.ringToken
-        return args.payload
+    async *validateStart(proc: T, identity: IIdentity, ringToken: string): AsyncGenerator<string, T, any> {
+        return proc
     }
 
     /**
      * 
      * @param __type Domain Commands overwrite this method to implement command's logic
-     * @param args 
+     * @param evnt 
      */
-    async execute(__type: string, args: AartsEvent): Promise<T & DynamoCommandItem> {
-        return args.payload.arguments as T & DynamoCommandItem
+    async execute(proc: T, identity: IIdentity, ringToken: string): Promise<T> {
+        return proc
     }
 
-    async *start(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${__type}:START] Begin start method. Doing a gate check of payload. Received args: `, args)
+    async *start(evnt: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] Begin start method. Doing a gate check of payload. Received evnt: `, ppjson(evnt))
 
-        const proto = this.lookupItems.get(__type)
+        let proc = await this.__validateStart(evnt)
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] proc object, after __validateStart processing it: ${ppjson(proc)}`)
 
-        if (!proto) {
-            throw new Error(`${process.env.ringToken}: [${__type}:START] Not able to locate dynamo item prototype for item ${__type}`)
-        }
-
-        const asyncGenBase = this.baseValidateStart(__type, args)
-        let processorBase
+        const asyncGenDomain = this.validateStart(proc, evnt.payload.identity, evnt.meta.ringToken)
+        let processorDomain
         do {
-            processorBase = await asyncGenBase.next()
-            !process.env.DEBUGGER || loginfo(`[${__type.replace("P__", "")}:baseValidateStart] output: `, processorBase.value)
-            !processorBase.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}]` }, { output: processorBase.value }] })
-        } while (!processorBase.done)
+            processorDomain = await asyncGenDomain.next()
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:validateStart] output: `, ppjson(processorDomain.value))
+            !processorDomain.done && (yield processorDomain.value as string)
+        } while (!processorDomain.done)
 
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] Procedure applicable for Starting: ${ppjson(processorDomain.done)}`)
 
-        const dynamoItems = []
-        for (const arg of processorBase.value.arguments) {
-            let procedure = new proto(arg) as unknown as IProcedure<T> & DynamoItem
-            procedure.id = `${procedure.__typename}|${procedure.ringToken}` // TODO unify in some more general place. Using the ringToken as the GUID part of a procedure, avoiding one more refkey "__proc"
+        // SAVE STATE PRIOR starting - important is to be deterministic on number of events this proc will fire, as this is how we mark it done (comparing processed === total events)
+        proc = await transactPutItem(proc, (this.lookupItems.get(evnt.meta.item) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] proc object, after putting in DB: ${ppjson(proc)}`)
 
-            const asyncGenDomain = this.validateStart(Object.assign(processorBase.value, { arguments: procedure }))
-            let processorDomain
-            do {
-                processorDomain = await asyncGenDomain.next()
-                !process.env.DEBUGGER || loginfo(`[${__type.replace("P__", "")}:validateStart] output: `, processorDomain.value)
-                !processorDomain.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}]` }, { output: processorDomain.value }] })
-            } while (!processorDomain.done)
-
-            dynamoItems.push(processorDomain.value)
-
-            !process.env.DEBUGGER || loginfo(`[${__type}:START] Procedure applicable for Starting.`)
-
-            //#region saving state
-            // SAVE STATE PRIOR starting - important is to be deterministic on number of events this proc will fire, as this is how we mark it done (comparing processed === total events)
-            const asyncGenSave = this.save(__type, Object.assign({}, { identity: args.payload.identity }, { arguments: [processorDomain.value.arguments] }))
-            let processorSave
-            do {
-                processorSave = await asyncGenSave.next()
-                !process.env.DEBUGGER || loginfo(`[${__type.replace("P__", "")}:save] output: `, processorSave.value)
-                !processorSave.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}]` }, { output: processorSave.value }] })
-            } while (!processorSave.done)
-            //#endregion
-            let procedureResult
-            try {
-                const startDate = new Date()
-                procedureResult = await this.execute(__type, args)
-                procedureResult.total_events = this.eventsForAsyncProcessing.length
-                procedureResult.start_date = startDate.toISOString()
-                if (this.eventsForAsyncProcessing.length > 0) {
-                    if (!process.env["AWS_SAM_LOCAL"]) {
-                        // used runtime in aws
-                        for (const chunk of chunks(this.eventsForAsyncProcessing, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
-                            console.log("__proc: " + procedure.id)
-                            await controller({
-                                //"x" values not necessary here. Can it be deleted or for typescript not complaining to leave it ?
-                                "action": "x",
-                                "item": "x",
-                                "jobType": "long",
-                                "ringToken": procedure.ringToken as string,
-                                "arguments": chunk.map(c => {
-                                    Object.assign(c, { ringToken: procedure.ringToken })
-                                    if (Array.isArray(c.arguments)) {
-                                        c.arguments.forEach(arg => {
-                                            Object.assign(arg, { ringToken: procedure.ringToken })
-                                            Object.assign(arg.arguments, { __proc: procedure.id, ringToken: procedure.ringToken })
-                                        })
-                                    } else {
-                                        Object.assign(c.arguments, { __proc: procedure.id, ringToken: procedure.ringToken })
-                                    }
-                                    return c
-                                }),
-                                "identity": {
-                                    "username": "akrsmv"
+        let procedureResult: DynamoItem & DynamoCommandItem = proc as DynamoItem & DynamoCommandItem
+        try {
+            const startDate = new Date()
+            procedureResult = (await this.execute(proc, evnt.payload.identity, evnt.meta.ringToken)) as DynamoItem & DynamoCommandItem
+            procedureResult.total_events = this.eventsForAsyncProcessing.length
+            procedureResult.start_date = startDate.toISOString()
+            if (this.eventsForAsyncProcessing.length > 0) {
+                if (!process.env["AWS_SAM_LOCAL"]) {
+                    // used runtime in aws
+                    for (const chunk of chunks(this.eventsForAsyncProcessing, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
+                        console.log("__proc: " + proc.id)
+                        await controller({
+                            //"x" values not necessary here. Can it be deleted or for typescript not complaining to leave it ?
+                            "action": "x",
+                            "item": "x",
+                            "jobType": "long",
+                            "ringToken": proc.ringToken as string,
+                            "arguments": chunk.map(c => {
+                                Object.assign(c, { ringToken: proc.ringToken })
+                                if (Array.isArray(c.arguments)) {
+                                    c.arguments.forEach(arg => {
+                                        Object.assign(arg, { ringToken: proc.ringToken })
+                                        Object.assign(arg.arguments, { __proc: proc.id, ringToken: proc.ringToken })
+                                    })
+                                } else {
+                                    Object.assign(c.arguments, { __proc: proc.id, ringToken: proc.ringToken })
                                 }
-                            })
-                        }
-                    } else {
-                        // used SAM LOCAL env
-                        for (const evnt of this.eventsForAsyncProcessing) {
-                            await processPayload({
-                                meta: {
-                                    ringToken: args.meta.ringToken as string,
-                                    eventSource: `worker:${evnt.eventType === "output" ? evnt.eventType : "input"}:${evnt.jobType}`,
-                                    action: evnt.action as IItemManagerKeys,
-                                    item: evnt.item
-                                },
-                                payload: {
-                                    arguments: Object.assign(evnt.arguments, { __proc: procedure.id, ringToken: procedure.ringToken }),
-                                    identity: evnt.identity,
-                                }
-                            }, undefined)
-                            loginfo("SAM LOCAL FLATTENING ELEMENT FROM PROCEDURE's EVENTS ARRAY", evnt)
-                        }
+                                return c
+                            }),
+                            "identity": {
+                                "username": "akrsmv"
+                            }
+                        })
                     }
-
-                    this.eventsForAsyncProcessing = []
-                }
-            } catch (ex) {
-                procedure["errors"] = ppjson(ex)
-                procedureResult = procedure
-            } finally {
-                //#region saving state AFTER procedure ended
-                if (procedureResult) {
-                    delete procedureResult["processed_events"] // important to remove this as it may be already asynchronously modified in db from other events
-                    if (!procedureResult.total_events) {
-                        procedureResult.item_state = 'success'
+                } else {
+                    // used SAM LOCAL env
+                    for (const e of this.eventsForAsyncProcessing) {
+                        await processPayload({
+                            meta: {
+                                ringToken: evnt.meta.ringToken as string,
+                                eventSource: `worker:${e.eventType === "output" ? e.eventType : "input"}:${e.jobType}`,
+                                action: e.action as IItemManagerKeys,
+                                item: e.item
+                            },
+                            payload: {
+                                arguments: Object.assign(e.arguments, { __proc: proc.id, ringToken: proc.ringToken }),
+                                identity: evnt.payload.identity,
+                            }
+                        }, undefined)
+                        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, "SAM LOCAL FLATTENING ELEMENT FROM PROCEDURE's EVENTS ARRAY", ppjson(evnt))
                     }
                 }
-                // load latest procedure contents
-                // TODO what if async update of procedure sneak in between getting from db and the consequent update? retries?
-                const P__from_db = await getItemById(procedure.__typename, procedure.id)
-                console.log("WILL SAVE PRIOR STARTING ", ppjson(procedureResult))
-                if (!!P__from_db && !!P__from_db[0]) {
-                    await transactUpdateItem(
-                        P__from_db[0],
-                        // procedure,
-                        {
-                            sync_end_date: new Date().toISOString(),
-                            ...procedureResult,
-                            revisions: P__from_db[0].revisions
-                        },
-                        (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-                }
-                //#endregion
+
+                this.eventsForAsyncProcessing = []
             }
-            !process.env.DEBUGGER || loginfo(`[${__type}:START] Procedure ended.`)
+        } catch (ex) {
+            procedureResult = proc as DynamoItem & DynamoCommandItem
+            procedureResult.errors = ppjson(ex)
+        } finally {
+            //#region saving state AFTER procedure ended
+            // remove processed_events as it may be already asynchronously modified in db from other events
+            delete procedureResult["processed_events"]
+            if (!procedureResult.total_events) {
+                procedureResult.item_state = 'success'
+            }
+            // load latest procedure contents
+            // TODO what if async update of procedure sneak in between getting from db and the consequent update? retries?
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] LOADING RPOCEDURE, CALLING: await getItemById(${proc.__typename}, ${proc.id}, ${evnt.meta.ringToken})`)
+            const P__from_db = await getItemById(proc.__typename, proc.id, evnt.meta.ringToken)
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] WILL TRY(!)UPDATE PROCEDURE ${ppjson(P__from_db)} WITH sync_end_date after its sync execution has ended`, ppjson(procedureResult))
+            if (!!P__from_db) {
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] UPDATING PROCEDURE WITH sync_end_date after its sync execution has ended`, ppjson(procedureResult))
+                procedureResult = await transactUpdateItem(
+                    P__from_db,
+                    {
+                        sync_end_date: new Date().toISOString(),
+                        ...procedureResult,
+                        revisions: P__from_db.revisions
+                    },
+                    (this.lookupItems.get(evnt.meta.item) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys) as DynamoItem & DynamoCommandItem
+            }
+            //#endregion
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] Procedure ended.`)
+            return { result: procedureResult as T }
         }
-
-        return { resultItems: dynamoItems, identity: args.payload.identity }
     }
 
     //#endregion
@@ -285,7 +273,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      * @param identity 
      */
-    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async *validateQuery(args: DdbQueryInput, identity: IIdentity, ringToken: string): AsyncGenerator<string, DdbQueryInput, any> {
         return args
     }
     /**
@@ -293,47 +281,42 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args holds gate checkins, transforming incomming args for dynamodb query
      * @param identity 
      */
-    async *baseValidateQuery(args: DdbQueryInput[], identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async __validateQuery(inputQueryArg: DdbQueryInput, identity: IIdentity, ringToken: string): Promise<DdbQueryInput> {
 
-        if (!Array.isArray(args) || args.length > 1) {
-            throw new Error(`${process.env.ringToken}: [baseValidateQuery] Payload is not a single element array! ${ppjson(args)}`)
+        if (Array.isArray(inputQueryArg)) throw new Error("payload.arguments must not be an array!")
+
+        if (!inputQueryArg.limit || inputQueryArg.limit > 50) {
+            inputQueryArg.limit = 50
         }
 
-        if (!args[0].limit || args[0].limit > 50) {
-            args[0].limit = 50
+        if (!inputQueryArg.pk) {
+            throw new Error(`${ringToken}: [__validateQuery] PK is mandatory when querying`)
+        }
+        // check for proper value on available GSIs
+        if (!!inputQueryArg.ddbIndex && [
+            "meta__id",
+            "meta__smetadata",
+            "smetadata__meta",
+            "meta__nmetadata",
+            "nmetadata__meta",].indexOf(inputQueryArg.ddbIndex) < 0) {
+            throw new Error(`${ringToken}: Provided GSI Name is invalid`)
+        } else if (!!inputQueryArg.ddbIndex) {
+            // infer keys from index provided
+            inputQueryArg.primaryKeyName = inputQueryArg.ddbIndex.substr(0, inputQueryArg.ddbIndex.indexOf("__"))
+            inputQueryArg.rangeKeyName = inputQueryArg.ddbIndex.substr(inputQueryArg.ddbIndex.indexOf("__") + 2)
+        } else {
+            // assume its about the table
+            inputQueryArg.primaryKeyName = "id"
+            inputQueryArg.rangeKeyName = "meta"
         }
 
-        return args.reduce<DdbQueryInput[]>((accum, inputQueryArg) => {
-            if (!inputQueryArg.pk) {
-                throw new Error(`${process.env.ringToken}: [baseValidateQuery] PK is mandatory when querying`)
-            }
-            // check for proper value on available GSIs
-            if (!!inputQueryArg.ddbIndex && [
-                "meta__id",
-                "meta__smetadata",
-                "smetadata__meta",
-                "meta__nmetadata",
-                "nmetadata__meta",].indexOf(inputQueryArg.ddbIndex) < 0) {
-                throw new Error(`${process.env.ringToken}: Provided GSI Name is invalid`)
-            } else if (!!inputQueryArg.ddbIndex) {
-                // infer keys from index provided
-                inputQueryArg.primaryKeyName = inputQueryArg.ddbIndex.substr(0, inputQueryArg.ddbIndex.indexOf("__"))
-                inputQueryArg.rangeKeyName = inputQueryArg.ddbIndex.substr(inputQueryArg.ddbIndex.indexOf("__") + 2)
-            } else {
-                // assume its about the table
-                inputQueryArg.primaryKeyName = "id"
-                inputQueryArg.rangeKeyName = "meta"
-            }
+        if (!process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS) {
+            !process.env.DEBUGGER || loginfo({ ringToken: ringToken }, "WILL START TRANSFORMING ", ppjson(inputQueryArg))
+            Object.assign(inputQueryArg, transformGraphQLSelection(inputQueryArg.selectionSetGraphQL))
+            !process.env.DEBUGGER || loginfo({ ringToken: ringToken }, "transformed ", ppjson(inputQueryArg))
+        }
 
-            if (!process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS) {
-                console.log("WILL START TRANSFORMING ", inputQueryArg)
-                Object.assign(inputQueryArg, transformGraphQLSelection(inputQueryArg.selectionSetGraphQL))
-                console.log("transformed ", inputQueryArg)
-            }
-
-            accum.push(inputQueryArg as unknown as DdbQueryInput)
-            return accum
-        }, [])[0] // TODO query only by one input at a time refactor
+        return inputQueryArg
     }
 
     /**
@@ -345,36 +328,26 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * pagetoken (page nr)
      * 
      * @param item 
-     * @param args 
+     * @param evnt 
      */
-    async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${item}:QUERY] Begin query method.Received arguments: `, args)
+    async *query(evnt: AartsEvent): AsyncGenerator<string, AartsPayload, undefined> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:QUERY] Begin query method.Received arguments: `, ppjson(evnt))
 
-        const asyncGenBaseValidate = this.baseValidateQuery(args.payload.arguments, args.payload.identity) // TODO check for id, meta present
-        let processorBaseValidate = await asyncGenBaseValidate.next()
+        const queryParams = await this.__validateQuery(evnt.payload.arguments, evnt.payload.identity, evnt.meta.ringToken)
+
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, "QUERY IS", ppjson(queryParams))
+
+        const asyncGen = this.validateQuery(queryParams, evnt.payload.identity, evnt.meta.ringToken)
+        let processor
         do {
-            if (!processorBaseValidate.done) {
-                yield { resultItems: [{ message: `[${item}:QUERY] ${processorBaseValidate.value}` }] }
-                processorBaseValidate = await asyncGenBaseValidate.next()
-            }
-        } while (!processorBaseValidate.done)
-
-        !process.env.DEBUGGER || loginfo("QUERIES ARE ", processorBaseValidate.value)
-
-        // this can throw exception due to failed validation, eg. missing id/meta keys
-        const asyncGen = this.validateQuery(processorBaseValidate.value, args.payload.identity) // TODO check for id, meta present
-        let processor = await asyncGen.next()
-        do {
-            if (!processor.done) {
-                yield { resultItems: [{ message: `[${item}:QUERY] ${processor.value}` }] }
-                processor = await asyncGen.next()
-            }
+            processor = await asyncGen.next()
+            !processor.done && (yield processor.value as string)
         } while (!processor.done)
 
-        const dynamoItems = await queryItems(processor.value);
+        const dynamoItems = await queryItems(processor.value as DdbQueryInput);
 
-        !process.env.DEBUGGER || loginfo(`[${item}:QUERY] End.Result: `, { resultItems: [dynamoItems] })
-        return { resultItems: [dynamoItems] }
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:QUERY] End.Result: `, ppjson({ result: dynamoItems }))
+        return { result: dynamoItems }
     }
     //#endregion
 
@@ -384,85 +357,79 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param item implemented by client intem managers, if custom domain validation needed
      * @param identity 
      */
-    async *validateDelete(item: T, identity: IIdentity): AsyncGenerator<AartsPayload, T, undefined> {
+    async *validateDelete(item: T, identity: IIdentity, ringToken: string): AsyncGenerator<string, T, any> {
         return item
     }
     /**
      * 
-     * @param __type gate checks for Update
+     * @param __type gate checks for Delete
      * @param payload 
      */
-    async *baseValidateDelete(__type: string, event: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateDelete] checking for mandatory item keys`)
+    async __validateDelete(evnt: AartsEvent): Promise<DdbGetInput> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:__validateDelete] checking for mandatory item keys`)
 
-        if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
-            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateDelete] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
-        }
+        if (Array.isArray(evnt.payload.arguments)) throw new Error("payload.arguments must not be an array!")
 
-        for (const arg of event.payload.arguments[0].pks) {
+        for (const arg of evnt.payload.arguments.pks) {
             if (!("id" in arg && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
-                throw new Error(`${process.env.ringToken}: id and revisions keys is mandatory when deleting`)
+                throw new Error(`${evnt.meta.ringToken}: id and revisions keys is mandatory when deleting`)
             } else {
-                arg["meta"] = `${versionString(0)}|${__type}`
-                arg["ringToken"] = event.meta.ringToken
+                arg["meta"] = `${versionString(0)}|${evnt.meta.item}`
+                arg["ringToken"] = evnt.meta.ringToken
             }
         }
 
-        return event.payload
+        return evnt.payload.arguments
     }
 
     /**
      * making use of dynamodb transactwriteItems. Making update requests
      * @param __type 
-     * @param args 
+     * @param evnt 
      */
-    async *delete(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
-        yield { resultItems: [{ message: `[${__type}:DELETE] BEGIN delete method. Doing a gate check of payload` }] }
+    async *delete(evnt: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:DELETE] BEGIN delete method. Doing a gate check of payload`, ppjson(evnt))
 
-        for await (const baseValidateResult of this.baseValidateDelete(__type, args)) {
-            yield { resultItems: [{ message: baseValidateResult }] }
+        evnt.payload.arguments = await this.__validateDelete(evnt)
+
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:DELETE] Loading requested items`)
+
+        const dynamoExistingItems = await batchGetItem(evnt.payload.arguments);
+
+        if (dynamoExistingItems.items.length !== evnt.payload.arguments.pks.length) {
+            throw new Error(`${evnt.meta.ringToken}: [${evnt.meta.item}:DELETE] Unable to locate all items corresponding to requested id(s)`)
         }
 
-        !process.env.DEBUGGER || loginfo(`[${__type}:DELETE] Loading requested items`)
-        const dynamoExistingItems = await batchGetItem(args.payload.arguments[0]);
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:DELETE] requested deletion of`, ppjson(dynamoExistingItems))
 
-        if (dynamoExistingItems.length !== args.payload.arguments[0].pks.length) {
-            throw new Error(`${process.env.ringToken}: [${__type}:DELETE] Unable to locate items corresponding to requested id(s)`)
-        }
-
-        yield { resultItems: [{ message: `[${__type}:DELETE] requested deletion of ${ppjson(dynamoExistingItems)}` }] }
-
-
-        for (const existingItem of dynamoExistingItems) {
-            const requestedId = (args.payload.arguments[0].pks as { id: string, revisions: number }[]).filter(pk => pk.id === existingItem.id)[0]
+        for (const existingItem of dynamoExistingItems.items) {
+            const requestedId = (evnt.payload.arguments.pks as { id: string, revisions: number }[]).filter(pk => pk.id === existingItem.id)[0]
             if (existingItem.revisions !== requestedId.revisions) {
-                throw new Error(`${process.env.ringToken}: [${__type}:DELETE] revisions passed does not match item revisions: ${ppjson(requestedId)}`)
+                throw new Error(`${evnt.meta.ringToken}: [${evnt.meta.item}:DELETE] revisions passed does not match item revisions: ${ppjson(requestedId)}`)
             }
         }
 
+        const deletedItems = []
 
-        const updatedItems = []
+        for (const arg of evnt.payload.arguments.pks) {
+            const existingItem = dynamoExistingItems.items.filter(d => d.id == arg.id && d.meta == arg.meta)[0]
 
-        for (const arg of args.payload.arguments[0].pks) {
-            const existingItem = dynamoExistingItems.filter(d => d.id == arg.id && d.meta == arg.meta)[0]
-
-            for await (const domainValidateMessage of this.validateDelete(
-                Object.assign({}, existingItem, arg),
-                args.payload.identity)) {
-                yield { resultItems: [{ message: `[${__type}:validateDelete] ${domainValidateMessage}` }] }
+            for await (const domainValidateMessage of this.validateDelete(Object.assign({}, existingItem, arg), evnt.payload.identity, evnt.meta.ringToken)) {
+                yield `[${evnt.meta.item}:validateDelete] ${domainValidateMessage}`
             }
 
-            updatedItems.push(
+            deletedItems.push(
                 await transactDeleteItem(
                     existingItem,
-                    (this.lookupItems.get(__type) as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys)
+                    (this.lookupItems.get(evnt.meta.item) as AnyConstructor<DynamoItem> & DomainItem & { __refkeys: any[] }).__refkeys,
+                    evnt.meta.ringToken)
             )
         }
 
-        !process.env.DEBUGGER || loginfo(`[${__type}:DELETE] END. Result: `, { arguments: updatedItems, identity: args.payload.identity })
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:DELETE] END. Result: `, ppjson({ result: { items: deletedItems as T[], nextPage: null } }))
 
-        return { arguments: updatedItems, identity: args.payload.identity }
+        return { result: { items: deletedItems as T[], nextPage: null } }
 
     }
     //#endregion
@@ -473,7 +440,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      * @param identity 
      */
-    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity, ringToken: string): AsyncGenerator<string, DdbGetInput, any> {
         return args
     }
     /**
@@ -481,65 +448,55 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args holds gate checks, transforming incomming args for dynamodb getItem
      * @param identity 
      */
-    async *baseValidateGet(args: DdbGetInput[], identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async __validateGet(ddbGetInput: DdbGetInput, ringToken: string): Promise<DdbGetInput> {
+        !process.env.DEBUGGER || loginfo({ringToken},  '[__validateGet] Begin. Doing a gate check of payload. Received arguments: ', ppjson(ddbGetInput))
 
-        if (!Array.isArray(args) || args.length > 1) {
-            throw new Error(`${process.env.ringToken}: [baseValidateGet] Payload is not a single element array! ${ppjson(args)}`)
+        if (Array.isArray(ddbGetInput)) throw new Error("payload.arguments must not be an array!")
+        ddbGetInput.ringToken = ringToken // remember it for logginng from dynamodb client methods
+        ddbGetInput.pks = ddbGetInput.pks.reduce<DdbTableItemKey[]>((accum, item) => {
+            if (item.id) {
+                if (!item.meta) {
+                    accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
+                } else {
+                    accum.push({ id: item.id, meta: item.meta })
+                }
+            } else {
+                throw new Error(`${ringToken}: invalid ID keys passed. id: ${item.id} meta: ${item.meta}`)
+            }
+            return accum
+        }, [])
+
+        // !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
+        if (!!ddbGetInput.loadPeersLevel || (!!ddbGetInput.peersPropsToLoad && ddbGetInput.peersPropsToLoad.length > 0)) {
+            Object.assign(ddbGetInput, transformGraphQLSelection(ddbGetInput.selectionSetGraphQL))
+            !process.env.DEBUGGER || loginfo({ ringToken }, '[__validateGet] Transormed loading of peers: ', ppjson(ddbGetInput))
         }
 
-        const getInput = Object.assign({}, args[0], {
-            pks: args[0].pks.reduce<DdbTableItemKey[]>((accum, item) => {
-                if (item.id) {
-                    if (!item.meta) {
-                        accum.push({ id: item.id, meta: `${versionString(0)}|${item.id.substr(0, item.id.indexOf("|"))}` })
-                    } else {
-                        accum.push({ id: item.id, meta: item.meta })
-                    }
-                } else {
-                    throw new Error(`${process.env.ringToken}: invalid ID keys passed. id: ${item.id} meta: ${item.meta}`)
-                }
-                return accum
-            }, [])
-        },
-            // !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
-            !!args[0].loadPeersLevel || (!!args[0].peersPropsToLoad && args[0].peersPropsToLoad.length > 0) ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
-        console.log("transformed ", getInput)
-        return getInput
-
+        return ddbGetInput
     }
     /**
      * making use of dynamodb batchGetItems
      * @param item 
      * @param args 
      */
-    async *get(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${item}:GET] Begin get method. Doing a gate check of payload. Received arguments: `, args)
+    async *get(evnt: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:GET] Begin get method. Doing a gate check of payload. Received arguments: `, ppjson(evnt))
 
-        const asyncGenBaseValidate = this.baseValidateGet(args.payload.arguments, args.payload.identity) // TODO check for id, meta present
-        let processorBaseValidate = await asyncGenBaseValidate.next()
+        evnt.payload.arguments = await this.__validateGet(evnt.payload.arguments, evnt.meta.ringToken)
+
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, "KEYS TO SEARCH ARE ", ppjson(evnt.payload.arguments))
+
+        const asyncGen = this.validateGet(evnt.payload.arguments, evnt.payload.identity, evnt.meta.ringToken)
+        let processor
         do {
-            if (!processorBaseValidate.done) {
-                yield { resultItems: [{ message: `[${item}:GET] ${processorBaseValidate.value}` }] }
-                processorBaseValidate = await asyncGenBaseValidate.next()
-            }
-        } while (!processorBaseValidate.done)
-
-        !process.env.DEBUGGER || loginfo("KEYS TO SEARCH ARE " + JSON.stringify(processorBaseValidate.value))
-
-        // this can throw exception due to failed validation, eg. missing id/meta keys
-        const asyncGen = this.validateGet(processorBaseValidate.value, args.payload.identity) // TODO check for id, meta present
-        let processor = await asyncGen.next()
-        do {
-            if (!processor.done) {
-                yield { resultItems: [{ message: `[${item}:GET] ${processor.value}` }] }
-                processor = await asyncGen.next()
-            }
+            processor = await asyncGen.next()
+            !processor.done && (yield processor.value as string)
         } while (!processor.done)
 
-        const dynamoItems = await batchGetItem(processor.value);
+        const dynamoItems = await batchGetItem(processor.value as DdbGetInput);
 
-        !process.env.DEBUGGER || loginfo(`[${item}:GET] End. Result: `, { arguments: dynamoItems, identity: args.payload.identity })
-        return { arguments: dynamoItems, identity: args.payload.identity }
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:GET] End. Result: `, ppjson({ result: dynamoItems }))
+        return { result: dynamoItems as DBQueryOutput<T> }
     }
     //#endregion
 
@@ -549,7 +506,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param item implemented in client item managers
      * @param identity 
      */
-    async *validateCreate(item: T, identity: IIdentity): AsyncGenerator<AartsPayload, T, undefined> {
+    async *validateCreate(item: T, identity: IIdentity, ringToken: string): AsyncGenerator<string, T, any> {
         return item
     }
     /**
@@ -557,110 +514,71 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param __type gate checks for CREATE
      * @param payload 
      */
-    async *baseValidateCreate(__type: string, event: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateCreate] START. checking for mandatory item keys. Received args: `, event)
+    async __validateCreate(evnt: AartsEvent): Promise<T> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:__validateCreate] START. checking for mandatory item keys. Received args: `, ppjson(evnt))
 
-        if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
-            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateCreate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
+        if (Array.isArray(evnt.payload.arguments)) throw new Error("payload.arguments must not be an array!")
+
+        if (!!evnt.payload.arguments.revisions) {
+            delete evnt.payload.arguments.revisions
+        } else {
+            evnt.payload.arguments["meta"] = `${versionString(0)}|${evnt.meta.item}`
+            evnt.payload.arguments["__typename"] = evnt.meta.item
+            evnt.payload.arguments["ringToken"] = evnt.meta.ringToken
         }
 
-        if (!event.payload.arguments[0]) {
-            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateCreate] Payload is a single element array, but its invalid ! ${ppjson(event.payload.arguments)}`);
+        const proto = this.lookupItems.get(evnt.meta.item)
+
+        if (!proto) {
+            throw new Error(`${evnt.meta.ringToken}: [${evnt.meta.item}:CREATE] Not able to locate dynamo item prototype for item ${evnt.meta.item}`)
         }
 
-
-        for (const arg of event.payload.arguments) {
-            if ("revisions" in arg) {
-                // throw new Error(`${process.env.ringToken}: [${__type}:baseValidateCreate] {id, revisions} should not be present when creating item`)
-                delete arg.revisions
-            } else {
-                // !process.env.DEBUGGER || loginfo("Using supplied ring token for item creation id: ", payload.ringToken)
-                // arg["id"] = `${__type}|${payload.ringToken}` NOPE ! dont do that, allow clients to cpecify their own ID, ex usage see nomenclatures
-                arg["meta"] = `${versionString(0)}|${__type}`
-                arg["__typename"] = __type
-                arg["ringToken"] = event.meta.ringToken
-            }
-        }
-
-        return event.payload as AartsPayload<T>
+        return Object.assign(new proto(), evnt.payload.arguments)
     }
     /**
      * making use of dynamodb transactWriteItems, making a put requests for each element from incomming arguments array
      * @param item the item type
-     * @param args initialization parameters. Each element in the array will result in a separate item created
+     * @param evnt initialization parameters. Each element in the array will result in a separate item created
      */
-    async *create(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Begin create method. Doing a gate check of payload. Received args: `, args)
+    async *create(evnt: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:CREATE] Begin create method. Doing a gate check of payload. Received evnt: `, ppjson(evnt))
         try {
-            if (__type === "BASE") {
-                !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Begin create method. type is BASE! Directly calling transact put without any checks`, args)
-                const result = await transactPutItem(args.payload.arguments[0], [])
-                return { resultItems: [result], identity: args.payload.identity }
+            if (evnt.meta.item === "BASE") {
+                !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:CREATE] Begin create method. type is BASE! Directly calling transact put without any checks`, ppjson(evnt))
+                const result = await transactPutItem(evnt.payload.arguments, [])
+                return { result }
             }
 
-            // for await (const baseValidateResult of this.baseValidateCreate(__type, args)) {
-            //     !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateCreate] output: `, baseValidateResult)
-            //     yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: baseValidateResult }] }
-            // }
+            const itemToCreate = await this.__validateCreate(evnt)
 
-            const asyncGenBase = this.baseValidateCreate(__type, args)
-            let processorBase
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, "itemToCreate: ", ppjson(itemToCreate))
+
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}] Calling domain's validateCreate method, evnt: `, ppjson({ itemToCreate }), ppjson({ identity: evnt.payload.identity }), ppjson({ringToken: evnt.meta.ringToken}))
+
+            const asyncGenDomain = this.validateCreate(itemToCreate, evnt.payload.identity, evnt.meta.ringToken)
+            let processorDomain
             do {
-                processorBase = await asyncGenBase.next()
-                !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateCreate] output: `, processorBase.value)
-                !processorBase.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: processorBase.value }] })
-            } while (!processorBase.done)
+                processorDomain = await asyncGenDomain.next()
+                !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:validateCreate] output: `, ppjson(processorDomain.value))
+                !processorDomain.done && (yield processorDomain.value as string)
+            } while (!processorDomain.done)
 
-            const proto = this.lookupItems.get(__type)
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:CREATE] Item applicable for saving.`)
 
-            if (!proto) {
-                throw new Error(`${process.env.ringToken}: [${__type}:CREATE] Not able to locate dynamo item prototype for item ${__type}`)
-            }
+            const savedItem = await transactPutItem(processorDomain.value as T, (this.lookupItems.get(evnt.meta.item) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
 
-            const dynamoItems = []
-            for (const arg of args.payload.arguments) {
-
-                !process.env.DEBUGGER || loginfo("Arguments from payload to be merged with itemToCreate: ", arg)
-                const itemToCreate = Object.assign({}, new proto(), arg)
-                !process.env.DEBUGGER || loginfo("itemToCreate: ", itemToCreate)
-
-                !process.env.DEBUGGER || loginfo(`[${__type}] Calling domain's validateCreate method, Args: `, { itemToCreate }, { identity: args.payload.identity })
-
-                const asyncGenDomain = this.validateCreate(itemToCreate, args.payload.identity)
-                let processorDomain
-                do {
-                    processorDomain = await asyncGenDomain.next()
-                    !process.env.DEBUGGER || loginfo(`[${__type}:validateCreate] output: `, processorDomain.value)
-                    !processorDomain.done && (yield { resultItems: [{ message: `[${__type.replace("P__", "")}:]` }, { output: processorDomain.value }] })
-                } while (!processorDomain.done)
-
-                dynamoItems.push(processorDomain.value)
-            }
-
-            !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Item applicable for saving.`)
-
-
-            const asyncGenSave = this.save(__type, Object.assign({}, args.payload, { arguments: dynamoItems }))
-            let processorSave = await asyncGenSave.next()
-            !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Saving item result: `, processorSave.value.arguments)
-            do {
-                if (!processorSave.done) {
-                    processorSave = await asyncGenSave.next()
-                    !process.env.DEBUGGER || loginfo(`[${__type}:CREATE] Saving item result: `, processorSave.value.arguments)
-                }
-            } while (!processorSave.done)
-            return { resultItems: dynamoItems, identity: args.payload.identity }
+            return { result: savedItem as T }
         } catch (err) {
-            if (!!args.payload.arguments[0].__proc) {
+            if (!!evnt.payload.arguments.__proc) {
                 // so this operation is part of a procedure, record an errored event
                 await dynamoDbClient.putItem({
                     Item: {
-                        id: { S: args.payload.arguments[0].__proc },
-                        __proc: { S: args.payload.arguments[0].__proc },
-                        meta: { S: `errored|${args.meta.sqsMsgId || args.meta.ringToken}` },
+                        id: { S: evnt.payload.arguments.__proc },
+                        __proc: { S: evnt.payload.arguments.__proc },
+                        meta: { S: `errored|${evnt.meta.sqsMsgId || evnt.meta.ringToken}` },
                         err: { S: `${err && err.message ? err.message : err}` },
                         stack: { S: `${err && err.stack ? err.stack.slice(0, 500) : ''}` },
-                        ringToken: { S: args.meta.ringToken }
+                        ringToken: { S: evnt.meta.ringToken }
                     },
                     TableName: DB_NAME
                 }).promise()
@@ -676,7 +594,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param item implemented by client intem managers, if custom domain validation needed
      * @param identity 
      */
-    async *validateUpdate(item: T, identity: IIdentity): AsyncGenerator<AartsPayload, T, undefined> {
+    async *validateUpdate(item: T, identity: IIdentity, ringToken: string): AsyncGenerator<string, T, any> {
         return item
     }
     /**
@@ -684,111 +602,56 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param __type gate checks for Update
      * @param payload 
      */
-    async *baseValidateUpdate(__type: string, event: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${__type}:baseValidateUpdate] checking for mandatory item keys. Received args: `, event)
+    async __validateUpdate(evnt: AartsEvent): Promise<T> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:__validateUpdate] checking for mandatory item keys. Received args: `, ppjson(evnt))
 
-        if (!Array.isArray(event.payload.arguments) || event.payload.arguments.length > 1) {
-            throw new Error(`${process.env.ringToken}: [${__type}:baseValidateUpdate] Payload is not a single element array! ${ppjson(event.payload.arguments)}`)
+        if (Array.isArray(evnt.payload.arguments)) throw new Error("payload.arguments must not be an array!")
+
+        if (!("id" in evnt.payload.arguments && ("revisions" in evnt.payload.arguments
+            // TODO check for item being a procedure not needed? (was because procs are updated only from the libs and do not wanted to throw if not the right revision)
+            || evnt.payload.arguments["id"].startsWith("P__")))) {
+            // will throw error if ONLY SOME of the above keys are present
+            throw new Error(`${evnt.meta.ringToken}: {id, revisions} keys are mandatory when updating`)
+        } else {
+            evnt.payload.arguments["meta"] = `${versionString(0)}|${evnt.meta.item}`
+            evnt.payload.arguments["__typename"] = evnt.meta.item
+            evnt.payload.arguments["ringToken"] = evnt.meta.ringToken
         }
 
-        for (const arg of event.payload.arguments) {
-            if (!("id" in arg && ("revisions" in arg || arg["id"].startsWith("P__")))) {
-                // will throw error if ONLY SOME of the above keys are present
-                throw new Error(`${process.env.ringToken}: {id, revisions} keys are mandatory when updating`)
-            } else {
-                arg["meta"] = `${versionString(0)}|${__type}`
-                arg["__typename"] = __type
-                arg["ringToken"] = event.meta.ringToken
-            }
-        }
-
-        return event.payload as AartsPayload<T>
+        return evnt.payload.arguments
     }
 
     /**
-     * making use of dynamodb transactwriteItems. Making update requests
+     * Updates an item in a dynamo transaction
      * @param __type 
-     * @param args
+     * @param evnt
      */
-    async *update(__type: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${__type}:UPDATE] BEGIN update method. Doing a gate check of payload. Received Args: `, args)
+    async *update(evnt: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] BEGIN update method. Doing a gate check of payload. Received evnt: `, ppjson(evnt))
 
-        for await (const baseValidateResult of this.baseValidateUpdate(__type, args)) {
-            yield { resultItems: [{ message: baseValidateResult }] }
-        }
+        evnt.payload.arguments = await this.__validateUpdate(evnt)
 
-        !process.env.DEBUGGER || loginfo(`[${__type}:UPDATE] Loading requested items`)
-        const dynamoExistingItems = await batchGetItem({ loadPeersLevel: 0, pks: args.payload.arguments });
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] Loading requested items`)
+        const dynamoExistingItems = await batchGetItem({ loadPeersLevel: 0, pks: [evnt.payload.arguments], ringToken: evnt.meta.ringToken });
         // console.log("result from batch get", JSON.stringify(dynamoExistingItems))
-        if (dynamoExistingItems.length !== args.payload.arguments.length) {
-            throw new Error(`${process.env.ringToken}: [${__type}:UPDATE] Unable to locate items corresponding to requested id(s)`)
+        if (dynamoExistingItems.items.length !== 1) {
+            throw new Error(`${evnt.meta.ringToken}: [${evnt.meta.item}:UPDATE] Unable to locate item corresponding to requested { id: ${evnt.payload.arguments.id}, meta: ${evnt.payload.arguments.meta}}`)
         }
 
-        const updatedItems = []
-
-        for (const arg of args.payload.arguments) {
-            const existingItem = dynamoExistingItems.filter(d => d.id == arg.id && d.meta == arg.meta)[0]
-
-            for await (const domainValidateMessage of this.validateUpdate(
-                Object.assign({}, existingItem, arg),
-                args.payload.identity)) {
-                yield { resultItems: [{ message: `[${__type}:validateUpdate] ${domainValidateMessage}` }] }
-            }
-
-            updatedItems.push(
-                await transactUpdateItem(
-                    existingItem,
-                    arg,
-                    (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-            )
+        for await (const domainValidateMessage of this.validateUpdate(Object.assign({}, dynamoExistingItems.items[0], evnt.payload.arguments), evnt.payload.identity, evnt.meta.ringToken)) {
+            yield domainValidateMessage as string
         }
 
-        !process.env.DEBUGGER || loginfo(`[${__type}:UPDATE] END. Result: `, { resultItems: updatedItems, identity: args.payload.identity })
+        const updatedItem = await transactUpdateItem(
+            dynamoExistingItems.items[0],
+            evnt.payload.arguments,
+            (this.lookupItems.get(evnt.meta.item) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys) as T
 
-        return { resultItems: updatedItems, identity: args.payload.identity }
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] END. Result: `, ppjson({ result: updatedItem }))
+
+        return { result: updatedItem }
 
     }
     //#endregion
 
-    async *save(__type: string, args: AartsPayload): AsyncGenerator<AartsPayload, AartsPayload<T>, undefined> {
-        !process.env.DEBUGGER || loginfo(`[${__type}:SAVE] BEGIN save method. No Gate check of payoad here. Saving is only internal. TODO make not visible to clients`)
-
-        const proto = this.lookupItems.get(__type)
-
-        const item_refkeys = (proto as unknown as MixinConstructor<typeof DynamoItem>).__refkeys
-        !process.env.DEBUGGER || loginfo(`[${__type}:SAVE] Analyzing item refkeys: `, item_refkeys)
-
-
-        // USING BATCH WRITEITEM WITHOUT TRANSACTION, TODO leave a method for non transactional save of bulk data? +Can again define it on IItemManager level?
-        // const item_refs: T[] = []
-        // for (const item of args.arguments) {
-        //     // analyse each item and create new DynamoItems for each item's ref
-        //     for (const refkey of item_refkeys) {
-        //         //@ts-ignore
-        //         if (!!item[refkey]) {
-        //             item_refs.push(
-        //                 removeEmpty(new class Ref extends ItemReference(item, refkey) { }) as unknown as T
-        //             )
-        //         }
-        //     }
-        // }
-        // const item_and_its_refs = args.arguments.concat(item_refs)
-        // const chunked = chunks(item_and_its_refs, 25)
-        // for (const chunk of chunked) {
-        //     let response = await batchPutItems(chunk) // - using batchPutItem
-        //     // console.log("SAVING TO DYNAMO RESULT: ", response)
-        // }
-
-        // USING WRITING IN A TRANSACTION
-        for (const item of args.arguments) {
-            if (!!item) {
-                let response = await transactPutItem(item, item_refkeys)
-                !process.env.DEBUGGER || loginfo("SAVING TO DYNAMO RESULT: ", response)
-            }
-        }
-
-        // !process.env.DEBUGGER || (yield { resultItems: [{ message: `[${__type}:SAVE] END` }] })
-        !process.env.DEBUGGER || loginfo(`[${__type}:SAVE] END. Result [TODO shouldnt we send the actual result of saving instead of returing input args, as it is now?] `, { resultItems: args.arguments })
-        return { resultItems: args.arguments }
-    }
 }

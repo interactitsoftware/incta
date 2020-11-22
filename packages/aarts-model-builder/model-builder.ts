@@ -134,15 +134,15 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     console.log(`...Generating generic test event - delete of domain item: ` + await recordFile(join(cwd, "__test_events"), `delete.json`, ppjson({
         action: "delete",
-        item: "any-domain-item",
+        item: "replace with __typename you want to delete",
         arguments: {
             pks: [{
-                id: "id-of-item-to-be-deleted-1",
-                revisions: "sending-latest-rev-of-deleted-item-mandatory-1"
+                id: "id (string) and proper revisions (number) are mandatory when deleting - 1",
+                revisions: 0
             },
             {
-                id: "id-of-item-to-be-deleted-2",
-                revisions: "sending-latest-rev-of-deleted-item-mandatory-2"
+                id: "id (string) and proper revisions (number) are mandatory when deleting - N",
+                revisions: 0
             }],
         },
         identity: {
@@ -152,14 +152,14 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     console.log(`...Generating generic test event - get domain items: ` +
         (await recordFile(join(cwd, "__test_events"), `get.json`, ppjson({
-            action: "delete",
+            action: "get",
             item: "any-domain-item",
             arguments: {
                 pks: [{
-                    id: "id-of-item-to-be-retrieved-1",
+                    id: "id-of-item-to-be-retrieved - 1",
                 },
                 {
-                    id: "id-of-item-to-be-retrieved-2",
+                    id: "id-of-item-to-be-retrieved - N",
                 }],
             },
             identity: {

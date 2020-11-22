@@ -13,47 +13,47 @@ import { IItemManagerKeys } from "aarts-types/interfaces";
  * - ringToken = uuid()
  * If invoked in the context of SAM LOCAL it will call the sqs handler synchronously, skiping the SNS publish part
  */
-export const controller = async (event: AppSyncEvent | DynamoDBStreamEvent, context?: Context): Promise<any> => {
-	const ringToken: string = (event as { ringToken: string }).ringToken || uuid()
+export const controller = async (evnt: AppSyncEvent, context?: Context): Promise<any> => {
+	const ringToken: string = (evnt as { ringToken: string }).ringToken || uuid()
 	// log the ringToken
-	if (!!(event as { ringToken: string }).ringToken) {
-		!process.env.DEBUGGER || loginfo(`using already present ring token:  ${ringToken} for received event`, event)
+	if (!!evnt.ringToken) {
+		!process.env.DEBUGGER || loginfo({ ringToken }, `using already present ring token:  ${ringToken} for received event`, ppjson(evnt))
 	} else {
-		!process.env.DEBUGGER || loginfo(`generated ring token: ${ringToken} for received event`, event)
+		!process.env.DEBUGGER || loginfo({ ringToken }, `generated ring token: ${ringToken} for received event`, ppjson(evnt))
 	}
 
 	let result
-	if (!!(event as AppSyncEvent).action) {
-		result = await processAppSyncEvent(event as AppSyncEvent, ringToken, context)
+	if (!!evnt.action) {
+		result = await processAppSyncEvent(evnt, ringToken, context)
 	} else {
 		//assume an unknown event
-		throw new Error(`Unknown event landed in arrtsSNSEventDispatcher: ${ppjson(event)}`)
+		throw new Error(`Unknown event landed in arrtsSNSEventDispatcher: ${ppjson(evnt)}`)
 	}
 
 	return result
 }
 
-const processAppSyncEvent = async (event: AppSyncEvent, ringToken: string, context?: Context) => {
+const processAppSyncEvent = async (evnt: AppSyncEvent, ringToken: string, context?: Context) => {
 
 	let result
-	if (event.action === "query" || event.action === "get") {
-		!process.env.DEBUGGER || loginfo('dispatching directly to handler, skipping SNS publishing. Event is ', event)
-			Object.assign(event.arguments, { selectionSetGraphQL: event.selectionSetGraphQL, selectionSetList: event.selectionSetList })
+	if (evnt.action === "query" || evnt.action === "get") {
+		!process.env.DEBUGGER || loginfo({ ringToken }, 'dispatching directly to handler, skipping SNS publishing. evnt is ', ppjson(evnt))
+			Object.assign(evnt.arguments, { selectionSetGraphQL: evnt.selectionSetGraphQL, selectionSetList: evnt.selectionSetList })
 		return (await processPayload({
 			meta: {
 				ringToken: ringToken,
-				eventSource: `worker:${event.eventType === "output" ? event.eventType : "input"}:${event.jobType}`,
-				action: event.action as IItemManagerKeys,
-				item: event.item
+				eventSource: `worker:${evnt.eventType === "output" ? evnt.eventType : "input"}:${evnt.jobType}`,
+				action: evnt.action as IItemManagerKeys,
+				item: evnt.item
 			},
 			payload: {
-				arguments: event.arguments,
-				identity: event.identity,
+				arguments: evnt.arguments,
+				identity: evnt.identity,
 			}
-		}, context)).payload.resultItems[0].items
+		}, context)).result
 	} else if (!process.env["AWS_SAM_LOCAL"]) {
 		// used runtime in aws
-		const publishInput: AWS.SNS.PublishInput = prepareAppSyncEventForDispatch(event, ringToken)
+		const publishInput: AWS.SNS.PublishInput = prepareAppSyncEventForDispatch(evnt, ringToken)
 		result = await publish(publishInput)
 		// PROD runtime execution ends here
 
@@ -62,30 +62,30 @@ const processAppSyncEvent = async (event: AppSyncEvent, ringToken: string, conte
 		// result = await samLocalSupport_callSqsHandlerSynchronously(event, ringToken)
 		
 		// within the same lamnbda, process the payload
-		result = await processPayload({
+		result = (await processPayload({
 			meta: {
 				ringToken: ringToken,
-				eventSource: `worker:${event.eventType === "output" ? event.eventType : "input"}:${event.jobType}`,
-				action: event.action as IItemManagerKeys,
-				item: event.item
+				eventSource: `worker:${evnt.eventType === "output" ? evnt.eventType : "input"}:${evnt.jobType}`,
+				action: evnt.action as IItemManagerKeys,
+				item: evnt.item
 			},
 			payload: {
-				arguments: event.arguments,
-				identity: event.identity,
+				arguments: evnt.arguments,
+				identity: evnt.identity,
 			}
-		}, context)
+		}, context)).result
 	}
 
 	return result
 }
 
-const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, ringToken: string) => {
+const samLocalSupport_callSqsHandlerSynchronously = async (evnt: AppSyncEvent, ringToken: string) => {
 	//used sam local runtime
-	const sqsEvent = await samLocalSimulateSQSHandlerFromContent(JSON.stringify(event), ringToken);
-	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
-	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. SQS WORKER SHORT IS " + process.env.WORKER_SHORT)
-	!process.env.DEBUGGER || loginfo("AWS_SAM_LOCAL INVOCATION. SQS WORKER LONG IS " + process.env.WORKER_LONG)
-	!process.env.DEBUGGER || loginfo("sqsEVENT simulated: ", sqsEvent)
+	const sqsEvent = await samLocalSimulateSQSHandlerFromContent(JSON.stringify(evnt), ringToken);
+	!process.env.DEBUGGER || loginfo({ ringToken }, "AWS_SAM_LOCAL INVOCATION. INVOKING SYNCHRONOUSLY SQS HANDLER")
+	!process.env.DEBUGGER || loginfo({ ringToken }, "AWS_SAM_LOCAL INVOCATION. SQS WORKER SHORT IS " + process.env.WORKER_SHORT)
+	!process.env.DEBUGGER || loginfo({ ringToken }, "AWS_SAM_LOCAL INVOCATION. SQS WORKER LONG IS " + process.env.WORKER_LONG)
+	!process.env.DEBUGGER || loginfo({ ringToken }, "sqsEVENT simulated: ", sqsEvent)
 
 	// only run inside local lambda runner
 	// Note the endpoint name
@@ -101,7 +101,7 @@ const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, 
 		maxRetries: 1, 
 		retryDelayOptions: {
 			customBackoff: (retryCount: number, err) => {
-				!process.env.DEBUGGER || loginfo(new Date() + ": retrying attempt:" + retryCount + ". ERROR ", err)
+				!process.env.DEBUGGER || loginfo({ ringToken }, new Date() + ": retrying attempt:" + retryCount + ". ERROR ", ppjson(err))
 				// expecting to retry
 				// 1st attempt: 110 ms
 				// 2nd attempt: 200 ms
@@ -119,7 +119,7 @@ const samLocalSupport_callSqsHandlerSynchronously = async (event: AppSyncEvent, 
 	// however here, if the synchronous invocation fails dispatcher will DO retry (SAM local limitation?) 
 	await lambda.invoke(
 		{
-			FunctionName: event.jobType === "long" ? process.env.WORKER_LONG as string: process.env.WORKER_SHORT as string,
+			FunctionName: evnt.jobType === "long" ? process.env.WORKER_LONG as string: process.env.WORKER_SHORT as string,
 			Payload: sqsEvent
 		}, (err, data) => {
 			console.log("[AWS_SAM_LOCAL]: SNS DISPATCHER PROCESSED EVENT " + sqsEvent)

@@ -4,11 +4,12 @@
 import { batchGetItem, populateRefKeys } from './dynamodb-batchGetItem'
 import DynamoDB, { AttributeMap, AttributeValue, QueryOutput } from 'aws-sdk/clients/dynamodb'
 import { dynamoDbClient, fromAttributeMapArray, DB_NAME, toAttributeMap, fromAttributeMap, ddbRequest } from './DynamoDbClient';
-import { DdbQueryInput, DdbQueryOutput, DdbGSIItemKey, RefKey } from './interfaces';
+import { DdbQueryInput, DdbGSIItemKey, RefKey } from './interfaces';
 import { loginfo, ppjson, versionString } from 'aarts-utils';
 import { DynamoItem } from './DynamoItem';
+import { DBQueryOutput } from 'aarts-types';
 
-export const queryItems = async <T extends DdbQueryInput, TResult extends DynamoItem>(ddbQueryPayload: T): Promise<DdbQueryOutput<TResult>> => {
+export const queryItems = async <T extends DdbQueryInput, TResult extends DynamoItem>(ddbQueryPayload: T): Promise<DBQueryOutput<TResult>> => {
 
     if (ddbQueryPayload.loadPeersLevel === undefined) {
         ddbQueryPayload.loadPeersLevel = 0 // default behaviour, do not load peers if not requested
@@ -34,9 +35,9 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
 
         dexpressionAttributeNames[`#${ddbQueryPayload.rangeKeyName}`] = ddbQueryPayload.rangeKeyName
 
-        if (typeof ddbQueryPayload["range"] === "object") {
+        if (!!ddbQueryPayload["range"] && typeof ddbQueryPayload["range"] === "object") {
             if (!("min" in ddbQueryPayload["range"] || "max" in ddbQueryPayload["range"])) {
-                throw new Error(`${process.env.ringToken}: range key for query is object but is missing the keys min,max`)
+                throw new Error(`${ddbQueryPayload.ringToken}: range key for query is object but is missing the keys min,max`)
             }
             dexpressionAttributeValues[`:range_min`] = toAttributeMap(ddbQueryPayload.range).min
             dexpressionAttributeValues[`:range_max`] = toAttributeMap(ddbQueryPayload.range).max
@@ -70,12 +71,12 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
             }, {}))
     }
 
-    !process.env.DEBUGGER || loginfo("dqueryKeys ", dqueryKeys)
-    !process.env.DEBUGGER || loginfo("keyConditionExpression ", dkeyConditionExpression)
-    !process.env.DEBUGGER || loginfo("dfilter ", dfilter)
-    !process.env.DEBUGGER || loginfo("dfilterExpression ", dfilterExpression)
-    !process.env.DEBUGGER || loginfo("dexpressionAttributeNames ", dexpressionAttributeNames)
-    !process.env.DEBUGGER || loginfo("dexpressionAttributeValues ", dexpressionAttributeValues)
+    !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "dqueryKeys ", ppjson(dqueryKeys))
+    !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "keyConditionExpression ", ppjson(dkeyConditionExpression))
+    !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "dfilter ", ppjson(dfilter))
+    !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "dfilterExpression ", ppjson(dfilterExpression))
+    !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "dexpressionAttributeNames ", ppjson(dexpressionAttributeNames))
+    !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "dexpressionAttributeValues ", ppjson(dexpressionAttributeValues))
 
     const params: DynamoDB.QueryInput = {
         TableName: DB_NAME,
@@ -87,41 +88,45 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
         ExpressionAttributeNames: dexpressionAttributeNames,
         ExpressionAttributeValues: dexpressionAttributeValues,
         FilterExpression: dfilterExpression
-
     }
 
     try {
-        const result = await ddbRequest(dynamoDbClient.query(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== QueryOutput: ", result)
-        let resultItems = fromAttributeMapArray((result as QueryOutput).Items as AttributeMap[]) as DynamoItem[]
+        const dynamoResult = await ddbRequest(dynamoDbClient.query(params), ddbQueryPayload.ringToken)
+        !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "====DDB==== QueryOutput: ", ppjson(dynamoResult))
+        let output = { 
+            items: fromAttributeMapArray((dynamoResult as QueryOutput).Items as AttributeMap[]) as TResult[],
+            nextPage: fromAttributeMap<DdbGSIItemKey>((dynamoResult as QueryOutput).LastEvaluatedKey as DynamoDB.Key)
+        }
 
-        if (!!ddbQueryPayload.ddbIndex && !!resultItems && resultItems.length > 0) {
+        if (!!ddbQueryPayload.ddbIndex && !!dynamoResult && output.items.length > 0) {
             if (!process.env.copyEntireItemToGsis) {
-                console.log("calling batch get item with", {
-                    pks: resultItems.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }),
+                !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "calling batch get item with", ppjson({
+                    pks: output.items.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }),
                     loadPeersLevel: ddbQueryPayload.loadPeersLevel,
                     peersPropsToLoad: ddbQueryPayload.peersPropsToLoad,
-                    projectionExpression: ddbQueryPayload.projectionExpression
-                })
-                resultItems = await batchGetItem({
-                    pks: resultItems.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }),
+                    projectionExpression: ddbQueryPayload.projectionExpression,
+                    ringToken: ddbQueryPayload.ringToken
+                }))
+                output.items = (await batchGetItem({
+                    pks: output.items.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }),
                     loadPeersLevel: ddbQueryPayload.loadPeersLevel,
                     peersPropsToLoad: ddbQueryPayload.peersPropsToLoad,
-                    projectionExpression: ddbQueryPayload.projectionExpression
-                })
+                    projectionExpression: ddbQueryPayload.projectionExpression,
+                    ringToken: ddbQueryPayload.ringToken
+                })).items as TResult[]
             } else {
-                for (let resultItem of resultItems) {
-                    await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad, ddbQueryPayload.projectionExpression)
+                for (let resultItem of output.items) {
+                    await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad, ddbQueryPayload.projectionExpression, ddbQueryPayload.ringToken)
                 }
             }
-        } else if (!!resultItems && resultItems.length > 0) {
+        } else if (!!output && output.items.length > 0) {
             // TODO promise.all !!!
-            for (let resultItem of resultItems) {
-                await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad, ddbQueryPayload.projectionExpression)
+            for (let resultItem of output.items) {
+                await populateRefKeys(resultItem, ddbQueryPayload.loadPeersLevel, ddbQueryPayload.peersPropsToLoad, ddbQueryPayload.projectionExpression, ddbQueryPayload.ringToken)
             }
         }
 
-        return { items: resultItems as TResult[], lastEvaluatedKey: fromAttributeMap<DdbGSIItemKey>((result as QueryOutput).LastEvaluatedKey as DynamoDB.Key), count: (result as QueryOutput).Count }
+        return output
 
     } catch (err) {
         throw new Error(ppjson({ request: params, error: err }))

@@ -1,10 +1,8 @@
 import { AartsEvent, AartsPayload } from "aarts-types/interfaces"
-import { loginfo, versionString } from "aarts-utils"
+import { loginfo, ppjson, versionString } from "aarts-utils"
 import { DynamoItem } from "aarts-dynamodb"
-import { batchGetItem } from "aarts-dynamodb"
 import { queryItems } from "aarts-dynamodb"
-import { _specs_Flight } from "./Flight"
-import { _specs_AirportItem, _specs_FlightItem, _specs_QueryCustomItem } from "./_DynamoItems"
+import { AirportItem, FlightItem, _specs_QueryCustomItem } from "./_DynamoItems"
 import { BaseDynamoItemManager } from "../../BaseItemManager"
 
 export class _specs_QueryCustom { 
@@ -18,31 +16,32 @@ export class _specs_QueryCustom {
 }
 
 export class _specs_QueryCustomManager extends BaseDynamoItemManager<_specs_QueryCustomItem> {
-    async *query(item: string, args: AartsEvent): AsyncGenerator<AartsPayload, AartsPayload, undefined> {
-        !process.env.DEBUGGER || loginfo('query Received arguments bbbbbbb: ', args)
+    async *query(args: AartsEvent): AsyncGenerator<string, AartsPayload, undefined> {
+        !process.env.DEBUGGER || loginfo({ringToken: args.meta.ringToken}, 'query Received arguments bbbbbbb: ', ppjson(args))
 
         // get all airports in europe
         const airports = await queryItems({
-            pk: `${versionString(0)}|${_specs_AirportItem.__type}`,
+            pk: `${versionString(0)}|${AirportItem.__type}`,
             ddbIndex: "meta__id",
             primaryKeyName: "meta",
-            rangeKeyName: "id"
+            rangeKeyName: "id",
+            ringToken: args.meta.ringToken
         });
 
         // get all flights related to those airports ('to' or 'from')
         const flights = await queryItems({ 
-            pk: `${_specs_FlightItem.__type}}to_airport`,
+            pk: `${FlightItem.__type}}to_airport`,
             primaryKeyName: "meta",
             rangeKeyName: "smetadata",
-            ddbIndex: "meta__smetadata"
+            ddbIndex: "meta__smetadata",
+            ringToken: args.meta.ringToken
         });
 
         
         const res = (airports.items as DynamoItem[]).concat(flights.items as DynamoItem[])
         
-        !process.env.DEBUGGER || loginfo(`[${item}:QUERY] End. Results: `,  { resultItems: [res] })
-        // yield { resultItems: [{items:res}] }
-        return { resultItems: [res] }
+        !process.env.DEBUGGER || loginfo({ringToken: args.meta.ringToken}, `[${args.meta.item}:QUERY] End. Results: `,  ppjson({ result: res }))
+        return { result: res }
     }
 
 }

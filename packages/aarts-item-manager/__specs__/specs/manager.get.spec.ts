@@ -22,14 +22,14 @@ describe('manager.get.spec', () => {
   test('get 2 items of different type via single call to manager', async () => {
 
     // you can get items of different types, no matter the particular item manager you call
-    const getGenerator = await domainAdapter.itemManagers[_specs_AirportItem.__type].get("doesnt matter here",
+    const getGenerator = await domainAdapter.itemManagers[_specs_AirportItem.__type].get(
       {
         payload: {
-          arguments: [{pks: [{ id: arrangedAirplane.id }, { id: arrangedAirport.id }]}],
+          arguments: {pks: [{ id: arrangedAirplane.id }, { id: arrangedAirport.id }]},
           identity: "akrsmv"
         },
         meta: {
-          item: "notneededfortest",
+          item: "doesnt matter here",
           action: "get",
           eventSource: "notneededfortest",
           ringToken: "notneededfortest"
@@ -43,26 +43,26 @@ describe('manager.get.spec', () => {
       }
     } while (!processorGet.done)
 
-    expect(processorGet.value.arguments.length).toBe(2)
+    expect(processorGet.value.result?.items.length).toBe(2)
     //@ts-ignore
-    expect(processorGet.value.arguments.filter(a => a.__typename === _specs_AirplaneItem.__type).length).toBe(1)
+    expect(processorGet.value.result?.items.filter(a => a.__typename === _specs_AirplaneItem.__type).length).toBe(1)
     //@ts-ignore
-    return expect(processorGet.value.arguments.filter(a => a.__typename === _specs_AirportItem.__type).length).toBe(1)
+    return expect(processorGet.value.result?.items.filter(a => a.__typename === _specs_AirportItem.__type).length).toBe(1)
   })
 
-  test('will throw if payload arguments is not an array', async () => {
+  test('will throw if payload arguments is an array', async () => {
 
     // you can get items of different types, no matter the particular item manager you call
 
-    const callWithPayloadNotArray = async () => {
-      for await (let a of domainAdapter.itemManagers[_specs_AirportItem.__type].get("doesnt matter here",
+    const callWithPayloadArray = async () => {
+      for await (let a of domainAdapter.itemManagers[_specs_AirportItem.__type].get(
         {
           payload: {
-            arguments: { id: arrangedAirplane.id },
+            arguments: [{ id: arrangedAirplane.id }],
             identity: "akrsmv"
           },
           meta: {
-            item: "notneededfortest",
+            item: "doesnt matter here",
             action: "query",
             eventSource: "notneededfortest",
             ringToken: "notneededfortest"
@@ -70,7 +70,7 @@ describe('manager.get.spec', () => {
         })) return a
     }
 
-    expect(callWithPayloadNotArray).rejects.toThrow(/Payload is not a single element array/)
+    expect(callWithPayloadArray).rejects.toThrow(/payload.arguments must not be an array!/)
 
   })
 })

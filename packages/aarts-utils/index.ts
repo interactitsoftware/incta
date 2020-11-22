@@ -25,14 +25,16 @@ export const chunks = <T>(arr: Array<T>, size: number): Array<Array<T>> => {
 
 export const ppjson = (json: any): string => typeof json === "object"? JSON.stringify(json, null, 4): json as unknown as string
 
+
+export type RingTokenSource = { ringToken: string }
 /**
- * Appends sourceRingToken, which is the ringToken of the current process. 
- * Attempts to parse any json strings passed for ease of cloudwatch queries
+ * utilty method for logging which reminds the developer to always pass the ringToken
+ * for easy tracking the source of that log message
  * @param message 
  * @param obj 
  */
-export const loginfo = (...input: any[]) => {
-    console.log({ringTokenSource: process.env.ringToken, message: ppjson(input)})
+export const loginfo = (ringTokenObject: RingTokenSource, ...input: string[]) => {
+    console.log(ringTokenObject.ringToken, input)
 }
 
 export const versionString = (nr: number) => `v_${nr}`

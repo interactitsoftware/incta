@@ -1,60 +1,59 @@
-import { _specs_AirplaneManager } from "./Airplane"
-import { _specs_AirportManager } from "./Airport"
+
 import { DynamoItem } from "aarts-dynamodb"
-
-
 import { IDomainAdapter } from "aarts-types/interfaces"
 import { AnyConstructor } from "aarts-types/Mixin"
 import { 
-    _specs_AirportItem,
-    _specs_AirplaneItem,
-    _specs_AirplaneManifacturerItem, 
-    _specs_AirplaneModelItem, 
-    _specs_CountryItem, 
-    _specs_FlightItem, 
-    _specs_TouristItem,
+    AirportItem,
+    AirplaneItem,
+    AirplaneManifacturerItem, 
+    AirplaneModelItem, 
+    CountryItem, 
+    FlightItem, 
+    TouristItem,
+    TouristSeasonItem,
+    InvoiceItem,
+    OrderItem,
+    EraseDataItem,
     _specs_DataImporterItem,
-    _specs_TouristSeasonItem,
-    _specs_InvoiceItem,
-    _specs_OrderItem,
-    _specs_EraseDataItem,
     _specs_QueryCustomItem
  } from "./_DynamoItems"
 import { _specs_QueryCustomManager } from "./QueryCustom"
 import { BaseDynamoItemManager } from "../../BaseItemManager"
 import { _specs_DataImporterManager } from "./DataImporter"
+import { _specs_AirplaneManager } from "./airplaneManager"
+import { _specs_AirportManager } from "./airportManager"
 
 
 const allItems = new Map<string, AnyConstructor<DynamoItem>>()
-allItems.set(_specs_AirportItem.__type, _specs_AirportItem)
-allItems.set(_specs_AirplaneItem.__type, _specs_AirplaneItem)
-allItems.set(_specs_AirplaneManifacturerItem.__type, _specs_AirplaneManifacturerItem)
-allItems.set(_specs_AirplaneModelItem.__type, _specs_AirplaneModelItem)
-allItems.set(_specs_CountryItem.__type, _specs_CountryItem)
-allItems.set(_specs_FlightItem.__type, _specs_FlightItem)
-allItems.set(_specs_TouristItem.__type, _specs_TouristItem)
-allItems.set(_specs_DataImporterItem.__type, _specs_DataImporterItem)
-allItems.set(_specs_TouristSeasonItem.__type, _specs_TouristSeasonItem)
-allItems.set(_specs_InvoiceItem.__type, _specs_InvoiceItem)
-allItems.set(_specs_OrderItem.__type, _specs_OrderItem)
-allItems.set(_specs_EraseDataItem.__type, _specs_EraseDataItem)
+allItems.set(AirportItem.__type, AirportItem)
+allItems.set(AirplaneItem.__type, AirplaneItem)
+allItems.set(AirplaneManifacturerItem.__type, AirplaneManifacturerItem)
+allItems.set(AirplaneModelItem.__type, AirplaneModelItem)
+allItems.set(CountryItem.__type, CountryItem)
+allItems.set(FlightItem.__type, FlightItem)
+allItems.set(TouristItem.__type, TouristItem)
+allItems.set(TouristSeasonItem.__type, TouristSeasonItem)
+allItems.set(InvoiceItem.__type, InvoiceItem)
+allItems.set(OrderItem.__type, OrderItem)
+allItems.set(EraseDataItem.__type, EraseDataItem)
 allItems.set(_specs_QueryCustomItem.__type, _specs_QueryCustomItem)
+allItems.set(_specs_DataImporterItem.__type, _specs_DataImporterItem)
 
 const allItemManagers = {
     "BASE": new BaseDynamoItemManager(allItems),
-    [_specs_AirplaneItem.__type]: new _specs_AirplaneManager(allItems),
-    [_specs_AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
-    [_specs_AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
-    [_specs_AirportItem.__type]: new _specs_AirportManager(allItems),
-    [_specs_FlightItem.__type]: new BaseDynamoItemManager(allItems),
-    [_specs_CountryItem.__type]: new BaseDynamoItemManager(allItems),
-    [_specs_TouristItem.__type]: new BaseDynamoItemManager(allItems),
-    [_specs_DataImporterItem.__type]: new _specs_DataImporterManager(allItems),
-    [_specs_TouristSeasonItem.__type]: new BaseDynamoItemManager(allItems),
-    [_specs_InvoiceItem.__type]: new BaseDynamoItemManager(allItems),
-    [_specs_OrderItem.__type]: new BaseDynamoItemManager(allItems),
-    [_specs_EraseDataItem.__type]: new BaseDynamoItemManager(allItems),
+    [AirplaneModelItem.__type]: new BaseDynamoItemManager(allItems),
+    [AirplaneManifacturerItem.__type]: new BaseDynamoItemManager(allItems),
+    [FlightItem.__type]: new BaseDynamoItemManager(allItems),
+    [CountryItem.__type]: new BaseDynamoItemManager(allItems),
+    [TouristItem.__type]: new BaseDynamoItemManager(allItems),
+    [TouristSeasonItem.__type]: new BaseDynamoItemManager(allItems),
+    [InvoiceItem.__type]: new BaseDynamoItemManager(allItems),
+    [OrderItem.__type]: new BaseDynamoItemManager(allItems),
+    [EraseDataItem.__type]: new BaseDynamoItemManager(allItems),
+    [AirplaneItem.__type]: new _specs_AirplaneManager(allItems),
+    [AirportItem.__type]: new _specs_AirportManager(allItems),
     [_specs_QueryCustomItem.__type]: new _specs_QueryCustomManager(allItems),
+    [_specs_DataImporterItem.__type]: new _specs_DataImporterManager(allItems),
 }
 class DomainAdapter implements IDomainAdapter<DynamoItem> {
     public lookupItems = allItems

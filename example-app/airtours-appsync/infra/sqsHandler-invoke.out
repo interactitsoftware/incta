@@ -346,7 +346,7 @@ Mounting C:\Users\TechHuddle\Documents\aarts-all\example-app\airtours-appsync\ai
         "ringToken": "1599388197748_287822.8086218939",
         "eventSource": "worker:input"
     },
-    "resultItems": [
+    "result": [
         {
             "airport_size": 11,
             "id": "airport|f6902135-a183-4fc1-9a0a-a50a87fbf5ef",

@@ -8,62 +8,62 @@ export class AirportDomain extends BaseDynamoItemManager<AirportItem> {
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateCreate(airport: AirportItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirportItem, undefined> {
+    async *validateCreate(airport: AirportItem, identity: IIdentity): AsyncGenerator<string, AirportItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Create Airport Failed` }, errors] }
+            yield `Create Airport Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly created Airport` }] }
+            yield `Successfuly created Airport`
             return airport
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateUpdate(airport: AirportItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirportItem, undefined> {
+    async *validateUpdate(airport: AirportItem, identity: IIdentity): AsyncGenerator<string, AirportItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update Airport Failed` }, errors] }
+            yield `Update Airport Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated Airport` }] }
+            yield `Successfuly updated Airport`
             return airport
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateDelete(airport: AirportItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirportItem, undefined> {
+    async *validateDelete(airport: AirportItem, identity: IIdentity): AsyncGenerator<string, AirportItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Delete Airport Failed` }, errors] }
+            yield `Delete Airport Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly deleted Airport` }] }
+            yield `Successfuly deleted Airport`
             return airport
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
         return args
     }
     /**
      * Validating the get parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
 }

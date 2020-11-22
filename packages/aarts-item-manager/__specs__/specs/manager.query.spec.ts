@@ -3,6 +3,7 @@ import { _specs_CountryItem, _specs_AirportItem, _specs_AirplaneManifacturerItem
 import { queryItems } from "aarts-dynamodb";
 import { seedAirtoursData } from "aarts-dynamodb/__specs__/testmodel/testDataSeeder";
 import { domainAdapter } from "../testmodel/itemManagersMap";
+import { AirportItem } from "../testmodel/_DynamoItems";
 
 describe('manager.query.spec', () => {
 
@@ -13,20 +14,19 @@ describe('manager.query.spec', () => {
     }, 60000)
     // afterAll(async (done) => { await clearDynamo(); done() })
 
-    test('meta__smetadata: will fail if arguments is not an array', async () => {
+    test('pk key is mandatory when querying', async () => {
 
         // get the sofia airport dynamo record
         const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
-            _specs_AirportItem.__type,
             {
                 payload: {
                     arguments: {
-
+                        ringToken: "123"
                     },
                     identity: "akrsmv"
                 },
                 meta: {
-                    item: "notneededfortest",
+                    item: AirportItem.__type,
                     action: "query",
                     eventSource: "notneededfortest",
                     ringToken: "notneededfortest"
@@ -34,7 +34,7 @@ describe('manager.query.spec', () => {
 
             }
         )
-        const willFailBecauseArgsNoArray = async () => {
+        const willFailBecauseNoPKGiven = async () => {
             let queryProcessor = await queryGen.next()
             do {
                 if (!queryProcessor.done) {
@@ -43,7 +43,7 @@ describe('manager.query.spec', () => {
             } while (!queryProcessor.done)
         }
 
-        expect(willFailBecauseArgsNoArray).rejects.toThrow(/\[baseValidateQuery\] Payload is not a single element array! \{\}/)
+        expect(await willFailBecauseNoPKGiven).rejects.toThrow(/undefined: \[__validateQuery\] PK is mandatory when querying/)
     })
 
     // get all flights to sofia
@@ -51,20 +51,19 @@ describe('manager.query.spec', () => {
 
         // get the sofia airport dynamo record
         const queryGen = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
-            _specs_AirportItem.__type,
             {
                 payload: {
-                    arguments: [{
+                    arguments: {
                         ddbIndex: "meta__smetadata",
                         primaryKeyName: "meta",
                         rangeKeyName: "smetadata",
                         pk: `${_specs_AirportItem.__type}}name`,
-                        range: "Sofia"
-                    }],
+                        range: "Sofia",
+                    },
                     identity: "akrsmv"
                 },
                 meta: {
-                    item: "notneededfortest",
+                    item: AirportItem.__type,
                     action: "query",
                     eventSource: "notneededfortest",
                     ringToken: "notneededfortest"
@@ -83,20 +82,19 @@ describe('manager.query.spec', () => {
         // META: flight}to_airport; 
         // SMETADATA: SOFIA AIRPORT's ID
         const queryGen1 = await domainAdapter.itemManagers[_specs_AirportItem.__type].query(
-            _specs_AirportItem.__type,
             {
                 payload: {
-                    arguments: [{
+                    arguments: {
                         ddbIndex: "meta__smetadata",
                         primaryKeyName: "meta",
                         rangeKeyName: "smetadata",
                         pk: `${_specs_FlightItem.__type}}to_airport`,
-                        range: (queryProcessor.value.resultItems && queryProcessor.value.resultItems[0].items[0].id)
-                    }],
+                        range: (queryProcessor.value.result && queryProcessor.value.result.items[0].id)
+                    },
                     identity: "akrsmv"
                 },
                 meta: {
-                    item: "notneededfortest",
+                    item: AirportItem.__type,
                     action: "query",
                     eventSource: "notneededfortest",
                     ringToken: "notneededfortest"
@@ -112,30 +110,28 @@ describe('manager.query.spec', () => {
             }
         } while (!queryProcessor1.done)
 
-
-        return expect((queryProcessor1.value.resultItems && queryProcessor1.value.resultItems[0].items.length)).toBe(4) // see test model below
+        return expect((queryProcessor1.value.result && queryProcessor1.value.result.items.length)).toBe(4) // see test model below
     })
 
     // get all flights to sofia
-    test('Emphasize that base manager can be used for queries - query all items having particular string refkey value - via BaseManager', async () => {
+    test('BaseItemManager can be used for querying all types ', async () => {
 
         const queryManager = await domainAdapter.itemManagers["BASE"]
         // get the sofia airport dynamo record
         const queryGen = queryManager.query(
-            _specs_AirportItem.__type,
             {
                 payload: {
-                    arguments: [{
+                    arguments: {
                         ddbIndex: "meta__smetadata",
                         primaryKeyName: "meta",
                         rangeKeyName: "smetadata",
                         pk: `${_specs_AirportItem.__type}}name`,
                         range: "Sofia"
-                    }],
+                    },
                     identity: "akrsmv"
                 },
                 meta: {
-                    item: "notneededfortest",
+                    item: AirportItem.__type,
                     action: "query",
                     eventSource: "notneededfortest",
                     ringToken: "notneededfortest"
@@ -154,20 +150,19 @@ describe('manager.query.spec', () => {
         // META: flight}to_airport; 
         // SMETADATA: SOFIA AIRPORT's ID
         const queryGen1 = queryManager.query(
-            _specs_AirportItem.__type,
             {
                 payload: {
-                    arguments: [{
+                    arguments: {
                         ddbIndex: "meta__smetadata",
                         primaryKeyName: "meta",
                         rangeKeyName: "smetadata",
                         pk: `${_specs_FlightItem.__type}}to_airport`,
-                        range: queryProcessor.value.resultItems && queryProcessor.value.resultItems[0].items && queryProcessor.value.resultItems[0].items[0].id
-                    }],
+                        range: queryProcessor.value.result && queryProcessor.value.result.items && queryProcessor.value.result.items[0].id
+                    },
                     identity: "akrsmv"
                 },
                 meta: {
-                    item: "notneededfortest",
+                    item: AirportItem.__type,
                     action: "query",
                     eventSource: "notneededfortest",
                     ringToken: "notneededfortest"
@@ -184,7 +179,7 @@ describe('manager.query.spec', () => {
         } while (!queryProcessor1.done)
 
 
-        return expect(queryProcessor1.value.resultItems && queryProcessor1.value.resultItems[0].items.length).toBe(4) // see test model below
+        return expect(queryProcessor1.value.result && queryProcessor1.value.result.items.length).toBe(4) // see test model below
     })
 
     test('query all items having particular string refkey value', async () => {
@@ -194,10 +189,11 @@ describe('manager.query.spec', () => {
             pk: `${_specs_FlightItem.__type}}flight_code`,
             range: "F13",
             rangeKeyName: 'smetadata',
-            primaryKeyName: 'meta'
+            primaryKeyName: 'meta',
+            ringToken: 'test-ring-token'
         })
 
-        return expect(flight_by_code.count).toBe(1) //see testmodel
+        return expect(flight_by_code.items.length).toBe(1) //see testmodel
     })
 
     // BASICALLY THE SAME FUNCTIONALITY TESTED AS IN LOW LEVEL QUERY TESTS, THIS TIME VIA A MANAGER AS SHOWN IN ABOVE TEST

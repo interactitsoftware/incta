@@ -8,62 +8,62 @@ export class AirplaneManifacturerDomain extends BaseDynamoItemManager<AirplaneMa
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateCreate(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneManifacturerItem, undefined> {
+    async *validateCreate(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<string, AirplaneManifacturerItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Create AirplaneManifacturer Failed` }, errors] }
+            yield `Create AirplaneManifacturer Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly created AirplaneManifacturer` }] }
+            yield `Successfuly created AirplaneManifacturer`
             return airplaneManifacturer
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateUpdate(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneManifacturerItem, undefined> {
+    async *validateUpdate(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<string, AirplaneManifacturerItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Update AirplaneManifacturer Failed` }, errors] }
+            yield `Update AirplaneManifacturer Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly updated AirplaneManifacturer` }] }
+            yield `Successfuly updated AirplaneManifacturer`
             return airplaneManifacturer
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateDelete(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<AartsPayload, AirplaneManifacturerItem, undefined> {
+    async *validateDelete(airplaneManifacturer: AirplaneManifacturerItem, identity: IIdentity): AsyncGenerator<string, AirplaneManifacturerItem, undefined> {
         const errors: string[] = []
         if (errors.length > 0) {
-            yield { resultItems: [{ message: `Delete AirplaneManifacturer Failed` }, errors] }
+            yield `Delete AirplaneManifacturer Failed`
             throw new Error(`${errors.join(";;")}`)
         } else {
-            yield { resultItems: [{ message: `Successfuly deleted AirplaneManifacturer` }] }
+            yield `Successfuly deleted AirplaneManifacturer`
             return airplaneManifacturer
         }
     }
     /**
      * Validating the query parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbQueryInput, undefined> {
+    async *validateQuery(args: DdbQueryInput, identity: IIdentity): AsyncGenerator<string, DdbQueryInput, undefined> {
         return args
     }
     /**
      * Validating the get parameters and user identity.
      * Yielded objects should be of the form:
-     * yield { resultItems: [{ message: `message here` }] }
+     * yield `message here`
      */
-    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<AartsPayload, DdbGetInput, undefined> {
+    async *validateGet(args: DdbGetInput, identity: IIdentity): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
 }

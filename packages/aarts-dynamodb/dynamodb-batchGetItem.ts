@@ -6,8 +6,9 @@ import { MixinConstructor } from 'aarts-types/Mixin';
 import { DdbGetInput, DdbTableItemKey, RefKey } from './interfaces';
 import { loginfo, ppjson } from 'aarts-utils';
 import { DynamoItem } from './DynamoItem';
+import { DBQueryOutput } from 'aarts-types';
 
-export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Promise<T[]> => {
+export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Promise<DBQueryOutput<T>> => {
     const keys: AttributeMap[] = toAttributeMapArray(args.pks.map(i => { return { id: i.id, meta: i.meta } }))
 
     if (args.loadPeersLevel === undefined) {
@@ -30,25 +31,25 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
     }
 
     try {
-        const result = await ddbRequest(dynamoDbClient.batchGetItem(params))
-        !process.env.DEBUGGER || loginfo("====DDB==== BatchGetItemOutput: ", result)
+        const dbResult = await ddbRequest(dynamoDbClient.batchGetItem(params), args.ringToken)
+        !process.env.DEBUGGER || loginfo({ringToken: args.ringToken}, "====DDB==== BatchGetItemOutput: ", ppjson(dbResult))
 
-        let resultItems = fromAttributeMapArray(((result as BatchGetItemOutput).Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[]
+        let result = fromAttributeMapArray(((dbResult as BatchGetItemOutput).Responses as BatchGetResponseMap)[DB_NAME] as AttributeMap[]) as DynamoItem[]
 
         if (args.loadPeersLevel !== 0) {
-            for (let resultItem of resultItems) {
-                await populateRefKeys(resultItem, args.loadPeersLevel, args.peersPropsToLoad, args.projectionExpression)
+            for (let resultItem of result) {
+                await populateRefKeys(resultItem, args.loadPeersLevel, args.peersPropsToLoad, args.projectionExpression, args.ringToken)
             }
         }
 
-        return resultItems as T[]
+        return {items: result as T[], nextPage: (dbResult as BatchGetItemOutput).UnprocessedKeys }
     } catch (err) {
         throw new Error(ppjson({ request: params, error: err }))
     }
 
 }
 
-export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: number, peersPropsToLoad: string[] | undefined, projectionExpression: string | undefined) => {
+export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: number, peersPropsToLoad: string[] | undefined, projectionExpression: string | undefined, ringToken: string) => {
     if (loadPeersLevel === 0) return
 
     if (!global.domainAdapter && !global.domainAdapter.lookupItems) {
@@ -72,10 +73,11 @@ export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: nu
         pks: Array.from(keysToLoad.reduce<Map<string, DdbTableItemKey>>((accum, item) => { accum.set(`${item.pk.id}${item.pk.meta}`, item.pk); return accum }, new Map()).values()),
         loadPeersLevel: --loadPeersLevel,
         peersPropsToLoad,
-        projectionExpression
+        projectionExpression,
+        ringToken
     })
 
     for (const refKeyToItem of keysToLoad) {
-        resultItem[`${refKeyToItem.key[0].toUpperCase()}${refKeyToItem.key.slice(1)}`] = loadedItemsFromKeys.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
+        resultItem[`${refKeyToItem.key[0].toUpperCase()}${refKeyToItem.key.slice(1)}`] = loadedItemsFromKeys.items.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
     }
 }

@@ -20,7 +20,8 @@ describe('update number refkey', () => {
         id: arrangedItem.id,
         meta: arrangedItem.meta,
         revisions: arrangedItem.revisions,
-        number_of_seats: 13
+        number_of_seats: 13,
+        ringToken: 'test-ring-token'
       }, _specs_AirplaneItem.__refkeys).then(async updateResult => {
 
         expect(updateResult).toBeInstanceOf(_specs_AirplaneItem)

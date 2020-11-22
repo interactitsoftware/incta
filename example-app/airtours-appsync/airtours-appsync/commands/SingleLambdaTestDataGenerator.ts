@@ -581,7 +581,7 @@ export class SingleLambdaTestDataGenerator {
                 "eventSource": "worker:input",
                 "ringToken": parentRingToken + "_"+ uuid()
             }
-        })).payload.resultItems[0]
+        })).payload.result
     }
 
    
