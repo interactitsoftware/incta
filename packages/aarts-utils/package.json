@@ -1,6 +1,6 @@
 {
   "name": "aarts-utils",
-  "version": "0.2.662",
+  "version": "0.2.665",
   "description": "utility functions used by aarts libraries",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -9,7 +9,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^14.14.9",
+    "@types/node": "^14.14.10",
     "typescript": "^3.9.7"
   },
   "scripts": {

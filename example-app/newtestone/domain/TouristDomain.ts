@@ -13,6 +13,13 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
      */
     async *validateCreate(tourist: TouristItem, identity: IIdentity, ringToken: string): AsyncGenerator<string, TouristItem, undefined> {
         const errors: string[] = []
+        const toCountryFromPayload = tourist.to_country,
+        fromCountryFromPayload = tourist.from_country,
+        toAirportFromPayload = tourist.to_airport,
+        fromAirportFromPayload = tourist.from_airport,
+        flightFromPayload = tourist.flight,
+        airplaneFromPayload = tourist.airplane
+
         // domain logic for tourist creation
         await setDomainRefkeyFromPayload(CountryItem.__type, tourist, 'to_country', ringToken, 'name', errors)
         await setDomainRefkeyFromPayload(CountryItem.__type, tourist, 'from_country', ringToken, 'name', errors)
@@ -39,22 +46,22 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
             // record item, and if missing peaces record corrsp messages
             tourist.processingMessages = []
             if (!tourist.to_country) {
-                tourist.processingMessages.push({ message: "Invalid destination country", severity: "error", properties: "to_country" })
+                tourist.processingMessages.push({ message: "Invalid destination country" + toCountryFromPayload, severity: "error", properties: "to_country" })
             }
             if (!tourist.from_country) {
-                tourist.processingMessages.push({ message: "Invalid origin country", severity: "error", properties: "from_country" })
+                tourist.processingMessages.push({ message: "Invalid origin country " + fromCountryFromPayload, severity: "error", properties: "from_country" })
             }
             if (!tourist.to_airport) {
-                tourist.processingMessages.push({ message: "Invalid destination airport", severity: "error", properties: "to_airport" })
+                tourist.processingMessages.push({ message: "Invalid destination airport " + toAirportFromPayload, severity: "error", properties: "to_airport" })
             }
             if (!tourist.from_airport) {
-                tourist.processingMessages.push({ message: "Invalid origin airport", severity: "error", properties: "from_airport" })
+                tourist.processingMessages.push({ message: "Invalid origin airport " + fromAirportFromPayload, severity: "error", properties: "from_airport" })
             }
             if (!tourist.flight) {
-                tourist.processingMessages.push({ message: "Invalid flight", severity: "error", properties: "flight" })
+                tourist.processingMessages.push({ message: "Invalid flight " + flightFromPayload, severity: "error", properties: "flight" })
             }
             if (!tourist.airplane) {
-                tourist.processingMessages.push({ message: "Invalid airplane", severity: "warning", properties: "airplane" })
+                tourist.processingMessages.push({ message: "Invalid airplane " + airplaneFromPayload, severity: "warning", properties: "airplane" })
             }
         }
 

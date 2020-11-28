@@ -19,7 +19,8 @@ import { InvoiceItem } from "./_DynamoItems"
 import { OrderItem } from "./_DynamoItems"
 import { EraseDataItem } from "./_DynamoItems"
 import { GenerateAirtoursDataItem } from "./_DynamoItems"
-import { GenerateTouristsItem } from "./_DynamoItems"
+import { GenerateTouristsReservationsItem } from "./_DynamoItems"
+import { ConfirmTouristsReservationsItem } from "./_DynamoItems"
 import { GenerateInvoicesItem } from "./_DynamoItems"
 import { FlightsInvolvingCountryItem } from "./_DynamoItems"
 import { TouristFlightsForSeasonItem } from "./_DynamoItems"
@@ -36,7 +37,8 @@ import { InvoiceDomain } from "../domain/InvoiceDomain"
 import { OrderDomain } from "../domain/OrderDomain"
 import { EraseDataCommand } from "../commands/EraseDataCommand"
 import { GenerateAirtoursDataCommand } from "../commands/GenerateAirtoursDataCommand"
-import { GenerateTouristsCommand } from "../commands/GenerateTouristsCommand"
+import { GenerateTouristsReservationsCommand } from "../commands/GenerateTouristsReservationsCommand"
+import { ConfirmTouristsReservationsCommand } from "../commands/ConfirmTouristsReservationsCommand"
 import { GenerateInvoicesCommand } from "../commands/GenerateInvoicesCommand"
 import { FlightsInvolvingCountryQuery } from "../queries/FlightsInvolvingCountryQuery"
 import { TouristFlightsForSeasonQuery } from "../queries/TouristFlightsForSeasonQuery"
@@ -54,7 +56,8 @@ allItems.set(InvoiceItem.__type, InvoiceItem)
 allItems.set(OrderItem.__type, OrderItem)
 allItems.set(EraseDataItem.__type, EraseDataItem)
 allItems.set(GenerateAirtoursDataItem.__type, GenerateAirtoursDataItem)
-allItems.set(GenerateTouristsItem.__type, GenerateTouristsItem)
+allItems.set(GenerateTouristsReservationsItem.__type, GenerateTouristsReservationsItem)
+allItems.set(ConfirmTouristsReservationsItem.__type, ConfirmTouristsReservationsItem)
 allItems.set(GenerateInvoicesItem.__type, GenerateInvoicesItem)
 allItems.set(FlightsInvolvingCountryItem.__type, FlightsInvolvingCountryItem)
 allItems.set(TouristFlightsForSeasonItem.__type, TouristFlightsForSeasonItem)
@@ -73,7 +76,8 @@ const allItemManagers = {
     [OrderItem.__type]: new OrderDomain(allItems),
     [EraseDataItem.__type]: new EraseDataCommand(allItems),
     [GenerateAirtoursDataItem.__type]: new GenerateAirtoursDataCommand(allItems),
-    [GenerateTouristsItem.__type]: new GenerateTouristsCommand(allItems),
+    [GenerateTouristsReservationsItem.__type]: new GenerateTouristsReservationsCommand(allItems),
+    [ConfirmTouristsReservationsItem.__type]: new ConfirmTouristsReservationsCommand(allItems),
     [GenerateInvoicesItem.__type]: new GenerateInvoicesCommand(allItems),
     [FlightsInvolvingCountryItem.__type]: new FlightsInvolvingCountryQuery(allItems),
     [TouristFlightsForSeasonItem.__type]: new TouristFlightsForSeasonQuery(allItems),

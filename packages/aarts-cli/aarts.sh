@@ -76,7 +76,7 @@ sam_invoke_controller() {
 
 rebuild_model() {
     cd $AARTS_INFRA_PATH
-    ./node_modules/.bin/aarts-model-builder $CLIENT_PROJECT_PATH
+    ./node_modules/.bin/aarts-model-builder --app-path $CLIENT_PROJECT_PATH
 }
 
 aws_invoke_worker() {

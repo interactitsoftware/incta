@@ -892,7 +892,7 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
                     "eventSource": "worker:input",
                     "ringToken": ringToken
                 }
-            })).payload.result
+            })).payload.result.result
         }
     }
 }
@@ -922,6 +922,7 @@ const prepareTouristToCreate = (
         ticket_type: ["class_1", "class_2", "vip"][~~(Math.random() * 3)],
         fname: fn,
         lname: ln,
+        item_state: "reservation",
         ...touristData
     }
 }

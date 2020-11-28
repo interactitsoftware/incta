@@ -1,20 +1,20 @@
 
 import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
-import { GenerateTouristsItem, TouristItem } from "../__bootstrap/_DynamoItems"
+import { GenerateTouristsReservationsItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
 import { names } from "./random-names/names"
 
-export class GenerateTouristsCommand extends BaseDynamoItemManager<GenerateTouristsItem> {
+export class GenerateTouristsReservationsCommand extends BaseDynamoItemManager<GenerateTouristsReservationsItem> {
     
     /**
     * Command parameters preparation and/or validation
     */
-    async *validateStart(proc: GenerateTouristsItem, identity: IIdentity, ringToken: string): AsyncGenerator<string, GenerateTouristsItem, undefined> {
+    async *validateStart(proc: GenerateTouristsReservationsItem, identity: IIdentity, ringToken: string): AsyncGenerator<string, GenerateTouristsReservationsItem, undefined> {
 
         // here you can apply further domain logic on permissions, authorizations etc
         const errors: string[] = []
         if (errors.length > 0) {
-            yield 'Start CreateTourists Failed'
+            yield 'Start GenerateTouristsReservations Failed'
             throw new Error(`${errors.join(";;")}`)
         }
 
@@ -25,7 +25,7 @@ export class GenerateTouristsCommand extends BaseDynamoItemManager<GenerateTouri
     /**
     * Command Implementation
     */
-    async execute(proc: GenerateTouristsItem, identity: IIdentity, ringToken: string) : Promise<GenerateTouristsItem> { 
+    async execute(proc: GenerateTouristsReservationsItem, identity: IIdentity, ringToken: string) : Promise<GenerateTouristsReservationsItem> { 
         for (let i = 0; i < Number(proc.touristsToCreate || 10); i++) {
 
             const namesLenght = proc.useNamesLength || names.length
@@ -46,6 +46,7 @@ export class GenerateTouristsCommand extends BaseDynamoItemManager<GenerateTouri
                 id_card: (~~(Math.random() * 1000000) + ~~(Math.random() * 1000000) + ~~(Math.random() * 1000000)),
                 fname,
                 lname,
+                item_state: "reservation",
                 flight: proc.flight,
                 airplane: proc.airplane,
                 from_airport: proc.fromAirport,

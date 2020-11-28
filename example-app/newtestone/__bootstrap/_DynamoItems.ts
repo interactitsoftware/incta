@@ -11,7 +11,8 @@ import { Invoice } from "./items/Invoice"
 import { Order } from "./items/Order"
 import { EraseData } from "./items/EraseData"
 import { GenerateAirtoursData } from "./items/GenerateAirtoursData"
-import { GenerateTourists } from "./items/GenerateTourists"
+import { GenerateTouristsReservations } from "./items/GenerateTouristsReservations"
+import { ConfirmTouristsReservations } from "./items/ConfirmTouristsReservations"
 import { GenerateInvoices } from "./items/GenerateInvoices"
 import { FlightsInvolvingCountry } from "./items/FlightsInvolvingCountry"
 import { TouristFlightsForSeason } from "./items/TouristFlightsForSeason"
@@ -30,7 +31,8 @@ const __type__FlightsInvolvingCountry: string = "FlightsInvolvingCountry"
 const __type__TouristFlightsForSeason: string = "TouristFlightsForSeason"
 const __type__EraseData: string = "P__EraseData"
 const __type__GenerateAirtoursData: string = "P__GenerateAirtoursData"
-const __type__GenerateTourists: string = "P__GenerateTourists"
+const __type__GenerateTouristsReservations: string = "P__GenerateTouristsReservations"
+const __type__ConfirmTouristsReservations: string = "P__ConfirmTouristsReservations"
 const __type__GenerateInvoices: string = "P__GenerateInvoices"
 
 export class CountryItem extends DynamoItem(Country, __type__Country, [
@@ -102,7 +104,9 @@ export class EraseDataItem extends DynamoItem(EraseData, __type__EraseData, [
 ]) { }
 export class GenerateAirtoursDataItem extends DynamoItem(GenerateAirtoursData, __type__GenerateAirtoursData, [
 ]) { }
-export class GenerateTouristsItem extends DynamoItem(GenerateTourists, __type__GenerateTourists, [
+export class GenerateTouristsReservationsItem extends DynamoItem(GenerateTouristsReservations, __type__GenerateTouristsReservations, [
+]) { }
+export class ConfirmTouristsReservationsItem extends DynamoItem(ConfirmTouristsReservations, __type__ConfirmTouristsReservations, [
 ]) { }
 export class GenerateInvoicesItem extends DynamoItem(GenerateInvoices, __type__GenerateInvoices, [
 ]) { }

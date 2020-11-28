@@ -1,0 +1,11 @@
+{
+    "action": "start",
+    "item": "ConfirmTouristsReservations",
+    "arguments": {
+        "cancelledReservations": null,
+        "touristSeason": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

@@ -11,6 +11,8 @@ import { DBQueryOutput } from 'aarts-types';
 
 export const queryItems = async <T extends DdbQueryInput, TResult extends DynamoItem>(ddbQueryPayload: T): Promise<DBQueryOutput<TResult>> => {
 
+    !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "ddbQueryPayload ", ppjson(ddbQueryPayload))
+
     if (ddbQueryPayload.loadPeersLevel === undefined) {
         ddbQueryPayload.loadPeersLevel = 0 // default behaviour, do not load peers if not requested
     }
@@ -82,7 +84,7 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
         TableName: DB_NAME,
         IndexName: ddbQueryPayload.ddbIndex,
         Limit: ddbQueryPayload.limit,
-        ExclusiveStartKey: toAttributeMap(ddbQueryPayload.paginationToken),
+        ExclusiveStartKey: !!ddbQueryPayload.paginationToken ? toAttributeMap(ddbQueryPayload.paginationToken): undefined,
         ReturnConsumedCapacity: 'TOTAL',
         KeyConditionExpression: dkeyConditionExpression,
         ExpressionAttributeNames: dexpressionAttributeNames,

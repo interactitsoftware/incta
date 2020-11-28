@@ -38,7 +38,8 @@ export class DynamoCommandItem {
  * - [OK]remove the arrays support (which is anyways not completed and only cause chaos)
  * - [OK]remove *save method and directly call transactPut
  * - add if (__type == BASE) also for update method
- * - wrap the update also in a try catch for tracing __proc keys
+ * - [OK]wrap the update also in a try catch for tracing __proc keys
+ * - move loading up the item to update within transactUpdateMethod, for handling optimistic locking better?? Do we really want to update
  * - consider this try catch on some higher level?
  * - maintain DBmigration commands separatley from other commands
  */
@@ -83,7 +84,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             // TODO refine it not to cycle indefinetley
             if (newImage.id.startsWith("P__") && (newImage.revisions === 0 || newImage.revisions === 1)
                 && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) >= (newImage["total_events"] as number)) {
-                !process.env.DEBUGGER || loginfo({ringToken: newImage.ringToken as string}, `ISSUING UPDATE-${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
+                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `ISSUING UPDATE-${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
                 const P__from_db = await getItemById(newImage.__typename, newImage.id, newImage.ringToken as string)
                 if (!!P__from_db) {
                     try { // swallow errors for now
@@ -108,7 +109,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             if (typeof this.onUpdate === "function") {
                 await this.onUpdate(__type, newImage)
             } else {
-                !process.env.DEBUGGER || loginfo({ringToken: newImage.ringToken as string}, `No specific onUpdate method was found in manager of ${__type}`)
+                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `No specific onUpdate method was found in manager of ${__type}`)
             }
         }
     }
@@ -122,7 +123,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param args 
      */
     async __validateStart(evnt: AartsEvent): Promise<T> {
-        !process.env.DEBUGGER || loginfo({ringToken: evnt.meta.ringToken}, `[${evnt.meta.item}:__validateStart] START. checking for mandatory item keys: `, ppjson(evnt.payload))
+        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:__validateStart] START. checking for mandatory item keys: `, ppjson(evnt.payload))
 
         if (Array.isArray(evnt.payload.arguments)) throw new Error("payload.arguments must not be an array!")
 
@@ -249,7 +250,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             const P__from_db = await getItemById(proc.__typename, proc.id, evnt.meta.ringToken)
             !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] WILL TRY(!)UPDATE PROCEDURE ${ppjson(P__from_db)} WITH sync_end_date after its sync execution has ended`, ppjson(procedureResult))
             if (!!P__from_db) {
-            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] UPDATING PROCEDURE WITH sync_end_date after its sync execution has ended`, ppjson(procedureResult))
+                !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] UPDATING PROCEDURE WITH sync_end_date after its sync execution has ended`, ppjson(procedureResult))
                 procedureResult = await transactUpdateItem(
                     P__from_db,
                     {
@@ -449,7 +450,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      * @param identity 
      */
     async __validateGet(ddbGetInput: DdbGetInput, ringToken: string): Promise<DdbGetInput> {
-        !process.env.DEBUGGER || loginfo({ringToken},  '[__validateGet] Begin. Doing a gate check of payload. Received arguments: ', ppjson(ddbGetInput))
+        !process.env.DEBUGGER || loginfo({ ringToken }, '[__validateGet] Begin. Doing a gate check of payload. Received arguments: ', ppjson(ddbGetInput))
 
         if (Array.isArray(ddbGetInput)) throw new Error("payload.arguments must not be an array!")
         ddbGetInput.ringToken = ringToken // remember it for logginng from dynamodb client methods
@@ -544,7 +545,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:CREATE] Begin create method. Doing a gate check of payload. Received evnt: `, ppjson(evnt))
         try {
             if (evnt.meta.item === "BASE") {
-                !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:CREATE] Begin create method. type is BASE! Directly calling transact put without any checks`, ppjson(evnt))
+                !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:CREATE] Type is BASE! Directly calling transact put without any checks`, ppjson(evnt))
                 const result = await transactPutItem(evnt.payload.arguments, [])
                 return { result }
             }
@@ -553,7 +554,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, "itemToCreate: ", ppjson(itemToCreate))
 
-            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}] Calling domain's validateCreate method, evnt: `, ppjson({ itemToCreate }), ppjson({ identity: evnt.payload.identity }), ppjson({ringToken: evnt.meta.ringToken}))
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}] Calling domain's validateCreate method, evnt: `, ppjson({ itemToCreate }), ppjson({ identity: evnt.payload.identity }), ppjson({ ringToken: evnt.meta.ringToken }))
 
             const asyncGenDomain = this.validateCreate(itemToCreate, evnt.payload.identity, evnt.meta.ringToken)
             let processorDomain
@@ -628,29 +629,53 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
      */
     async *update(evnt: AartsEvent): AsyncGenerator<string, AartsPayload<T>, undefined> {
         !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] BEGIN update method. Doing a gate check of payload. Received evnt: `, ppjson(evnt))
+        try {
+            // setting payload.item = "BASE" and payload.action="update" allow you to benefit from distributing update loads accross lambdas
+            // while still writing the update request in the client
+            if (evnt.meta.item === "BASE") {
+                !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] Type is BASE! Directly making transact update without any checks`, ppjson(evnt))
+                const result = await dynamoDbClient.transactWriteItems(evnt.payload.arguments).promise()
+                return { result: undefined }
+            }
 
-        evnt.payload.arguments = await this.__validateUpdate(evnt)
+            evnt.payload.arguments = await this.__validateUpdate(evnt)
 
-        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] Loading requested items`)
-        const dynamoExistingItems = await batchGetItem({ loadPeersLevel: 0, pks: [evnt.payload.arguments], ringToken: evnt.meta.ringToken });
-        // console.log("result from batch get", JSON.stringify(dynamoExistingItems))
-        if (dynamoExistingItems.items.length !== 1) {
-            throw new Error(`${evnt.meta.ringToken}: [${evnt.meta.item}:UPDATE] Unable to locate item corresponding to requested { id: ${evnt.payload.arguments.id}, meta: ${evnt.payload.arguments.meta}}`)
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] Loading requested items`)
+            const dynamoExistingItems = await batchGetItem({ loadPeersLevel: 0, pks: [evnt.payload.arguments], ringToken: evnt.meta.ringToken });
+            // console.log("result from batch get", JSON.stringify(dynamoExistingItems))
+            if (dynamoExistingItems.items.length !== 1) {
+                throw new Error(`${evnt.meta.ringToken}: [${evnt.meta.item}:UPDATE] Unable to locate item corresponding to requested { id: ${evnt.payload.arguments.id}, meta: ${evnt.payload.arguments.meta}}`)
+            }
+
+            for await (const domainValidateMessage of this.validateUpdate(Object.assign({}, dynamoExistingItems.items[0], evnt.payload.arguments), evnt.payload.identity, evnt.meta.ringToken)) {
+                yield domainValidateMessage as string
+            }
+
+            const updatedItem = await transactUpdateItem(
+                dynamoExistingItems.items[0],
+                evnt.payload.arguments,
+                (this.lookupItems.get(evnt.meta.item) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys) as T
+
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] END. Result: `, ppjson({ result: updatedItem }))
+
+            return { result: updatedItem }
+        } catch (err) {
+            if (!!evnt.payload.arguments.__proc) {
+                // so this operation is part of a procedure, record an errored event
+                await dynamoDbClient.putItem({
+                    Item: {
+                        id: { S: evnt.payload.arguments.__proc },
+                        __proc: { S: evnt.payload.arguments.__proc },
+                        meta: { S: `errored|${evnt.meta.sqsMsgId || evnt.meta.ringToken}` },
+                        err: { S: `${err && err.message ? err.message : err}` },
+                        stack: { S: `${err && err.stack ? err.stack.slice(0, 500) : ''}` },
+                        ringToken: { S: evnt.meta.ringToken }
+                    },
+                    TableName: DB_NAME
+                }).promise()
+            }
+            throw err
         }
-
-        for await (const domainValidateMessage of this.validateUpdate(Object.assign({}, dynamoExistingItems.items[0], evnt.payload.arguments), evnt.payload.identity, evnt.meta.ringToken)) {
-            yield domainValidateMessage as string
-        }
-
-        const updatedItem = await transactUpdateItem(
-            dynamoExistingItems.items[0],
-            evnt.payload.arguments,
-            (this.lookupItems.get(evnt.meta.item) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys) as T
-
-        !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] END. Result: `, ppjson({ result: updatedItem }))
-
-        return { result: updatedItem }
-
     }
     //#endregion
 

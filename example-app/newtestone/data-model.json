@@ -295,7 +295,7 @@
                 "type": "string[]"
             }
         },
-        "GenerateTourists": {
+        "GenerateTouristsReservations": {
             "touristsToCreate": {
                 "type": "number"
             },
@@ -327,6 +327,14 @@
                 "type": "string"
             },
             "flight": {
+                "type": "string"
+            }
+        },
+        "ConfirmTouristsReservations" : {
+            "cancelledReservations": { 
+                "type": "string[]"
+            },
+            "touristSeason": {
                 "type": "string"
             }
         },
