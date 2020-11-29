@@ -40,6 +40,7 @@ export class DynamoCommandItem {
  * - add if (__type == BASE) also for update method
  * - [OK]wrap the update also in a try catch for tracing __proc keys
  * - move loading up the item to update within transactUpdateMethod, for handling optimistic locking better?? Do we really want to update
+ * - aarts-eb-handler to be configured to read in messages in batches, to catch any exceptions and rethrow them, deleting manually from sqs what was successful
  * - consider this try catch on some higher level?
  * - maintain DBmigration commands separatley from other commands
  */
@@ -51,7 +52,6 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     constructor(lookupItems: Map<string, AnyConstructor<DynamoItem & DomainItem>>) {
         this.lookupItems = lookupItems
     }
-
 
     public onCreate: Function | undefined
     public onUpdate: Function | undefined
@@ -235,14 +235,19 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 this.eventsForAsyncProcessing = []
             }
         } catch (ex) {
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] (${ex})EXCEPTION in procedure execute method: ${ppjson(ex)}`)
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] proc object when exception happened: ${ppjson(proc)}`)
             procedureResult = proc as DynamoItem & DynamoCommandItem
             procedureResult.errors = ppjson(ex)
+            procedureResult.item_state = 'error'
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] procedureResult object when exception happened, after pointing to proc: ${ppjson(procedureResult)}`)
         } finally {
             //#region saving state AFTER procedure ended
             // remove processed_events as it may be already asynchronously modified in db from other events
             delete procedureResult["processed_events"]
             if (!procedureResult.total_events) {
-                procedureResult.item_state = 'success'
+                // if errored and threw exception do not overwrite status
+                procedureResult.item_state = procedureResult.item_state || 'success'
             }
             // load latest procedure contents
             // TODO what if async update of procedure sneak in between getting from db and the consequent update? retries?

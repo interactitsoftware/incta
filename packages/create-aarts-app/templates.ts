@@ -427,7 +427,7 @@ export const dataModelJsons = {
     },
     "Queries": {
       "FlightsInvolvingCountry": {},
-      "TouristFlightsForSeason": {}
+      "AllTouristForTouristSeason": {}
     }
   },
   empty: {
@@ -444,8 +444,7 @@ export const dataModelJsons = {
 }
 
 export const tsconfigJson =
-  `
-{
+`{
     "compilerOptions": {
       "incremental": true,
       "target": "ES2018",

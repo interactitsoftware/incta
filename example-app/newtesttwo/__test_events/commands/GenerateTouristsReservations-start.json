@@ -1,0 +1,20 @@
+{
+    "action": "start",
+    "item": "GenerateTouristsReservations",
+    "arguments": {
+        "touristsToCreate": 5,
+        "useNamesLength": 5,
+        "fname": "abc",
+        "lname": "abc",
+        "iban": "abc",
+        "toAirport": "abc",
+        "fromAirport": "abc",
+        "toCountry": "abc",
+        "fromCountry": "abc",
+        "airplane": "abc",
+        "flight": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

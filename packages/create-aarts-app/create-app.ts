@@ -66,7 +66,8 @@ const transferAirtoursTemplate = async (appPath: string) => {
     await recordFile(join(appPath, "commands", "random-names"), "names.ts", randomNames)
 
     await recordFile(join(appPath, "commands"), "EraseDataCommand.ts", airtoursTemplate.EraseDataCommand)
-    await recordFile(join(appPath, "commands"), "GenerateTouristsCommand.ts", airtoursTemplate.GenerateTouristsCommand)
+    await recordFile(join(appPath, "commands"), "GenerateTouristsReservationsCommand.ts", airtoursTemplate.GenerateTouristsReservationsCommand)
+    await recordFile(join(appPath, "commands"), "ConfirmTouristsReservationsCommand.ts", airtoursTemplate.ConfirmTouristsReservationsCommand)
     await recordFile(join(appPath, "commands"), "GenerateAirtoursDataCommand.ts", airtoursTemplate.GenerateAirtoursDataCommand)
     await recordFile(join(appPath, "commands"), "GenerateInvoicesCommand.ts", airtoursTemplate.GenerateInvoicesCommand)
 
@@ -75,7 +76,7 @@ const transferAirtoursTemplate = async (appPath: string) => {
     await recordFile(join(appPath, "domain"), "OrderDomain.ts", airtoursTemplate.OrderDomain)
 
     await recordFile(join(appPath, "queries"), "FlightsInvolvingCountryQuery.ts", airtoursTemplate.FlightsInvolvingCountryQuery)
-    await recordFile(join(appPath, "queries"), "TouristFlightsForSeasonQuery.ts", airtoursTemplate.TouristFlightsForSeasonQuery)
+    await recordFile(join(appPath, "queries"), "AllTouristForTouristSeasonQuery.ts", airtoursTemplate.AllTouristForTouristSeasonQuery)
 }
 
 const recordFile = async (dir: string, fileName: string, contents: string) => {

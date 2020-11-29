@@ -23,9 +23,30 @@ export const chunks = <T>(arr: Array<T>, size: number): Array<Array<T>> => {
     return chunked_arr;
 }
 
-export const ppjson = (json: any): string => typeof json === "object"? JSON.stringify(json, null, 4): json as unknown as string
+export const ppjson = (obj: any): string => {
+    if (obj instanceof Error) {
+        return JSON.stringify(obj, replaceErrors, 4)
+    } else {
+        return typeof obj === "object" ?
+            JSON.stringify(obj, null, 4) : 
+            obj as unknown as string
+    } 
+}
 
+const replaceErrors = (key: string, value: any) => {
+    if (value instanceof Error) {
+        var error : Record<string, any> = {};
 
+        Object.getOwnPropertyNames(value).forEach(function (key) {
+            //@ts-ignore
+            error[key] = value[key];
+        });
+
+        return error;
+    }
+
+    return value;
+}
 export type RingTokenSource = { ringToken: string }
 /**
  * utilty method for logging which reminds the developer to always pass the ringToken

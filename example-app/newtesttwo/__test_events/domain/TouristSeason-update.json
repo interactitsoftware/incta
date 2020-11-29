@@ -1,0 +1,18 @@
+{
+    "action": "update",
+    "item": "TouristSeason",
+    "arguments": {
+        "id": "id-of-item-to-be-updated",
+        "revisions": "sending-latest-rev-of-updated-item-mandatory",
+        "discounts": {
+            "vip": 5,
+            "class_2": 5,
+            "class_1": 5
+        },
+        "code": "abc",
+        "price_flight_per_hour": 5
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

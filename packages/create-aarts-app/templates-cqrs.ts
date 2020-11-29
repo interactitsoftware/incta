@@ -960,7 +960,7 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
                     "eventSource": "worker:input",
                     "ringToken": ringToken
                 }
-            })).payload.result
+            })).payload.result.result
         }
     }
 }
@@ -990,29 +990,29 @@ const prepareTouristToCreate = (
         ticket_type: ["class_1", "class_2", "vip"][~~(Math.random() * 3)],
         fname: fn,
         lname: ln,
+        item_state: "reservation",
         ...touristData
     }
 }
 `
 
-export const GenerateTouristsCommand = 
-`
-import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
-import { GenerateTouristsItem, TouristItem } from "../__bootstrap/_DynamoItems"
+export const GenerateTouristsReservationsCommand = 
+`import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+import { GenerateTouristsReservationsItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
 import { names } from "./random-names/names"
 
-export class GenerateTouristsCommand extends BaseDynamoItemManager<GenerateTouristsItem> {
+export class GenerateTouristsReservationsCommand extends BaseDynamoItemManager<GenerateTouristsReservationsItem> {
     
     /**
     * Command parameters preparation and/or validation
     */
-    async *validateStart(proc: GenerateTouristsItem, identity: IIdentity, ringToken: string): AsyncGenerator<string, GenerateTouristsItem, undefined> {
+    async *validateStart(proc: GenerateTouristsReservationsItem, identity: IIdentity, ringToken: string): AsyncGenerator<string, GenerateTouristsReservationsItem, undefined> {
 
         // here you can apply further domain logic on permissions, authorizations etc
         const errors: string[] = []
         if (errors.length > 0) {
-            yield 'Start CreateTourists Failed'
+            yield 'Start GenerateTouristsReservations Failed'
             throw new Error(\`\${errors.join(";;")}\`)
         }
 
@@ -1023,7 +1023,7 @@ export class GenerateTouristsCommand extends BaseDynamoItemManager<GenerateTouri
     /**
     * Command Implementation
     */
-    async execute(proc: GenerateTouristsItem, identity: IIdentity, ringToken: string) : Promise<GenerateTouristsItem> { 
+    async execute(proc: GenerateTouristsReservationsItem, identity: IIdentity, ringToken: string) : Promise<GenerateTouristsReservationsItem> { 
         for (let i = 0; i < Number(proc.touristsToCreate || 10); i++) {
 
             const namesLenght = proc.useNamesLength || names.length
@@ -1044,6 +1044,7 @@ export class GenerateTouristsCommand extends BaseDynamoItemManager<GenerateTouri
                 id_card: (~~(Math.random() * 1000000) + ~~(Math.random() * 1000000) + ~~(Math.random() * 1000000)),
                 fname,
                 lname,
+                item_state: "reservation",
                 flight: proc.flight,
                 airplane: proc.airplane,
                 from_airport: proc.fromAirport,
@@ -1068,9 +1069,147 @@ export class GenerateTouristsCommand extends BaseDynamoItemManager<GenerateTouri
 }
 `
 
-export const GenerateInvoicesCommand = 
+export const ConfirmTouristsReservationsCommand = 
+`import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+import { ConfirmTouristsReservationsItem, TouristItem } from "../__bootstrap/_DynamoItems"
+import { IIdentity } from "aarts-types/interfaces"
+import { queryItems, versionString } from "aarts-dynamodb"
+import { ppjson } from "aarts-utils"
+
+export class ConfirmTouristsReservationsCommand extends BaseDynamoItemManager<ConfirmTouristsReservationsItem> {
+
+    /**
+    * Command parameters preparation and/or validation
+    */
+    async *validateStart(proc: ConfirmTouristsReservationsItem, identity: IIdentity, ringToken: string): AsyncGenerator<string, ConfirmTouristsReservationsItem, undefined> {
+
+        // here you can apply further domain logic on permissions, authorizations etc
+        const errors: string[] = []
+        if (errors.length > 0) {
+            yield 'Start CreateTourists Failed'
+            throw new Error(\`\${errors.join(";;")}\`)
+        }
+
+        // if this method returns without throwing error, the execute method will be called 
+        return proc
+    }
+
+    /**
+    * Command Implementation
+    */
+    async execute(proc: ConfirmTouristsReservationsItem, identity: IIdentity, ringToken: string): Promise<ConfirmTouristsReservationsItem> {
+        // TODO 
+        // - load all tourists for tourists season
+        // - if tourists season is null load all tourists present
+        // for each tourist - update state to confirmed 
+        if (!!proc.touristSeason) {
+            let nextPage
+            do {
+                // TODO get all flights in that touristSeason 
+                // TODO get all tourists for all the flights
+                // TODO use the Query AllTouristsForSeason
+                const allTouristsReservationsForSeason = await queryItems({
+                    ddbIndex: "smetadata__meta",
+                    pk: proc.touristSeason,
+                    range: \`\${versionString(0)}|Tourist\`,
+                    primaryKeyName: "smetadata",
+                    rangeKeyName: "meta",
+                    ringToken
+                });
+                nextPage = allTouristsReservationsForSeason.nextPage
+
+                allTouristsReservationsForSeason.items.forEach(
+                    tourist => {
+                        if (!!proc.cancelledReservations && proc.cancelledReservations.indexOf(tourist.id) > -1) {
+                            this.eventsForAsyncProcessing.push({
+                                "action": "update",
+                                "item": TouristItem.__type,
+                                "arguments": {
+                                    id: tourist.id,
+                                    revisions: tourist.revisions,
+                                    item_state: "cancelled"
+                                },
+                                "identity": {
+                                    "username": "akrsmv"
+                                }
+                            })
+                        } else {
+                            // set status to confirmed and also set the refkey to tourist_season
+                            this.eventsForAsyncProcessing.push({
+                                "action": "update",
+                                "item": TouristItem.__type,
+                                "arguments": {
+                                    id: tourist.id,
+                                    revisions: tourist.revisions,
+                                    item_state: "confirmed",
+                                    tourist_season: tourist.Flight.tourist_season
+                                },
+                                "identity": {
+                                    "username": "akrsmv"
+                                }
+                            })
+                        }
+                    })
+            } while (!!nextPage)
+        } else {
+            console.log("WILL UPDATE ALLL TOURISTS")
+            let nextPage
+            do {
+                const allTouristsReservations = await queryItems({
+                    ddbIndex: "meta__id",
+                    pk: \`\${versionString(0)}|Tourist\`,
+                    primaryKeyName: "meta",
+                    rangeKeyName: "id",
+                    loadPeersLevel:1,
+                    peersPropsToLoad: ["flight"],
+                    ringToken
+                });
+                nextPage = allTouristsReservations.nextPage
+                console.log("NEX PAGE IS " + nextPage)
+                console.log("results are: ", ppjson(allTouristsReservations.items))
+
+                for (const tourist of allTouristsReservations.items) {
+                    if (!!proc.cancelledReservations && proc.cancelledReservations.indexOf(tourist.id) > -1) {
+                        this.eventsForAsyncProcessing.push({
+                            "action": "update",
+                            "item": TouristItem.__type,
+                            "arguments": {
+                                id: tourist.id,
+                                revisions: tourist.revisions,
+                                item_state: "cancelled"
+                            },
+                            "identity": {
+                                "username": "akrsmv"
+                            }
+                        })
+                    } else {
+                        // set status to confirmed and also set the refkey to tourist_season
+                        this.eventsForAsyncProcessing.push({
+                            "action": "update",
+                            "item": TouristItem.__type,
+                            "arguments": {
+                                id: tourist.id,
+                                revisions: tourist.revisions,
+                                item_state: "confirmed",
+                                tourist_season: tourist.Flight.tourist_season
+                            },
+                            "identity": {
+                                "username": "akrsmv"
+                            }
+                        })
+                    }
+                }
+            } while (!!nextPage && Object.keys(nextPage).length > 0)
+        }
+
+
+        return proc
+    }
+}
 `
-import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+
+export const GenerateInvoicesCommand = 
+`import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
 import { GenerateInvoicesItem } from "../__bootstrap/_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
 import { dynamoDbClient, DB_NAME } from "aarts-dynamodb"
@@ -1107,7 +1246,6 @@ export class GenerateInvoicesCommand extends BaseDynamoItemManager<GenerateInvoi
         return proc
     }
 }
-
 `
 
 export const TouristDomain = 
@@ -1353,16 +1491,16 @@ export class OrderDomain extends BaseDynamoItemManager<OrderItem> {
 }
 `
 
-export const TouristFlightsForSeasonQuery = 
+export const AllTouristForTouristSeasonQuery = 
 `import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
-import { TouristFlightsForSeasonItem } from "../__bootstrap/_DynamoItems"
+import { AllTouristForTouristSeasonItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, AartsEvent, IIdentity, IItemManager  } from "aarts-types/interfaces"
 import { ppjson } from "aarts-utils"
 
-export class TouristFlightsForSeasonQuery extends BaseDynamoItemManager<TouristFlightsForSeasonItem> {
+export class AllTouristForTouristSeasonQuery extends BaseDynamoItemManager<AllTouristForTouristSeasonItem> {
     // Custom Queries are BaseDynamoItemManagers with overwritten query method. 
     // Code will not call validateQuery and __ValidateQuery in this case, unless you explicitly call them
-    async *query(args: AartsEvent): AsyncGenerator<string, AartsPayload<TouristFlightsForSeasonItem>, undefined> {
+    async *query(args: AartsEvent): AsyncGenerator<string, AartsPayload<AllTouristForTouristSeasonItem>, undefined> {
 
         return { result: { items:[], nextPage: null } }
     }

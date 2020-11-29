@@ -36,6 +36,7 @@ export class ConfirmTouristsReservationsCommand extends BaseDynamoItemManager<Co
             do {
                 // TODO get all flights in that touristSeason 
                 // TODO get all tourists for all the flights
+                // TODO use the Query AllTouristsForSeason
                 const allTouristsReservationsForSeason = await queryItems({
                     ddbIndex: "smetadata__meta",
                     pk: proc.touristSeason,

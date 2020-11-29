@@ -117,11 +117,19 @@ export const refkeyitem = <T extends DynamoItem>(item: T, key: string) => Object
 
 export function ensureOnlyNewKeyUpdates(existingItem: Record<string, any>, itemUpdates: Record<string, any>): object {
     return Object.keys(itemUpdates)
-        // Remove those with same value, preserving whatever the revisions passed
-        .filter(k => k === "revisions" || (itemUpdates[k] === "__del__" && existingItem[k]) || (itemUpdates[k] !== "__del__" && itemUpdates[k] != existingItem[k]))
+        .filter(k => 
+            (itemUpdates[k] !== "__del__" && (
+                // preserving any arrays, if they are not requested to be entirely deleted
+                Array.isArray(itemUpdates[k]) 
+                // preserve anything that differs from whats there already
+                || itemUpdates[k] != existingItem[k]))
+            // preserving whatever the revisions passed
+            || k === "revisions" 
+            // preserving any delete key requests
+            || (itemUpdates[k] === "__del__" && existingItem[k]))
         .reduce(
             (newObj, k) =>
-                typeof itemUpdates[k] === "object"
+                typeof itemUpdates[k] === "object" && !Array.isArray(itemUpdates[k])
                     ? { ...newObj, [k]: ensureOnlyNewKeyUpdates(itemUpdates[k], existingItem[k]) } // Recurse.
                     : { ...newObj, [k]: itemUpdates[k] }, // Copy value.
             {}
