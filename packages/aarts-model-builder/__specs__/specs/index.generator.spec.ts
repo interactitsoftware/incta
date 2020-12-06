@@ -15,6 +15,7 @@ describe('index.generator', () => {
     console.log = jest.fn();
 
     await builder({
+      version:1,
       Items:{
         "Airplane": {
           model: {type:"string", indexed: true},
@@ -43,7 +44,8 @@ describe('index.generator', () => {
           touristSeason: { type: "string" },
           tourist: { type: "string" }
         }
-      }
+      },
+      GSIs:[]
     }, outputDir)
 
     expect(shell.ls(outputDir)).toContain("__bootstrap")

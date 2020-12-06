@@ -1,6 +1,8 @@
+import * as AirtoursTemplateModelV1 from "./templates/airtours-ddb-v1/data-model"
+import * as AirtoursTemplateModelV2 from "./templates/airtours-ddb-v2/data-model"
+
 export const jestConfigJs =
-  `
-module.exports = {
+`module.exports = {
     "roots": [
       "<rootDir>"
     ],
@@ -20,8 +22,7 @@ module.exports = {
 `
 
 export const testSetupEnvs =
-  `
-process.env.AWS_SAM_LOCAL="1"
+`process.env.AWS_SAM_LOCAL="1"
 process.env.DB_NAME="TEST1"
 // process.env.CopyEntireItemToGSIs="1" // needs further work around creating the test data base on each test run, to respect this value
 // process.env.DEBUGGER="1" //may print lots of logs
@@ -31,8 +32,7 @@ process.env.EVENT_BUS_TOPIC="arn:aws:sns:eu-west-1:216788398771:airtours-EventsB
 `
 
 export const packageJson =
-  `
-{
+`{
     "name": "##APP##",
     "version": "1.0.0",
     "description": "##APP## provisioned by aarts",
@@ -47,390 +47,23 @@ export const packageJson =
     "license": "ISC"
   }
 `
-
-export const testutils =
-  `
-import { chunks } from "aarts-utils"
-import { WriteRequest } from "aws-sdk/clients/dynamodb"
-import { dynamoDbClient, DB_NAME } from "aarts-dynamodb";
-
-export const clearDynamo = async () => {
-    let scanResult
-    do {
-        let scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
-        const items = scanResult.Items && chunks(scanResult.Items, 25)
-        if (items) {
-            for (const chunk of items) {
-                await dynamoDbClient.batchWriteItem({
-                    RequestItems: {
-                        [DB_NAME]: chunk.reduce<WriteRequest[]>((accum, item) => {
-                            accum.push({
-                                DeleteRequest: {
-                                    Key: { id: { S: item.id.S }, meta: { S: item.meta.S } }
-                                }
-                            })
-                            return accum
-                        }, [])
-                    }
-                }).promise()
-            }
-        }
-
-        scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
-
-    } while (scanResult && scanResult.LastEvaluatedKey)
-}
-`
-
 export const dataModelJsons = {
-  "airtours": {
+  "airtours-ddb-v1": AirtoursTemplateModelV1.model,
+  "airtours-ddb-v2": AirtoursTemplateModelV2.model,
+  empty_v1: {
+    "version": 1,
     "Items": {
-      "Country": {
-        "name": {
-          "type": "string",
-          "indexed": true,
-          "unique": true
-        },
-        "currency": {
-          "type": "string"
-        },
-        "code": {
-          "type": "string",
-          "indexed": true,
-          "unique": true
-        }
-      },
-      "Airport": {
-        "name": {
-          "type": "string",
-          "indexed": true,
-          "unique": true
-        },
-        "airport_size": {
-          "type": "number",
-          "indexed": true
-        },
-        "country": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Country"
-        },
-        "branch": {
-          "type": "string",
-          "indexed": true
-        },
-        "type": {
-          "type": "string",
-          "indexed": true
-        },
-        "code": {
-          "type": "string",
-          "indexed": true
-        }
-      },
-      "Flight": {
-        "airplane": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Airplane"
-        },
-        "from_airport": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Airport"
-        },
-        "to_airport": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Airport"
-        },
-        "from_country": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Country"
-        },
-        "to_country": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Country"
-        },
-        "flight_code": {
-          "type": "string",
-          "indexed": true
-        },
-        "duration_hours": {
-          "type": "number",
-          "indexed": true
-        },
-        "tourist_season": {
-          "type": "string",
-          "indexed": true,
-          "ref": "TouristSeason"
-        },
-        "price_1st_class": {
-          "type": "number"
-        },
-        "price_2nd_class": {
-          "type": "number"
-        },
-        "price_vip": {
-          "type": "number"
-        }
-      },
-      "Airplane": {
-        "reg_uq_str": {
-          "type": "string",
-          "indexed": true,
-          "unique": true
-        },
-        "reg_uq_number": {
-          "type": "number",
-          "indexed": true,
-          "unique": true
-        },
-        "number_of_seats": {
-          "type": "number",
-          "indexed": true
-        },
-        "model": {
-          "type": "string",
-          "indexed": true,
-          "ref": "AirplaneModel"
-        },
-        "manifacturer": {
-          "type": "string",
-          "indexed": true,
-          "ref": "AirplaneManifacturer"
-        }
-      },
-      "AirplaneModel": {
-        "manifacturer": {
-          "type": "string",
-          "indexed": true,
-          "ref": "AirplaneManifacturer"
-        },
-        "country": {
-          "type": "string",
-          "ref": "Country"
-        },
-        "name": {
-          "type": "string",
-          "indexed": true,
-          "unique": true
-        }
-      },
-      "AirplaneManifacturer": {
-        "country": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Country"
-        },
-        "name": {
-          "type": "string",
-          "indexed": true,
-          "unique": true
-        }
-      },
-      "Tourist": {
-        "fname": {
-          "type": "string",
-          "indexed": true
-        },
-        "lname": {
-          "type": "string",
-          "indexed": true
-        },
-        "id_card": {
-          "type": "number",
-          "indexed": true,
-          "unique": true
-        },
-        "iban": {
-          "type": "string",
-          "indexed": true
-        },
-        "tourist_season": {
-          "type": "string",
-          "indexed": true,
-          "ref": "TouristSeason"
-        },
-        "ticket_type": {
-          "type": "string",
-          "indexed": true
-        },
-        "airplane": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Airplane"
-        },
-        "flight": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Flight"
-        },
-        "from_airport": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Airport"
-        },
-        "to_airport": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Airport"
-        },
-        "from_country": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Country"
-        },
-        "to_country": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Country"
-        }
-      },
-      "TouristSeason": {
-        "discounts": {
-          "vip": {
-            "type": "number"
-          },
-          "class_2": {
-            "type": "number"
-          },
-          "class_1": {
-            "type": "number"
-          }
-        },
-        "code": {
-          "type": "string",
-          "indexed": true,
-          "unique": true
-        },
-        "price_flight_per_hour": {
-          "type": "number"
-        }
-      },
-      "Invoice": {
-        "invoice_nr": {
-          "type": "string",
-          "indexed": true
-        },
-        "card_id": {
-          "type": "string",
-          "indexed": true
-        },
-        "tourist": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Tourist"
-        },
-        "lname": {
-          "type": "string"
-        },
-        "fname": {
-          "type": "string"
-        },
-        "address1": {
-          "type": "string"
-        },
-        "address2": {
-          "type": "string"
-        }
-      },
-      "Order": {
-        "invoice": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Invoice"
-        },
-        "flight": {
-          "type": "string",
-          "indexed": true,
-          "ref": "Flight"
-        },
-        "tourist_season": {
-          "type": "string",
-          "indexed": true,
-          "ref": "TouristSeason"
-        },
-        "price": {
-          "type": "number"
-        },
-        "quantity": {
-          "type": "number"
-        },
-        "discount": {
-          "type": "number"
-        },
-        "vat": {
-          "type": "number"
-        }
-      }
+
     },
     "Commands": {
-      "EraseData": {},
-      "GenerateAirtoursData": {
-        "useNamesLength": {
-          "type": "number"
-        },
-        "touristsToCreate": {
-          "type": "number"
-        },
-        "on_success": {
-          "type": "string[]"
-        }
-      },
-      "GenerateTouristsReservations": {
-        "touristsToCreate": {
-          "type": "number"
-        },
-        "useNamesLength": {
-          "type": "number"
-        },
-        "fname": {
-          "type": "string"
-        },
-        "lname": {
-          "type": "string"
-        },
-        "iban": {
-          "type": "string"
-        },
-        "toAirport": {
-          "type": "string"
-        },
-        "fromAirport": {
-          "type": "string"
-        },
-        "toCountry": {
-          "type": "string"
-        },
-        "fromCountry": {
-          "type": "string"
-        },
-        "airplane": {
-          "type": "string"
-        },
-        "flight": {
-          "type": "string"
-        }
-      },
-      "ConfirmTouristsReservations": {
-        "cancelledReservations": {
-          "type": "string[]"
-        },
-        "touristSeason": {
-          "type": "string"
-        }
-      },
-      "GenerateInvoices": {}
+
     },
     "Queries": {
-      "FlightsInvolvingCountry": {},
-      "AllTouristForTouristSeason": {}
+
     }
   },
-  empty: {
+  empty_v2: {
+    "version": 2,
     "Items": {
 
     },

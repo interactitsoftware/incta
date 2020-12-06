@@ -1,8 +1,0 @@
-{
-    "action": "start",
-    "item": "GenerateAirtoursData",
-    "arguments": {},
-    "identity": {
-        "username": "testuser"
-    }
-}

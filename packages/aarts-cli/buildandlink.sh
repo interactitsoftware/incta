@@ -11,6 +11,7 @@ npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_TYPES
@@ -21,8 +22,8 @@ npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
+sleep 5
 
-#npm link
 
 echo ------------------------------------------------
 echo            AARTS_EB_TYPES
@@ -33,69 +34,95 @@ npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
-#npm link
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_DYNAMODB
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-dynamodb
-# npm link aarts-types
 npm install && npm update
 npm version patch
 npm run build_lin
 cd dist
 npm publish -m "dev update"
-# npm link
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_DYNAMODB_EVENTS
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-dynamodb-events
-# npm link aarts-eb-types
 npm install && npm update
 npm version patch
 npm run build_lin
 cd dist
 npm publish -m "dev update"
-# npm link
+sleep 5
+
+echo ------------------------------------------------
+echo            AARTS_DDB
+echo ------------------------------------------------
+cd $AARTS_HOME/packages/aarts-ddb
+npm install && npm update
+npm version patch
+npm run build_lin
+cd dist
+npm publish -m "dev update"
+sleep 5
+
+echo ------------------------------------------------
+echo            AARTS_DDB_EVENTS
+echo ------------------------------------------------
+cd $AARTS_HOME/packages/aarts-ddb-events
+npm install && npm update
+npm version patch
+npm run build_lin
+cd dist
+npm publish -m "dev update"
+sleep 5
+
+echo ------------------------------------------------
+echo            AARTS_DDB_MANAGER
+echo ------------------------------------------------
+cd $AARTS_HOME/packages/aarts-ddb-manager
+npm install && npm update
+npm version patch
+npm run build
+cd dist
+npm publish -m "dev update"
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_HANDLER
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-handler
-# npm link aarts-types
 npm install && npm update
 npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
-# npm link
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_EB_HANDLER
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-eb-handler
-# npm link aarts-types
-# npm link aarts-eb-types
-# npm link aarts-handler
 npm install && npm update
 npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
-# npm link
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_EB_DISPATCHER
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-eb-dispatcher
-# npm link aarts-eb-types
 npm install && npm update
 npm version patch
 npm run build_lin
 cd dist
 npm publish -m "dev update"
-# npm link
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_ITEM_MANAGER
@@ -106,7 +133,7 @@ npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
-# npm link
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_EB_NOTIFIER
@@ -116,21 +143,18 @@ npm install && npm update
 npm version patch
 npm run build_lin
 npm publish -m "dev update"
-# npm link
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_MODEL_BUILDER
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-model-builder
-# npm link aarts-dynamodb
-# npm link aarts-eb-handler
-# npm link aarts-eb-notifier
-# npm link aarts-eb-dispatcher
 npm install && npm update
 npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
+sleep 5
 
 echo ------------------------------------------------
 echo            CREATE_AARTS_APP
@@ -141,6 +165,7 @@ npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
+sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_CLI
@@ -151,6 +176,7 @@ npm version patch
 npm run build
 cd dist
 npm publish -m "dev update"
+sleep 5
 
 # echo ------------------------------------------------
 # echo            AARTS_EXAMPLE

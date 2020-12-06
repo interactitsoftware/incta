@@ -1,9 +1,10 @@
 import * as shell from "shelljs"
-import { writeFile } from "fs"
 import { join } from "path"
-import { dataModelJsons, jestConfigJs, packageJson, randomNames, testSetupEnvs, testutils, tsconfigJson } from "./templates"
+import { dataModelJsons, jestConfigJs, packageJson, randomNames, testSetupEnvs, tsconfigJson } from "./templates"
 import { ppjson } from "aarts-utils"
-import * as airtoursTemplate from "./templates-cqrs"
+import { recordFile } from "./utils"
+import { transferAirtoursV1Template } from "./templates/airtours-ddb-v1"
+import { transferAirtoursV2Template } from "./templates/airtours-ddb-v2"
 
 export const createApp = async (appName: string, templateModel?: string) => {
     if (!appName) {
@@ -33,16 +34,10 @@ export const createApp = async (appName: string, templateModel?: string) => {
 
     //#region static files
     await recordFile(join(".", appName, "__specs__", "setup"), "envVars.js", testSetupEnvs)
-    await recordFile(join(".", appName, "__specs__", "specs"), "testutils.ts", testutils)
     await recordFile(appPath, "package.json", packageJson.replace(/##APP##/g, appName))
     await recordFile(appPath, "tsconfig.json", tsconfigJson)
     await recordFile(appPath, "jest.config.js", jestConfigJs)
-    await recordFile(appPath, "data-model.json", ppjson(dataModelJsons[templateModel]))
-    //#endregion
-
-    //#region install libs
-    shell.exec(`cd ${appPath} && npm install @types/node @types/jest aarts-eb-handler aarts-eb-notifier aarts-eb-dispatcher aarts-types aarts-dynamodb-events aarts-dynamodb aarts-item-manager aarts-utils aws-sdk --save`)
-    shell.exec(`cd ${appPath} && npm install jest ts-jest -D`)
+    await recordFile(appPath, "data-model.json", ppjson(dataModelJsons.empty_v1))
     //#endregion
 
     await transferAnyTemplateFiles(templateModel, appPath)
@@ -54,34 +49,21 @@ const transferAnyTemplateFiles = async (templateModel: string, appPath: string) 
     switch (templateModel) {
         case "empty": return;
 
-        case "airtours":
-            await transferAirtoursTemplate(appPath);
+        case "airtours-ddb-v1":
+            await transferAirtoursV1Template(appPath);
+            shell.exec(`cd ${appPath} && npm install @types/node @types/jest aarts-eb-handler aarts-eb-notifier aarts-eb-dispatcher aarts-types aarts-dynamodb-events aarts-dynamodb aarts-item-manager aarts-utils aws-sdk --save`)
+            shell.exec(`cd ${appPath} && npm install jest ts-jest -D`)
             break;
-        default: return;
+        case "airtours-ddb-v2":
+            await transferAirtoursV2Template(appPath);
+            shell.exec(`cd ${appPath} && npm install @types/node @types/jest aarts-eb-handler aarts-eb-notifier aarts-eb-dispatcher aarts-types aarts-ddb-events aarts-ddb aarts-ddb-manager aarts-utils aws-sdk --save`)
+            shell.exec(`cd ${appPath} && npm install jest ts-jest -D`)
+            break;
+        default: 
+            shell.exec(`cd ${appPath} && npm install @types/node @types/jest aarts-eb-handler aarts-eb-notifier aarts-eb-dispatcher aarts-types aarts-dynamodb-events aarts-dynamodb aarts-item-manager aarts-utils aws-sdk --save`)
+            shell.exec(`cd ${appPath} && npm install jest ts-jest -D`)
+        return;
     }
 }
 
-const transferAirtoursTemplate = async (appPath: string) => {
-    shell.mkdir("-p", join(appPath, "commands", "random-names"))
-    await recordFile(join(appPath, "commands", "random-names"), "names.ts", randomNames)
 
-    await recordFile(join(appPath, "commands"), "EraseDataCommand.ts", airtoursTemplate.EraseDataCommand)
-    await recordFile(join(appPath, "commands"), "GenerateTouristsReservationsCommand.ts", airtoursTemplate.GenerateTouristsReservationsCommand)
-    await recordFile(join(appPath, "commands"), "ConfirmTouristsReservationsCommand.ts", airtoursTemplate.ConfirmTouristsReservationsCommand)
-    await recordFile(join(appPath, "commands"), "GenerateAirtoursDataCommand.ts", airtoursTemplate.GenerateAirtoursDataCommand)
-    await recordFile(join(appPath, "commands"), "GenerateInvoicesCommand.ts", airtoursTemplate.GenerateInvoicesCommand)
-
-    await recordFile(join(appPath, "domain"), "TouristDomain.ts", airtoursTemplate.TouristDomain)
-    await recordFile(join(appPath, "domain"), "InvoiceDomain.ts", airtoursTemplate.InvoiceDomain)
-    await recordFile(join(appPath, "domain"), "OrderDomain.ts", airtoursTemplate.OrderDomain)
-
-    await recordFile(join(appPath, "queries"), "FlightsInvolvingCountryQuery.ts", airtoursTemplate.FlightsInvolvingCountryQuery)
-    await recordFile(join(appPath, "queries"), "AllTouristForTouristSeasonQuery.ts", airtoursTemplate.AllTouristForTouristSeasonQuery)
-}
-
-const recordFile = async (dir: string, fileName: string, contents: string) => {
-    return new Promise((resolve, reject) => writeFile(join(dir, fileName), contents, err => {
-        if (err) return reject(err)
-        return resolve(`Written ${fileName}`)
-    }))
-}

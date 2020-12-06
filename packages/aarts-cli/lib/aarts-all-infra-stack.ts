@@ -101,7 +101,7 @@ export class AartsAllInfraStack extends Stack {
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
       eventSource: "worker:input:long",
-      sqsRetries: 3,
+      sqsRetries: 1,
       layers: [
         nodeModulesLayer
       ],

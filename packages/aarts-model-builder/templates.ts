@@ -1,6 +1,6 @@
 export const domainTemplate = 
-`import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
-import { DdbGetInput, DdbQueryInput } from "aarts-dynamodb/interfaces"
+`import { BaseDynamoItemManager } from "##DDB_MANAGER_LIB##/BaseItemManager"
+import { DdbGetInput, DdbQueryInput } from "##DDB_LIB##/interfaces"
 import { ##ITEM##Item } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
 import { ppjson } from "aarts-utils"
@@ -66,7 +66,7 @@ export class ##ITEM##Domain extends BaseDynamoItemManager<##ITEM##Item> {
 `
 
 export const commandTemplate = 
-`import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+`import { BaseDynamoItemManager } from "##DDB_MANAGER_LIB##/BaseItemManager"
 import { ##ITEM##Item } from "../__bootstrap/_DynamoItems"
 import { AartsEvent, AartsPayload, IIdentity, IItemManager  } from "aarts-types/interfaces"
 
@@ -104,7 +104,7 @@ export class ##ITEM##Command extends BaseDynamoItemManager<##ITEM##Item> {
 
 export const queryTemplate = 
 `
-import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"
+import { BaseDynamoItemManager } from "##DDB_MANAGER_LIB##/BaseItemManager"
 import { ##ITEM##Item } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, AartsEvent, IIdentity, IItemManager  } from "aarts-types/interfaces"
 import { ppjson } from "aarts-utils"
@@ -117,3 +117,60 @@ export class ##ITEM##Query extends BaseDynamoItemManager<##ITEM##Item> {
     }
 }
 `
+
+export const testutils =
+`import { chunks } from "aarts-utils"
+import { WriteRequest } from "aws-sdk/clients/dynamodb"
+import { dynamoDbClient, DB_NAME } from "##DDB_LIB##";
+
+export const clearDynamo = async () => {
+    let scanResult
+    do {
+        let scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
+        const items = scanResult.Items && chunks(scanResult.Items, 25)
+        if (items) {
+            for (const chunk of items) {
+                await dynamoDbClient.batchWriteItem({
+                    RequestItems: {
+                        [DB_NAME]: chunk.reduce<WriteRequest[]>((accum, item) => {
+                            accum.push({
+                                DeleteRequest: {
+                                    Key: { id: { S: item.id.S }, meta: { S: item.meta.S } }
+                                }
+                            })
+                            return accum
+                        }, [])
+                    }
+                }).promise()
+            }
+        }
+
+        scanResult = await dynamoDbClient.scan({ TableName: DB_NAME }).promise()
+
+    } while (scanResult && scanResult.LastEvaluatedKey)
+}
+`
+
+export const getDdbLibName = (modelVerion: number) : string => {
+    switch(modelVerion) {
+        case 1: return "aarts-dynamodb"
+        case 2: return "aarts-ddb"
+        default: return "aarts-dynamodb"
+    }
+}
+
+export const getDdbManagerLibName = (modelVerion: number) : string => {
+    switch(modelVerion) {
+        case 1: return "aarts-item-manager"
+        case 2: return "aarts-ddb-manager"
+        default: return "aarts-item-manager"
+    }
+}
+
+export const getDdbEventsLibName = (modelVerion: number) : string => {
+    switch(modelVerion) {
+        case 1: return "aarts-dynamodb-events"
+        case 2: return "aarts-ddb-events"
+        default: return "aarts-dynamodb-events"
+    }
+}

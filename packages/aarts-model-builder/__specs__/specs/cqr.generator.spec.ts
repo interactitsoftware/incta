@@ -17,6 +17,7 @@ describe('cqr.generator', () => {
     console.log = jest.fn();
 
     await builder({
+      version:1,
       Items:{
         "Airplane": {
           model: {type:"string"},
@@ -29,7 +30,8 @@ describe('cqr.generator', () => {
         }
       },
       Commands:{},
-      Queries: {}
+      Queries: {},
+      GSIs:[]
     }, outputDir)
 
     expect(shell.ls(outputDir)).toContain("__bootstrap")

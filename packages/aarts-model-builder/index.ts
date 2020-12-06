@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { existsSync } from "fs"
 import { join } from "path"
-import { builder, DataModel } from "./model-builder"
+import { builder } from "./model-builder"
 
 import yargs from 'yargs'
+import { DataModel } from "aarts-types"
 
 const args = yargs(process.argv.slice(2))
   .option("app-path", { type: 'string' })

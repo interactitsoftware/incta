@@ -55,5 +55,5 @@ export interface IProcedure<T> {
     start(__type: string, args: AartsEvent) : T
 }
 export type DomainItem = Record<string, any>
-export type RefKey<T extends DomainItem> = { key: keyof IBaseDynamoItemProps | keyof T, ref?: string, unique?: boolean }
+export type RefKey<T extends DomainItem> = { key: keyof IBaseDynamoItemProps | keyof T, ref?: string, unique?: boolean, gsiPrimaryKey?: string, gsiRangeKey?: string }
 

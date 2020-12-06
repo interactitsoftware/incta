@@ -4,7 +4,10 @@ import { Function } from '@aws-cdk/aws-lambda'
 import { BillingMode, AttributeType, StreamViewType, ProjectionType, Table } from '@aws-cdk/aws-dynamodb';
 import { RemovalPolicy } from '@aws-cdk/core';
 import { ENV_VARS__DB_NAME, ENV_VARS__TEST_DB_NAME, ENV_VARS__DB_ENDPOINT } from '../../env-constants';
-import { clientAppName } from "../aarts-all-infra-stack"
+import { clientAppDirName, clientAppName } from "../aarts-all-infra-stack"
+import { Model } from '@aws-cdk/aws-apigateway';
+import { join } from 'path';
+import { DataModel } from "aarts-types/interfaces"
 
 export interface DynamoDBConstructProps { 
   copyEntireItemToGsis: string
@@ -17,8 +20,9 @@ export class DynamoDBConstruct extends cdk.Construct {
 
   constructor(scope: cdk.Construct, id: string, props: DynamoDBConstructProps) {
     super(scope, id);
+    const dataModel = require(join(clientAppDirName, "data-model.json")) as DataModel
 
-    const createTable = (isTestTable?: boolean) => {
+    const createTableV1 = (isTestTable?: boolean) => {
       const table = new Table(this, `${isTestTable ? `TEST${clientAppName}` : clientAppName}`, {
         tableName: `${isTestTable ? `TEST${clientAppName}` : clientAppName}`,
         partitionKey: { name: "id", type: AttributeType.STRING },
@@ -31,7 +35,7 @@ export class DynamoDBConstruct extends cdk.Construct {
         billingMode: BillingMode.PAY_PER_REQUEST,
 
         stream: StreamViewType.NEW_AND_OLD_IMAGES,
-        removalPolicy: RemovalPolicy.DESTROY // TODO think for prod and later RETAINing of real data
+        removalPolicy: RemovalPolicy.DESTROY 
       })
 
       table.addGlobalSecondaryIndex({
@@ -82,7 +86,48 @@ export class DynamoDBConstruct extends cdk.Construct {
       return table;
     }
 
-    this.table = createTable()
+    const createTableV2 = (dataModel: DataModel) => {
+      const table = new Table(this, clientAppName, {
+        tableName: clientAppName,
+        partitionKey: { name: "id", type: AttributeType.STRING },
+        sortKey: { name: "meta", type: AttributeType.STRING },
+
+        // billingMode: BillingMode.PROVISIONED,
+        // readCapacity: 1,
+        // writeCapacity: 1,
+
+        billingMode: BillingMode.PAY_PER_REQUEST,
+
+        stream: StreamViewType.NEW_AND_OLD_IMAGES,
+        removalPolicy: RemovalPolicy.DESTROY 
+      })
+
+      for (const gsi of dataModel.GSIs) {
+        const pkName = gsi.substr(0, gsi.indexOf("__"))
+        const pkType = pkName.startsWith("s") ? AttributeType.STRING : AttributeType.NUMBER
+        const skName = gsi.substr(gsi.indexOf("__") + 2)
+        const skType = skName.startsWith("s") ? AttributeType.STRING : AttributeType.NUMBER
+        
+        table.addGlobalSecondaryIndex({
+          indexName: gsi,
+          partitionKey: { name: pkName, type: pkType },
+          sortKey: { name: skName, type: skType },
+          projectionType: !!props.copyEntireItemToGsis && props.copyEntireItemToGsis !== "undefined" ? ProjectionType.ALL : ProjectionType.KEYS_ONLY,
+          // readCapacity: 1,
+          // writeCapacity: 1,
+        })
+      }
+
+      return table;
+    }
+
+    if (dataModel.version === 1) {
+      this.table = createTableV1()
+    }
+    if (dataModel.version === 2) {
+      this.table = createTableV2(dataModel)
+    }
+    
     // this.testTable =createTable(true) // do not use a test table in a provisioned mode, incures redundant costs.
   }
 

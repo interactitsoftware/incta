@@ -1,25 +1,9 @@
 import * as shell from "shelljs"
 import { existsSync, writeFile } from "fs"
 import { join, sep } from "path"
-import { commandTemplate, domainTemplate, queryTemplate } from "./templates"
+import { commandTemplate, domainTemplate, getDdbEventsLibName, getDdbLibName, getDdbManagerLibName, queryTemplate, testutils } from "./templates"
 import { ppjson } from "aarts-utils"
-
-export type ItemPropertyValue = {
-    unique?: boolean | undefined
-    indexed?: boolean | undefined
-    ref?: string | undefined
-    type: string
-}
-
-export interface DataModelObject {
-    [x: string]: ItemPropertyValue | DataModelObject
-}
-
-export interface DataModel {
-    Items: { [x: string]: DataModelObject }
-    Commands: { [x: string]: DataModelObject }
-    Queries: { [x: string]: DataModelObject }
-}
+import { DataModel, DataModelObject } from "aarts-types/interfaces"
 
 const buildPojo = (modelItem: DataModelObject, indent: string = _indent): string => {
 
@@ -54,7 +38,7 @@ const sampleModelObject = (model: DataModelObject) => {
                     //@ts-ignore
                     accum[prop] = null
                     break
-            } 
+            }
         } else {
             accum[prop] = sampleModelObject(model[prop] as DataModelObject)
         }
@@ -70,6 +54,7 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     shell.mkdir("-p", join(cwd, aartsFolderName))
     await recordFile(join(cwd, aartsFolderName), "README.md", "Folder contents is managed by aarts-cli.\nYou should not edit manually.\nRather, edit the model-json in the root of your app.")
+
     shell.mkdir("-p", join(cwd, "__specs__", "specs", "commands"))
     shell.mkdir("-p", join(cwd, "__specs__", "specs", "queries"))
     shell.mkdir("-p", join(cwd, "__specs__", "specs", "domain"))
@@ -97,6 +82,10 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
     }
 
     console.log("Analysing model")
+    await recordFile(join(cwd, "__specs__", "specs"), "testutils.ts", testutils
+        .replace(/##DDB_LIB##/g, getDdbLibName(model.version))
+        .replace(/##DDB_MANAGER_LIB##/g, getDdbManagerLibName(model.version)))
+
     shell.mkdir("-p", join(cwd, aartsFolderName, "items"))
 
     //#region items
@@ -187,7 +176,7 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     //#region commands
     for (const item of Object.keys(model.Commands)) {
-        let itemContents = `import { DynamoCommandItem } from "aarts-item-manager/BaseItemManager"` + "\n"
+        let itemContents = `import { DynamoCommandItem } from "${getDdbManagerLibName(model.version)}/BaseItemManager"` + "\n"
             + `export class ${item}  extends DynamoCommandItem {` + "\n"
             + `    constructor(...args: any[]) { super(args) }` + "\n"
         Object.keys(model.Commands[item]).forEach(prop => {
@@ -235,7 +224,7 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
 
     //#region _DynamoItems
-    let _DynamoItemsContents = `import { DynamoItem } from "aarts-dynamodb/DynamoItem"` + "\n"
+    let _DynamoItemsContents = `import { DynamoItem } from "${getDdbLibName(model.version)}/DynamoItem"` + "\n"
 
     for (const item of Object.keys(model.Items).concat(Object.keys(model.Commands)).concat(Object.keys(model.Queries))) {
         _DynamoItemsContents += `import { ${item} } from "./items/${item}"` + "\n"
@@ -290,15 +279,15 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     //#region index.ts 
     let indexContents =
-        `import { DynamoItem } from "aarts-dynamodb/DynamoItem"` + "\n"
-        + `import { BaseDynamoItemManager } from "aarts-item-manager/BaseItemManager"` + "\n"
+        `import { DynamoItem } from "${getDdbLibName(model.version)}/DynamoItem"` + "\n"
+        + `import { BaseDynamoItemManager } from "${getDdbManagerLibName(model.version)}/BaseItemManager"` + "\n"
         + `import { worker } from "aarts-eb-handler"` + "\n"
         + `import { feeder } from "aarts-eb-notifier"` + "\n"
         + `import { controller } from "aarts-eb-dispatcher"` + "\n"
         + `import { IDomainAdapter } from "aarts-types/interfaces"` + "\n"
         + `import { AnyConstructor } from "aarts-types/Mixin"` + "\n"
-        + `import { dynamoEventsAggregation } from "aarts-dynamodb-events/dynamoEventsAggregation"` + "\n"
-        + `import { dynamoEventsCallback } from "aarts-dynamodb-events/dynamoEventsCallback"` + "\n"
+        + `import { dynamoEventsAggregation } from "${getDdbEventsLibName(model.version)}/dynamoEventsAggregation"` + "\n"
+        + `import { dynamoEventsCallback } from "${getDdbEventsLibName(model.version)}/dynamoEventsCallback"` + "\n"
         + `##DYNAMO_ITEMS_IMPORT##` + "\n"
         + `##DYNAMO_ITEMS_PROCESSORS_IMPORT##` + "\n"
         + `const allItems = new Map<string, AnyConstructor<DynamoItem>>()` + "\n"
@@ -344,10 +333,11 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     //#region domain processors
     shell.mkdir("-p", join(cwd, "domain"))
-    // const domainTemplate = readFileSync(join("templates","Domain.template")).toString()
     for (const item of Object.keys(model.Items)) {
         console.log(`...Generating domain processor for ${item}: `
             + await recordFile(join(cwd, "domain"), `${item}Domain.ts`, domainTemplate
+                .replace(/##DDB_LIB##/g, getDdbLibName(model.version))
+                .replace(/##DDB_MANAGER_LIB##/g, getDdbManagerLibName(model.version))
                 .replace(/##ITEM##/g, item)
                 .replace(/##ITEM_LOWERC##/g, `${item[0].toLowerCase()}${item.slice(1)}`), false))
     }
@@ -355,10 +345,11 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     //#region commands
     shell.mkdir("-p", join(cwd, "commands"))
-    // const commandTemplate = readFileSync(join("templates","Command.template")).toString()
     for (const item of Object.keys(model.Commands)) {
         console.log(`...Generating command processor for ${item}: `
             + await recordFile(join(cwd, "commands"), `${item}Command.ts`, commandTemplate
+                .replace(/##DDB_LIB##/g, getDdbLibName(model.version))
+                .replace(/##DDB_MANAGER_LIB##/g, getDdbManagerLibName(model.version))
                 .replace(/##ITEM##/g, item)
                 .replace(/##ITEM_LOWERC##/g, `${item[0].toLowerCase()}${item.slice(1)}`), false))
     }
@@ -366,10 +357,11 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
     //#region queries
     shell.mkdir("-p", join(cwd, "queries"))
-    // const queryTemplate = readFileSync(join("templates","Query.template")).toString()
     for (const item of Object.keys(model.Queries)) {
         console.log(`...Generating query processor for ${item}:`
             + await recordFile(join(cwd, "queries"), `${item}Query.ts`, queryTemplate
+                .replace(/##DDB_LIB##/g, getDdbLibName(model.version))
+                .replace(/##DDB_MANAGER_LIB##/g, getDdbManagerLibName(model.version))
                 .replace(/##ITEM##/g, item)
                 .replace(/##ITEM_LOWERC##/g, `${item[0].toLowerCase()}${item.slice(1)}`), false))
     }
@@ -391,7 +383,9 @@ const recordFile = async (dir: string, fileName: string, contents: string, overw
 
 const backupPreviousCode = (cwd: string) => {
     const bakFolder = "__rebuild-model-backup"
-
+    if (!existsSync(join(cwd, "__test_events"))) {
+        return
+    }
     if (existsSync(join(cwd, "__test_events"))) {
         shell.mkdir("-p", join(cwd, bakFolder))
         shell.mv("", join(cwd, "__test_events"), join(cwd, bakFolder))

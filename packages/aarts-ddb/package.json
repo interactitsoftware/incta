@@ -1,0 +1,50 @@
+{
+  "name": "aarts-ddb",
+  "contributors": [
+    "akrsmv"
+  ],
+  "version": "0.4.697",
+  "description": "dynamo db transactoinal crud operations with support on refkeys and uniqeness. Flat model",
+  "main": "index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.svg",
+    "*.md",
+    "__specs__/testmodel/*.js",
+    "__specs__/testmodel/*.d.ts",
+    "__specs__/testmodel/*.ts"
+  ],
+  "repository": {
+    "url": "https://github.com/akrsmv/aarts-all/tree/master/packages/aarts-all"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.64",
+    "aarts-types": "^0.2.706",
+    "aarts-utils": "^0.2.701",
+    "aws-lambda": "^1.0.6",
+    "aws-sdk": "^2.804.0",
+    "typescript": "^3.9.7"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.3",
+    "@types/node": "^14.14.10",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4"
+  },
+  "scripts": {
+    "build_win": "npm run clean_win && tsc && copy package.json README.md test-model.svg .\\dist",
+    "build_lin": "npm run clean_lin && tsc && cp package.json README.md test-model.svg ./dist",
+    "clean_lin": "rm -fr ./dist",
+    "clean_win": "rmdir /Q /S dist",
+    "build": "tsc && cp package.json README.md test-model.svg ./dist",
+    "clean": "rm -fr ./dist",
+    "test": "./node_modules/.bin/jest --runInBand",
+    "clear_jest": "jest --clearCache",
+    "watch": "tsc -w"
+  },
+  "author": "akrsmv",
+  "license": "ISC",
+  "gitHead": "f3c4cb0b1ea2906ddbc660ca274f5942b3edf978"
+}

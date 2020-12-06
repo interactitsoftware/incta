@@ -1,0 +1,10 @@
+{
+    "action": "query",
+    "item": "FlightsInvolvingCountry",
+    "arguments": {
+        "country": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

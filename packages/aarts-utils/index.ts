@@ -26,6 +26,8 @@ export const chunks = <T>(arr: Array<T>, size: number): Array<Array<T>> => {
 export const ppjson = (obj: any): string => {
     if (obj instanceof Error) {
         return JSON.stringify(obj, replaceErrors, 4)
+    } else if (obj instanceof Map) {
+        return JSON.stringify(obj, replaceMap, 4)
     } else {
         return typeof obj === "object" ?
             JSON.stringify(obj, null, 4) : 
@@ -47,6 +49,14 @@ const replaceErrors = (key: string, value: any) => {
 
     return value;
 }
+
+const replaceMap = (key: string, value: any) => {
+    if (value instanceof Map) {
+        return Array.from(value.entries())
+    }
+    return value;
+}
+
 export type RingTokenSource = { ringToken: string }
 /**
  * utilty method for logging which reminds the developer to always pass the ringToken

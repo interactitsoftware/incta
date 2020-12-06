@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { createApp } from "./create-app"
 import yargs from 'yargs'
-import { builder, DataModel } from "aarts-model-builder/model-builder"
+import { builder } from "aarts-model-builder/model-builder"
+import { DataModel } from "aarts-types"
 
 const args = yargs(process.argv.slice(2))
   .option("app-name", { type: 'string' })

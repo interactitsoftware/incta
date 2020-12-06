@@ -1,6 +1,6 @@
 {
   "name": "aarts-model-builder",
-  "version": "0.2.673",
+  "version": "0.2.704",
   "description": "utility to build dynamo items and graphql schema for aarts framework",
   "main": "./index.js",
   "bin": "index.js",
@@ -10,22 +10,22 @@
   },
   "dependencies": {
     "@types/shelljs": "^0.8.8",
-    "aarts-dynamodb": "^0.4.664",
-    "aarts-dynamodb-events": "^1.0.658",
-    "aarts-eb-dispatcher": "^1.0.655",
-    "aarts-eb-handler": "^0.3.658",
-    "aarts-eb-notifier": "^0.1.359",
-    "aarts-item-manager": "^0.4.687",
-    "aarts-types": "^0.2.676",
-    "aarts-utils": "^0.2.671",
+    "aarts-dynamodb": "^0.4.696",
+    "aarts-dynamodb-events": "^1.0.688",
+    "aarts-eb-dispatcher": "^1.0.684",
+    "aarts-eb-handler": "^0.3.687",
+    "aarts-eb-notifier": "^0.1.389",
+    "aarts-item-manager": "^0.4.717",
+    "aarts-types": "^0.2.707",
+    "aarts-utils": "^0.2.701",
     "shelljs": "^0.8.4",
     "typescript": "^4.1.2",
-    "yargs": "^16.1.1"
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",
     "@types/node": "^14.14.10",
-    "@types/yargs": "^15.0.10",
+    "@types/yargs": "^15.0.11",
     "jest": "^26.6.3",
     "ts-jest": "^26.4.4"
   },

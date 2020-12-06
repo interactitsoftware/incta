@@ -43,6 +43,30 @@ export class DynamoCommandItem {
  * - aarts-eb-handler to be configured to read in messages in batches, to catch any exceptions and rethrow them, deleting manually from sqs what was successful
  * - consider this try catch on some higher level?
  * - maintain DBmigration commands separatley from other commands
+ * 
+ * 
+ * ---------------------
+ * aarts-dynamodb2
+ * 
+ * -- load model in cdk
+ * -- if dynamo-verion not present, throw error
+ * -- if present create dynamo table accodingly:
+ *  - if version 1 - create table and sgsi__meta, ngsi__meta, meta__sgsi, meta__ngsi - TODO change aarts-dynamodb libs
+ *  - introduce shard=random(10)
+ *  - introduce index shard__meta_state
+ *  - if version 2 - get all "index" fields and create "sgsi<N>__meta_state" GSI - CAN START WITHOUT ABOVE
+ *  - introduce meta_state=meta|item_state
+ *  
+ *  
+ * 
+ * -- extend RefKey to store also the index property
+ * -- when querying:
+ *  - pass index name
+ *  - pass pk 
+ *  - pass range
+ *  - pass rangePredicate (either =, begins_with, exists, not exists, between), if not present assume =
+ * 
+ * -- batchGet and peersloading --> no change here
  */
 export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager<T> {
 

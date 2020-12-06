@@ -16,6 +16,7 @@ describe('buildPojo', () => {
     console.log = jest.fn();
 
     await builder({
+      version:1,
       Items: {
         "Airport": {
           inerMap1: {
@@ -47,7 +48,8 @@ describe('buildPojo', () => {
         }
       },
       Commands: {},
-      Queries: {}
+      Queries: {},
+      GSIs:[]
     }, outputDir)
 
     expect(shell.ls(outputDir)).toContain("__bootstrap")

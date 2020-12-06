@@ -16,6 +16,7 @@ describe('_DynamoItems.generator', () => {
     console.log = jest.fn();
 
     await builder({
+      version:1,
       Items:{
         "Airplane": {
           model: {type:"string"},
@@ -28,7 +29,8 @@ describe('_DynamoItems.generator', () => {
         }
       },
       Commands:{},
-      Queries: {}
+      Queries: {},
+      GSIs:[]
     }, outputDir)
 
     expect(console.log).toHaveBeenCalledWith(`...Generating globalDefinitions: ${join(__dirname, "aarts-test-app", "__bootstrap", "globalDefinitions.ts")}`);
@@ -53,6 +55,7 @@ describe('_DynamoItems.generator', () => {
     console.log = jest.fn();
 
     await builder({
+      version:1,
       Items:{
         "Airplane": {
           model: {type:"string", indexed: true},
@@ -66,7 +69,8 @@ describe('_DynamoItems.generator', () => {
         }
       },
       Commands:{},
-      Queries: {}
+      Queries: {},
+      GSIs:[]
     }, outputDir)
 
     expect(console.log).toHaveBeenCalledWith(`...Generating globalDefinitions: ${join(__dirname, "aarts-test-app", "__bootstrap", "globalDefinitions.ts")}`);
