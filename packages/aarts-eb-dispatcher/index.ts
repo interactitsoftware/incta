@@ -34,11 +34,14 @@ export const controller = async (evnt: AppSyncEvent, context?: Context): Promise
 }
 
 const processAppSyncEvent = async (evnt: AppSyncEvent, ringToken: string, context?: Context) => {
-
-	let result
-	if (evnt.action === "query" || evnt.action === "get") {
+	const syncProcessing =
+		(evnt.action === "query" || evnt.action === "get")// always process sync GET requests
+		|| (evnt.action !== "start" // always process async START(RPC) requests
+			&& !process.env.ASYNC_CUD && !evnt.forcePublishToBus); // process CUD requests depending on config
+	let result;
+	if (syncProcessing) {
 		!process.env.DEBUGGER || loginfo({ ringToken }, 'dispatching directly to handler, skipping SNS publishing. evnt is ', ppjson(evnt))
-			Object.assign(evnt.arguments, { selectionSetGraphQL: evnt.selectionSetGraphQL, selectionSetList: evnt.selectionSetList })
+		Object.assign(evnt.arguments, { selectionSetGraphQL: evnt.selectionSetGraphQL, selectionSetList: evnt.selectionSetList })
 		return (await processPayload({
 			meta: {
 				ringToken: ringToken,
@@ -60,7 +63,7 @@ const processAppSyncEvent = async (evnt: AppSyncEvent, ringToken: string, contex
 	} else {
 		// try calling synchronously a worker, simulating sqs event
 		// result = await samLocalSupport_callSqsHandlerSynchronously(event, ringToken)
-		
+
 		// within the same lamnbda, process the payload
 		result = (await processPayload({
 			meta: {
@@ -98,7 +101,7 @@ const samLocalSupport_callSqsHandlerSynchronously = async (evnt: AppSyncEvent, r
 		sslEnabled: false,
 		// is it because a lambda should return some standard output ({status_code : 200 } etc), 
 		// that even a succesful lambda in aws, retries with SAM LOCAL (if set maxRetries is > 1)
-		maxRetries: 1, 
+		maxRetries: 1,
 		retryDelayOptions: {
 			customBackoff: (retryCount: number, err) => {
 				!process.env.DEBUGGER || loginfo({ ringToken }, new Date() + ": retrying attempt:" + retryCount + ". ERROR ", ppjson(err))
@@ -119,7 +122,7 @@ const samLocalSupport_callSqsHandlerSynchronously = async (evnt: AppSyncEvent, r
 	// however here, if the synchronous invocation fails dispatcher will DO retry (SAM local limitation?) 
 	await lambda.invoke(
 		{
-			FunctionName: evnt.jobType === "long" ? process.env.WORKER_LONG as string: process.env.WORKER_SHORT as string,
+			FunctionName: evnt.jobType === "long" ? process.env.WORKER_LONG as string : process.env.WORKER_SHORT as string,
 			Payload: sqsEvent
 		}, (err, data) => {
 			console.log("[AWS_SAM_LOCAL]: SNS DISPATCHER PROCESSED EVENT " + sqsEvent)

@@ -1,0 +1,10 @@
+{
+    "action": "query",
+    "item": "AllTouristForTouristSeason",
+    "arguments": {
+        "touristSeason": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

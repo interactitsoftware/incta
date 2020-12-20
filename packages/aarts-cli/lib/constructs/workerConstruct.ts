@@ -19,7 +19,8 @@ export interface WorkerConstructProps {
     envVars?: { [key: string]: string }
     reservedConcurrentExecutions?: number
     layers?: ILayerVersion[] | undefined,
-    sqsRetries: number
+    sqsRetries: number,
+    eventSourceBatchSize?: number
 }
 
 export class WorkerConstruct extends Construct {
@@ -33,9 +34,9 @@ export class WorkerConstruct extends Construct {
         })
         const functionQueue = new Queue(this, "Queue", {
             // as per best practices from AWS visibilityTimeout is suggesteed 6 times lambda timeout
-            // however we reduce to only 1.5 the lambda timeout, as we do not have retries in the lambda
-            visibilityTimeout: Duration.seconds(1.5 * props.functionTimeout.toSeconds()),
-            // receiveMessageWaitTime: Duration.seconds(3), // long polling for events
+            // however we reduce to only 2 the lambda timeout, as we do not have retries in the lambda
+            visibilityTimeout: Duration.seconds(2 * props.functionTimeout.toSeconds()),
+            receiveMessageWaitTime: Duration.seconds(3), // long polling for events
             queueName: `${props.workerName}`,
             // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
             deadLetterQueue: {
@@ -71,11 +72,11 @@ export class WorkerConstruct extends Construct {
             // but lambda is also setup to have its own DLQ, according to this article: https://aws.amazon.com/blogs/compute/designing-durable-serverless-apps-with-dlqs-for-amazon-sns-amazon-sqs-aws-lambda/
             // so far testing it, lambda's DLQ never gets used, only the SQS DLQ
 
-            environment: props.envVars,
+            environment: {"QUEUE_URL": functionQueue.queueUrl, ...props.envVars},
 
             events: [new SqsEventSource(functionQueue,
                 {
-                    batchSize: 1
+                    batchSize: props.eventSourceBatchSize || 1
                 })
             ],
             // unlike the dispatcher who must not have retries

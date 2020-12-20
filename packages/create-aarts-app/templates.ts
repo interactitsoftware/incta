@@ -2,7 +2,7 @@ import * as AirtoursTemplateModelV1 from "./templates/airtours-ddb-v1/data-model
 import * as AirtoursTemplateModelV2 from "./templates/airtours-ddb-v2/data-model"
 
 export const jestConfigJs =
-`module.exports = {
+  `module.exports = {
     "roots": [
       "<rootDir>"
     ],
@@ -22,7 +22,7 @@ export const jestConfigJs =
 `
 
 export const testSetupEnvs =
-`process.env.AWS_SAM_LOCAL="1"
+  `process.env.AWS_SAM_LOCAL="1"
 process.env.DB_NAME="TEST1"
 // process.env.CopyEntireItemToGSIs="1" // needs further work around creating the test data base on each test run, to respect this value
 // process.env.DEBUGGER="1" //may print lots of logs
@@ -32,7 +32,7 @@ process.env.EVENT_BUS_TOPIC="arn:aws:sns:eu-west-1:216788398771:airtours-EventsB
 `
 
 export const packageJson =
-`{
+  `{
     "name": "##APP##",
     "version": "1.0.0",
     "description": "##APP## provisioned by aarts",
@@ -77,7 +77,7 @@ export const dataModelJsons = {
 }
 
 export const tsconfigJson =
-`{
+  `{
     "compilerOptions": {
       "incremental": true,
       "target": "ES2018",

@@ -32,17 +32,18 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
 */
     async execute(proc: GenerateAirtoursDataItem, identity: IIdentity, ringToken: string): Promise<GenerateAirtoursDataItem> {
 
-        const alreadyProcessed = await queryItems({
-            ddbIndex: "smetadata__meta",
-            pk: ringToken,
-            primaryKeyName: "smetadata",
-            rangeKeyName: "meta",
-            ringToken
-        });
+        const alreadyProcessed: {items: DynamoItem[] } = {items : []} 
+        // = await queryItems({
+        //     ddbIndex: "smetadata__meta",
+        //     pk: ringToken,
+        //     primaryKeyName: "smetadata",
+        //     rangeKeyName: "meta",
+        //     ringToken
+        // });
 
-        console.log("===============================");
-        console.log("ALREADY PROCESSED ARE: ", alreadyProcessed.items.length)
-        console.log("===============================");
+        // console.log("===============================");
+        // console.log("ALREADY PROCESSED ARE: ", alreadyProcessed.items.length)
+        // console.log("===============================");
 
 
 
@@ -859,6 +860,23 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
         return proc as GenerateAirtoursDataItem
     }
 
+    public onCreate = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onCreate logic in here or delete this method*/
+        // console.log("ON CREATE TRIGGERED for " + __type)
+    }
+    public onUpdate = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onUpdate logic in here or delete this method*/
+        // console.log("ON UPDATE TRIGGERED for " + __type)
+    }
+    public onSuccess = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onSuccess logic in here or delete this method*/
+        // console.log("ON SUCCESS TRIGGERED for " + __type)
+    }
+    public onError = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onError logic in here or delete this method*/
+        // console.log("ON ERROR TRIGGERED for " + __type)
+    }
+
     private createAirport(args: Record<string, string | number> & { code: string, type: string }, parentbranch?: string) {
         return {
             ...args,
@@ -918,7 +936,7 @@ const prepareTouristToCreate = (
     return {
         // some random id card adn iban. NOTE still possible for large nr of tourists to generate same id_card, 
         // in this case second insert will be error as id_card is set to be unique
-        iban: \`BGSOF\${generatedIban}\`,
+        iban: \`BGSOF\${generatedIban}#\${uuid()}\`,
         id_card: (~~(Math.random() * 1000000) + ~~(Math.random() * 1000000) + ~~(Math.random() * 1000000)),
         ticket_type: ["class_1", "class_2", "vip"][~~(Math.random() * 3)],
         fname: fn,
@@ -926,5 +944,4 @@ const prepareTouristToCreate = (
         item_state: "reservation",
         ...touristData
     }
-}
-`
+}`

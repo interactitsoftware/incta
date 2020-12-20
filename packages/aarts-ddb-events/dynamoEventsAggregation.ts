@@ -6,7 +6,7 @@ import { DynamoItem } from "aarts-ddb/DynamoItem"
 
 export const dynamoEventsAggregation = async (evnt: DynamoDBStreamEvent, context: Context, cb: Function) => {
 	let result = {}
-	!process.env.DEBUGGER || loginfo({ringToken: "aarts-ddb-events"}, "received", ppjson(evnt))
+	!process.env.DEBUGGER || loginfo({ ringToken: "aarts-ddb-events" }, "received", ppjson(evnt))
 
 	try {
 		//#region // -------------------- AGGREGATE PROCEDURE's PROCESSED/ERRORED EVENTS --------------------
@@ -27,7 +27,7 @@ export const dynamoEventsAggregation = async (evnt: DynamoDBStreamEvent, context
 					(record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.startsWith("errored")
 					|| // or for items that are refkeys, added as part of DB migrations (only those will have __proc and ringtoken)
 					(record.dynamodb?.NewImage as { meta: { S: string } })["meta"].S.indexOf("}") > 0)
-				&& 
+				&&
 				// fire only for items which were indeed changed as part of a parocedure
 				//(__proc key can become obsolate as it remains in the item, thats why compare it to the ringToken, which is always updated)
 				((record.dynamodb?.NewImage as { ringToken: { S: string } })["ringToken"].S as string) === ((record.dynamodb?.NewImage as { __proc: { S: string } })["__proc"].S as string).substr(((record.dynamodb?.NewImage as { __proc: { S: string } })["__proc"].S as string).indexOf("|") + 1)
@@ -35,23 +35,28 @@ export const dynamoEventsAggregation = async (evnt: DynamoDBStreamEvent, context
 		)) {
 			// TODO make it faster, remove the fromAttributeMap call and directly use the record only
 			const newImage = fromAttributeMap(rec.dynamodb?.NewImage as AttributeMap) as DynamoItem
-			!process.env.DEBUGGER || loginfo({ringToken: "aarts-ddb-events"}, "new Image: ", ppjson(newImage))
+			!process.env.DEBUGGER || loginfo({ ringToken: "aarts-ddb-events" }, "new Image: ", ppjson(newImage))
 			if (countersProcEventsMap.has(newImage["__proc"])) {
 				if ((newImage["meta"] as string).startsWith("errored")) {
-					//@ts-ignore, above we check for presence
-					countersProcEventsMap.get(newImage["__proc"]).errored++
+					if (rec.eventName === "MODIFY" && !!rec.dynamodb?.NewImage && Array.isArray(rec.dynamodb.NewImage.errors.L) && rec.dynamodb.NewImage.errors.L.length >= 4) {
+						//@ts-ignore, above we check for presence
+						countersProcEventsMap.get(newImage["__proc"]).errored++
+					}
 				} else {
 					//@ts-ignore, above we check for presence
 					countersProcEventsMap.get(newImage["__proc"]).success++
 				}
 			} else {
 				if ((newImage["meta"] as string).startsWith("errored")) {
-					countersProcEventsMap.set(newImage["__proc"], { success: 0, errored: 1 })
+					if (rec.eventName === "MODIFY" && !!rec.dynamodb?.NewImage && Array.isArray(rec.dynamodb.NewImage.errors.L) && rec.dynamodb.NewImage.errors.L.length >= 4) {
+						countersProcEventsMap.set(newImage["__proc"], { success: 0, errored: 1 })
+					}
 				} else {
 					countersProcEventsMap.set(newImage["__proc"], { success: 1, errored: 0 })
 				}
 			}
 		}
+		!process.env.DEBUGGER || console.log("ENTERS AGGREGATION OF PROC EVENTS ", countersProcEventsMap)
 
 		// issue aggregated processed_events updates
 		for (const id of countersProcEventsMap.keys()) {
@@ -77,7 +82,7 @@ export const dynamoEventsAggregation = async (evnt: DynamoDBStreamEvent, context
 				ClientRequestToken: uuid()
 			}
 			const resultUpdateProcEvents = await ddbRequest(dynamoDbClient.transactWriteItems(params), "aarts-ddb-events")
-			!process.env.DEBUGGER || loginfo({ringToken: "aarts-ddb-events"}, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
+			!process.env.DEBUGGER || loginfo({ ringToken: "aarts-ddb-events" }, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateProcEvents))
 		}
 		//#endregion
 
@@ -118,7 +123,7 @@ export const dynamoEventsAggregation = async (evnt: DynamoDBStreamEvent, context
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapOld.get(typestateOld)}` } },
 					ReturnValues: "ALL_NEW"
 				}), "aarts-ddb-events")
-				!process.env.DEBUGGER || loginfo({ringToken: "aarts-ddb-events"}, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByOldState))
+				!process.env.DEBUGGER || loginfo({ ringToken: "aarts-ddb-events" }, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByOldState))
 			}
 
 
@@ -134,7 +139,7 @@ export const dynamoEventsAggregation = async (evnt: DynamoDBStreamEvent, context
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapNew.get(typestateNew)}` } },
 					ReturnValues: "ALL_NEW"
 				}), "aarts-ddb-events")
-				!process.env.DEBUGGER || loginfo({ringToken: "aarts-ddb-events"}, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByNewState))
+				!process.env.DEBUGGER || loginfo({ ringToken: "aarts-ddb-events" }, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByNewState))
 			}
 
 
@@ -164,7 +169,7 @@ export const dynamoEventsAggregation = async (evnt: DynamoDBStreamEvent, context
 					ExpressionAttributeValues: { ":zero": { "N": "0" }, ":inc": { "N": `${typesByStatusesMapNew.get(typestateNew)}` } },
 					ReturnValues: "ALL_NEW"
 				}), "aarts-ddb-events")
-				!process.env.DEBUGGER || loginfo({ringToken: "aarts-ddb-events"}, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByNewState))
+				!process.env.DEBUGGER || loginfo({ ringToken: "aarts-ddb-events" }, "====DDB==== UpdateItemOutput: ", ppjson(resultUpdateAggrTotalByNewState))
 			}
 		}
 		//#endregion

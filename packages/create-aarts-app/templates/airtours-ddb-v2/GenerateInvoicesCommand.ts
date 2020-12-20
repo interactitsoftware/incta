@@ -35,5 +35,21 @@ export class GenerateInvoicesCommand extends BaseDynamoItemManager<GenerateInvoi
 
         return proc
     }
+    public onCreate = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onCreate logic in here or delete this method*/
+        // console.log("ON CREATE TRIGGERED for " + __type)
+    }
+    public onUpdate = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onUpdate logic in here or delete this method*/
+        // console.log("ON UPDATE TRIGGERED for " + __type)
+    }
+    public onSuccess = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onSuccess logic in here or delete this method*/
+        // console.log("ON SUCCESS TRIGGERED for " + __type)
+    }
+    public onError = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onError logic in here or delete this method*/
+        // console.log("ON ERROR TRIGGERED for " + __type)
+    }
 }
 `

@@ -27,6 +27,19 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
 
     const drevisionsUpdates = toAttributeMap({ "inc_revision": 1, "start_revision": 0 })
     const ditemUpdates: DynamoDB.AttributeMap = toAttributeMap(ensureOnlyNewKeyUpdates(existingItem, itemUpdates))
+
+    // check required fields
+    if (__item_refkeys) {
+        const requiredFieldsMissing = Array.from(__item_refkeys.values()).filter(r => !!r.required).reduce<string[]>((accum, reqKey) => {
+            if (itemUpdates[reqKey.key] === "__del__" && existingItem[reqKey.key]) {
+                accum.push(reqKey.key as string)
+            }
+            return accum
+        }, [])
+        if (requiredFieldsMissing.length > 0) {
+            throw new Error(`required [${requiredFieldsMissing.join(",")}] keys for updating ${existingItem.__typename} cannot be removed`)
+        }
+    }
     // copy gsi keys
     Object.keys(ditemUpdates).reduce<AttributeMap>((accum, key) => {
         if (__item_refkeys && __item_refkeys.has(key)) {
@@ -145,7 +158,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
     const allTransactWriteItemList =
         itemTransactWriteItemList.concat(
             Object.keys(drefkeyUpdates).filter(r => drefkeyUpdates[r].S !== "__del__").reduce<TransactWriteItem[]>((accum, key) => {
-                if (__item_refkeys.get(key)?.unique) {
+                if (__item_refkeys.get(key)?.unique && existingItem[key] !== itemUpdates[key]) {
                     if (dexistingItem[key]) { // if uq constraint already present, delete it
                         accum.push({
                             Delete: {
@@ -168,6 +181,10 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                 return accum
             }, []))
 
+    // avoid empty updates
+    if (updateExpr === "set #revisions = :revisions, #ringToken = :ringToken") {
+        return existingItem
+    }
     const params: TransactWriteItemsInput = {
         TransactItems: allTransactWriteItemList,
         ReturnConsumedCapacity: "TOTAL",

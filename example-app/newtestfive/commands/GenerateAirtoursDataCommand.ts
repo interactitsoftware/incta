@@ -918,7 +918,7 @@ const prepareTouristToCreate = (
     return {
         // some random id card adn iban. NOTE still possible for large nr of tourists to generate same id_card, 
         // in this case second insert will be error as id_card is set to be unique
-        iban: `BGSOF${generatedIban}`,
+        iban: `BGSOF${generatedIban}#${uuid()}`,
         id_card: (~~(Math.random() * 1000000) + ~~(Math.random() * 1000000) + ~~(Math.random() * 1000000)),
         ticket_type: ["class_1", "class_2", "vip"][~~(Math.random() * 3)],
         fname: fn,

@@ -1,0 +1,16 @@
+{
+    "action": "create",
+    "item": "Order",
+    "arguments": {
+        "invoice": "abc",
+        "flight": "abc",
+        "tourist_season": "abc",
+        "price": 5,
+        "quantity": 5,
+        "discount": 5,
+        "vat": 5
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

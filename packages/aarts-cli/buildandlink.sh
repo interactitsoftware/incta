@@ -36,27 +36,27 @@ cd dist
 npm publish -m "dev update"
 sleep 5
 
-echo ------------------------------------------------
-echo            AARTS_DYNAMODB
-echo ------------------------------------------------
-cd $AARTS_HOME/packages/aarts-dynamodb
-npm install && npm update
-npm version patch
-npm run build_lin
-cd dist
-npm publish -m "dev update"
-sleep 5
+# echo ------------------------------------------------
+# echo            AARTS_DYNAMODB
+# echo ------------------------------------------------
+# cd $AARTS_HOME/packages/aarts-dynamodb
+# npm install && npm update
+# npm version patch
+# npm run build_lin
+# cd dist
+# npm publish -m "dev update"
+# sleep 5
 
-echo ------------------------------------------------
-echo            AARTS_DYNAMODB_EVENTS
-echo ------------------------------------------------
-cd $AARTS_HOME/packages/aarts-dynamodb-events
-npm install && npm update
-npm version patch
-npm run build_lin
-cd dist
-npm publish -m "dev update"
-sleep 5
+# echo ------------------------------------------------
+# echo            AARTS_DYNAMODB_EVENTS
+# echo ------------------------------------------------
+# cd $AARTS_HOME/packages/aarts-dynamodb-events
+# npm install && npm update
+# npm version patch
+# npm run build_lin
+# cd dist
+# npm publish -m "dev update"
+# sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_DDB
@@ -124,22 +124,22 @@ cd dist
 npm publish -m "dev update"
 sleep 5
 
-echo ------------------------------------------------
-echo            AARTS_ITEM_MANAGER
-echo ------------------------------------------------
-cd $AARTS_HOME/packages/aarts-item-manager
-npm install && npm update
-npm version patch
-npm run build
-cd dist
-npm publish -m "dev update"
-sleep 5
+# echo ------------------------------------------------
+# echo            AARTS_ITEM_MANAGER
+# echo ------------------------------------------------
+# cd $AARTS_HOME/packages/aarts-item-manager
+# npm install && npm update
+# npm version patch
+# npm run build
+# cd dist
+# npm publish -m "dev update"
+# sleep 5
 
 echo ------------------------------------------------
 echo            AARTS_EB_NOTIFIER
 echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-eb-notifier
-npm install && npm update
+npm install #&& npm update
 npm version patch
 npm run build_lin
 npm publish -m "dev update"

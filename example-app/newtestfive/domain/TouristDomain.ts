@@ -2,7 +2,7 @@ import { BaseDynamoItemManager } from "aarts-ddb-manager/BaseItemManager"
 import { DdbGetInput, DdbQueryInput } from "aarts-ddb/interfaces"
 import { AirplaneItem, AirportItem, CountryItem, FlightItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
-import { ppjson } from "aarts-utils"
+import { ppjson, uuid } from "aarts-utils"
 import { setDomainRefkeyFromPayload } from "aarts-ddb"
 import { names } from "../commands/random-names/names"
 
@@ -23,8 +23,12 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
         
         // -- test simulating errored commands
         if (tourist.fname === names[0]) {
-            yield "Sorry tourists with that name already exists [just simulating error here]"
-            throw new Error("Sorry tourists with that name already exists [just simulating error here]")
+            if (~~(Math.random()*3) === 0){
+                tourist.fname = names[0] + ', BUT ITS OKAY' // try simulate events that pass after one-two retries 
+            } else {
+                yield "Sorry tourists with that name already exists [just simulating error here]"
+                throw new Error("Sorry tourists with that name already exists [just simulating error here]")
+            }
         }
         // -- end test
 
@@ -57,8 +61,10 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
                 tourist.processingMessages.push({ message: "Invalid airplane", severity: "warning", properties: "airplane" })
             }
         }
-
-        yield `Successfuly created Tourist`
+        // ensure notifying clients will not happen when mass generation/batch processing calls were done (we do not pass this prop from commands)
+        if (tourist.strictDomainMode) {
+            yield `Successfuly created Tourist`
+        }
         return tourist
     }
     /**

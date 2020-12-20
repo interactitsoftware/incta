@@ -9,9 +9,9 @@ import { DynamoItem } from './DynamoItem';
 
 export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refkeys?: Map<string, RefKey<T>>): Promise<T> => {
     const ditem = toAttributeMap(item)
-    !process.env.DEBUGGER || loginfo({ringToken: item.ringToken as string}, `In transactPutItem. refkeys:`, ppjson(__item_refkeys))
-    !process.env.DEBUGGER || loginfo({ringToken: item.ringToken as string}, `item to create:`, ppjson(item))
-    !process.env.DEBUGGER || loginfo({ringToken: item.ringToken as string}, `ditem:`, ppjson(ditem))
+    !process.env.DEBUGGER || loginfo({ ringToken: item.ringToken as string }, `In transactPutItem. refkeys:`, ppjson(__item_refkeys))
+    !process.env.DEBUGGER || loginfo({ ringToken: item.ringToken as string }, `item to create:`, ppjson(item))
+    !process.env.DEBUGGER || loginfo({ ringToken: item.ringToken as string }, `ditem:`, ppjson(ditem))
 
     // New approach where reffered item is being loaded in same key as the corresponding refkey but with Upper case first letter
     // --> check for any refs loaded and unload them before creating starts
@@ -25,19 +25,34 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     }
     // <-- 
 
+    // check required fields
+    if (__item_refkeys) {
+
+        const requiredFieldsMissing = Array.from(__item_refkeys.values()).filter(r => !!r.required).reduce<string []>((accum, reqKey) => {
+            if (!item[reqKey.key]) {
+                accum.push(reqKey.key as string)
+            }
+            return accum
+        }, [])
+        if (requiredFieldsMissing.length > 0) {
+            throw new Error(`required [${requiredFieldsMissing.join(",")}] keys for creating ${item.__typename} were not provided`)
+        }
+    }
+
+
     // copy gsi keys
     Object.keys(ditem).reduce<AttributeMap>((accum, key) => {
-        if (__item_refkeys && __item_refkeys.has(key) && !!item[key]) {
-            if (!! __item_refkeys.get(key)?.gsiKey && Array.isArray( __item_refkeys.get(key)?.gsiKey)) {
-                for (const gsiKey of __item_refkeys.get(key)?.gsiKey as string []) {
-                    accum[gsiKey] =  ditem[key]
+        if (__item_refkeys && __item_refkeys.has(key)) {
+            if (!!item[key] && !!__item_refkeys.get(key)?.gsiKey && Array.isArray(__item_refkeys.get(key)?.gsiKey)) {
+                for (const gsiKey of __item_refkeys.get(key)?.gsiKey as string[]) {
+                    accum[gsiKey] = ditem[key]
                 }
             }
         }
         return accum
     }, ditem)
-    ditem["smetadata"] = {S:`${item.__typename}|${item.item_state}`}
-    ditem["nshard"] = {N: `${~~(Math.random()*10)}`}
+    ditem["smetadata"] = { S: `${item.__typename}|${item.item_state}` }
+    ditem["nshard"] = { N: `${~~(Math.random() * 10)}` }
 
     const itemTransactWriteItemList: TransactWriteItemList = [
         {
@@ -77,10 +92,10 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
     // write item to the database
     try {
         const result = await ddbRequest(dynamoDbClient.transactWriteItems(params), item.ringToken as string)
-        !process.env.DEBUGGER || loginfo({ringToken: item.ringToken as string}, "====DDB==== TransactWriteItemsOutput: ", ppjson(result))
+        !process.env.DEBUGGER || loginfo({ ringToken: item.ringToken as string }, "====DDB==== TransactWriteItemsOutput: ", ppjson(result))
     } catch (err) {
         throw new Error(/*ppjson({request: params, error: err})*/err)
     }
-        
+
     return item
 }

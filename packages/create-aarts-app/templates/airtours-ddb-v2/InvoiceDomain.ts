@@ -62,5 +62,14 @@ export class InvoiceDomain extends BaseDynamoItemManager<InvoiceItem> {
     async *validateGet(args: DdbGetInput, identity: IIdentity, ringToken: string): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
+
+    public onCreate = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onCreate logic in here or delete this method*/
+        // console.log("ON CREATE TRIGGERED for " + __type)
+    }
+    public onUpdate = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onUpdate logic in here or delete this method*/
+        // console.log("ON UPDATE TRIGGERED for " + __type)
+    }
 }
 `

@@ -78,18 +78,19 @@ export class AartsAllInfraStack extends Stack {
 
     const workerInputShort = new WorkerConstruct(this, `${props.clientAppName}WorkerShort`, {
       workerName: `${props.clientAppName}WorkerShort`,
-      functionTimeout: Duration.seconds(10),
+      functionTimeout: Duration.seconds(30),
       functionHandler: "__bootstrap/index.worker",
       functionImplementationPath: join(props.clientAppDirName, "dist"),
       functionRuntime: Runtime.NODEJS_12_X,
       eventBusConstruct: eventBusConstruct,
       dynamoDbConstruct: dynamoDbConstruct,
       eventSource: "worker:input:short",
+      eventSourceBatchSize: 10,
       sqsRetries: 3,
       layers: [
         nodeModulesLayer
       ],
-      reservedConcurrentExecutions: 25
+      reservedConcurrentExecutions: 100
     });
 
     const workerInputLong = new WorkerConstruct(this, `${props.clientAppName}WorkerLong`, {

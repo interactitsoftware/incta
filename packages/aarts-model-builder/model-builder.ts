@@ -3,7 +3,7 @@ import { existsSync, writeFile } from "fs"
 import { join, sep } from "path"
 import { commandTemplate, domainTemplate, getDdbEventsLibName, getDdbLibName, getDdbManagerLibName, queryTemplate, testutils } from "./templates"
 import { ppjson } from "aarts-utils"
-import { DataModel, DataModelObject } from "aarts-types/interfaces"
+import { DataModel, DataModelObject, ItemPropertyValue } from "aarts-types/interfaces"
 
 const buildPojo = (modelItem: DataModelObject, indent: string = _indent): string => {
 
@@ -224,55 +224,7 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
 
 
     //#region _DynamoItems
-    let _DynamoItemsContents = `import { DynamoItem } from "${getDdbLibName(model.version)}/DynamoItem"` + "\n"
-
-    for (const item of Object.keys(model.Items).concat(Object.keys(model.Commands)).concat(Object.keys(model.Queries))) {
-        _DynamoItemsContents += `import { ${item} } from "./items/${item}"` + "\n"
-    }
-    _DynamoItemsContents += "\n"
-    for (const item of Object.keys(model.Items).concat(Object.keys(model.Queries))) {
-        _DynamoItemsContents += `const __type__${item}: string = "${item}"` + "\n"
-    }
-    for (const item of Object.keys(model.Commands)) {
-        _DynamoItemsContents += `const __type__${item}: string = "P__${item}"` + "\n"
-    }
-    _DynamoItemsContents += "\n"
-    for (const item of Object.keys(model.Items)) {
-        _DynamoItemsContents += `export class ${item}Item extends DynamoItem(${item}, __type__${item}, [` + "\n"
-        Object.keys(model.Items[item]).forEach(prop => {
-            if (model.Items[item][prop].indexed || model.Items[item][prop].unique || model.Items[item][prop].ref) {
-                _DynamoItemsContents += `    { key:"${prop}"`
-                    + `${model.Items[item][prop].unique ? ', unique: true' : ''} `
-                    + `${model.Items[item][prop].ref ? ', ref: __type__' + model.Items[item][prop].ref : ''}`
-                    + "},\n"
-            }
-        })
-        _DynamoItemsContents += "]) { }\n"
-    }
-    for (const item of Object.keys(model.Commands)) {
-        _DynamoItemsContents += `export class ${item}Item extends DynamoItem(${item}, __type__${item}, [` + "\n"
-        Object.keys(model.Commands[item]).forEach(prop => {
-            if (model.Commands[item][prop].indexed || model.Commands[item][prop].unique || model.Commands[item][prop].ref) {
-                _DynamoItemsContents += `    { key:"${prop}"`
-                    + `${model.Commands[item][prop].unique ? ', unique: true' : ''} `
-                    + `${model.Commands[item][prop].ref ? ', ref: __type__' + model.Commands[item][prop].ref : ''}`
-                    + "},\n"
-            }
-        })
-        _DynamoItemsContents += "]) { }\n"
-    }
-    for (const item of Object.keys(model.Queries)) {
-        _DynamoItemsContents += `export class ${item}Item extends DynamoItem(${item}, __type__${item}, [` + "\n"
-        Object.keys(model.Queries[item]).forEach(prop => {
-            if (model.Queries[item][prop].indexed || model.Queries[item][prop].unique || model.Queries[item][prop].ref) {
-                _DynamoItemsContents += `    { key:"${prop}"`
-                    + `${model.Queries[item][prop].unique ? ', unique: true' : ''} `
-                    + `${model.Queries[item][prop].ref ? ', ref: __type__' + model.Queries[item][prop].ref : ''}`
-                    + "},\n"
-            }
-        })
-        _DynamoItemsContents += "]) { }\n"
-    }
+    let _DynamoItemsContents = generateDynamoItems(model)
     console.log(`...Generating _DynamoItems.ts: `
         + await recordFile(join(cwd, "__bootstrap"), "_DynamoItems.ts", _DynamoItemsContents))
     //#endregion
@@ -390,4 +342,111 @@ const backupPreviousCode = (cwd: string) => {
         shell.mkdir("-p", join(cwd, bakFolder))
         shell.mv("", join(cwd, "__test_events"), join(cwd, bakFolder))
     }
+}
+
+const generateDynamoItems = (model: DataModel) : string => {
+    switch (model.version) {
+        case 1: return generateDynamoItemsV1(model)
+        case 2: return generateDynamoItemsV2(model)
+        default: return generateDynamoItemsV1(model)
+    }
+}
+
+const generateDynamoItemsV1 = (model: DataModel) => {
+    let _DynamoItemsContents = `import { DynamoItem } from "${getDdbLibName(model.version)}/DynamoItem"` + "\n"
+
+    for (const item of Object.keys(model.Items).concat(Object.keys(model.Commands)).concat(Object.keys(model.Queries))) {
+        _DynamoItemsContents += `import { ${item} } from "./items/${item}"` + "\n"
+    }
+    _DynamoItemsContents += "\n"
+    for (const item of Object.keys(model.Items).concat(Object.keys(model.Queries))) {
+        _DynamoItemsContents += `const __type__${item}: string = "${item}"` + "\n"
+    }
+    for (const item of Object.keys(model.Commands)) {
+        _DynamoItemsContents += `const __type__${item}: string = "P__${item}"` + "\n"
+    }
+    _DynamoItemsContents += "\n"
+    for (const item of Object.keys(model.Items)) {
+        _DynamoItemsContents += `export class ${item}Item extends DynamoItem(${item}, __type__${item}, [` + "\n"
+        Object.keys(model.Items[item]).forEach(prop => {
+            if (model.Items[item][prop].indexed || model.Items[item][prop].unique || model.Items[item][prop].ref) {
+                _DynamoItemsContents += `    { key:"${prop}"`
+                    + `${model.Items[item][prop].unique ? ', unique: true' : ''} `
+                    + `${model.Items[item][prop].ref ? ', ref: __type__' + model.Items[item][prop].ref : ''}`
+                    + "},\n"
+            }
+        })
+        _DynamoItemsContents += "]) { }\n"
+    }
+    for (const item of Object.keys(model.Commands)) {
+        _DynamoItemsContents += `export class ${item}Item extends DynamoItem(${item}, __type__${item}, [` + "\n"
+        Object.keys(model.Commands[item]).forEach(prop => {
+            if (model.Commands[item][prop].indexed || model.Commands[item][prop].unique || model.Commands[item][prop].ref) {
+                _DynamoItemsContents += `    { key:"${prop}"`
+                    + `${model.Commands[item][prop].unique ? ', unique: true' : ''} `
+                    + `${model.Commands[item][prop].ref ? ', ref: __type__' + model.Commands[item][prop].ref : ''}`
+                    + "},\n"
+            }
+        })
+        _DynamoItemsContents += "]) { }\n"
+    }
+    for (const item of Object.keys(model.Queries)) {
+        _DynamoItemsContents += `export class ${item}Item extends DynamoItem(${item}, __type__${item}, [` + "\n"
+        Object.keys(model.Queries[item]).forEach(prop => {
+            if (model.Queries[item][prop].indexed || model.Queries[item][prop].unique || model.Queries[item][prop].ref) {
+                _DynamoItemsContents += `    { key:"${prop}"`
+                    + `${model.Queries[item][prop].unique ? ', unique: true' : ''} `
+                    + `${model.Queries[item][prop].ref ? ', ref: __type__' + model.Queries[item][prop].ref : ''}`
+                    + "},\n"
+            }
+        })
+        _DynamoItemsContents += "]) { }\n"
+    }
+    return _DynamoItemsContents
+} 
+
+/*
+v1 and v2 generation are compatible, however, excerpted in a new method for ease of tracking
+*/
+const generateDynamoItemsV2 = (model: DataModel) => {
+    let _DynamoItemsContents = `import { DynamoItem } from "${getDdbLibName(model.version)}/DynamoItem"` + "\n"
+
+    for (const item of Object.keys(model.Items).concat(Object.keys(model.Commands)).concat(Object.keys(model.Queries))) {
+        _DynamoItemsContents += `import { ${item} } from "./items/${item}"` + "\n"
+    }
+    _DynamoItemsContents += "\n"
+    for (const item of Object.keys(model.Items).concat(Object.keys(model.Queries))) {
+        _DynamoItemsContents += `const __type__${item}: string = "${item}"` + "\n"
+    }
+    for (const item of Object.keys(model.Commands)) {
+        _DynamoItemsContents += `const __type__${item}: string = "P__${item}"` + "\n"
+    }
+    _DynamoItemsContents += "\n"
+    
+    _DynamoItemsContents += generateItems(model.Items)
+    _DynamoItemsContents += generateItems(model.Commands)
+    _DynamoItemsContents += generateItems(model.Queries)
+
+    return _DynamoItemsContents
+} 
+
+const generateItems = (modelSection: { [x: string]: DataModelObject}) => {
+    let result = ""
+    for (const item of Object.keys(modelSection)) {
+        result += `export class ${item}Item extends DynamoItem(${item}, __type__${item}, [` + "\n"
+        Object.keys(modelSection[item]).forEach(prop => {
+            if (modelSection[item][prop].indexed || modelSection[item][prop].unique || modelSection[item][prop].required || modelSection[item][prop].ref) {
+                result += `    { key:"${prop}"`
+                    + `${modelSection[item][prop].unique ? ', unique: true' : ''}`
+                    + `${modelSection[item][prop].required ? ', required: true' : ''}`
+                    + `${modelSection[item][prop].ref ? ', ref: __type__' + modelSection[item][prop].ref : ''}`
+                    //@ts-ignore
+                    + `${modelSection[item][prop].gsiKey ? `, gsiKey: ["${Array.isArray(modelSection[item][prop].gsiKey) ?  modelSection[item][prop].gsiKey?.join('","'):modelSection[item][prop].gsiKey}"]` : ''}`
+                    + "},\n"
+            }
+        })
+        result += "]) { }\n"
+    }
+
+    return result
 }

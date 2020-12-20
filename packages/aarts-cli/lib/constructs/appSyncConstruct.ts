@@ -110,7 +110,7 @@ type Query {
 }
 
 type Subscription {
-    inbox(item: String, action: String, identity: String, ringToken: String, eventSource: String): Notification @aws_subscribe(mutations: ["feed"])
+    inbox(item: String, action: String, identity: String, ringToken: String, eventSource: String): Notification @aws_subscribe(mutations: ["feed"]) @aws_iam @aws_cognito_user_pools
 
     ##SUBSCRIPTION##
 }

@@ -3,7 +3,7 @@ export const TouristDomain =
 import { DdbGetInput, DdbQueryInput } from "aarts-ddb/interfaces"
 import { AirplaneItem, AirportItem, CountryItem, FlightItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
-import { ppjson } from "aarts-utils"
+import { ppjson, uuid } from "aarts-utils"
 import { setDomainRefkeyFromPayload } from "aarts-ddb"
 import { names } from "../commands/random-names/names"
 
@@ -15,17 +15,21 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
     async *validateCreate(tourist: TouristItem, identity: IIdentity, ringToken: string): AsyncGenerator<string, TouristItem, undefined> {
         const errors: string[] = []
         // domain logic for tourist creation
-        await setDomainRefkeyFromPayload(CountryItem.__type, tourist, 'to_country', ringToken, 'name', errors)
-        await setDomainRefkeyFromPayload(CountryItem.__type, tourist, 'from_country', ringToken, 'name', errors)
-        await setDomainRefkeyFromPayload(AirportItem.__type, tourist, 'to_airport', ringToken, 'name', errors)
-        await setDomainRefkeyFromPayload(AirportItem.__type, tourist, 'from_airport', ringToken, 'name', errors)
+        await setDomainRefkeyFromPayload(CountryItem.__type, tourist, 'to_country', 'name', ringToken, errors)
+        await setDomainRefkeyFromPayload(CountryItem.__type, tourist, 'from_country', 'name', ringToken, errors)
+        await setDomainRefkeyFromPayload(AirportItem.__type, tourist, 'to_airport', 'name', ringToken, errors)
+        await setDomainRefkeyFromPayload(AirportItem.__type, tourist, 'from_airport', 'name', ringToken, errors)
         await setDomainRefkeyFromPayload(FlightItem.__type, tourist,  'flight', 'flight_code', ringToken, errors)
         await setDomainRefkeyFromPayload(AirplaneItem.__type, tourist, 'airplane', 'reg_uq_str', ringToken, errors)
         
         // -- test simulating errored commands
         if (tourist.fname === names[0]) {
-            yield "Sorry tourists with that name already exists [just simulating error here]"
-            throw new Error("Sorry tourists with that name already exists [just simulating error here]")
+            if (~~(Math.random()*3) === 0){
+                tourist.fname = names[0] + ', BUT ITS OKAY' // try simulate events that pass after one-two retries 
+            } else {
+                yield "Sorry tourists with that name already exists [just simulating error here]"
+                throw new Error("Sorry tourists with that name already exists [just simulating error here]")
+            }
         }
         // -- end test
 
@@ -58,8 +62,10 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
                 tourist.processingMessages.push({ message: "Invalid airplane", severity: "warning", properties: "airplane" })
             }
         }
-
-        yield \`Successfuly created Tourist\`
+        // ensure notifying clients will not happen when mass generation/batch processing calls were done (we do not pass this prop from commands)
+        if (tourist.strictDomainMode) {
+            yield \`Successfuly created Tourist\`
+        }
         return tourist
     }
     /**
@@ -104,5 +110,13 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
     async *validateGet(args: DdbGetInput, identity: IIdentity, ringToken: string): AsyncGenerator<string, DdbGetInput, undefined> {
         return args
     }
-}
-`
+
+    public onCreate = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onCreate logic in here or delete this method*/
+        // console.log("ON CREATE TRIGGERED for " + __type)
+    }
+    public onUpdate = async (__type: string, newImage: DynamoItem) => {
+        /*Implement your custom onUpdate logic in here or delete this method*/
+        // console.log("ON UPDATE TRIGGERED for " + __type)
+    }
+}`

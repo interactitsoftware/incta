@@ -216,6 +216,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                         console.log("__proc: " + proc.id)
                         await controller({
                             //"x" values not necessary here. Can it be deleted or for typescript not complaining to leave it ?
+                            "forcePublishToBus": true,
                             "action": "x",
                             "item": "x",
                             "jobType": "long",

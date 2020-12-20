@@ -16,7 +16,9 @@ export interface AartsMeta {
     action: IItemManagerKeys,
     ringToken: string,
     eventSource: string,
-    sqsMsgId?: string
+    sqsMsgId?: string,
+    sqsReceiptHandle?: string,
+    approximateReceiveCount?: number
 }
 
 export interface AartsPayload<T = any> {
@@ -58,6 +60,8 @@ export interface IItemManagerCallback<TItem = any> {
     // in order to be able to be called by a loookup based on the action attribute sent inside the messageAttributes of an SQS message
     _onCreate(item: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void>
     _onUpdate(item: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void>
+    _onSuccess(item: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void>
+    _onError(item: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void>
 }
 
 export interface DataModel {
@@ -69,6 +73,7 @@ export interface DataModel {
 }
 export type ItemPropertyValue = {
     unique?: boolean
+    required?: boolean
     indexed?: boolean
     gsiKey?: string[]
     ref?: string

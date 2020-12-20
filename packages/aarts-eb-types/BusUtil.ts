@@ -1,6 +1,7 @@
 import * as AWS from "aws-sdk";
 
 export interface AppSyncEvent {
+    forcePublishToBus?: boolean
     action: string,
     item: string,
     ringToken?: string,

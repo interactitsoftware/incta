@@ -8,7 +8,7 @@ import { DynamoDBConstruct } from './dynamoDbConstruct';
 import { clientAppDirName, clientAppName } from "../aarts-all-infra-stack"
 import { EventBusConstruct } from './eventBusConstruct';
 import { Runtime } from '@aws-cdk/aws-lambda/lib/runtime';
-import { DynamoEventSource, SqsDlq } from '@aws-cdk/aws-lambda-event-sources';
+import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Queue } from '@aws-cdk/aws-sqs';
 
 export interface DynamoEventsConstructProps {
@@ -34,11 +34,8 @@ export class DynamoEventsConstruct extends cdk.Construct {
             timeout: Duration.seconds(60),
             layers: [props.nodeModulesLayer],
 
-            // IMPORTANT we dont want retry on a dispatcher level, reties should be only on sqs handler level
-            // because if dispatcher reties, it will generate new ringToken, which may result in duplicate items, 
-            // out of single create events (which got failed, and retried)
             retryAttempts: 0,
-            reservedConcurrentExecutions: 1
+            // reservedConcurrentExecutions: 1 DO WE NEED THAT HERE?
         })
         // props.eventBusConstruct.grantAccess(this.dynamoEventsAggregation)
         props.dynamoDbConstruct.grantAccess(this.dynamoEventsAggregation)
@@ -54,7 +51,7 @@ export class DynamoEventsConstruct extends cdk.Construct {
             batchSize: 1000,
             bisectBatchOnError: true,
             parallelizationFactor: 1,
-            maxBatchingWindow: Duration.seconds(30),
+            maxBatchingWindow: Duration.seconds(10),
             onFailure: {
                 bind: (iEventSourceMapping, lambda) => { return { destination: dlq.queueArn} }
             }
@@ -70,12 +67,8 @@ export class DynamoEventsConstruct extends cdk.Construct {
             memorySize: 256,
             timeout: Duration.seconds(60),
             layers: [props.nodeModulesLayer],
-
-            // IMPORTANT we dont want retry on a dispatcher level, reties should be only on sqs handler level
-            // because if dispatcher reties, it will generate new ringToken, which may result in duplicate items, 
-            // out of single create events (which got failed, and retried)
             retryAttempts: 0,
-            reservedConcurrentExecutions: 1
+            // reservedConcurrentExecutions: 1 DO WE NEED THAT HERE?
         })
         props.eventBusConstruct.grantAccess(this.dynamoEventsCallback)
         props.dynamoDbConstruct.grantAccess(this.dynamoEventsCallback)

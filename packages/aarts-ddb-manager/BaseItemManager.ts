@@ -6,7 +6,7 @@ import { transactPutItem } from "aarts-ddb";
 import { queryItems } from "aarts-ddb";
 import { transactDeleteItem } from "aarts-ddb";
 import { AnyConstructor, MixinConstructor } from "aarts-types/Mixin"
-import { ppjson, loginfo, chunks } from "aarts-utils"
+import { ppjson, loginfo, chunks, uuid } from "aarts-utils"
 import { AartsEvent, AartsPayload, IIdentity, IItemManager, IItemManagerKeys } from "aarts-types/interfaces"
 import { DdbQueryInput, DdbTableItemKey, DomainItem, DdbGetInput } from "aarts-ddb";
 import { StreamRecord } from "aws-lambda";
@@ -28,7 +28,7 @@ import { DBQueryOutput } from 'aarts-types';
 
 export class DynamoCommandItem {
     constructor(...args: any[]) { }
-    total_events: number = 0
+    total_events?: number = 0
     start_date?: string
     sync_end_date?: string
     async_end_date?: string
@@ -36,7 +36,6 @@ export class DynamoCommandItem {
     errored_events?: number
     errors?: string
 }
-
 
 /**
  * TODO 
@@ -53,7 +52,7 @@ export class DynamoCommandItem {
  * ---------------------
  * aarts-ddb2
  * 
- * -- load model in cdk
+ * -- [OK]load model in cdk
  * -- if dynamo-verion not present, assume version 1
  * -- if present create dynamo table accodingly:
  *  - if version 1 - create table and GSIs meta smetadata etc.
@@ -81,6 +80,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
     public onCreate: Function | undefined
     public onUpdate: Function | undefined
+    public onSuccess: Function | undefined
+    public onError: Function | undefined
 
     //#region STREAMS CALLBACKS
     async _onCreate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
@@ -103,22 +104,25 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
     async _onUpdate(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
         if (dynamodbStreamRecord !== undefined) {
             const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
-            const oldImage = fromAttributeMap(dynamodbStreamRecord?.OldImage as AttributeMap) as DynamoItem
             !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, "_onUpdate CALL BACK FIRED for streamRecord ", ppjson(newImage))
 
             // mark procedures as done when total_events=processed_events
-            // TODO refine it not to cycle indefinetley
-            if (newImage.id.startsWith("P__") && (newImage.revisions === 0 || newImage.revisions === 1)
-                && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) >= (newImage["total_events"] as number)) {
-                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `ISSUING UPDATE-${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
+            if (newImage.id.startsWith("P__") && (newImage.revisions >= 1)
+                && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) === (newImage["total_events"] as number)
+                //NEW WAY: when all retries finished
+                && ! (newImage["item_state"] === "success" || newImage["item_state"] === "error")) {
+
+                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `ISSUING UPDATE-${(newImage["processed_events"] as number) === (newImage["total_events"] as number) ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
+                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `newImage["processed_events"] ${newImage["processed_events"] as number} ; newImage["errored_events"] ${newImage["errored_events"] as number} ; newImage["total_events"]: ${newImage["total_events"] as number}`)
                 const P__from_db = await getItemById(newImage.__typename, newImage.id, newImage.ringToken as string)
                 if (!!P__from_db) {
-                    try { // swallow errors for now
+                    try { 
                         await transactUpdateItem(
                             P__from_db,
                             {
                                 end_date: new Date().toISOString(),
-                                item_state: `${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'success' : 'error'}`,
+                                item_state: `${(newImage["processed_events"] as number) === (newImage["total_events"] as number) ? 'success' : 'error'}`,
+                                // OLD WAY: item_state: `${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'success' : 'error'}`,
                                 ringToken: newImage.ringToken,
                                 revisions: P__from_db.revisions,
                                 id: newImage.id,
@@ -126,7 +130,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                             },
                             (this.lookupItems.get(__type) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
                     } catch (err) {
-                        console.error("ERROR updating P__ ", ppjson(err))
+                        console.error("ERROR updating P__ ", ppjson(err), ppjson(P__from_db))
+                        throw err
                     }
                 }
             }
@@ -136,6 +141,34 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 await this.onUpdate(__type, newImage)
             } else {
                 !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `No specific onUpdate method was found in manager of ${__type}`)
+            }
+        }
+    }
+
+    async _onSuccess(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
+        if (dynamodbStreamRecord !== undefined) {
+            const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
+            !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, "_onSuccess CALL BACK FIRED for streamRecord ", ppjson(newImage))
+
+            console.log("CHECKING this.onSuccess ", ppjson(this.onSuccess))
+            if (typeof this.onSuccess === "function") {
+                await this.onSuccess(__type, newImage)
+            } else {
+                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `No specific onSuccess method was found in manager of ${__type}`)
+            }
+        }
+    }
+
+    async _onError(__type: string, dynamodbStreamRecord: StreamRecord | undefined): Promise<void> {
+        if (dynamodbStreamRecord !== undefined) {
+            const newImage = fromAttributeMap(dynamodbStreamRecord?.NewImage as AttributeMap) as DynamoItem
+            !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, "_onError CALL BACK FIRED for streamRecord ", ppjson(newImage))
+
+            console.log("CHECKING this.onError ", ppjson(this.onError))
+            if (typeof this.onError === "function") {
+                await this.onError(__type, newImage)
+            } else {
+                !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `No specific onError method was found in manager of ${__type}`)
             }
         }
     }
@@ -218,6 +251,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                         console.log("__proc: " + proc.id)
                         await controller({
                             //"x" values not necessary here. Can it be deleted or for typescript not complaining to leave it ?
+                            "forcePublishToBus": true,
                             "action": "x",
                             "item": "x",
                             "jobType": "long",
@@ -600,21 +634,41 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:CREATE] Item applicable for saving.`)
 
             const savedItem = await transactPutItem(processorDomain.value as T, (this.lookupItems.get(evnt.meta.item) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-
+            // delete any previously errored attempts
+            await dynamoDbClient.deleteItem({ TableName: DB_NAME, Key: { id: { S: evnt.payload.arguments.__proc }, meta: { S: `errored|${evnt.meta.sqsMsgId}` } } }).promise()
             return { result: savedItem as T }
         } catch (err) {
             if (!!evnt.payload.arguments.__proc) {
                 // so this operation is part of a procedure, record an errored event
-                await dynamoDbClient.putItem({
-                    Item: {
-                        id: { S: evnt.payload.arguments.__proc },
-                        __proc: { S: evnt.payload.arguments.__proc },
-                        meta: { S: `errored|${evnt.meta.sqsMsgId || evnt.meta.ringToken}` },
-                        err: { S: `${err && err.message ? err.message : err}` },
-                        stack: { S: `${err && err.stack ? err.stack.slice(0, 500) : ''}` },
-                        ringToken: { S: evnt.meta.ringToken }
+                // await dynamoDbClient.putItem({
+                //     Item: {
+                //         id: { S: evnt.payload.arguments.__proc },
+                //         __proc: { S: evnt.payload.arguments.__proc },
+                //         meta: { S: `errored|${evnt.meta.sqsMsgId}` },//|${evnt.meta.sqsReceiptHandle}
+                //         err: { S: `${err && err.message ? err.message : err}` },
+                //         stack: { S: `${err && err.stack ? err.stack.slice(0, 500) : ''}` },
+                //         ringToken: { S: evnt.meta.ringToken }
+                //     },
+                //     TableName: DB_NAME
+                // }).promise()
+                await dynamoDbClient.updateItem({
+                    TableName: DB_NAME,
+                    Key: { id: { S: evnt.payload.arguments.__proc }, meta: { S: `errored|${evnt.meta.sqsMsgId}` } },
+                    UpdateExpression: 'SET #ringToken = :ringToken, #proc = :proc, #errors = list_append(if_not_exists(#errors, :empty_list), :err)', // String representation of the update to an attribute
+                    ExpressionAttributeNames: {
+                        '#errors': 'errors',
+                        '#ringToken': 'ringToken',
+                        '#proc': '__proc'
                     },
-                    TableName: DB_NAME
+                    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+                        ':err': {L:[{S:`${err && err.message ? err.message : ppjson(err).slice(0,500) + '--\n' + `${err && err.stack ? err.stack.slice(0, 500) : ''}`}`}]},
+                        ':empty_list': {L:[{S:'empty'}]},
+                        ':ringToken': { S: evnt.meta.ringToken },
+                        ':proc': { S: evnt.payload.arguments.__proc }
+                    },
+                    ReturnValues: 'NONE', 
+                    ReturnConsumedCapacity: 'NONE', 
+                    ReturnItemCollectionMetrics: 'NONE', 
                 }).promise()
             }
             throw err
@@ -691,20 +745,41 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] END. Result: `, ppjson({ result: updatedItem }))
 
+            // delete any previously errored attempts
+            await dynamoDbClient.deleteItem({ TableName: DB_NAME, Key: { id: { S: evnt.payload.arguments.__proc }, meta: { S: `errored|${evnt.meta.sqsMsgId}` } } }).promise()
             return { result: updatedItem }
         } catch (err) {
             if (!!evnt.payload.arguments.__proc) {
                 // so this operation is part of a procedure, record an errored event
-                await dynamoDbClient.putItem({
-                    Item: {
-                        id: { S: evnt.payload.arguments.__proc },
-                        __proc: { S: evnt.payload.arguments.__proc },
-                        meta: { S: `errored|${evnt.meta.sqsMsgId || evnt.meta.ringToken}` },
-                        err: { S: `${err && err.message ? err.message : err}` },
-                        stack: { S: `${err && err.stack ? err.stack.slice(0, 500) : ''}` },
-                        ringToken: { S: evnt.meta.ringToken }
+                // await dynamoDbClient.putItem({
+                //     Item: {
+                //         id: { S: evnt.payload.arguments.__proc },
+                //         __proc: { S: evnt.payload.arguments.__proc },
+                //         meta: { S: `errored|${evnt.meta.sqsMsgId}|${evnt.meta.sqsReceiptHandle}` },
+                //         err: { S: `${err && err.message ? err.message : err}` },
+                //         stack: { S: `${err && err.stack ? err.stack.slice(0, 500) : ''}` },
+                //         ringToken: { S: evnt.meta.ringToken }
+                //     },
+                //     TableName: DB_NAME
+                // }).promise()
+                await dynamoDbClient.updateItem({
+                    TableName: DB_NAME,
+                    Key: { id: { S: evnt.payload.arguments.__proc }, meta: { S: `errored|${evnt.meta.sqsMsgId}` } },
+                    UpdateExpression: 'SET #ringToken = :ringToken, #proc = :proc, #errors = list_append(if_not_exists(#errors, :empty_list), :err)', // String representation of the update to an attribute
+                    ExpressionAttributeNames: {
+                        '#errors': 'errors',
+                        '#ringToken': 'ringToken',
+                        '#proc': '__proc'
                     },
-                    TableName: DB_NAME
+                    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+                        ':err': {L:[{S:`${err && err.message ? err.message : ppjson(err).slice(0,500) + '--\n' + `${err && err.stack ? err.stack.slice(0, 500) : ''}`}`}]},
+                        ':empty_list': {L:[{S:'empty'}]},
+                        ':ringToken': { S: evnt.meta.ringToken },
+                        ':proc': { S: evnt.payload.arguments.__proc }
+                    },
+                    ReturnValues: 'NONE', 
+                    ReturnConsumedCapacity: 'NONE', 
+                    ReturnItemCollectionMetrics: 'NONE', 
                 }).promise()
             }
             throw err
