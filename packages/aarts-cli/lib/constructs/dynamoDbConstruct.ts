@@ -21,6 +21,7 @@ export class DynamoDBConstruct extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: DynamoDBConstructProps) {
     super(scope, id);
     const dataModel = require(join(clientAppDirName, "data-model.json")) as DataModel
+    const aartsConfig = require(join(clientAppDirName, "aarts.config.json")) as AartsConfig
 
     const createTableV1 = (isTestTable?: boolean) => {
       const table = new Table(this, `${isTestTable ? `TEST${clientAppName}` : clientAppName}`, {

@@ -83,3 +83,30 @@ export type ItemPropertyValue = {
 export interface DataModelObject {
     [x: string]: ItemPropertyValue | DataModelObject
 }
+
+export interface AartsConfig {
+    DynamoDB: {
+        Mode: "PAY_PER_REQUEST" | "PROVISIONED"
+        ProvisionedCapacity: {
+            RCU: number
+            WCU: number
+            Stream: "NEW_AND_OLD_IMAGES" | "KEYS_ONLY" | "OLD_IMAGE" | "NEW_IMAGE",
+            RemovalPolicy: "DESTROY" |  "RETAIN" | "SNAPSHOT"
+        }
+    }
+    SQS: {
+        type: "FIFO" | "STANDARD"
+    }
+    AsyncCUD: boolean,
+    Lambda: {
+        Controller: {
+            RAM: number,
+            Timeout: number
+        },
+        Workers: [{
+            name: string,
+            RAM: number,
+            Timeout: number
+        }]
+    }
+}
