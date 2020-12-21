@@ -87,15 +87,11 @@ export interface DataModelObject {
 export interface AartsConfig {
     DynamoDB: {
         Mode: "PAY_PER_REQUEST" | "PROVISIONED"
+        RemovalPolicy: "DESTROY" | "RETAIN" | "SNAPSHOT"
         ProvisionedCapacity: {
             RCU: number
             WCU: number
-            Stream: "NEW_AND_OLD_IMAGES" | "KEYS_ONLY" | "OLD_IMAGE" | "NEW_IMAGE",
-            RemovalPolicy: "DESTROY" |  "RETAIN" | "SNAPSHOT"
         }
-    }
-    SQS: {
-        type: "FIFO" | "STANDARD"
     }
     AsyncCUD: boolean,
     Lambda: {
@@ -103,10 +99,26 @@ export interface AartsConfig {
             RAM: number,
             Timeout: number
         },
+        Feeder: {
+            RAM: number
+            Timeout: number,
+            SQSFIFO: boolean
+        },
+        DynamoStreamsProcessors: {
+            Aggregation: {
+                RAM: number
+                Timeout: number
+            },
+            ItemCallbacks: {
+                RAM: number
+                Timeout: number
+            }
+        },
         Workers: [{
             name: string,
             RAM: number,
-            Timeout: number
+            Timeout: number,
+            SQSFIFO: boolean
         }]
     }
 }

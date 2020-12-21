@@ -9,7 +9,8 @@ import { LayerVersion, Code } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
 import { DynamoDBConstruct } from './dynamoDbConstruct';
 import { clientAppDirName, clientAppName } from "../aarts-all-infra-stack"
-import { ENV_VARS__EVENT_BUS_TOPIC } from '../../env-constants';
+import { ENV_VARS__ASYNC_CUD, ENV_VARS__EVENT_BUS_TOPIC } from '../../env-constants';
+import { AartsConfig } from 'aarts-types';
 
 export interface EventBusConstructProps {
     nodeModulesLayer: LayerVersion,
@@ -27,6 +28,7 @@ export class EventBusConstruct extends cdk.Construct {
 
         if (!!this.node.tryGetContext("debug-mode")) {
             //#region test queues consuming all the messages
+            // TODO reflect AartsConfig and add test queue for each worker, if in debug mode
             var testOutputQueue = new sqs.Queue(this, "TESTOUTPUTQUEUE", {
                 retentionPeriod: Duration.hours(48)
             });
@@ -68,14 +70,15 @@ export class EventBusConstruct extends cdk.Construct {
             }));
             //#endregion
         }
+        const aartsConfig = require(join(clientAppDirName, "aarts.config.json")) as AartsConfig
 
         this.controller = new lambda.Function(this, "Controller", {
             runtime: lambda.Runtime.NODEJS_12_X,
             functionName: `${clientAppName}Controller`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: '__bootstrap/index.controller',
-            memorySize: 256,
-            timeout: cdk.Duration.seconds(60),
+            memorySize: aartsConfig.Lambda.Controller.RAM,
+            timeout: cdk.Duration.seconds(aartsConfig.Lambda.Controller.Timeout),
             layers: [props.nodeModulesLayer],
 
             // IMPORTANT we dont want retry on a dispatcher level, reties should be only on sqs handler level
@@ -85,6 +88,9 @@ export class EventBusConstruct extends cdk.Construct {
         })
         this.grantAccess(this.controller)
         props.dynamoDbConstruct.grantAccess(this.controller)
+        if (!!aartsConfig.AsyncCUD) {
+            this.controller.addEnvironment(ENV_VARS__ASYNC_CUD, "1")
+        }
     }
 
     grantAccess(lambdaFunction: lambda.Function) {

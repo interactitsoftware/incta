@@ -1,6 +1,6 @@
 import * as shell from "shelljs"
 import { join } from "path"
-import { dataModelJsons, jestConfigJs, packageJson, randomNames, testSetupEnvs, tsconfigJson } from "./templates"
+import { aartsConfig, dataModelJsons, jestConfigJs, packageJson, randomNames, testSetupEnvs, tsconfigJson } from "./templates"
 import { ppjson } from "aarts-utils"
 import { recordFile } from "./utils"
 import { transferAirtoursV1Template } from "./templates/airtours-ddb-v1"
@@ -38,6 +38,7 @@ export const createApp = async (appName: string, templateModel?: string) => {
     await recordFile(appPath, "tsconfig.json", tsconfigJson)
     await recordFile(appPath, "jest.config.js", jestConfigJs)
     await recordFile(appPath, "data-model.json", ppjson(dataModelJsons.empty_v1))
+    await recordFile(appPath, "aarts.config.json", aartsConfig)
     //#endregion
 
     await transferAnyTemplateFiles(templateModel, appPath)

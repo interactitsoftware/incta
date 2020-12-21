@@ -4,7 +4,7 @@ import { DdbGetInput, DdbQueryInput } from "aarts-ddb/interfaces"
 import { AirplaneItem, AirportItem, CountryItem, FlightItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
 import { ppjson, uuid } from "aarts-utils"
-import { setDomainRefkeyFromPayload } from "aarts-ddb"
+import { setDomainRefkeyFromPayload, DynamoItem } from "aarts-ddb"
 import { names } from "../commands/random-names/names"
 
 export class TouristDomain extends BaseDynamoItemManager<TouristItem> {

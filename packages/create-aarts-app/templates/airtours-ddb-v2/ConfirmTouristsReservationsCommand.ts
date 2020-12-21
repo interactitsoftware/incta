@@ -2,7 +2,7 @@ export const ConfirmTouristsReservationsCommand =
 `import { BaseDynamoItemManager } from "aarts-ddb-manager/BaseItemManager"
 import { AllTouristForTouristSeasonItem, ConfirmTouristsReservationsItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
-import { queryItems, versionString } from "aarts-ddb"
+import { queryItems, versionString, DynamoItem } from "aarts-ddb"
 import { ppjson } from "aarts-utils"
 import { domainAdapter } from "../__bootstrap"
 import { AllTouristForTouristSeasonQuery } from "../queries/AllTouristForTouristSeasonQuery"

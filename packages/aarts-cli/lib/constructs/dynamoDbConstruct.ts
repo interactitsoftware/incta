@@ -7,7 +7,7 @@ import { ENV_VARS__DB_NAME, ENV_VARS__TEST_DB_NAME, ENV_VARS__DB_ENDPOINT } from
 import { clientAppDirName, clientAppName } from "../aarts-all-infra-stack"
 import { Model } from '@aws-cdk/aws-apigateway';
 import { join } from 'path';
-import { DataModel } from "aarts-types/interfaces"
+import { AartsConfig, DataModel } from "aarts-types/interfaces"
 
 export interface DynamoDBConstructProps { 
   copyEntireItemToGsis: string
@@ -93,14 +93,12 @@ export class DynamoDBConstruct extends cdk.Construct {
         partitionKey: { name: "id", type: AttributeType.STRING },
         sortKey: { name: "meta", type: AttributeType.STRING },
 
-        // billingMode: BillingMode.PROVISIONED,
-        // readCapacity: 1,
-        // writeCapacity: 1,
-
-        billingMode: BillingMode.PAY_PER_REQUEST,
+        billingMode: BillingMode[aartsConfig.DynamoDB.Mode],
+        readCapacity: aartsConfig.DynamoDB.ProvisionedCapacity && aartsConfig.DynamoDB.ProvisionedCapacity.RCU || undefined,
+        writeCapacity: aartsConfig.DynamoDB.ProvisionedCapacity && aartsConfig.DynamoDB.ProvisionedCapacity.WCU || undefined,
 
         stream: StreamViewType.NEW_AND_OLD_IMAGES,
-        removalPolicy: RemovalPolicy.DESTROY 
+        removalPolicy: RemovalPolicy[aartsConfig.DynamoDB.RemovalPolicy] 
       })
 
       for (const gsi of dataModel.GSIs) {
@@ -114,8 +112,6 @@ export class DynamoDBConstruct extends cdk.Construct {
           partitionKey: { name: pkName, type: pkType },
           sortKey: { name: skName, type: skType },
           projectionType: !!props.copyEntireItemToGsis && props.copyEntireItemToGsis !== "undefined" ? ProjectionType.ALL : ProjectionType.KEYS_ONLY,
-          // readCapacity: 1,
-          // writeCapacity: 1,
         })
       }
 

@@ -1,6 +1,6 @@
 {
   "name": "aarts-eb-notifier",
-  "version": "0.1.440",
+  "version": "0.1.444",
   "description": "calls an appsync local datasource with aarts payload passed",
   "main": "./index.js",
   "types": "./index.d.ts",

@@ -10,6 +10,7 @@ import { EventBusConstruct } from './eventBusConstruct';
 import { Runtime } from '@aws-cdk/aws-lambda/lib/runtime';
 import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Queue } from '@aws-cdk/aws-sqs';
+import { AartsConfig } from 'aarts-types';
 
 export interface DynamoEventsConstructProps {
     nodeModulesLayer: LayerVersion,
@@ -25,13 +26,14 @@ export class DynamoEventsConstruct extends cdk.Construct {
     constructor(scope: cdk.Construct, id: string, props: DynamoEventsConstructProps) {
         super(scope, id);
 
+        const aartsConfig = require(join(clientAppDirName, "aarts.config.json")) as AartsConfig
         this.dynamoEventsAggregation = new lambda.Function(this, "Aggregation", {
             runtime: Runtime.NODEJS_12_X,
             functionName: `${clientAppName}dynamoEventsAggregation`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: '__bootstrap/index.dynamoEventsAggregation',
-            memorySize: 256,
-            timeout: Duration.seconds(60),
+            memorySize: aartsConfig.Lambda.DynamoStreamsProcessors.Aggregation.RAM,
+            timeout: Duration.seconds(aartsConfig.Lambda.DynamoStreamsProcessors.Aggregation.Timeout),
             layers: [props.nodeModulesLayer],
 
             retryAttempts: 0,
@@ -64,8 +66,8 @@ export class DynamoEventsConstruct extends cdk.Construct {
             functionName: `${clientAppName}dynamoEventsCallback`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: '__bootstrap/index.dynamoEventsCallback',
-            memorySize: 256,
-            timeout: Duration.seconds(60),
+            memorySize: aartsConfig.Lambda.DynamoStreamsProcessors.ItemCallbacks.RAM,
+            timeout: Duration.seconds(aartsConfig.Lambda.DynamoStreamsProcessors.ItemCallbacks.Timeout),
             layers: [props.nodeModulesLayer],
             retryAttempts: 0,
             // reservedConcurrentExecutions: 1 DO WE NEED THAT HERE?

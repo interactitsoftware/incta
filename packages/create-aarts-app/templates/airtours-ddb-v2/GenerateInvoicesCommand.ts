@@ -2,7 +2,7 @@ export const GenerateInvoicesCommand =
 `import { BaseDynamoItemManager } from "aarts-ddb-manager/BaseItemManager"
 import { GenerateInvoicesItem } from "../__bootstrap/_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
-import { dynamoDbClient, DB_NAME } from "aarts-ddb"
+import { dynamoDbClient, DB_NAME, DynamoItem } from "aarts-ddb"
 import { chunks } from "aarts-utils"
 import { ScanOutput, WriteRequest } from "aws-sdk/clients/dynamodb"
 

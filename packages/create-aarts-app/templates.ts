@@ -1,6 +1,49 @@
 import * as AirtoursTemplateModelV1 from "./templates/airtours-ddb-v1/data-model"
 import * as AirtoursTemplateModelV2 from "./templates/airtours-ddb-v2/data-model"
 
+export const aartsConfig =
+`{
+  "DynamoDB": {
+      "Mode": "PAY_PER_REQUEST",
+      "RemovalPolicy": "DESTROY"
+  },
+  "AsyncCUD": false,
+  "Lambda": {
+      "Controller": {
+          "RAM": 256,
+          "Timeout": 60
+      },
+      "Feeder": {
+          "RAM": 128,
+          "Timeout": 10,
+          "SQSFIFO": false
+      },
+      "DynamoStreamsProcessors": {
+          "Aggregation": {
+              "RAM": 512,
+              "Timeout": 60
+          },
+          "ItemCallbacks": {
+              "RAM": 256,
+              "Timeout": 60
+          }
+      },
+      "Workers": [{
+          "name": "Short",
+          "RAM": 256,
+          "Timeout": 30,
+          "SQSFIFO": false
+      },
+      {
+        "name": "Long",
+        "RAM": 512,
+        "Timeout": 600,
+        "SQSFIFO": false
+    }]
+  }
+}
+`
+
 export const jestConfigJs =
   `module.exports = {
     "roots": [

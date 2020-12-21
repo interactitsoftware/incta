@@ -5,6 +5,7 @@ import { IIdentity } from "aarts-types/interfaces"
 import { names } from "./random-names/names"
 import { Tourist } from "../__bootstrap/items/Tourist"
 import { uuid } from "aarts-utils"
+import { DynamoItem } from "aarts-ddb"
 /* USE THAT FOR TESTING
 {
   "action": "start",

@@ -6,6 +6,9 @@ import { SqsSubscription } from '@aws-cdk/aws-sns-subscriptions';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { Runtime, Code, Function, ILayerVersion, Tracing } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
+import { clientAppDirName } from '../aarts-all-infra-stack';
+import { AartsConfig } from 'aarts-types';
+import { join } from 'path';
 
 export interface WorkerConstructProps {
     workerName: string,
@@ -16,6 +19,8 @@ export interface WorkerConstructProps {
     functionHandler: string
     functionRuntime: Runtime
     functionTimeout: Duration
+    functionMemorySize: number
+    functionSQSFIFO: boolean
     envVars?: { [key: string]: string }
     reservedConcurrentExecutions?: number
     layers?: ILayerVersion[] | undefined,
@@ -30,7 +35,9 @@ export class WorkerConstruct extends Construct {
     constructor(scope: Construct, id: string, props: WorkerConstructProps) {
         super(scope, id);
         const functionDeadletterQueue = new Queue(this, "DEADLETTER", {
-            queueName: `${props.workerName}-DEADLETTER`
+            queueName: `${props.workerName}-DEADLETTER`,
+            fifo: !!props.functionSQSFIFO || undefined,
+            contentBasedDeduplication: !!props.functionSQSFIFO || undefined
         })
         const functionQueue = new Queue(this, "Queue", {
             // as per best practices from AWS visibilityTimeout is suggesteed 6 times lambda timeout
@@ -41,8 +48,10 @@ export class WorkerConstruct extends Construct {
             // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
             deadLetterQueue: {
                 maxReceiveCount: props.sqsRetries,
-                queue: functionDeadletterQueue,
-            }
+                queue: functionDeadletterQueue
+            },
+            fifo: !!props.functionSQSFIFO || undefined,
+            contentBasedDeduplication: !!props.functionSQSFIFO || undefined
         })
         functionQueue.node.addDependency(functionDeadletterQueue)
 
@@ -64,7 +73,7 @@ export class WorkerConstruct extends Construct {
             handler: props.functionHandler,
             runtime: props.functionRuntime,
             timeout: props.functionTimeout,
-            memorySize: 256,
+            memorySize: props.functionMemorySize || 256,
             functionName: `${props.workerName}`,
             tracing: Tracing.ACTIVE,
 

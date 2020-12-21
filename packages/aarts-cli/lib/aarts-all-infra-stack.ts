@@ -10,6 +10,7 @@ import { AppSyncLocalDatasourceConstruct } from './constructs/AppSyncLocalDataso
 import { AartsResolver, AppSyncLambdaDataSourceConstruct } from './constructs/appSyncLambdaDataSourceConstruct';
 import { WorkerConstruct } from './constructs/workerConstruct';
 import { DynamoEventsConstruct } from './constructs/dynamoEventsConstruct';
+import { AartsConfig } from 'aarts-types';
 
 let clientAppName: string, clientAppDirName: string
 export { clientAppName, clientAppDirName }
@@ -25,6 +26,7 @@ export class AartsAllInfraStack extends Stack {
 
     clientAppDirName = props.clientAppDirName
     clientAppName = props.clientAppName
+    const aartsConfig = require(join(clientAppDirName, "aarts.config.json")) as AartsConfig
 
     const nodeModulesLayer = new LayerVersion(this, props.clientAppName + 'Modules', {
       code: Code.fromAsset(join("node-modules-layer"), {
@@ -76,45 +78,55 @@ export class AartsAllInfraStack extends Stack {
       eventBusConstruct, dynamoDbConstruct, nodeModulesLayer
     })
 
-    const workerInputShort = new WorkerConstruct(this, `${props.clientAppName}WorkerShort`, {
-      workerName: `${props.clientAppName}WorkerShort`,
-      functionTimeout: Duration.seconds(30),
-      functionHandler: "__bootstrap/index.worker",
-      functionImplementationPath: join(props.clientAppDirName, "dist"),
-      functionRuntime: Runtime.NODEJS_12_X,
-      eventBusConstruct: eventBusConstruct,
-      dynamoDbConstruct: dynamoDbConstruct,
-      eventSource: "worker:input:short",
-      eventSourceBatchSize: 10,
-      sqsRetries: 3,
-      layers: [
-        nodeModulesLayer
-      ],
-      reservedConcurrentExecutions: 100
-    });
+    for (const worker of aartsConfig.Lambda.Workers) {
+      const workerFunction = new WorkerConstruct(this, `${props.clientAppName}Worker${worker.name}`, {
+        workerName: `${props.clientAppName}Worker${worker.name}`,
+        functionMemorySize: worker.RAM,
+        functionSQSFIFO: worker.SQSFIFO,
+        functionTimeout: Duration.seconds(worker.Timeout),
+        functionHandler: "__bootstrap/index.worker",
+        functionImplementationPath: join(props.clientAppDirName, "dist"),
+        functionRuntime: Runtime.NODEJS_12_X,
+        eventBusConstruct: eventBusConstruct,
+        dynamoDbConstruct: dynamoDbConstruct,
+        eventSource: `worker:input:${worker.name.toLowerCase()}`,
+        eventSourceBatchSize: 10,
+        sqsRetries: 3,
+        layers: [
+          nodeModulesLayer
+        ],
+        reservedConcurrentExecutions: 100
+      });
+      eventBusConstruct.controller.addEnvironment(`WORKER_${worker.name.toUpperCase()}`, workerFunction.function.functionName)
+      if (!!this.node.tryGetContext("debug-mode")) {
+        workerFunction.function.addEnvironment("DEBUGGER", "1")
+      }
+    }
+    
 
-    const workerInputLong = new WorkerConstruct(this, `${props.clientAppName}WorkerLong`, {
-      workerName: `${props.clientAppName}WorkerLong`,
-      functionTimeout: Duration.minutes(10),
-      functionHandler: "__bootstrap/index.worker",
-      functionImplementationPath: join(props.clientAppDirName, "dist"),
-      functionRuntime: Runtime.NODEJS_12_X,
-      eventBusConstruct: eventBusConstruct,
-      dynamoDbConstruct: dynamoDbConstruct,
-      eventSource: "worker:input:long",
-      sqsRetries: 1,
-      layers: [
-        nodeModulesLayer
-      ],
-      reservedConcurrentExecutions: 25
-    })
+    // const workerInputLong = new WorkerConstruct(this, `${props.clientAppName}WorkerLong`, {
+    //   workerName: `${props.clientAppName}WorkerLong`,
+    //   functionTimeout: Duration.minutes(10),
+    //   functionHandler: "__bootstrap/index.worker",
+    //   functionImplementationPath: join(props.clientAppDirName, "dist"),
+    //   functionRuntime: Runtime.NODEJS_12_X,
+    //   eventBusConstruct: eventBusConstruct,
+    //   dynamoDbConstruct: dynamoDbConstruct,
+    //   eventSource: "worker:input:long",
+    //   sqsRetries: 1,
+    //   layers: [
+    //     nodeModulesLayer
+    //   ],
+    //   reservedConcurrentExecutions: 25
+    // })
 
-    eventBusConstruct.controller.addEnvironment("WORKER_LONG", workerInputLong.function.functionName)
-    eventBusConstruct.controller.addEnvironment("WORKER_SHORT", workerInputShort.function.functionName)
+    
+    // eventBusConstruct.controller.addEnvironment("WORKER_SHORT", workerInputShort.function.functionName)
+
+    // workerInputLong.function.addEnvironment("DEBUGGER", "1")
+    // workerInputShort.function.addEnvironment("DEBUGGER", "1")
 
     if (!!this.node.tryGetContext("debug-mode")) {
-      workerInputLong.function.addEnvironment("DEBUGGER", "1")
-      workerInputShort.function.addEnvironment("DEBUGGER", "1")
       eventBusConstruct.controller.addEnvironment("DEBUGGER", "1")
       dynamoEventsConstruct.dynamoEventsAggregation.addEnvironment("DEBUGGER", "1")
       dynamoEventsConstruct.dynamoEventsCallback.addEnvironment("DEBUGGER", "1")

@@ -4,6 +4,7 @@ import { DdbGetInput, DdbQueryInput } from "aarts-ddb/interfaces"
 import { InvoiceItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
 import { ppjson } from "aarts-utils"
+import { DynamoItem } from "aarts-ddb"
 
 export class InvoiceDomain extends BaseDynamoItemManager<InvoiceItem> {
     /**
