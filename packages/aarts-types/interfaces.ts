@@ -118,7 +118,8 @@ export interface AartsConfig {
             name: string,
             RAM: number,
             Timeout: number,
-            SQSFIFO: boolean
+            SQSFIFO: boolean,
+            reservedConcurrentExecutions?: number
         }]
     }
 }

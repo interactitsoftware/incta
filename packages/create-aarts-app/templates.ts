@@ -38,7 +38,8 @@ export const aartsConfig =
         "name": "Long",
         "RAM": 512,
         "Timeout": 600,
-        "SQSFIFO": false
+        "SQSFIFO": false,
+        "ReservedCapacity": 100 
     }]
   }
 }

@@ -50,7 +50,7 @@ export const worker = async (message: SQSEvent, context: Context): Promise<any> 
 }
 
 export const processPayload = async (input: AartsEvent, context?: Context): Promise<any> => {
-	process.env.DO_NOT_PRINT_RECEIVED_AARTS_PAYLOAD || loginfo({ ringToken: input.meta.ringToken }, "Received input ", ppjson(input));
+	process.env.DO_NOT_PRINT_RECEIVED_AARTS_PAYLOAD || loginfo({ ringToken: input.meta.ringToken }, "[START AartsSQSHandler.processPayload]Received input ", ppjson(input));
 
 	//#region 
 	// SPECIAL CASE IF ITS ACTUALLY NOT REALLY AartsEvent yet, i.e no meta present, its still an AppSyncEvent (because of direct calls to this method from procedures's start method ) 
@@ -84,7 +84,7 @@ export const processPayload = async (input: AartsEvent, context?: Context): Prom
 		!processor.done && (await publish(prepareAartsEventForDispatch(Object.assign({}, input, { payload: { result: processor.value } }))))
 	} while (!processor.done)
 
-	!process.env.DEBUGGER || loginfo({ ringToken: input.meta.ringToken }, "returning from AartsSQSHandler.processPayload", ppjson(processor.value))
+	!process.env.DEBUGGER || loginfo({ ringToken: input.meta.ringToken }, "[END AartsSQSHandler.processPayload]", ppjson(processor.value))
 
 	return Object.assign({}, input, { payload: { result: (processor.value as AartsPayload).result } })
 }

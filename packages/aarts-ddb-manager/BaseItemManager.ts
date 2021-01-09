@@ -631,26 +631,11 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 !processorDomain.done && (yield processorDomain.value as string)
             } while (!processorDomain.done)
 
-            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:CREATE] Item applicable for saving.`)
-
             const savedItem = await transactPutItem(processorDomain.value as T, (this.lookupItems.get(evnt.meta.item) as unknown as MixinConstructor<typeof DynamoItem>).__refkeys)
-            // delete any previously errored attempts
-            await dynamoDbClient.deleteItem({ TableName: DB_NAME, Key: { id: { S: evnt.payload.arguments.__proc }, meta: { S: `errored|${evnt.meta.sqsMsgId}` } } }).promise()
+            
             return { result: savedItem as T }
         } catch (err) {
             if (!!evnt.payload.arguments.__proc) {
-                // so this operation is part of a procedure, record an errored event
-                // await dynamoDbClient.putItem({
-                //     Item: {
-                //         id: { S: evnt.payload.arguments.__proc },
-                //         __proc: { S: evnt.payload.arguments.__proc },
-                //         meta: { S: `errored|${evnt.meta.sqsMsgId}` },//|${evnt.meta.sqsReceiptHandle}
-                //         err: { S: `${err && err.message ? err.message : err}` },
-                //         stack: { S: `${err && err.stack ? err.stack.slice(0, 500) : ''}` },
-                //         ringToken: { S: evnt.meta.ringToken }
-                //     },
-                //     TableName: DB_NAME
-                // }).promise()
                 await dynamoDbClient.updateItem({
                     TableName: DB_NAME,
                     Key: { id: { S: evnt.payload.arguments.__proc }, meta: { S: `errored|${evnt.meta.sqsMsgId}` } },

@@ -1,16 +1,16 @@
 {
   "name": "aarts-handler",
-  "version": "0.3.742",
+  "version": "0.3.745",
   "description": "dispatches actions to item managers",
   "main": "./index.js",
   "types:": "./index.d.ts",
   "dependencies": {
-    "@types/aws-lambda": "^8.10.66",
-    "@types/node": "^13.13.36",
+    "@types/aws-lambda": "^8.10.70",
+    "@types/node": "^13.13.39",
     "@types/request": "^2.48.4",
-    "aarts-types": "^0.2.770",
-    "aarts-utils": "^0.2.758",
-    "aws-sdk": "^2.814.0",
+    "aarts-types": "^0.2.773",
+    "aarts-utils": "^0.2.761",
+    "aws-sdk": "^2.824.0",
     "typescript": "^3.9.7"
   },
   "scripts": {

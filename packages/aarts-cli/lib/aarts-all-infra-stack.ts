@@ -95,7 +95,7 @@ export class AartsAllInfraStack extends Stack {
         layers: [
           nodeModulesLayer
         ],
-        reservedConcurrentExecutions: 100
+        reservedConcurrentExecutions: worker.reservedConcurrentExecutions
       });
       eventBusConstruct.controller.addEnvironment(`WORKER_${worker.name.toUpperCase()}`, workerFunction.function.functionName)
       if (!!this.node.tryGetContext("debug-mode")) {

@@ -32,21 +32,6 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
 */
     async execute(proc: GenerateAirtoursDataItem, identity: IIdentity, ringToken: string): Promise<GenerateAirtoursDataItem> {
 
-        const alreadyProcessed: {items: DynamoItem[] } = {items : []} 
-        // = await queryItems({
-        //     ddbIndex: "smetadata__meta",
-        //     pk: ringToken,
-        //     primaryKeyName: "smetadata",
-        //     rangeKeyName: "meta",
-        //     ringToken
-        // });
-
-        // console.log("===============================");
-        // console.log("ALREADY PROCESSED ARE: ", alreadyProcessed.items.length)
-        // console.log("===============================");
-
-
-
         // jsons for create
         // 7 countries
 
@@ -62,44 +47,37 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
             ringToken,
             CountryItem.__type,
             bg_country,
-            "name",
-            alreadyProcessed.items as DynamoItem[])
+            "name")
         const dynamo_sr_country = await this.createItem(
             ringToken,
             CountryItem.__type,
             sr_country,
-            "name",
-            alreadyProcessed.items as DynamoItem[])
+            "name")
         const dynamo_ru_country = await this.createItem(
             ringToken,
             CountryItem.__type,
             ru_country,
-            "name",
-            alreadyProcessed.items as DynamoItem[])
+            "name")
         const dynamo_ch_country = await this.createItem(
             ringToken,
             CountryItem.__type,
             ch_country,
-            "name",
-            alreadyProcessed.items as DynamoItem[])
+            "name")
         const dynamo_us_country = await this.createItem(
             ringToken,
             CountryItem.__type,
             us_country,
-            "name",
-            alreadyProcessed.items as DynamoItem[])
+            "name")
         const dynamo_uk_country = await this.createItem(
             ringToken,
             CountryItem.__type,
             uk_country,
-            "name",
-            alreadyProcessed.items as DynamoItem[])
+            "name")
         const dynamo_au_country = await this.createItem(
             ringToken,
             CountryItem.__type,
             au_country,
-            "name",
-            alreadyProcessed.items as DynamoItem[])
+            "name")
 
         // 10 airports
         const bg_airport_sf = this.createAirport({ type: "regional", code: dynamo_bg_country.code, name: "Sofia airport", country: dynamo_bg_country.id, airport_size: 10.2 })
@@ -117,62 +95,52 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
             ringToken,
             AirportItem.__type,
             bg_airport_sf,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_bg_airport_bs = await this.createItem(
             ringToken,
             AirportItem.__type,
             bg_airport_bs,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_sr_airport_bg = await this.createItem(
             ringToken,
             AirportItem.__type,
             sr_airport_bg,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_ch_airport_bj = await this.createItem(
             ringToken,
             AirportItem.__type,
             ch_airport_bj,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_us_airport_ke = await this.createItem(
             ringToken,
             AirportItem.__type,
             us_airport_ke,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_uk_airport_ln = await this.createItem(
             ringToken,
             AirportItem.__type,
             uk_airport_ln,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_au_airport_sy = await this.createItem(
             ringToken,
             AirportItem.__type,
             au_airport_sy,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_ru_airport_mw = await this.createItem(
             ringToken,
             AirportItem.__type,
             ru_airport_mw,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_ru_airport_pt = await this.createItem(
             ringToken,
             AirportItem.__type,
             ru_airport_pt,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
         const dynamo_ru_airport_ng = await this.createItem(
             ringToken,
             AirportItem.__type,
             ru_airport_ng,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
 
         // 5 airplanes - by 2 different manifacturers, of 3 different models
         // the manifacturers
@@ -183,15 +151,13 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
             ringToken,
             AirplaneManifacturerItem.__type,
             boeing,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
 
         const dynamo_irkut = await this.createItem(
             ringToken,
             AirplaneManifacturerItem.__type,
             irkut,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
 
         // the models
         const model_787 = { name: "Boeing 787", country: dynamo_us_country.id, manifacturer: dynamo_boeing.id }
@@ -202,22 +168,19 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
             ringToken,
             AirplaneModelItem.__type,
             model_787,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
 
         const dynamo_model_mc21 = await this.createItem(
             ringToken,
             AirplaneModelItem.__type,
             model_mc21,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
 
         const dynamo_model_tu144 = await this.createItem(
             ringToken,
             AirplaneModelItem.__type,
             model_tu144,
-            "name",
-            (alreadyProcessed.items as DynamoItem[]))
+            "name")
 
         // the planes
         const plane_mc21_reg111 = { number_of_seats: 15, reg_uq_str: "reg111", reg_uq_number: 111, country: dynamo_ru_country.id, manifacturer: dynamo_irkut.id, model: dynamo_model_mc21.id }
@@ -230,36 +193,31 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
             ringToken,
             AirplaneItem.__type,
             plane_mc21_reg111,
-            "reg_uq_str",
-            (alreadyProcessed.items as DynamoItem[]))
+            "reg_uq_str")
 
         const dynamo_plane_tu144_reg222 = await this.createItem(
             ringToken,
             AirplaneItem.__type,
             plane_tu144_reg222,
-            "reg_uq_str",
-            (alreadyProcessed.items as DynamoItem[]))
+            "reg_uq_str")
 
         const dynamo_plane_tu144_reg333 = await this.createItem(
             ringToken,
             AirplaneItem.__type,
             plane_tu144_reg333,
-            "reg_uq_str",
-            (alreadyProcessed.items as DynamoItem[]))
+            "reg_uq_str")
 
         const dynamo_plane_b787_reg444 = await this.createItem(
             ringToken,
             AirplaneItem.__type,
             plane_b787_reg444,
-            "reg_uq_str",
-            (alreadyProcessed.items as DynamoItem[]))
+            "reg_uq_str")
 
         const dynamo_plane_b787_reg555 = await this.createItem(
             ringToken,
             AirplaneItem.__type,
             plane_b787_reg555,
-            "reg_uq_str",
-            (alreadyProcessed.items as DynamoItem[]))
+            "reg_uq_str")
 
         // 7 tourist seasons
         const q4_2020: TouristSeason = { code: "2020/Q4", price_flight_per_hour: 13, discounts: { vip: 50, class_1: 20, class_2: 40 } }
@@ -274,44 +232,37 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
             ringToken,
             TouristSeasonItem.__type,
             q4_2020,
-            "code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "code")
         const dynamo_q1_2021 = await this.createItem(
             ringToken,
             TouristSeasonItem.__type,
             q1_2021,
-            "code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "code")
         const dynamo_q2_2021 = await this.createItem(
             ringToken,
             TouristSeasonItem.__type,
             q2_2021,
-            "code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "code")
         const dynamo_q3_2021 = await this.createItem(
             ringToken,
             TouristSeasonItem.__type,
             q3_2021,
-            "code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "code")
         const dynamo_q4_2021 = await this.createItem(
             ringToken,
             TouristSeasonItem.__type,
             q4_2021,
-            "code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "code")
         const dynamo_q1_2022 = await this.createItem(
             ringToken,
             TouristSeasonItem.__type,
             q1_2022,
-            "code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "code")
         const dynamo_q2_2022 = await this.createItem(
             ringToken,
             TouristSeasonItem.__type,
             q2_2022,
-            "code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "code")
 
         // 20 flights
         const flight_sf_mw = { tourist_season: dynamo_q4_2020.id, duration_hours: 10, flight_code: "F1", airplane: dynamo_plane_mc21_reg111.id, from_airport: dynamo_bg_airport_sf.id, to_airport: dynamo_ru_airport_mw.id, from_country: dynamo_bg_country.id, to_country: dynamo_ru_country.id }
@@ -346,128 +297,108 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
             ringToken,
             FlightItem.__type,
             flight_sf_mw,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_sf_bj = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_sf_bj,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_sf_mw1 = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_sf_mw1,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
 
         const dynamo_flight_bj_mw = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_bj_mw,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_bj_ke = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_bj_ke,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_bj_ke1 = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_bj_ke1,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_bj_sy = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_bj_sy,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
 
         const dynamo_flight_mw_ke = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_mw_ke,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_mw_sf = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_mw_sf,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_mw_pt = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_mw_pt,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
 
         const dynamo_flight_sy_bj = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_sy_bj,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_sy_ln = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_sy_ln,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_sy_ke = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_sy_ke,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
 
         const dynamo_flight_sr_sf = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_sr_sf,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_sr_ke = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_sr_ke,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
 
         const dynamo_flight_ke_sf = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_ke_sf,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_ke_mw = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_ke_mw,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_ke_mw1 = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_ke_mw1,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
 
         const dynamo_flight_pt_mw = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_pt_mw,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
         const dynamo_flight_pt_sf = await this.createItem(
             ringToken,
             FlightItem.__type,
             flight_pt_sf,
-            "flight_code",
-            (alreadyProcessed.items as DynamoItem[]))
+            "flight_code")
 
         const totalTouristsToAdd = Number(proc.touristsToCreate || 0)
         const touristsPerFlight = totalTouristsToAdd / 20 // test data have 20 flights in total
@@ -887,32 +818,26 @@ export class GenerateAirtoursDataCommand extends BaseDynamoItemManager<GenerateA
         ringToken: string,
         __type: string,
         itemBody: Record<string, any>,
-        uqKeyTocheck: string | number,
-        processedItems: DynamoItem[]) {
-        const processedItem = processedItems && processedItems.filter(i => i[uqKeyTocheck] === itemBody[uqKeyTocheck])
-        if (processedItem && processedItem.length > 0) {
-            // reduce the total_events expected as this item was already present and we will not issue a tx for it
-            return (processedItem[0] as unknown) as DynamoItem
-        } else {
-            return (await processPayload({
-                "payload": {
-                    "arguments": {
-                        ...itemBody,
-                        __proc: (this as DynamoItem).id
+        uqKeyTocheck?: string | number) { // if implementing idempotency one could always go first to db and check if such item was already created
 
-                    },
-                    "identity": {
-                        "username": "akrsmv"
-                    }
+        return (await processPayload({
+            "payload": {
+                "arguments": {
+                    ...itemBody,
+                    __proc: (this as DynamoItem).id
+
                 },
-                "meta": {
-                    "action": "create",
-                    "item": __type,
-                    "eventSource": "worker:input",
-                    "ringToken": ringToken
+                "identity": {
+                    "username": "akrsmv"
                 }
-            })).payload.result.result
-        }
+            },
+            "meta": {
+                "action": "create",
+                "item": __type,
+                "eventSource": "worker:input",
+                "ringToken": ringToken
+            }
+        })).payload.result.result
     }
 }
 
