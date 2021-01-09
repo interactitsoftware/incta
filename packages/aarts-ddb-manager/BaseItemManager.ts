@@ -41,10 +41,10 @@ export class DynamoCommandItem {
  * TODO 
  * - [OK]remove the arrays support (which is anyways not completed and only cause chaos)
  * - [OK]remove *save method and directly call transactPut
- * - add if (__type == BASE) also for update method
+ * - [OK]add if (__type == BASE) also for update method
  * - [OK]wrap the update also in a try catch for tracing __proc keys
  * - move loading up the item to update within transactUpdateMethod, for handling optimistic locking better?? Do we really want to update
- * - aarts-eb-handler to be configured to read in messages in batches, to catch any exceptions and rethrow them, deleting manually from sqs what was successful
+ * - [OK] aarts-eb-handler to be configured to read in messages in batches, to catch any exceptions and rethrow them, deleting manually from sqs what was successful
  * - consider this try catch on some higher level?
  * - maintain DBmigration commands separatley from other commands
  * 
