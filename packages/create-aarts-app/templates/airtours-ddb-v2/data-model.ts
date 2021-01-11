@@ -36,7 +36,8 @@ export const model = {
       "reg_uq_number": { "type": "number", "gsiKey": ["nSK1"], "unique": true, "indexed": true },
       "number_of_seats": { "type": "number", "gsiKey": ["nSK2"], "indexed": true },
       "model": { "type": "string", "gsiKey": ["sPK2"], "ref": "AirplaneModel", "indexed": true },
-      "manifacturer": { "type": "string", "gsiKey": ["sPK3"], "ref": "AirplaneManifacturer", "indexed": true }
+      "manifacturer": { "type": "string", "gsiKey": ["sPK3"], "ref": "AirplaneManifacturer", "indexed": true },
+      "country": { "type": "string", "gsiKey": [ "sPK4" ], "ref": "Country", "indexed": true }
     },
     "AirplaneModel": {
       "manifacturer": { "type": "string", "gsiKey": ["sPK1"], "ref": "AirplaneManifacturer", "indexed": true },

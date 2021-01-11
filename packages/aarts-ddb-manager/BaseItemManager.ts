@@ -534,8 +534,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             return accum
         }, [])
 
-        // !process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS ? transformGraphQLSelection(args[0].selectionSetGraphQL) : {})
-        if (!!ddbGetInput.loadPeersLevel || (!!ddbGetInput.peersPropsToLoad && ddbGetInput.peersPropsToLoad.length > 0)) {
+        if (!process.env.DONT_USE_GRAPHQL_FOR_LOADED_PEERS) {
+            !process.env.DEBUGGER || loginfo({ ringToken: ringToken }, "[__validateGet] WILL START TRANSFORMING ", ppjson(ddbGetInput))
             Object.assign(ddbGetInput, transformGraphQLSelection(ddbGetInput.selectionSetGraphQL))
             !process.env.DEBUGGER || loginfo({ ringToken }, '[__validateGet] Transormed loading of peers: ', ppjson(ddbGetInput))
         }
