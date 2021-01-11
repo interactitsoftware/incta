@@ -1,0 +1,16 @@
+{
+    "action": "create",
+    "item": "Invoice",
+    "arguments": {
+        "invoice_nr": "abc",
+        "id_card": "abc",
+        "tourist": "abc",
+        "lname": "abc",
+        "fname": "abc",
+        "address1": "abc",
+        "address2": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

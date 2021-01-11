@@ -1,0 +1,24 @@
+{
+    "action": "start",
+    "item": "GenerateTouristsReservations",
+    "arguments": {
+        "total_events": 5,
+        "noUniqueIdCardFields": true,
+        "noUniqueIbanFields": true,
+        "simulateErrors": true,
+        "touristsToCreate": 5,
+        "useNamesLength": 5,
+        "fname": null,
+        "lname": null,
+        "iban": null,
+        "toAirport": null,
+        "fromAirport": null,
+        "toCountry": null,
+        "fromCountry": null,
+        "airplane": null,
+        "flight": null
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

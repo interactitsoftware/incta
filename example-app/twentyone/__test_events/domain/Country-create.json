@@ -1,0 +1,13 @@
+{
+    "action": "create",
+    "item": "Country",
+    "arguments": {
+        "name": "abc",
+        "currency": "abc",
+        "code": "abc",
+        "tax_periods": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

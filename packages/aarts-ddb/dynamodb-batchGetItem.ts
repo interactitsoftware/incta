@@ -46,7 +46,6 @@ export const batchGetItem = async <T extends DynamoItem>(args: DdbGetInput): Pro
     } catch (err) {
         throw new Error(ppjson({ request: params, error: err }))
     }
-
 }
 
 export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: number, peersPropsToLoad: string[] | undefined, projectionExpression: string | undefined, ringToken: string) => {
@@ -59,7 +58,8 @@ export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: nu
 
     const __type = (resultItem as unknown as DynamoItem).__typename as string
     const __refkeysToItems = Array.from((((global.domainAdapter.lookupItems as unknown) as Map<string, MixinConstructor<typeof DynamoItem>>).get(__type)?.__refkeys as Map<string, RefKey<Record<string, any>>>).values()).filter(k => !!k.ref && (peersPropsToLoad === undefined || peersPropsToLoad.indexOf(k.key) > -1 || peersPropsToLoad.indexOf(`${k.key[0].toUpperCase()}${k.key.slice(1)}`) > -1))
-    const keysToLoad = __refkeysToItems.reduce<{ key: string, pk: { id: string, meta: string } }[]>((accum, i) => {
+    
+    const frozenKeysToLoad = __refkeysToItems.reduce<{ key: string, pk: { id: string, meta: string } }[]>((accum, i) => {
         if (Object.keys(resultItem).indexOf(i.key) > -1 && !!resultItem[i.key]) {
             accum.push({ key: i.key, pk: { id: resultItem[i.key], meta: `${versionString(0)}|${resultItem[i.key].substr(0, resultItem[i.key].indexOf("|"))}` } })
             return accum
@@ -67,17 +67,44 @@ export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: nu
         return accum
     }, [])
 
-    if (keysToLoad.length === 0) return
 
-    const loadedItemsFromKeys = await batchGetItem({
-        pks: Array.from(keysToLoad.reduce<Map<string, DdbTableItemKey>>((accum, item) => { accum.set(`${item.pk.id}${item.pk.meta}`, item.pk); return accum }, new Map()).values()),
-        loadPeersLevel: --loadPeersLevel,
-        peersPropsToLoad,
-        projectionExpression,
-        ringToken
-    })
+    let frozenIdsIdentified: string[] = []
+    if (frozenKeysToLoad.length !== 0) {
+        const loadedFrozenItemsFromKeys = await batchGetItem({
+            pks: Array.from(frozenKeysToLoad.reduce<Map<string, DdbTableItemKey>>((accum, item) => { accum.set(`${item.pk.id}${item.pk.meta}`, item.pk); return accum }, new Map()).values()),
+            loadPeersLevel: --loadPeersLevel,
+            peersPropsToLoad,
+            projectionExpression,
+            ringToken
+        })
 
-    for (const refKeyToItem of keysToLoad) {
-        resultItem[`${refKeyToItem.key[0].toUpperCase()}${refKeyToItem.key.slice(1)}`] = loadedItemsFromKeys.items.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
+        for (const refKeyToItem of frozenKeysToLoad) {
+            const frozenRefFound = loadedFrozenItemsFromKeys.items.filter(l => l.meta === refKeyToItem.pk.meta)[0]
+            if (!!frozenRefFound) {
+                resultItem[`${refKeyToItem.key[0].toUpperCase()}${refKeyToItem.key.slice(1)}`] = frozenRefFound
+                frozenIdsIdentified.push(frozenRefFound.meta)
+            }
+        }
+    }
+
+    const notFrozenKeysToLoad = __refkeysToItems.reduce<{ key: string, pk: { id: string, meta: string } }[]>((accum, i) => {
+        if (Object.keys(resultItem).indexOf(i.key) > -1 && !!resultItem[i.key] && frozenIdsIdentified.indexOf(resultItem[i.key]) === -1) {
+            accum.push({ key: i.key, pk: { id: resultItem.id, meta: resultItem[i.key] } })
+            return accum
+        }
+        return accum
+    }, [])
+
+    if (notFrozenKeysToLoad.length !== 0) {
+        const loadedItemsFromKeys = await batchGetItem({
+            pks: Array.from(notFrozenKeysToLoad.reduce<Map<string, DdbTableItemKey>>((accum, item) => { accum.set(`${item.pk.id}${item.pk.meta}`, item.pk); return accum }, new Map()).values()),
+            loadPeersLevel: --loadPeersLevel,
+            peersPropsToLoad,
+            projectionExpression,
+            ringToken
+        })
+        for (const refKeyToItem of notFrozenKeysToLoad) {
+            resultItem[`${refKeyToItem.key[0].toUpperCase()}${refKeyToItem.key.slice(1)}`] = loadedItemsFromKeys.items.filter(l => l.id === refKeyToItem.pk.id)[0] || resultItem[refKeyToItem.key]
+        }
     }
 }
