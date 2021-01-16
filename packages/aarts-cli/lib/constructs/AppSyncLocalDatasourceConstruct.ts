@@ -57,7 +57,7 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
         const aartsConfig = require(join(clientAppDirName, "aarts.config.json")) as AartsConfig
         this.notifierFunctionConstruct = new WorkerConstruct(this, "Feeder", {
             workerName: `${clientAppName}Feeder`,
-            functionSQSFIFO: aartsConfig.Lambda.Feeder.SQSFIFO,
+            functionSQSFIFO: !!aartsConfig.Lambda.Feeder.SQSFIFO,
             functionTimeout: Duration.seconds(aartsConfig.Lambda.Feeder.Timeout),
             functionMemorySize: aartsConfig.Lambda.Feeder.RAM,
             functionHandler: "__bootstrap/index.feeder",

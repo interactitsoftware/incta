@@ -37,7 +37,7 @@ export class DynamoEventsConstruct extends cdk.Construct {
             layers: [props.nodeModulesLayer],
 
             retryAttempts: 0,
-            // reservedConcurrentExecutions: 1 DO WE NEED THAT HERE?
+            reservedConcurrentExecutions: aartsConfig.Lambda.DynamoStreamsProcessors.Aggregation.reservedConcurrentExecutions
         })
         // props.eventBusConstruct.grantAccess(this.dynamoEventsAggregation)
         props.dynamoDbConstruct.grantAccess(this.dynamoEventsAggregation)
@@ -52,12 +52,17 @@ export class DynamoEventsConstruct extends cdk.Construct {
             startingPosition: StartingPosition.LATEST,
             batchSize: 1000,
             bisectBatchOnError: true,
-            parallelizationFactor: 1,
+            parallelizationFactor: 10,
             maxBatchingWindow: Duration.seconds(10),
             onFailure: {
                 bind: (iEventSourceMapping, lambda) => { return { destination: dlq.queueArn} }
             }
         }))
+
+        if (!!props.eventBusConstruct) {
+            this.dynamoEventsAggregation.node.addDependency(props.eventBusConstruct.eventBus)
+            props.eventBusConstruct.grantAccess(this.dynamoEventsAggregation)
+        }
 
         //---------
 
@@ -70,7 +75,7 @@ export class DynamoEventsConstruct extends cdk.Construct {
             timeout: Duration.seconds(aartsConfig.Lambda.DynamoStreamsProcessors.ItemCallbacks.Timeout),
             layers: [props.nodeModulesLayer],
             retryAttempts: 0,
-            // reservedConcurrentExecutions: 1 DO WE NEED THAT HERE?
+            reservedConcurrentExecutions: aartsConfig.Lambda.DynamoStreamsProcessors.ItemCallbacks.reservedConcurrentExecutions
         })
         props.eventBusConstruct.grantAccess(this.dynamoEventsCallback)
         props.dynamoDbConstruct.grantAccess(this.dynamoEventsCallback)
@@ -85,11 +90,16 @@ export class DynamoEventsConstruct extends cdk.Construct {
             startingPosition: StartingPosition.LATEST,
             batchSize: 1,
             bisectBatchOnError: true,
-            parallelizationFactor: 1,
+            parallelizationFactor: 10,
             maxBatchingWindow: Duration.seconds(0),
             onFailure: {
                 bind: (iEventSourceMapping, lambda) => { return { destination: dlqCb.queueArn} }
             }
         }))
+
+        if (!!props.eventBusConstruct) {
+            this.dynamoEventsCallback.node.addDependency(props.eventBusConstruct.eventBus)
+            props.eventBusConstruct.grantAccess(this.dynamoEventsCallback)
+        }
     }
 }

@@ -30,7 +30,7 @@ export class EventBusConstruct extends cdk.Construct {
             //#region test queues consuming all the messages
             // TODO reflect AartsConfig and add test queue for each worker, if in debug mode
             var testOutputQueue = new sqs.Queue(this, "TESTOUTPUTQUEUE", {
-                retentionPeriod: Duration.hours(48)
+                retentionPeriod: Duration.hours(12)
             });
             this.eventBus.addSubscription(new snsSubs.SqsSubscription(testOutputQueue, {
                 rawMessageDelivery: true,
@@ -43,7 +43,7 @@ export class EventBusConstruct extends cdk.Construct {
                 }
             }));
             var testInputShortQueue = new sqs.Queue(this, "TESTINPUTSHORTQUEUE", {
-                retentionPeriod: Duration.hours(48)
+                retentionPeriod: Duration.hours(12)
             });
             this.eventBus.addSubscription(new snsSubs.SqsSubscription(testInputShortQueue, {
                 rawMessageDelivery: true,
@@ -56,7 +56,7 @@ export class EventBusConstruct extends cdk.Construct {
                 }
             }));
             var testInputLongQueue = new sqs.Queue(this, "TESTINPUTLONGQUEUE", {
-                retentionPeriod: Duration.hours(48)
+                retentionPeriod: Duration.hours(12)
             });
             this.eventBus.addSubscription(new snsSubs.SqsSubscription(testInputLongQueue, {
                 rawMessageDelivery: true,
@@ -85,6 +85,7 @@ export class EventBusConstruct extends cdk.Construct {
             // because if dispatcher reties, it will generate new ringToken, which may result in duplicate items, 
             // out of single create events (which got failed, and retried)
             retryAttempts: 0
+            // note reservedConcurrentExecutions not set from config on purpose, we dont want to limit that lambda
         })
         this.grantAccess(this.controller)
         props.dynamoDbConstruct.grantAccess(this.controller)

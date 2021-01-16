@@ -83,7 +83,14 @@ export type ItemPropertyValue = {
 export interface DataModelObject {
     [x: string]: ItemPropertyValue | DataModelObject
 }
-
+export interface FunctionConfig {
+    name: string,
+    RAM: number,
+    Timeout: number,
+    SQSFIFO?: boolean,
+    reservedConcurrentExecutions?: number,
+    eventSourceBatchSize? : number
+}
 export interface AartsConfig {
     DynamoDB: {
         Mode: "PAY_PER_REQUEST" | "PROVISIONED"
@@ -95,31 +102,12 @@ export interface AartsConfig {
     }
     AsyncCUD: boolean,
     Lambda: {
-        Controller: {
-            RAM: number,
-            Timeout: number
-        },
-        Feeder: {
-            RAM: number
-            Timeout: number,
-            SQSFIFO: boolean
-        },
+        Controller: FunctionConfig,
+        Feeder: FunctionConfig,
         DynamoStreamsProcessors: {
-            Aggregation: {
-                RAM: number
-                Timeout: number
-            },
-            ItemCallbacks: {
-                RAM: number
-                Timeout: number
-            }
+            Aggregation: FunctionConfig,
+            ItemCallbacks: FunctionConfig
         },
-        Workers: [{
-            name: string,
-            RAM: number,
-            Timeout: number,
-            SQSFIFO: boolean,
-            reservedConcurrentExecutions?: number
-        }]
+        Workers: [FunctionConfig]
     }
 }

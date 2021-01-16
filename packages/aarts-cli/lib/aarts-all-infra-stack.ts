@@ -82,7 +82,7 @@ export class AartsAllInfraStack extends Stack {
       const workerFunction = new WorkerConstruct(this, `${props.clientAppName}Worker${worker.name}`, {
         workerName: `${props.clientAppName}Worker${worker.name}`,
         functionMemorySize: worker.RAM,
-        functionSQSFIFO: worker.SQSFIFO,
+        functionSQSFIFO: !!worker.SQSFIFO,
         functionTimeout: Duration.seconds(worker.Timeout),
         functionHandler: "__bootstrap/index.worker",
         functionImplementationPath: join(props.clientAppDirName, "dist"),
@@ -90,7 +90,7 @@ export class AartsAllInfraStack extends Stack {
         eventBusConstruct: eventBusConstruct,
         dynamoDbConstruct: dynamoDbConstruct,
         eventSource: `worker:input:${worker.name.toLowerCase()}`,
-        eventSourceBatchSize: 10,
+        eventSourceBatchSize: worker.eventSourceBatchSize || 10,
         sqsRetries: 3,
         layers: [
           nodeModulesLayer

@@ -31,15 +31,14 @@ export const aartsConfig =
       "Workers": [{
           "name": "Short",
           "RAM": 256,
-          "Timeout": 30,
+          "Timeout": 10,
           "SQSFIFO": false
       },
       {
         "name": "Long",
         "RAM": 512,
         "Timeout": 600,
-        "SQSFIFO": false,
-        "ReservedCapacity": 100 
+        "SQSFIFO": false
     }]
   }
 }

@@ -16,6 +16,7 @@ import { AppSyncEvent } from "aarts-eb-types"
 import { controller } from "aarts-eb-dispatcher"
 import { processPayload } from "aarts-eb-handler";
 import { DBQueryOutput } from 'aarts-types';
+import { DataExchange } from "aws-sdk";
 
 /**++++++++++++++++++++++++++++++++++++++++++++++++++
  * ++++++++++++++++++++++++++++++++++++++++++++++++
@@ -108,7 +109,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
             // mark procedures as done when total_events=processed_events
             if (newImage.id.startsWith("P__") && (newImage.revisions >= 1)
-                && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) === (newImage["total_events"] as number)
+                && (newImage["processed_events"] as number) + (newImage["errored_events"] as number) >= (newImage["total_events"] as number)
                 //NEW WAY: when all retries finished
                 && ! (newImage["item_state"] === "success" || newImage["item_state"] === "error")) {
 
@@ -117,10 +118,12 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 const P__from_db = await getItemById(newImage.__typename, newImage.id, newImage.ringToken as string)
                 if (!!P__from_db) {
                     try { 
+                        const date = new Date().toISOString()
                         await transactUpdateItem(
                             P__from_db,
                             {
-                                end_date: new Date().toISOString(),
+                                end_date: date,
+                                date_updated: date,
                                 item_state: `${(newImage["processed_events"] as number) === (newImage["total_events"] as number) ? 'success' : 'error'}`,
                                 // OLD WAY: item_state: `${!newImage["errored_events"] || (newImage["errored_events"] as number) === 0 ? 'success' : 'error'}`,
                                 ringToken: newImage.ringToken,
@@ -248,7 +251,6 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
                 if (!process.env["AWS_SAM_LOCAL"]) {
                     // used runtime in aws
                     for (const chunk of chunks(this.eventsForAsyncProcessing, Number(process.env.MAX_PAYLOAD_ARRAY_LENGTH || 25))) {
-                        console.log("__proc: " + proc.id)
                         await controller({
                             //"x" values not necessary here. Can it be deleted or for typescript not complaining to leave it ?
                             "forcePublishToBus": true,
