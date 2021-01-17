@@ -6,26 +6,19 @@ import { SqsSubscription } from '@aws-cdk/aws-sns-subscriptions';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { Runtime, Code, Function, ILayerVersion, Tracing } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
-import { clientAppDirName } from '../aarts-all-infra-stack';
-import { AartsConfig } from 'aarts-types';
-import { join } from 'path';
+import { FunctionConfig } from 'aarts-types';
 
 export interface WorkerConstructProps {
     workerName: string,
+    workerConfig: FunctionConfig
     eventBusConstruct?: EventBusConstruct
     dynamoDbConstruct?: DynamoDBConstruct
     eventSource: string
     functionImplementationPath: string
     functionHandler: string
     functionRuntime: Runtime
-    functionTimeout: Duration
-    functionMemorySize: number
-    functionSQSFIFO: boolean
     envVars?: { [key: string]: string }
-    reservedConcurrentExecutions?: number
     layers?: ILayerVersion[] | undefined,
-    sqsRetries: number,
-    eventSourceBatchSize?: number
 }
 
 export class WorkerConstruct extends Construct {
@@ -36,22 +29,22 @@ export class WorkerConstruct extends Construct {
         super(scope, id);
         const functionDeadletterQueue = new Queue(this, "DEADLETTER", {
             queueName: `${props.workerName}-DEADLETTER`,
-            fifo: !!props.functionSQSFIFO || undefined,
-            contentBasedDeduplication: !!props.functionSQSFIFO || undefined
+            fifo: !!props.workerConfig.SQSFIFO || undefined,
+            contentBasedDeduplication: !!props.workerConfig.SQSFIFO || undefined
         })
         const functionQueue = new Queue(this, "Queue", {
             // as per best practices from AWS visibilityTimeout is suggesteed 6 times lambda timeout
             // however we reduce to only 2 the lambda timeout, as we do not have retries in the lambda
-            visibilityTimeout: Duration.seconds(2 * props.functionTimeout.toSeconds()),
+            visibilityTimeout: Duration.seconds(2 * props.workerConfig.Timeout),
             receiveMessageWaitTime: Duration.seconds(3), // long polling for events
             queueName: `${props.workerName}`,
             // defining DLQ on SQS level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
             deadLetterQueue: {
-                maxReceiveCount: props.sqsRetries,
+                maxReceiveCount: props.workerConfig.sqsRetries || 3,
                 queue: functionDeadletterQueue
             },
-            fifo: !!props.functionSQSFIFO || undefined,
-            contentBasedDeduplication: !!props.functionSQSFIFO || undefined
+            fifo: !!props.workerConfig.SQSFIFO || undefined,
+            contentBasedDeduplication: !!props.workerConfig.SQSFIFO || undefined
         })
         functionQueue.node.addDependency(functionDeadletterQueue)
 
@@ -72,10 +65,10 @@ export class WorkerConstruct extends Construct {
             }),
             handler: props.functionHandler,
             runtime: props.functionRuntime,
-            timeout: props.functionTimeout,
-            memorySize: props.functionMemorySize || 256,
+            timeout: Duration.seconds(props.workerConfig.Timeout),
+            memorySize: props.workerConfig.RAM || 256,
             functionName: `${props.workerName}`,
-            tracing: Tracing.ACTIVE,
+            tracing: !!props.workerConfig.XRayTracing? Tracing.ACTIVE : Tracing.DISABLED,
 
             // DLQ enabled on a Queue level, see https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-api
             // but lambda is also setup to have its own DLQ, according to this article: https://aws.amazon.com/blogs/compute/designing-durable-serverless-apps-with-dlqs-for-amazon-sns-amazon-sqs-aws-lambda/
@@ -85,7 +78,7 @@ export class WorkerConstruct extends Construct {
 
             events: [new SqsEventSource(functionQueue,
                 {
-                    batchSize: props.eventSourceBatchSize || 1
+                    batchSize: props.workerConfig.eventSourceBatchSize || 1
                 })
             ],
             // unlike the dispatcher who must not have retries
@@ -101,7 +94,7 @@ export class WorkerConstruct extends Construct {
             //     queueName: `${props.workerName}-DEADLETTER-LAMBDA`
             // }),
 
-            reservedConcurrentExecutions: props.reservedConcurrentExecutions,
+            reservedConcurrentExecutions: props.workerConfig.reservedConcurrentExecutions,
             layers: props.layers
         })
 

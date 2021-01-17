@@ -16,7 +16,8 @@ export const aartsConfig =
       "Feeder": {
           "RAM": 128,
           "Timeout": 10,
-          "SQSFIFO": false
+          "SQSFIFO": false,
+          "sqsRetries": 1
       },
       "DynamoStreamsProcessors": {
           "Aggregation": {
@@ -38,7 +39,8 @@ export const aartsConfig =
         "name": "Long",
         "RAM": 512,
         "Timeout": 600,
-        "SQSFIFO": false
+        "SQSFIFO": false,
+        "sqsRetries": 1
     }]
   }
 }

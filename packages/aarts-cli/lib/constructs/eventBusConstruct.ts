@@ -5,16 +5,18 @@ import sqs = require('@aws-cdk/aws-sqs')
 import snsSubs = require('@aws-cdk/aws-sns-subscriptions');
 import { Duration } from '@aws-cdk/core'
 import { join } from 'path';
-import { LayerVersion, Code } from '@aws-cdk/aws-lambda';
+import { LayerVersion, Code, Tracing } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
 import { DynamoDBConstruct } from './dynamoDbConstruct';
 import { clientAppDirName, clientAppName } from "../aarts-all-infra-stack"
 import { ENV_VARS__ASYNC_CUD, ENV_VARS__EVENT_BUS_TOPIC } from '../../env-constants';
-import { AartsConfig } from 'aarts-types';
+import { FunctionConfig } from 'aarts-types';
 
 export interface EventBusConstructProps {
     nodeModulesLayer: LayerVersion,
-    dynamoDbConstruct: DynamoDBConstruct
+    dynamoDbConstruct: DynamoDBConstruct,
+    controllerConfig: FunctionConfig,
+    asyncCUD: boolean
 }
 
 export class EventBusConstruct extends cdk.Construct {
@@ -70,26 +72,27 @@ export class EventBusConstruct extends cdk.Construct {
             }));
             //#endregion
         }
-        const aartsConfig = require(join(clientAppDirName, "aarts.config.json")) as AartsConfig
 
         this.controller = new lambda.Function(this, "Controller", {
             runtime: lambda.Runtime.NODEJS_12_X,
             functionName: `${clientAppName}Controller`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: '__bootstrap/index.controller',
-            memorySize: aartsConfig.Lambda.Controller.RAM,
-            timeout: cdk.Duration.seconds(aartsConfig.Lambda.Controller.Timeout),
+            memorySize: props.controllerConfig.RAM,
+            timeout: cdk.Duration.seconds(props.controllerConfig.Timeout),
             layers: [props.nodeModulesLayer],
 
             // IMPORTANT we dont want retry on a dispatcher level, reties should be only on sqs handler level
             // because if dispatcher reties, it will generate new ringToken, which may result in duplicate items, 
             // out of single create events (which got failed, and retried)
-            retryAttempts: 0
-            // note reservedConcurrentExecutions not set from config on purpose, we dont want to limit that lambda
+            retryAttempts: 0,
+            tracing: !!props.controllerConfig.XRayTracing? Tracing.ACTIVE : Tracing.DISABLED,
+            
+            // note reservedConcurrentExecutions not set from config on purpose, we dont want to limit that lambda,
         })
         this.grantAccess(this.controller)
         props.dynamoDbConstruct.grantAccess(this.controller)
-        if (!!aartsConfig.AsyncCUD) {
+        if (!!props.asyncCUD) {
             this.controller.addEnvironment(ENV_VARS__ASYNC_CUD, "1")
         }
     }

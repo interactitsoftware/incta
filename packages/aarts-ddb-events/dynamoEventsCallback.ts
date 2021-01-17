@@ -4,8 +4,6 @@ import { ppjson, versionString } from "aarts-utils"
 
 export const dynamoEventsCallback = async (event: DynamoDBStreamEvent, context: Context, cb: Function) => {
 	let result = {}
-	console.log("received", ppjson(event))
-
 	//#region // -------------------- INVOKE _onUpdate callback --------------------
 	for (const rec of event.Records.filter(record => record.eventSource === "aws:dynamodb" && record.eventName === "MODIFY"
 		&& !!record.dynamodb?.NewImage && !!record.dynamodb?.OldImage

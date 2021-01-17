@@ -8,12 +8,13 @@ import { WorkerConstruct } from './workerConstruct';
 import { ENV_VARS__APPSYNC_ENDPOINT_URL } from '../../env-constants';
 import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
 import { clientAppName, clientAppDirName } from "../aarts-all-infra-stack"
-import { AartsConfig } from 'aarts-types';
+import { AartsConfig, FunctionConfig } from 'aarts-types';
 
 export interface AppSyncLocalDatasourceConstructProps {
     appSyncConstruct: AppSyncConstruct
     eventBusConstruct: EventBusConstruct
-    nodeModulesLayer: LayerVersion
+    nodeModulesLayer: LayerVersion,
+    feederConfig: FunctionConfig
 }
 
 export class AppSyncLocalDatasourceConstruct extends Construct {
@@ -54,18 +55,14 @@ export class AppSyncLocalDatasourceConstruct extends Construct {
         (feederLocalResolver.node.defaultChild as CfnResolver).dataSourceName = localCfnDS.name
         feederLocalResolver.node.addDependency(localCfnDS);
 
-        const aartsConfig = require(join(clientAppDirName, "aarts.config.json")) as AartsConfig
         this.notifierFunctionConstruct = new WorkerConstruct(this, "Feeder", {
             workerName: `${clientAppName}Feeder`,
-            functionSQSFIFO: !!aartsConfig.Lambda.Feeder.SQSFIFO,
-            functionTimeout: Duration.seconds(aartsConfig.Lambda.Feeder.Timeout),
-            functionMemorySize: aartsConfig.Lambda.Feeder.RAM,
+            workerConfig: props.feederConfig,
             functionHandler: "__bootstrap/index.feeder",
             functionImplementationPath: join(clientAppDirName, "dist"),
             functionRuntime: Runtime.NODEJS_12_X,
             eventBusConstruct: props.eventBusConstruct,
             eventSource: "worker:output",
-            sqsRetries: 1,
             layers: [props.nodeModulesLayer]
         });
 

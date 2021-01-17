@@ -1,6 +1,6 @@
 {
   "name": "aarts-cli",
-  "version": "0.1.1077",
+  "version": "0.1.1079",
   "bin": {
     "aarts": "aarts.sh",
     "aarts-cdk-typescript": "bin/aarts-cdk-typescript.js"
@@ -50,8 +50,8 @@
     "@aws-cdk/aws-sns-subscriptions": "^1.85.0",
     "@aws-cdk/aws-sqs": "^1.85.0",
     "@aws-cdk/core": "^1.85.0",
-    "aarts-model-builder": "^0.2.782",
-    "aarts-types": "^0.2.793",
+    "aarts-model-builder": "^0.2.784",
+    "aarts-types": "^0.2.797",
     "yaml-cfn": "^0.2.3"
   }
 }

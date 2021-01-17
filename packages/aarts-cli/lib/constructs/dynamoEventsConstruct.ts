@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/core')
 import lambda = require('@aws-cdk/aws-lambda')
 import { Duration } from '@aws-cdk/core'
 import { join } from 'path';
-import { LayerVersion, Code, StartingPosition } from '@aws-cdk/aws-lambda';
+import { LayerVersion, Code, StartingPosition, Tracing } from '@aws-cdk/aws-lambda';
 import { FollowMode } from '@aws-cdk/assets';
 import { DynamoDBConstruct } from './dynamoDbConstruct';
 import { clientAppDirName, clientAppName } from "../aarts-all-infra-stack"
@@ -10,12 +10,14 @@ import { EventBusConstruct } from './eventBusConstruct';
 import { Runtime } from '@aws-cdk/aws-lambda/lib/runtime';
 import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Queue } from '@aws-cdk/aws-sqs';
-import { AartsConfig } from 'aarts-types';
+import { AartsConfig, FunctionConfig } from 'aarts-types';
 
 export interface DynamoEventsConstructProps {
     nodeModulesLayer: LayerVersion,
     dynamoDbConstruct: DynamoDBConstruct,
-    eventBusConstruct: EventBusConstruct
+    eventBusConstruct: EventBusConstruct,
+    callbackFunctionConfig: FunctionConfig,
+    aggregationFunctionConfig: FunctionConfig
 }
 
 export class DynamoEventsConstruct extends cdk.Construct {
@@ -26,18 +28,18 @@ export class DynamoEventsConstruct extends cdk.Construct {
     constructor(scope: cdk.Construct, id: string, props: DynamoEventsConstructProps) {
         super(scope, id);
 
-        const aartsConfig = require(join(clientAppDirName, "aarts.config.json")) as AartsConfig
         this.dynamoEventsAggregation = new lambda.Function(this, "Aggregation", {
             runtime: Runtime.NODEJS_12_X,
             functionName: `${clientAppName}dynamoEventsAggregation`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: '__bootstrap/index.dynamoEventsAggregation',
-            memorySize: aartsConfig.Lambda.DynamoStreamsProcessors.Aggregation.RAM,
-            timeout: Duration.seconds(aartsConfig.Lambda.DynamoStreamsProcessors.Aggregation.Timeout),
+            memorySize: props.aggregationFunctionConfig.RAM,
+            timeout: Duration.seconds(props.aggregationFunctionConfig.Timeout),
             layers: [props.nodeModulesLayer],
 
             retryAttempts: 0,
-            reservedConcurrentExecutions: aartsConfig.Lambda.DynamoStreamsProcessors.Aggregation.reservedConcurrentExecutions
+            reservedConcurrentExecutions: props.aggregationFunctionConfig.reservedConcurrentExecutions,
+            tracing: !!props.aggregationFunctionConfig.XRayTracing? Tracing.ACTIVE : Tracing.DISABLED
         })
         // props.eventBusConstruct.grantAccess(this.dynamoEventsAggregation)
         props.dynamoDbConstruct.grantAccess(this.dynamoEventsAggregation)
@@ -71,11 +73,12 @@ export class DynamoEventsConstruct extends cdk.Construct {
             functionName: `${clientAppName}dynamoEventsCallback`,
             code: Code.fromAsset(join(clientAppDirName, "dist"), { exclude: ["aws-sdk"], follow: FollowMode.ALWAYS }),
             handler: '__bootstrap/index.dynamoEventsCallback',
-            memorySize: aartsConfig.Lambda.DynamoStreamsProcessors.ItemCallbacks.RAM,
-            timeout: Duration.seconds(aartsConfig.Lambda.DynamoStreamsProcessors.ItemCallbacks.Timeout),
+            memorySize: props.callbackFunctionConfig.RAM,
+            timeout: Duration.seconds(props.callbackFunctionConfig.Timeout),
             layers: [props.nodeModulesLayer],
             retryAttempts: 0,
-            reservedConcurrentExecutions: aartsConfig.Lambda.DynamoStreamsProcessors.ItemCallbacks.reservedConcurrentExecutions
+            reservedConcurrentExecutions: props.callbackFunctionConfig.reservedConcurrentExecutions,
+            tracing: !!props.callbackFunctionConfig.XRayTracing? Tracing.ACTIVE : Tracing.DISABLED
         })
         props.eventBusConstruct.grantAccess(this.dynamoEventsCallback)
         props.dynamoDbConstruct.grantAccess(this.dynamoEventsCallback)

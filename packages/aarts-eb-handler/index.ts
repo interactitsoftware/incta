@@ -46,7 +46,6 @@ export const worker = async (message: SQSEvent, context: Context): Promise<any> 
 		await Promise.all(deleteProcessedMsgs)
 		throw new Error("SQS batch processing failed. Successfully processed " + processedMsgs.length + ". Errored " + erroredMsgs.length)
 	}
-	console.log("SQS BATCH PROCESSED SUCCESSFULLY!")
 }
 
 export const processPayload = async (input: AartsEvent, context?: Context): Promise<any> => {

@@ -89,7 +89,9 @@ export interface FunctionConfig {
     Timeout: number,
     SQSFIFO?: boolean,
     reservedConcurrentExecutions?: number,
-    eventSourceBatchSize? : number
+    eventSourceBatchSize? : number,
+    XRayTracing?: boolean,
+    sqsRetries?: number
 }
 export interface AartsConfig {
     DynamoDB: {

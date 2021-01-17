@@ -47,6 +47,8 @@ export class AartsAllInfraStack extends Stack {
     const eventBusConstruct = new EventBusConstruct(this, `Events`, {
       nodeModulesLayer,
       dynamoDbConstruct,
+      controllerConfig: aartsConfig.Lambda.Controller,
+      asyncCUD: !!aartsConfig.AsyncCUD
     })
     const cognitoConstruct = new CognitoConstruct(this, `Auth`, {});
     const appSyncConstruct = new AppSyncConstruct(this, `AppSync`, {
@@ -69,62 +71,37 @@ export class AartsAllInfraStack extends Stack {
     })
 
     const appSyncLocalDatasourceConstruct = new AppSyncLocalDatasourceConstruct(this, "Local", {
-      eventBusConstruct: eventBusConstruct,
-      appSyncConstruct: appSyncConstruct,
-      nodeModulesLayer
+      eventBusConstruct,
+      appSyncConstruct,
+      nodeModulesLayer,
+      feederConfig: aartsConfig.Lambda.Feeder
     })
 
     const dynamoEventsConstruct = new DynamoEventsConstruct(this, `${props.clientAppName}DynamoEvents`, {
-      eventBusConstruct, dynamoDbConstruct, nodeModulesLayer
+      eventBusConstruct, dynamoDbConstruct, nodeModulesLayer, 
+      aggregationFunctionConfig: aartsConfig.Lambda.DynamoStreamsProcessors.Aggregation,
+      callbackFunctionConfig: aartsConfig.Lambda.DynamoStreamsProcessors.ItemCallbacks
     })
 
     for (const worker of aartsConfig.Lambda.Workers) {
       const workerFunction = new WorkerConstruct(this, `${props.clientAppName}Worker${worker.name}`, {
         workerName: `${props.clientAppName}Worker${worker.name}`,
-        functionMemorySize: worker.RAM,
-        functionSQSFIFO: !!worker.SQSFIFO,
-        functionTimeout: Duration.seconds(worker.Timeout),
+        workerConfig: worker,
         functionHandler: "__bootstrap/index.worker",
         functionImplementationPath: join(props.clientAppDirName, "dist"),
         functionRuntime: Runtime.NODEJS_12_X,
         eventBusConstruct: eventBusConstruct,
         dynamoDbConstruct: dynamoDbConstruct,
         eventSource: `worker:input:${worker.name.toLowerCase()}`,
-        eventSourceBatchSize: worker.eventSourceBatchSize || 10,
-        sqsRetries: 3,
         layers: [
           nodeModulesLayer
         ],
-        reservedConcurrentExecutions: worker.reservedConcurrentExecutions
       });
       eventBusConstruct.controller.addEnvironment(`WORKER_${worker.name.toUpperCase()}`, workerFunction.function.functionName)
       if (!!this.node.tryGetContext("debug-mode")) {
         workerFunction.function.addEnvironment("DEBUGGER", "1")
       }
     }
-    
-
-    // const workerInputLong = new WorkerConstruct(this, `${props.clientAppName}WorkerLong`, {
-    //   workerName: `${props.clientAppName}WorkerLong`,
-    //   functionTimeout: Duration.minutes(10),
-    //   functionHandler: "__bootstrap/index.worker",
-    //   functionImplementationPath: join(props.clientAppDirName, "dist"),
-    //   functionRuntime: Runtime.NODEJS_12_X,
-    //   eventBusConstruct: eventBusConstruct,
-    //   dynamoDbConstruct: dynamoDbConstruct,
-    //   eventSource: "worker:input:long",
-    //   sqsRetries: 1,
-    //   layers: [
-    //     nodeModulesLayer
-    //   ],
-    //   reservedConcurrentExecutions: 25
-    // })
-
-    
-    // eventBusConstruct.controller.addEnvironment("WORKER_SHORT", workerInputShort.function.functionName)
-
-    // workerInputLong.function.addEnvironment("DEBUGGER", "1")
-    // workerInputShort.function.addEnvironment("DEBUGGER", "1")
 
     if (!!this.node.tryGetContext("debug-mode")) {
       eventBusConstruct.controller.addEnvironment("DEBUGGER", "1")
