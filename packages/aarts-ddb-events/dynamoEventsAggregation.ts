@@ -129,7 +129,7 @@ const publishProcAggregatesUpdate = async (updateMap: Map<string, { success: num
 						TableName: DB_NAME,
 						Key: Object.assign({
 							id: { S: c },
-							meta: { S: `${versionString(0)}|${c.substr(0, c.indexOf("|"))}` },
+							meta: { S: `${versionString(0)}|${c}` },
 						}),
 						UpdateExpression: `SET #processed_events = if_not_exists(#processed_events, :zero) + :inc_success, #errored_events = if_not_exists(#errored_events, :zero) + :inc_errored`,
 						ExpressionAttributeNames: { [`#processed_events`]: "processed_events", [`#errored_events`]: "errored_events" },

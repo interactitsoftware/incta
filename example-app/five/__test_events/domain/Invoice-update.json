@@ -1,0 +1,18 @@
+{
+    "action": "update",
+    "item": "Invoice",
+    "arguments": {
+        "id": "id-of-item-to-be-updated",
+        "revisions": "sending-latest-rev-of-updated-item-mandatory",
+        "invoice_nr": "abc",
+        "id_card": "abc",
+        "tourist": "abc",
+        "lname": "abc",
+        "fname": "abc",
+        "address1": "abc",
+        "address2": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

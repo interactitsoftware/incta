@@ -1,0 +1,22 @@
+{
+    "action": "update",
+    "item": "Flight",
+    "arguments": {
+        "id": "id-of-item-to-be-updated",
+        "revisions": "sending-latest-rev-of-updated-item-mandatory",
+        "airplane": "abc",
+        "from_airport": "abc",
+        "to_airport": "abc",
+        "from_country": "abc",
+        "to_country": "abc",
+        "flight_code": "abc",
+        "duration_hours": 5,
+        "tourist_season": "abc",
+        "price_1st_class": 5,
+        "price_2nd_class": 5,
+        "price_vip": 5
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

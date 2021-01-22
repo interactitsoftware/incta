@@ -1,0 +1,10 @@
+{
+    "action": "start",
+    "item": "GenerateInvoices",
+    "arguments": {
+        "total_events": 5
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

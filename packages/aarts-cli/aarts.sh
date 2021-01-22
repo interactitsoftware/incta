@@ -43,6 +43,21 @@ ln_cross_platform() {
     fi
 }
 
+start_local_dynamodb() {
+    docker network create sam-local
+    docker run -ti --network sam-local --name dynamodb-local --restart always -d -v $AARTS_INFRA_PATH/dynamodblocaldata:/home/dynamodblocal/data/ -p 8000:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/
+    echo Started local dynamodb image with a --restart always flag.
+    echo next steps:
+    echo - aws dynamodb list-tables --endpoint-url http://localhost:8000
+    echo - execute aarts rebuild-model from your aarts project root folder to create a json definition for the table needed
+    echo - aws dynamodb create-table --cli-input-json file://local-dev-table-def.json --endpoint-url http://localhost:8000 
+    echo - you can benefit also from the provided local dynamodb shell here http://localhost:8000/shell
+}
+
+setup_local_dynamodb_table() {
+    echo will create local dynamo table $STACK_NAME
+}
+
 cdk_synth() {
     cd $AARTS_INFRA_PATH
     cdk synth --no-staging -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --profile $AWS_PROFILE >template.yml
@@ -54,11 +69,11 @@ sam_invoke_worker() {
     mkdir -p $CLIENT_PROJECT_PATH/local-lambda.out
 
     WORKER=$(node getlambdanames worker)
-    
+
     link_client_app
     cdk_synth
-    
-    echo $(node ./node-modules-layer/nodejs/node_modules/aarts-eb-dispatcher/samLocalSimulateSQSHandler.js $CLIENT_PROJECT_PATH/$TEST_EVENT) | sam local invoke $WORKER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/local-lambda.out/worker.out 2>&1
+
+    echo $(node ./node-modules-layer/nodejs/node_modules/aarts-eb-dispatcher/samLocalSimulateSQSHandler.js $CLIENT_PROJECT_PATH/$TEST_EVENT) | sam local invoke $WORKER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json >$CLIENT_PROJECT_PATH/local-lambda.out/worker.out 2>&1
 }
 
 sam_invoke_controller() {
@@ -67,11 +82,11 @@ sam_invoke_controller() {
     mkdir -p $CLIENT_PROJECT_PATH/local-lambda.out
 
     CONTROLLER=$(node getlambdanames controller)
-    
+
     link_client_app
     cdk_synth
-    
-    cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sam local invoke $CONTROLLER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json > $CLIENT_PROJECT_PATH/local-lambda.out/controller.out 2>&1
+
+    cat $CLIENT_PROJECT_PATH/$TEST_EVENT | sam local invoke $CONTROLLER --event - --region ddblocal --docker-network sam-local --template template.yml --env-vars env-constants-local.json >$CLIENT_PROJECT_PATH/local-lambda.out/controller.out 2>&1
 }
 
 rebuild_model() {
@@ -136,8 +151,8 @@ deploy() {
         cd $AARTS_INFRA_PATH
         cdk deploy -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --profile $AWS_PROFILE --require-approval never
         cd $CLIENT_PROJECT_PATH
-    else 
-        echo 
+    else
+        echo
         echo Cannot deploy...
         echo No dist folder found. Did you forgot to build the app?
     fi
@@ -188,6 +203,12 @@ while [ "$1" != "" ]; do
     start-local-lambda)
         ACTION=START_LOCAL_LAMBDA
         ;;
+    setup-local-dynamodb-table)
+        ACTION=SETUP_LOCAL_DYNAMODB_TABLE
+        ;;
+    start-local-dynamodb)
+        ACTION=START_LOCAL_DYNAMODB
+        ;;
     process) # shorthand
         ACTION=AWS_INVOKE_CONTROLLER
         ;;
@@ -219,7 +240,7 @@ while [ "$1" != "" ]; do
         shift
         TEST_EVENT="$1"
         ;;
-    --debug | -d )
+    --debug | -d)
         DEBUG_MODE=1
         ;;
     --interactive | -i)
@@ -262,6 +283,14 @@ DEPLOY)
     ;;
 START_LOCAL_LAMBDA)
     start_local_lambda
+    exit
+    ;;
+SETUP_LOCAL_DYNAMODB_TABLE)
+    setup_local_dynamodb_table
+    exit
+    ;;
+START_LOCAL_DYNAMODB)
+    start_local_dynamodb
     exit
     ;;
 AWS_INVOKE_CONTROLLER)

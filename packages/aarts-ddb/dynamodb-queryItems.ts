@@ -103,14 +103,14 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
         if (!!ddbQueryPayload.ddbIndex && !!dynamoResult && output.items.length > 0) {
             if (!process.env.copyEntireItemToGsis) {
                 !process.env.DEBUGGER || loginfo({ringToken: ddbQueryPayload.ringToken}, "calling batch get item with", ppjson({
-                    pks: output.items.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }),
+                    pks: output.items.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id}` } }),
                     loadPeersLevel: ddbQueryPayload.loadPeersLevel,
                     peersPropsToLoad: ddbQueryPayload.peersPropsToLoad,
                     projectionExpression: ddbQueryPayload.projectionExpression,
                     ringToken: ddbQueryPayload.ringToken
                 }))
                 output.items = (await batchGetItem({
-                    pks: output.items.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id.substr(0, r.id.indexOf("|"))}` } }),
+                    pks: output.items.map(r => { return { id: r.id, meta: `${versionString(0)}|${r.id}` } }),
                     loadPeersLevel: ddbQueryPayload.loadPeersLevel,
                     peersPropsToLoad: ddbQueryPayload.peersPropsToLoad,
                     projectionExpression: ddbQueryPayload.projectionExpression,

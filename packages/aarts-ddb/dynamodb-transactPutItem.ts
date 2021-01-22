@@ -2,7 +2,7 @@
 // TODO keys (id / meta) as separate params, and a string for the update expression?
 // https://github.com/aws/aws-sdk-js/blob/master/ts/dynamodb.ts
 import { TransactWriteItemsInput, TransactWriteItem, TransactWriteItemList, AttributeMap } from 'aws-sdk/clients/dynamodb'
-import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest, versionString, toAttributeMapKeysOnly } from './DynamoDbClient';
+import { dynamoDbClient, DB_NAME, toAttributeMap, refkeyitem, uniqueitemrefkeyid, ddbRequest } from './DynamoDbClient';
 import { loginfo, ppjson } from 'aarts-utils';
 import { RefKey } from './interfaces';
 import { DynamoItem } from './DynamoItem';

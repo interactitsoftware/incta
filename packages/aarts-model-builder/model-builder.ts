@@ -86,6 +86,8 @@ export const builder = async (model: DataModel | undefined, cwd: string) => {
         .replace(/##DDB_LIB##/g, getDdbLibName(model.version))
         .replace(/##DDB_MANAGER_LIB##/g, getDdbManagerLibName(model.version)))
 
+    await recordFile(cwd, "local-dev-table-def.json", JSON.stringify(generateTableDefinitionJson(model, appName)))
+
     shell.mkdir("-p", join(cwd, aartsFolderName, "items"))
 
     //#region items
@@ -344,7 +346,7 @@ const backupPreviousCode = (cwd: string) => {
     }
 }
 
-const generateDynamoItems = (model: DataModel) : string => {
+const generateDynamoItems = (model: DataModel): string => {
     switch (model.version) {
         case 1: return generateDynamoItemsV1(model)
         case 2: return generateDynamoItemsV2(model)
@@ -403,7 +405,7 @@ const generateDynamoItemsV1 = (model: DataModel) => {
         _DynamoItemsContents += "]) { }\n"
     }
     return _DynamoItemsContents
-} 
+}
 
 /*
 v1 and v2 generation are compatible, however, excerpted in a new method for ease of tracking
@@ -422,15 +424,15 @@ const generateDynamoItemsV2 = (model: DataModel) => {
         _DynamoItemsContents += `const __type__${item}: string = "P__${item}"` + "\n"
     }
     _DynamoItemsContents += "\n"
-    
+
     _DynamoItemsContents += generateItems(model.Items)
     _DynamoItemsContents += generateItems(model.Commands)
     _DynamoItemsContents += generateItems(model.Queries)
 
     return _DynamoItemsContents
-} 
+}
 
-const generateItems = (modelSection: { [x: string]: DataModelObject}) => {
+const generateItems = (modelSection: { [x: string]: DataModelObject }) => {
     let result = ""
     for (const item of Object.keys(modelSection)) {
         result += `export class ${item}Item extends DynamoItem(${item}, __type__${item}, [` + "\n"
@@ -441,7 +443,7 @@ const generateItems = (modelSection: { [x: string]: DataModelObject}) => {
                     + `${modelSection[item][prop].required ? ', required: true' : ''}`
                     + `${modelSection[item][prop].ref ? ', ref: __type__' + modelSection[item][prop].ref : ''}`
                     //@ts-ignore
-                    + `${modelSection[item][prop].gsiKey ? `, gsiKey: ["${Array.isArray(modelSection[item][prop].gsiKey) ?  modelSection[item][prop].gsiKey?.join('","'):modelSection[item][prop].gsiKey}"]` : ''}`
+                    + `${modelSection[item][prop].gsiKey ? `, gsiKey: ["${Array.isArray(modelSection[item][prop].gsiKey) ? modelSection[item][prop].gsiKey?.join('","') : modelSection[item][prop].gsiKey}"]` : ''}`
                     + "},\n"
             }
         })
@@ -449,4 +451,76 @@ const generateItems = (modelSection: { [x: string]: DataModelObject}) => {
     }
 
     return result
+}
+
+const generateTableDefinitionJson = (model: DataModel, appName: string) => {
+    const tableJson = {
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "id",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "meta",
+                "AttributeType": "S"
+            }
+        ],
+        "TableName": appName,
+        "KeySchema": [
+            {
+                "AttributeName": "id",
+                "KeyType": "HASH"
+            },
+            {
+                "AttributeName": "meta",
+                "KeyType": "RANGE"
+            }
+        ],
+        "GlobalSecondaryIndexes": [],
+        "BillingMode": "PROVISIONED"
+    }
+
+    const makeGSIJsonDef = (pk: string, sk: string): object => {
+
+        return {
+            "IndexName": `${pk}__${sk}`,
+            "KeySchema": [
+                {
+                    "AttributeName": pk,
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": sk,
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        }
+    }
+
+    for (const gsiDef of model.GSIs) {
+        const gsiSplit = gsiDef.split("__")
+        //@ts-ignore
+        tableJson.GlobalSecondaryIndexes.push(makeGSIJsonDef(gsiSplit[0], gsiSplit[1]))
+        if (tableJson.AttributeDefinitions.filter(attr => attr.AttributeName === gsiSplit[0]).length === 0) {
+            tableJson.AttributeDefinitions.push({
+                "AttributeName": gsiSplit[0], //pk
+                "AttributeType": gsiSplit[0].startsWith("s") ? "S" : "N"
+            })
+        }
+        if (tableJson.AttributeDefinitions.filter(attr => attr.AttributeName === gsiSplit[1]).length === 0) {
+            tableJson.AttributeDefinitions.push({
+                "AttributeName": gsiSplit[1], //sk
+                "AttributeType": gsiSplit[1].startsWith("s") ? "S" : "N"
+            })
+        }
+    }
+
+    return tableJson
 }

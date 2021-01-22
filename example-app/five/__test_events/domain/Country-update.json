@@ -1,0 +1,15 @@
+{
+    "action": "update",
+    "item": "Country",
+    "arguments": {
+        "id": "id-of-item-to-be-updated",
+        "revisions": "sending-latest-rev-of-updated-item-mandatory",
+        "name": "abc",
+        "currency": "abc",
+        "code": "abc",
+        "tax_periods": "abc"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}

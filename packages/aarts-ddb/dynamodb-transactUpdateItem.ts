@@ -1,8 +1,8 @@
 'use strict'
 
 import { DynamoDB } from 'aws-sdk'
-import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItemsOutput, TransactWriteItem, TransactWriteItemList, AttributeMap, UpdateItemInput } from 'aws-sdk/clients/dynamodb'
-import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, refkeyitemmeta, ddbRequest, leaveKeysOnly } from './DynamoDbClient';
+import { AttributeValue, TransactWriteItemsInput, AttributeName, TransactWriteItem, TransactWriteItemList, AttributeMap } from 'aws-sdk/clients/dynamodb'
+import { dynamoDbClient, DB_NAME, toAttributeMap, ensureOnlyNewKeyUpdates, versionString, ddbRequest, leaveKeysOnly } from './DynamoDbClient';
 import { loginfo, ppjson } from 'aarts-utils';
 import { RefKey } from './interfaces';
 import { DynamoItem } from './DynamoItem';
@@ -132,7 +132,7 @@ export const transactUpdateItem = async <T extends DynamoItem>(existingItem: T, 
                 ReturnValuesOnConditionCheckFailure: "ALL_OLD",
                 Key: Object.assign({
                     id: dexistingItemkey.id,
-                    meta: { S: `${versionString(existingItem.revisions + 1)}|${existingItem.__typename}` },
+                    meta: { S: `${versionString(existingItem.revisions + 1)}|${existingItem.id}` },
                 }),
                 UpdateExpression: updateExprHistory,
                 ExpressionAttributeNames: Object.assign(

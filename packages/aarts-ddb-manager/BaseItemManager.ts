@@ -115,7 +115,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
                 !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `ISSUING UPDATE-${(newImage["processed_events"] as number) === (newImage["total_events"] as number) ? 'SUCCESS' : 'ERROR'} TO PROCEDURE`, ppjson(newImage))
                 !process.env.DEBUGGER || loginfo({ ringToken: newImage.ringToken as string }, `newImage["processed_events"] ${newImage["processed_events"] as number} ; newImage["errored_events"] ${newImage["errored_events"] as number} ; newImage["total_events"]: ${newImage["total_events"] as number}`)
-                const P__from_db = await getItemById(newImage.__typename, newImage.id, newImage.ringToken as string)
+                const P__from_db = await getItemById(newImage.__typename, `${newImage.id}#${newImage.meta}`, newImage.ringToken as string)
                 if (!!P__from_db) {
                     try { 
                         const date = new Date().toISOString()
@@ -199,6 +199,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             new proto(evnt.payload.arguments) as T,
             {
                 id: `${evnt.meta.item}|${evnt.meta.ringToken}`,
+                meta: `${versionString(0)}|${evnt.meta.item}|${evnt.meta.ringToken}`,
                 ringToken: evnt.meta.ringToken
             })
     }
@@ -313,8 +314,8 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             }
             // load latest procedure contents
             // TODO what if async update of procedure sneak in between getting from db and the consequent update? retries?
-            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] LOADING RPOCEDURE, CALLING: await getItemById(${proc.__typename}, ${proc.id}, ${evnt.meta.ringToken})`)
-            const P__from_db = await getItemById(proc.__typename, proc.id, evnt.meta.ringToken)
+            !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] LOADING RPOCEDURE, CALLING: await getItemById(${proc.__typename}, ${proc.id}#${proc.meta}, ${evnt.meta.ringToken})`)
+            const P__from_db = await getItemById(proc.__typename, `${proc.id}#${proc.meta}`, evnt.meta.ringToken)
             !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] WILL TRY(!)UPDATE PROCEDURE ${ppjson(P__from_db)} WITH sync_end_date after its sync execution has ended`, ppjson(procedureResult))
             if (!!P__from_db) {
                 !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:START] UPDATING PROCEDURE WITH sync_end_date after its sync execution has ended`, ppjson(procedureResult))
@@ -441,11 +442,11 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         if (Array.isArray(evnt.payload.arguments)) throw new Error("payload.arguments must not be an array!")
 
         for (const arg of evnt.payload.arguments.pks) {
-            if (!("id" in arg && "revisions" in arg)) {
+            if (!("id" in arg && "meta" in evnt.payload.arguments && "revisions" in arg)) {
                 // will throw error if ONLY SOME of the above keys are present
-                throw new Error(`${evnt.meta.ringToken}: id and revisions keys is mandatory when deleting`)
+                throw new Error(`${evnt.meta.ringToken}: id,meta and revisions keys is mandatory when deleting`)
             } else {
-                arg["meta"] = `${versionString(0)}|${evnt.meta.item}`
+                // arg["meta"] = `${versionString(0)}|${evnt.meta.item}`
                 arg["ringToken"] = evnt.meta.ringToken
             }
         }
@@ -592,7 +593,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
         if (!!evnt.payload.arguments.revisions) {
             delete evnt.payload.arguments.revisions
         } else {
-            evnt.payload.arguments["meta"] = `${versionString(0)}|${evnt.meta.item}`
+            // evnt.payload.arguments["meta"] = `${versionString(0)}|${evnt.meta.item}`
             evnt.payload.arguments["__typename"] = evnt.meta.item
             evnt.payload.arguments["ringToken"] = evnt.meta.ringToken
         }
@@ -682,13 +683,13 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
 
         if (Array.isArray(evnt.payload.arguments)) throw new Error("payload.arguments must not be an array!")
 
-        if (!("id" in evnt.payload.arguments && ("revisions" in evnt.payload.arguments
+        if (!("id" in evnt.payload.arguments && "meta" in evnt.payload.arguments && ("revisions" in evnt.payload.arguments
             // TODO check for item being a procedure not needed? (was because procs are updated only from the libs and do not wanted to throw if not the right revision)
             || evnt.payload.arguments["id"].startsWith("P__")))) {
             // will throw error if ONLY SOME of the above keys are present
-            throw new Error(`${evnt.meta.ringToken}: {id, revisions} keys are mandatory when updating`)
+            throw new Error(`${evnt.meta.ringToken}: {id,meta,revisions} keys are mandatory when updating`)
         } else {
-            evnt.payload.arguments["meta"] = `${versionString(0)}|${evnt.meta.item}`
+            // evnt.payload.arguments["meta"] = `${versionString(0)}|${evnt.meta.item}`
             evnt.payload.arguments["__typename"] = evnt.meta.item
             evnt.payload.arguments["ringToken"] = evnt.meta.ringToken
         }

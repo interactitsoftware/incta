@@ -19,15 +19,21 @@ export const getItemsByRefkeyValue = async <T extends DynamoItem>(__type: string
     } else return [] as T[]
 }
 
-export const getItemById = async <T extends DynamoItem>(__type: string, id: string, ringToken: string): Promise<T | null> => {
-    if (!!id) {
+export const getItemById = async <T extends DynamoItem>(__type: string, ref: string, ringToken: string, allowNoHashInRef?: boolean): Promise<T | null> => {
+    if (!!ref && ref.indexOf('#') > 0) {
+        const refsplit = ref.split('#')
+        if (!allowNoHashInRef && refsplit.length !== 2) {
+            throw new Error("getItemById called with a broken ref: " + ref + " for type " + __type)
+        }
         const dbResult = await batchGetItem({
-            pks: [{ id: id, meta: `${versionString(0)}|${__type}` }],
+            pks: [{ id: refsplit[0], meta: refsplit[1] }],
             ringToken
         })
         if (dbResult.items && dbResult.items.length > 0 && dbResult.items[0]) {
             return dbResult.items[0] as T
         }
+    } else if (!allowNoHashInRef && ref.indexOf('#') === -1) {
+        throw new Error("getItemById called with a broken ref: " + ref + " for type " + __type)
     }
     return null
 }
@@ -66,10 +72,10 @@ export const getItemsOfType = async <T extends DynamoItem>(__type: string, ringT
  * @param errorsArray optional string array where explanatory error message woould be pushed
  */
 export const setDomainRefkeyFromPayload = async (__type: string, payload: DomainItem, domainRefkey: string, targetDomainRefkey: string, ringToken: string, errorsArray?: string[] | undefined): Promise<boolean> => {
-    !process.env.DEBUGGER || loginfo({ ringToken }, `entering setDomainRefkeyFromPayload with params`, ppjson({__type, payload, domainRefkey, ringToken, targetDomainRefkey}))
+    !process.env.DEBUGGER || loginfo({ ringToken }, `entering setDomainRefkeyFromPayload with params`, ppjson({ __type, payload, domainRefkey, ringToken, targetDomainRefkey }))
     !process.env.DEBUGGER || loginfo({ ringToken }, `data model's ref key config is `, ppjson(global.domainAdapter.lookupItems))
     if (!!payload[domainRefkey]) {
-        const itemByIdResults = await getItemById(__type, payload[domainRefkey], ringToken)
+        const itemByIdResults = await getItemById(__type, payload[domainRefkey], ringToken, true)
         if (itemByIdResults !== null) {
             payload[domainRefkey] = itemByIdResults.id
             return true
@@ -85,9 +91,11 @@ export const setDomainRefkeyFromPayload = async (__type: string, payload: Domain
                     payload[domainRefkey] = itemByTargetRefkeyResults[0].id
                     return true
                 } else if (itemByTargetRefkeyResults.length > 1) {
-                    errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because no target was found by id, and provided value ${payload[domainRefkey]} for ${__type}'s refkey ${targetDomainRefkey} points to multiple items and cannot take decision`)
+                    !process.env.DEBUGGER || loginfo({ ringToken }, `[Refkey set] failed, because no target was found by id, and provided value '${payload[domainRefkey]}' for '${__type}''s refkey '${targetDomainRefkey}'('${gsiKey[0]}') points to multiple items and cannot take decision`)
+                    errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because no target was found by id, and provided value '${payload[domainRefkey]}' for '${__type}''s refkey '${targetDomainRefkey}'('${gsiKey[0]}') points to multiple items and cannot take decision`)
                 } else if (itemByTargetRefkeyResults.length === 0) {
-                    errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because no target was found by id, and provided value ${payload[domainRefkey]} for ${__type}'s refkey ${targetDomainRefkey} was not found`)
+                    !process.env.DEBUGGER || loginfo({ ringToken }, `[Refkey set] failed, because no target was found by id, and provided value '${payload[domainRefkey]}' for '${__type}''s refkey '${targetDomainRefkey}'('${gsiKey[0]}') was not found`)
+                    errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because no target was found by id, and provided value '${payload[domainRefkey]}' for '${__type}''s refkey '${targetDomainRefkey}'('${gsiKey[0]}') was not found`)
                 }
             }
         }

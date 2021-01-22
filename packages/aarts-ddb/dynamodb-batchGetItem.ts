@@ -90,7 +90,7 @@ export const populateRefKeys = async (resultItem: DynamoItem, loadPeersLevel: nu
 
     const notFrozenKeysToLoad = __refkeysToItems.reduce<{ key: string, pk: { id: string, meta: string } }[]>((accum, i) => {
         if (Object.keys(resultItem).indexOf(i.key) > -1 && !!resultItem[i.key] && frozenIdsIdentified.indexOf(resultItem[i.key]) === -1) {
-            accum.push({ key: i.key, pk: { id: resultItem[i.key], meta: `${versionString(0)}|${resultItem[i.key].substr(0, resultItem[i.key].indexOf("|"))}` } })
+            accum.push({ key: i.key, pk: { id: resultItem[i.key], meta: `${versionString(0)}|${resultItem[i.key]}` } })
             return accum
         }
         return accum

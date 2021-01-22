@@ -8,6 +8,7 @@ import { clientAppDirName, clientAppName } from "../aarts-all-infra-stack"
 import { Model } from '@aws-cdk/aws-apigateway';
 import { join } from 'path';
 import { AartsConfig, DataModel } from "aarts-types/interfaces"
+import { threadId } from 'worker_threads';
 
 export interface DynamoDBConstructProps { 
   copyEntireItemToGsis: string

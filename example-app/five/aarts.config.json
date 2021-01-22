@@ -1,0 +1,42 @@
+{
+  "DynamoDB": {
+      "Mode": "PAY_PER_REQUEST",
+      "RemovalPolicy": "DESTROY"
+  },
+  "AsyncCUD": false,
+  "Lambda": {
+      "Controller": {
+          "RAM": 256,
+          "Timeout": 60
+      },
+      "Feeder": {
+          "RAM": 128,
+          "Timeout": 10,
+          "SQSFIFO": false,
+          "sqsRetries": 1
+      },
+      "DynamoStreamsProcessors": {
+          "Aggregation": {
+              "RAM": 512,
+              "Timeout": 60
+          },
+          "ItemCallbacks": {
+              "RAM": 256,
+              "Timeout": 60
+          }
+      },
+      "Workers": [{
+          "name": "Short",
+          "RAM": 256,
+          "Timeout": 10,
+          "SQSFIFO": false
+      },
+      {
+        "name": "Long",
+        "RAM": 512,
+        "Timeout": 600,
+        "SQSFIFO": false,
+        "sqsRetries": 1
+    }]
+  }
+}

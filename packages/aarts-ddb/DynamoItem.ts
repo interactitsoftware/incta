@@ -7,6 +7,13 @@ export const DynamoItem =
         class DynamoItem extends base implements IBaseDynamoItemProps {
             constructor(...input: any[]) {
                 super(input)
+                const i: string = uuid()
+
+                //@ts-ignore
+                this.id = input["id"] || `${t}|${i}`
+                //@ts-ignore
+                this.meta = input["meta"] || `${versionString(0)}|${t}|${i}`
+
                 Object.assign(this, input.reduce((accum, arg) => {
                     Object.keys(arg).forEach(k => {
                         accum[k] = arg[k]
@@ -22,17 +29,9 @@ export const DynamoItem =
             (new Map<string, RefKey<InstanceType<T>>>()).set("ringToken", { key: "ringToken" })) 
             || (new Map<string, RefKey<InstanceType<T>>>()).set("ringToken", { key: "ringToken" })
 
-            // nothing is frozen beneath this entity id by default
-            // public frozen_refs: string[] = []
-
-            public id: string = `${t}|${uuid()}`
-            public meta: string = `${versionString(0)}|${t}`
-            // SKIP SHARDING IDEA FOR NOW
-            // public shardnr: number = 0 // these we do not want spread in GSI's as we do index preloading (only taking them by id)
-
-            // LEAVE (s|n))metadata keys ONLY TO REFKEY LOGIC
-            // public smetadata: string = idstr
-
+            public id: string// = pk || `${t}|${i}`
+            public meta: string// = sk || `${versionString(0)}|${t}|${i}`
+            
             public __typename: string = t
             public item_state?: string
             public state_history?: Record<number, string>

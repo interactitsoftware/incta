@@ -1,0 +1,74 @@
+{
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "id",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "meta",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "nshard",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "smetadata",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "nSK1",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "nSK2",
+            "AttributeType": "N"
+        }
+    ],
+    "TableName": "five",
+    "KeySchema": [
+        {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "meta",
+            "KeyType": "RANGE"
+        }
+    ],
+    "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "nshard__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "nshard",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            }
+        },
+        {
+            "IndexName": "smetadata__nSK1",
+            "KeySchema": [
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "nSK1",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            }
+        }
+    ],
+    "BillingMode": "PAY_PER_REQUEST"
+}
