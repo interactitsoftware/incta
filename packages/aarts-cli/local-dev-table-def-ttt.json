@@ -1,0 +1,62 @@
+{
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "id",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "meta",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK1",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "smetadata",
+            "AttributeType": "S"
+        }
+    ],
+    "TableName": "ttt",
+    "KeySchema": [
+        {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "meta",
+            "KeyType": "RANGE"
+        }
+    ],
+    "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "sPK1__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK1",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            }
+        }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "StreamSpecification": {
+        "StreamEnabled": true,
+        "StreamViewType": "OLD_IMAGE"
+    },
+    "SSESpecification": {
+        "Enabled": false,
+        "SSEType": "KMS",
+        "KMSMasterKeyId": ""
+    },
+    "Tags": [
+       
+    ]
+}
