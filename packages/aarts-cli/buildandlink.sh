@@ -141,7 +141,7 @@ echo ------------------------------------------------
 cd $AARTS_HOME/packages/aarts-eb-notifier
 npm install #&& npm update
 npm version patch
-npm run build_lin
+npm run build
 npm publish -m "dev update"
 sleep 5
 

@@ -14,6 +14,7 @@ import { IItemManagerKeys } from "aarts-types/interfaces";
  * If invoked in the context of SAM LOCAL it will call the sqs handler synchronously, skiping the SNS publish part
  */
 export const controller = async (evnt: AppSyncEvent, context?: Context): Promise<any> => {
+	
 	const ringToken: string = (evnt as { ringToken: string }).ringToken || uuid()
 	// log the ringToken
 	if (!!evnt.ringToken) {
@@ -21,6 +22,8 @@ export const controller = async (evnt: AppSyncEvent, context?: Context): Promise
 	} else {
 		!process.env.DEBUGGER || loginfo({ ringToken }, `generated ring token: ${ringToken} for received event`, ppjson(evnt))
 	}
+
+	!process.env.DEBUGGER || loginfo({ ringToken }, ppjson(process.env))
 
 	let result
 	if (!!evnt.action) {

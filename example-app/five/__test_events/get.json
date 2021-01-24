@@ -4,7 +4,8 @@
     "arguments": {
         "pks": [
             {
-                "id": "id-of-item-to-be-retrieved - 1"
+                "id": "1",
+                "meta":"1"
             },
             {
                 "id": "id-of-item-to-be-retrieved - N"

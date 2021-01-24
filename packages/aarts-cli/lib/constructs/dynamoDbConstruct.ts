@@ -131,7 +131,7 @@ export class DynamoDBConstruct extends cdk.Construct {
 
   public grantAccess = (func: Function) => {
     this.table.grantFullAccess(func);
-    func.addEnvironment(ENV_VARS__DB_NAME, this.table.tableName);
+    func.addEnvironment(ENV_VARS__DB_NAME, clientAppName); // note not using this.table.tableName as if running via sam local start-lambda this var will stay with its token value
     func.addEnvironment(ENV_VARS__DB_ENDPOINT, `only used when testing locally`);
 
     if (!!this.testTable) {

@@ -43,7 +43,7 @@ Performance is of highest prioirity, however significant further cost and data m
 - remove all node_modules `find . -name "node_modules" -exec rm -rf '{}' +`
 - remove all package-lock files: `find . -name "package-lock.json" -exec rm -rf '{}' +`
 - ensure proper line endings: `find . -type f -exec dos2unix -k -s -o {} ';'`
-- rebuild: `cd ./packages/aarts-cli && sh buildandlink.sh` (well, you need to edit buildandlink.sh not to publish to npm :))
+- rebuild: `cd ./packages/aarts-cli && sh buildandlink.sh` (well, you need to edit buildandlink.sh not to publish to npm :) TODO start using lerna)
 
 # Useful
 [git 2fa with wsl2](https://gist.github.com/evillgenius75/613a44aa407300a08d0e3faea4c9df6b)
@@ -65,5 +65,8 @@ wsl2 setup again:
 - install git in wsl2 distro
 - setup git SSH keys
 - clone the repo, note: for local-dynamodb development you need to clone into the host's windows fs (mnt/c/..etc..), not under /home/..
-- install aws / sam cli - only in host or also needed in linux distro?
-
+- install [aws sam](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
+- install [aws cli for Linux](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html#cliv2-linux-install)
+- install [AWS NoSQL Workbench](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.settingup.html) and setup a local connection to localhost:8000
+- `npm install -g aws-cdk`
+- `npm install -g typescript`

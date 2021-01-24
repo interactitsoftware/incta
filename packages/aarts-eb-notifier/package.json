@@ -1,6 +1,6 @@
 {
   "name": "aarts-eb-notifier",
-  "version": "0.1.486",
+  "version": "0.1.494",
   "description": "calls an appsync local datasource with aarts payload passed",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -9,29 +9,29 @@
     "index.d.ts"
   ],
   "dependencies": {
-    "@types/aws-lambda": "^8.10.64",
+    "@types/aws-lambda": "^8.10.71",
     "@types/graphql": "^14.5.0",
-    "@types/node": "^13.13.34",
+    "@types/node": "^13.13.40",
     "@types/request": "^2.48.4",
-    "apollo-cache-inmemory": "^1.1.0",
-    "apollo-client": "^2.0.3",
-    "apollo-link": "^1.0.3",
-    "apollo-link-http": "^1.2.0",
-    "aws-sdk": "^2.141.0",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link": "^1.2.14",
+    "apollo-link-http": "^1.5.17",
     "aws-appsync": "^1.0.0",
+    "aws-sdk": "^2.831.0",
     "es6-promise": "^4.1.1",
     "graphql": "^0.11.7",
     "graphql-tag": "^2.5.0",
     "isomorphic-fetch": "^2.2.1",
     "ws": "^3.3.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  },
   "scripts": {
-    "clean_lin": "rm ./index.js ./index.d.ts",
-    "build_win": "tsc",
-    "build_lin": "tsc",
+    "clean": "rm ./index.js ./index.d.ts",
+    "build": "tsc",
     "watch": "tsc -w",
-    "clean_win": "del /Q /S ./index.js ./index.d.ts",
     "test": "jest"
   },
   "author": "akrsmv",

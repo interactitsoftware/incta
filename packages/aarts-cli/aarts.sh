@@ -45,7 +45,7 @@ ln_cross_platform() {
 
 start_local_dynamodb() {
     docker network create sam-local
-    docker run -ti --network sam-local --name dynamodb-local-$STACK_NAME --restart always -d -v $CLIENT_PROJECT_PATH/dynamodblocaldata:/home/dynamodblocal/data/ -p 8000:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/
+    docker run -ti --network sam-local --name dynamodb-local --restart always -d -v $CLIENT_PROJECT_PATH/dynamodblocaldata:/home/dynamodblocal/data/ -p 8000:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/
     echo Started local dynamodb image with a --restart always flag.
     echo next steps:
     echo - aws dynamodb list-tables --endpoint-url http://localhost:8000
@@ -60,7 +60,7 @@ setup_local_dynamodb_table() {
 
 cdk_synth() {
     cd $AARTS_INFRA_PATH
-    cdk synth --no-staging -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --profile $AWS_PROFILE >template.yml
+    cdk synth --no-staging -c clientAppName=$STACK_NAME -c clientAppDirName=$CLIENT_PROJECT_PATH -c debug-mode=$DEBUG_MODE --profile $AWS_PROFILE > template.yml
 }
 
 sam_invoke_worker() {

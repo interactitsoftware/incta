@@ -1,1 +1,390 @@
-{"AttributeDefinitions":[{"AttributeName":"id","AttributeType":"S"},{"AttributeName":"meta","AttributeType":"S"},{"AttributeName":"nshard","AttributeType":"N"},{"AttributeName":"smetadata","AttributeType":"S"},{"AttributeName":"nSK1","AttributeType":"N"},{"AttributeName":"nSK2","AttributeType":"N"},{"AttributeName":"nPK1","AttributeType":"N"},{"AttributeName":"sPK10","AttributeType":"S"},{"AttributeName":"sPK11","AttributeType":"S"},{"AttributeName":"sPK1","AttributeType":"S"},{"AttributeName":"sPK2","AttributeType":"S"},{"AttributeName":"sPK3","AttributeType":"S"},{"AttributeName":"sPK4","AttributeType":"S"},{"AttributeName":"sPK5","AttributeType":"S"},{"AttributeName":"sPK6","AttributeType":"S"},{"AttributeName":"sPK7","AttributeType":"S"},{"AttributeName":"sPK9","AttributeType":"S"},{"AttributeName":"sPK8","AttributeType":"S"}],"TableName":"five","KeySchema":[{"AttributeName":"id","KeyType":"HASH"},{"AttributeName":"meta","KeyType":"RANGE"}],"GlobalSecondaryIndexes":[{"IndexName":"nshard__smetadata","KeySchema":[{"AttributeName":"nshard","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"smetadata__nSK1","KeySchema":[{"AttributeName":"smetadata","KeyType":"HASH"},{"AttributeName":"nSK1","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"smetadata__nSK2","KeySchema":[{"AttributeName":"smetadata","KeyType":"HASH"},{"AttributeName":"nSK2","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"nPK1__smetadata","KeySchema":[{"AttributeName":"nPK1","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK10__smetadata","KeySchema":[{"AttributeName":"sPK10","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK11__smetadata","KeySchema":[{"AttributeName":"sPK11","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK1__smetadata","KeySchema":[{"AttributeName":"sPK1","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK2__smetadata","KeySchema":[{"AttributeName":"sPK2","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK3__smetadata","KeySchema":[{"AttributeName":"sPK3","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK4__smetadata","KeySchema":[{"AttributeName":"sPK4","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK5__smetadata","KeySchema":[{"AttributeName":"sPK5","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK6__smetadata","KeySchema":[{"AttributeName":"sPK6","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK7__smetadata","KeySchema":[{"AttributeName":"sPK7","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK9__smetadata","KeySchema":[{"AttributeName":"sPK9","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}},{"IndexName":"sPK8__smetadata","KeySchema":[{"AttributeName":"sPK8","KeyType":"HASH"},{"AttributeName":"smetadata","KeyType":"RANGE"}],"Projection":{"ProjectionType":"KEYS_ONLY"},"ProvisionedThroughput":{"ReadCapacityUnits":100,"WriteCapacityUnits":100}}],"BillingMode":"PROVISIONED"}
+{
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "id",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "meta",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "nshard",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "smetadata",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "nSK1",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "nSK2",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "nPK1",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "sPK10",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK11",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK1",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK2",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK3",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK4",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK5",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK6",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK7",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK9",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "sPK8",
+            "AttributeType": "S"
+        }
+    ],
+    "TableName": "five",
+    "KeySchema": [
+        {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "meta",
+            "KeyType": "RANGE"
+        }
+    ],
+    "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "nshard__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "nshard",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "smetadata__nSK1",
+            "KeySchema": [
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "nSK1",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "smetadata__nSK2",
+            "KeySchema": [
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "nSK2",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "nPK1__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "nPK1",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK10__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK10",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK11__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK11",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK1__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK1",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK2__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK2",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK3__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK3",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK4__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK4",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK5__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK5",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK6__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK6",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK7__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK7",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK9__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK9",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        },
+        {
+            "IndexName": "sPK8__smetadata",
+            "KeySchema": [
+                {
+                    "AttributeName": "sPK8",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "smetadata",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "KEYS_ONLY"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 100,
+                "WriteCapacityUnits": 100
+            }
+        }
+    ],
+    "BillingMode": "PAY_PER_REQUEST"
+}

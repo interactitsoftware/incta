@@ -2,8 +2,6 @@
     "Parameters": {
         "DEBUGGER": "1",
         "AWS_SAM_LOCAL": "1",
-        "DB_NAME": "TEST2",
-        "DDB_LOCAL_URL": "http://dynamodb:8000",
-        "AARTS_SQS_HANDLER": "airtours-appsyncHandlerShort"
+        "DDB_LOCAL_URL": "http://dynamodb-local:8000"
     }
 }

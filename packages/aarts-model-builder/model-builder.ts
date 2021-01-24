@@ -477,7 +477,7 @@ const generateTableDefinitionJson = (model: DataModel, appName: string) => {
             }
         ],
         "GlobalSecondaryIndexes": [],
-        "BillingMode": "PROVISIONED"
+        "BillingMode": "PAY_PER_REQUEST"
     }
 
     const makeGSIJsonDef = (pk: string, sk: string): object => {

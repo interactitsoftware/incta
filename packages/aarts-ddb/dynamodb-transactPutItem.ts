@@ -88,7 +88,7 @@ export const transactPutItem = async <T extends DynamoItem>(item: T, __item_refk
         ReturnItemCollectionMetrics: "SIZE",
         // ClientRequestToken: ringToken // TODO
     }
-
+    !process.env.DEBUGGER || loginfo({ ringToken: item.ringToken as string }, `TransactWriteItemsInput:`, ppjson(params))
     // write item to the database
     try {
         const result = await ddbRequest(dynamoDbClient.transactWriteItems(params), item.ringToken as string)

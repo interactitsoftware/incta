@@ -734,7 +734,7 @@ export class BaseDynamoItemManager<T extends DynamoItem> implements IItemManager
             !process.env.DEBUGGER || loginfo({ ringToken: evnt.meta.ringToken }, `[${evnt.meta.item}:UPDATE] END. Result: `, ppjson({ result: updatedItem }))
 
             // delete any previously errored attempts
-            await dynamoDbClient.deleteItem({ TableName: DB_NAME, Key: { id: { S: evnt.payload.arguments.__proc }, meta: { S: `errored|${evnt.meta.sqsMsgId}` } } }).promise()
+            // await dynamoDbClient.deleteItem({ TableName: DB_NAME, Key: { id: { S: evnt.payload.arguments.__proc }, meta: { S: `errored|${evnt.meta.sqsMsgId}` } } }).promise()
             return { result: updatedItem }
         } catch (err) {
             if (!!evnt.payload.arguments.__proc) {
