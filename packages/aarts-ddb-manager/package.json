@@ -3,7 +3,7 @@
   "contributors": [
     "akrsmv"
   ],
-  "version": "0.4.813",
+  "version": "0.4.814",
   "description": "manager standartizing operations over items in a dynamodb table",
   "main": "index.js",
   "types": "./index.d.ts",
@@ -21,14 +21,14 @@
   },
   "dependencies": {
     "@types/aws-lambda": "^8.10.71",
-    "aarts-ddb": "^0.4.794",
-    "aarts-eb-dispatcher": "^1.0.780",
-    "aarts-eb-handler": "^0.3.783",
-    "aarts-eb-types": "^0.2.797",
-    "aarts-types": "^0.2.813",
-    "aarts-utils": "^0.2.799",
+    "aarts-ddb": "^0.4.795",
+    "aarts-eb-dispatcher": "^1.0.781",
+    "aarts-eb-handler": "^0.3.784",
+    "aarts-eb-types": "^0.2.798",
+    "aarts-types": "^0.2.814",
+    "aarts-utils": "^0.2.801",
     "aws-lambda": "^1.0.6",
-    "aws-sdk": "^2.830.0",
+    "aws-sdk": "^2.831.0",
     "typescript": "^3.9.7"
   },
   "devDependencies": {

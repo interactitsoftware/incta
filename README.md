@@ -55,4 +55,15 @@ Performance is of highest prioirity, however significant further cost and data m
 [the saga pattern and lambda](https://theburningmonk.com/2017/07/applying-the-saga-pattern-with-aws-lambda-and-step-functions/)
 
 
+wsl2 setup again:
+- install win 10
+- install vs code
+- enable win features: hyper-v and wsl
+- install docker for win desktop (it will complain that wsl2 is not installed)
+- install wsl2  
+- [install nvm/node in wsl2](https://docs.microsoft.com/en-us/windows/nodejs/setup-on-wsl2)
+- install git in wsl2 distro
+- setup git SSH keys
+- clone the repo, note: for local-dynamodb development you need to clone into the host's windows fs (mnt/c/..etc..), not under /home/..
+- install aws / sam cli - only in host or also needed in linux distro?
 

@@ -1,6 +1,6 @@
 {
   "name": "create-aarts-app",
-  "version": "0.2.831",
+  "version": "0.2.832",
   "description": "initializes new aarts-app",
   "main": "./dist/create-aarts-app.js",
   "bin": "create-aarts-app.js",
@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@types/shelljs": "^0.8.8",
-    "aarts-model-builder": "^0.2.800",
-    "aarts-types": "^0.2.813",
-    "aarts-utils": "^0.2.799",
+    "aarts-model-builder": "^0.2.801",
+    "aarts-types": "^0.2.814",
+    "aarts-utils": "^0.2.801",
     "shelljs": "^0.8.4",
     "typescript": "^4.1.3",
     "yargs": "^16.2.0"
