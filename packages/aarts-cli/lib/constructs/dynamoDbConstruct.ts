@@ -103,17 +103,23 @@ export class DynamoDBConstruct extends cdk.Construct {
       })
 
       for (const gsi of dataModel.GSIs) {
-        const pkName = gsi.substr(0, gsi.indexOf("__"))
+        const gsiSplit = gsi.split("__")
+        const pkName = gsiSplit[0]
         const pkType = pkName.startsWith("s") ? AttributeType.STRING : AttributeType.NUMBER
-        const skName = gsi.substr(gsi.indexOf("__") + 2)
-        const skType = skName.startsWith("s") ? AttributeType.STRING : AttributeType.NUMBER
-        
-        table.addGlobalSecondaryIndex({
+        const skName = gsiSplit[1]
+        const skType = !!gsiSplit[1] ? skName.startsWith("s") ? AttributeType.STRING : AttributeType.NUMBER : undefined
+        const gsiDef = {
           indexName: gsi,
+          sortKey: undefined,
           partitionKey: { name: pkName, type: pkType },
-          sortKey: { name: skName, type: skType },
           projectionType: !!props.copyEntireItemToGsis && props.copyEntireItemToGsis !== "undefined" ? ProjectionType.ALL : ProjectionType.KEYS_ONLY,
-        })
+        }
+        if (!!skName){
+          //@ts-ignore
+          gsiDef.sortKey = { name: skName, type: skType }
+        }
+
+        table.addGlobalSecondaryIndex(gsiDef)
       }
 
       return table;

@@ -1,11 +1,36 @@
 import { BaseDynamoItemManager } from "aarts-ddb-manager/BaseItemManager"
 import { DdbGetInput, DdbQueryInput } from "aarts-ddb/interfaces"
-import { AirplaneItem, AirportItem, CountryItem, FlightItem, TouristItem } from "../__bootstrap/_DynamoItems"
+import { AirplaneItem, AirportItem, CountryItem, FlightItem, TouristItem, TouristSeasonItem } from "../__bootstrap/_DynamoItems"
 import { AartsPayload, IIdentity } from "aarts-types/interfaces"
 import { loginfo, ppjson, uuid } from "aarts-utils"
 import { setDomainRefkeyFromPayload, DynamoItem } from "aarts-ddb"
 import { names } from "../commands/random-names/names"
+import { TouristSeason } from "../__bootstrap/items/TouristSeason"
 
+/*
+TEST EVENT
+{
+    "action": "create",
+    "item": "Tourist",
+    "arguments": {
+        "id":"Tourist|1",
+        "meta": "v_0|Tourist|1",
+        "fname": "a",
+        "lname": "b",
+        "iban": "1",
+        "tourist_season": "2021/Q1",
+        "airplane": "reg111",
+        "flight": "F8",
+        "from_airport": "Airport|SofiaId",
+        "to_airport": "Airport|BelgradeId#v_0|Airport|BelgradeId",
+        "from_country": "Country|BulgariaId",
+        "to_country": "Serbia"
+    },
+    "identity": {
+        "username": "testuser"
+    }
+}
+*/
 export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
     /**
      * Validating the query parameters and user identity.
@@ -20,10 +45,10 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
         await setDomainRefkeyFromPayload(AirportItem.__type, tourist, 'from_airport', 'name', ringToken, errors)
         await setDomainRefkeyFromPayload(FlightItem.__type, tourist,  'flight', 'flight_code', ringToken, errors)
         await setDomainRefkeyFromPayload(AirplaneItem.__type, tourist, 'airplane', 'reg_uq_str', ringToken, errors)
+        await setDomainRefkeyFromPayload(TouristSeasonItem.__type, tourist, 'tourist_season', 'code', ringToken, errors)
 
         !process.env.DEBUGGER || loginfo({ ringToken }, 'errors array is ', ppjson(errors))
 
-        
         // -- test simulating errored commands
         if (tourist.fname === names[0]) {
             if (~~(Math.random()*3) === 0){
@@ -62,6 +87,9 @@ export class TouristDomain extends BaseDynamoItemManager<TouristItem> {
             }
             if (!tourist.airplane) {
                 tourist.processingMessages.push({ message: "Invalid airplane", severity: "warning", properties: "airplane" })
+            }
+            if (!tourist.tourist_season) {
+                tourist.processingMessages.push({ message: "Invalid tourist season", severity: "warning", properties: "tourist_season" })
             }
         }
         // ensure notifying clients will not happen when mass generation/batch processing calls were done (we do not pass this prop from commands)

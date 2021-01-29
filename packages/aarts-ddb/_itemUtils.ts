@@ -1,59 +1,63 @@
 import { batchGetItem } from "./dynamodb-batchGetItem";
 import { queryItems } from "./dynamodb-queryItems";
-import { DomainItem, RefKey } from "./interfaces";
+import { DdbLoadPeersInput, DdbQueryOutput, DomainItem, RefKey } from "./interfaces";
 import { versionString } from "./DynamoDbClient"
 import { DynamoItem } from "./DynamoItem";
-import { IDomainAdapter, MixinConstructor } from "aarts-types";
-import { loginfo, ppjson } from "aarts-utils";
+import { MixinConstructor } from "aarts-types";
+import { loginfo, existingPK, ppjson } from "aarts-utils";
 
-export const getItemsByRefkeyValue = async <T extends DynamoItem>(__type: string, refkeyName: string, refkeyValue: string | number, ringToken: string): Promise<DynamoItem[]> => {
-    if (!!refkeyValue) {
-        return ((await queryItems({
-            ddbIndex: `${refkeyName}__smetadata`,
-            pk: refkeyValue,
-            range: __type,
-            primaryKeyName: refkeyName,
-            rangeKeyName: "smetadata",
-            ringToken
-        })).items as T[]);
-    } else return [] as T[]
+export interface ItemQueryParams extends DdbLoadPeersInput {
+    __type: string,
+    state: string,
+    itemProp: string,
+    itemPropValue: string | number,
+    ringToken: string
 }
 
-export const getItemById = async <T extends DynamoItem>(__type: string, ref: string, ringToken: string, allowNoHashInRef?: boolean): Promise<T | null> => {
-    if (!!ref && ref.indexOf('#') > 0) {
-        const refsplit = ref.split('#')
-        if (!allowNoHashInRef && refsplit.length !== 2) {
-            throw new Error("getItemById called with a broken ref: " + ref + " for type " + __type)
-        }
+export const getItems = async <T extends DynamoItem>(params: ItemQueryParams)
+    : Promise<DdbQueryOutput<T>> => {
+
+    if (!!params.itemPropValue) {
+        const refKeysConfig = (((global.domainAdapter.lookupItems as unknown) as Map<string, MixinConstructor<typeof DynamoItem>>).get(params.__type)?.__refkeys as Map<string, RefKey<Record<string, any>>>);
+        const refKeyConfig = refKeysConfig.get(params.itemProp) as RefKey<any>
+        !process.env.DEBUGGER || loginfo({ ringToken: params.ringToken }, `getItems: ref keys config for this __type (${params.__type}) `, ppjson(refKeysConfig))
+        !process.env.DEBUGGER || loginfo({ ringToken: params.ringToken }, `getItems: ref key config for this refkey (${params.itemProp}) `, ppjson(refKeysConfig.get(params.itemProp)))
+        const gsiKey = refKeyConfig.gsiKey as string[]
+        return ((await queryItems({
+            ddbIndex: `${gsiKey[0]}__smetadata`,
+            pk: params.itemPropValue,
+            range: `${params.__type}|${params.state}`,
+            primaryKeyName: gsiKey[0],
+            rangeKeyName: "smetadata",
+            ringToken: params.ringToken,
+            peersPropsToLoad: params.peersPropsToLoad,
+            loadPeersLevel: params.loadPeersLevel,
+            projectionExpression: params.projectionExpression
+        })));
+    } else if (!!params.__type) {
+        return ((await queryItems({
+            ddbIndex: 'smetadata__',
+            pk: `${params.__type}|${params.state}`,
+            primaryKeyName: 'smetadata__',
+            rangeKeyName: '',
+            ringToken: params.ringToken
+        })));
+    }
+    else return { items:[] }
+}
+
+export const getItemById = async <T extends DynamoItem>(__type: string, ref: string, ringToken: string): Promise<T | null> => {
+    const pk = existingPK(ref)
+    if (!!pk) {
         const dbResult = await batchGetItem({
-            pks: [{ id: refsplit[0], meta: refsplit[1] }],
+            pks: [{ id: pk.id, meta: pk.meta }],
             ringToken
         })
         if (dbResult.items && dbResult.items.length > 0 && dbResult.items[0]) {
             return dbResult.items[0] as T
         }
-    } else if (!allowNoHashInRef && ref.indexOf('#') === -1) {
-        throw new Error("getItemById called with a broken ref: " + ref + " for type " + __type)
     }
     return null
-}
-
-/**
- * 
- * @param __type 
- * TODO sharding here
- * 
- */
-export const getItemsOfType = async <T extends DynamoItem>(__type: string, ringToken: string) => {
-    if (!!__type) {
-        return ((await queryItems({
-            ddbIndex: "meta__id",
-            pk: `${versionString(0)}|${__type}`,
-            primaryKeyName: "meta",
-            rangeKeyName: "id",
-            ringToken
-        })).items as T[]);
-    } else return [] as T[]
 }
 
 /**
@@ -75,7 +79,7 @@ export const setDomainRefkeyFromPayload = async (__type: string, payload: Domain
     !process.env.DEBUGGER || loginfo({ ringToken }, `entering setDomainRefkeyFromPayload with params`, ppjson({ __type, payload, domainRefkey, ringToken, targetDomainRefkey }))
     !process.env.DEBUGGER || loginfo({ ringToken }, `data model's ref key config is `, ppjson(global.domainAdapter.lookupItems))
     if (!!payload[domainRefkey]) {
-        const itemByIdResults = await getItemById(__type, payload[domainRefkey], ringToken, true)
+        const itemByIdResults = await getItemById(__type, payload[domainRefkey], ringToken)
         if (itemByIdResults !== null) {
             payload[domainRefkey] = itemByIdResults.id
             return true
@@ -83,17 +87,17 @@ export const setDomainRefkeyFromPayload = async (__type: string, payload: Domain
             const refKeysConfig = (((global.domainAdapter.lookupItems as unknown) as Map<string, MixinConstructor<typeof DynamoItem>>).get(__type)?.__refkeys as Map<string, RefKey<Record<string, any>>>);
             !process.env.DEBUGGER || loginfo({ ringToken }, `ref keys config for this __type (${__type}) `, ppjson(refKeysConfig))
             const refKeyConfig = refKeysConfig.get(targetDomainRefkey) as RefKey<any>
-            !process.env.DEBUGGER || loginfo({ ringToken }, `ref key config for this refkey (${targetDomainRefkey}) `, ppjson(refKeysConfig))
+            !process.env.DEBUGGER || loginfo({ ringToken }, `ref key config for this refkey (${targetDomainRefkey}) `, ppjson(refKeysConfig.get(targetDomainRefkey)))
             if (refKeyConfig.unique) {
                 const gsiKey = refKeyConfig.gsiKey as string[]
-                const itemByTargetRefkeyResults = await getItemsByRefkeyValue(__type, gsiKey[0], payload[domainRefkey], ringToken)
-                if (itemByTargetRefkeyResults.length === 1) {
-                    payload[domainRefkey] = itemByTargetRefkeyResults[0].id
+                const itemByTargetRefkeyResults = await getItems({__type, ringToken, state: '', itemPropValue: payload[domainRefkey], itemProp: domainRefkey})
+                if (itemByTargetRefkeyResults.items.length === 1) {
+                    payload[domainRefkey] = itemByTargetRefkeyResults.items[0].id
                     return true
-                } else if (itemByTargetRefkeyResults.length > 1) {
+                } else if (itemByTargetRefkeyResults.items.length > 1) {
                     !process.env.DEBUGGER || loginfo({ ringToken }, `[Refkey set] failed, because no target was found by id, and provided value '${payload[domainRefkey]}' for '${__type}''s refkey '${targetDomainRefkey}'('${gsiKey[0]}') points to multiple items and cannot take decision`)
                     errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because no target was found by id, and provided value '${payload[domainRefkey]}' for '${__type}''s refkey '${targetDomainRefkey}'('${gsiKey[0]}') points to multiple items and cannot take decision`)
-                } else if (itemByTargetRefkeyResults.length === 0) {
+                } else if (itemByTargetRefkeyResults.items.length === 0) {
                     !process.env.DEBUGGER || loginfo({ ringToken }, `[Refkey set] failed, because no target was found by id, and provided value '${payload[domainRefkey]}' for '${__type}''s refkey '${targetDomainRefkey}'('${gsiKey[0]}') was not found`)
                     errorsArray && Array.isArray(errorsArray) && errorsArray.push(`[Refkey set] failed, because no target was found by id, and provided value '${payload[domainRefkey]}' for '${__type}''s refkey '${targetDomainRefkey}'('${gsiKey[0]}') was not found`)
                 }

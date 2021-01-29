@@ -2,8 +2,11 @@ import cdk = require('@aws-cdk/core');
 import cognito = require('@aws-cdk/aws-cognito');
 import iam = require('@aws-cdk/aws-iam');
 import { clientAppName } from "../aarts-all-infra-stack"
+import { EventBusConstruct } from './eventBusConstruct';
 
-export interface CognitoConstructProps { }
+export interface CognitoConstructProps { 
+    eventBusConstruct: EventBusConstruct
+}
 // based on https://stackoverflow.com/questions/55784746/how-to-create-cognito-identitypool-with-cognito-userpool-as-one-of-the-authentic
 export class CognitoConstruct extends cdk.Construct {
 
@@ -16,12 +19,16 @@ export class CognitoConstruct extends cdk.Construct {
 
         const userPool = new cognito.UserPool(this, `UserPool`, {
             userPoolName: `${clientAppName}UserPool`,
-            autoVerify: { email: true},
+            autoVerify: { email: true },
             userVerification: { },
             signInAliases: {
                 email: true
             },
-            signInCaseSensitive: true
+            signInCaseSensitive: false,
+            lambdaTriggers: {
+                postAuthentication: props.eventBusConstruct.controller,
+                preTokenGeneration: props.eventBusConstruct.controller
+            }
         })
         const cfnUserPool = userPool.node.defaultChild as cognito.CfnUserPool;
         cfnUserPool.policies = {

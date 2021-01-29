@@ -1,4 +1,6 @@
 import { AartsEvent } from "aarts-types/interfaces";
+import { Key } from "aws-sdk/clients/dynamodb";
+import { DynamoItem } from "./DynamoItem";
 
 export interface DdbTableItemKey {
     id: string
@@ -38,6 +40,11 @@ export interface DdbQueryInput extends DdbLoadPeersInput{
     paginationToken?: DdbGSIItemKey
     ringToken: string
 } 
+
+export interface DdbQueryOutput<T = DynamoItem> {
+    items: T[],
+    nextPage?: Key
+}
 
 export interface DdbGetInput extends DdbLoadPeersInput{
     pks: DdbTableItemKey[],

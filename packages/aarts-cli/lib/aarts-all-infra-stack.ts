@@ -50,7 +50,7 @@ export class AartsAllInfraStack extends Stack {
       controllerConfig: aartsConfig.Lambda.Controller,
       asyncCUD: !!aartsConfig.AsyncCUD
     })
-    const cognitoConstruct = new CognitoConstruct(this, `Auth`, {});
+    const cognitoConstruct = new CognitoConstruct(this, `Auth`, { eventBusConstruct });
     const appSyncConstruct = new AppSyncConstruct(this, `AppSync`, {
       cognitoConstruct: cognitoConstruct
     })

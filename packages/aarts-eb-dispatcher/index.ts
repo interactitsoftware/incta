@@ -13,7 +13,7 @@ import { IItemManagerKeys } from "aarts-types/interfaces";
  * - ringToken = uuid()
  * If invoked in the context of SAM LOCAL it will call the sqs handler synchronously, skiping the SNS publish part
  */
-export const controller = async (evnt: AppSyncEvent, context?: Context): Promise<any> => {
+export const controller = async (evnt: AppSyncEvent, context?: Context, callback?: Function): Promise<any> => {
 	
 	const ringToken: string = (evnt as { ringToken: string }).ringToken || uuid()
 	// log the ringToken
@@ -21,6 +21,22 @@ export const controller = async (evnt: AppSyncEvent, context?: Context): Promise
 		!process.env.DEBUGGER || loginfo({ ringToken }, `using already present ring token:  ${ringToken} for received event`, ppjson(evnt))
 	} else {
 		!process.env.DEBUGGER || loginfo({ ringToken }, `generated ring token: ${ringToken} for received event`, ppjson(evnt))
+	}
+
+	if ("triggerSource" in evnt && evnt["triggerSource"] === "PostAuthentication_Authentication") {
+		// catch events of payload:
+		//{ "version": "1", "region": "eu-west-1", "userPoolId": "eu-west-1_5fFubCk74", "userName": "76c46c18-0aa8-4786-a1eb-ae50b880f7f7", "callerContext": { "awsSdkVersion": "aws-sdk-unknown-unknown", "clientId": "5og3ldap1shskk164029tg9a8s" }, "triggerSource": "PostAuthentication_Authentication", "request": { "userAttributes": { "sub": "76c46c18-0aa8-4786-a1eb-ae50b880f7f7", "email_verified": "true", "cognito:user_status": "FORCE_CHANGE_PASSWORD", "email": "akrsmv@gmail.com" }, "newDeviceUsed": false }, "response": {} }
+		!process.env.DEBUGGER || loginfo({ ringToken }, `PostAuthentication_Authentication event`, ppjson(evnt))
+		// TODO excerpt in separate npm package
+		!!callback && callback(null, evnt)
+	}
+
+	if ("triggerSource" in evnt && evnt["triggerSource"] === "TokenGeneration_Authentication") {
+		// catch events of payload:
+		//{ "version": "1", "triggerSource": "TokenGeneration_Authentication", "region": "eu-west-1", "userPoolId": "eu-west-1_5fFubCk74", "userName": "76c46c18-0aa8-4786-a1eb-ae50b880f7f7", "callerContext": { "awsSdkVersion": "aws-sdk-unknown-unknown", "clientId": "5og3ldap1shskk164029tg9a8s" }, "request": { "userAttributes": { "sub": "76c46c18-0aa8-4786-a1eb-ae50b880f7f7", "email_verified": "true", "cognito:user_status": "FORCE_CHANGE_PASSWORD", "email": "akrsmv@gmail.com" }, "groupConfiguration": { "groupsToOverride": [], "iamRolesToOverride": [], "preferredRole": null } }, "response": { "claimsOverrideDetails": null } }
+		!process.env.DEBUGGER || loginfo({ ringToken }, `PostAuthentication_Authentication event`, ppjson(evnt))
+		// TODO excerpt in separate npm package
+		!!callback && callback(null, evnt)
 	}
 
 	!process.env.DEBUGGER || loginfo({ ringToken }, ppjson(process.env))
@@ -33,7 +49,7 @@ export const controller = async (evnt: AppSyncEvent, context?: Context): Promise
 		throw new Error(`Unknown event landed in arrtsSNSEventDispatcher: ${ppjson(evnt)}`)
 	}
 
-	return result
+	return Object.assign(result, { ringToken }) 
 }
 
 const processAppSyncEvent = async (evnt: AppSyncEvent, ringToken: string, context?: Context) => {

@@ -482,16 +482,12 @@ const generateTableDefinitionJson = (model: DataModel, appName: string) => {
 
     const makeGSIJsonDef = (pk: string, sk: string): object => {
 
-        return {
+        const gsiDef = {
             "IndexName": `${pk}__${sk}`,
             "KeySchema": [
                 {
                     "AttributeName": pk,
                     "KeyType": "HASH"
-                },
-                {
-                    "AttributeName": sk,
-                    "KeyType": "RANGE"
                 }
             ],
             "Projection": {
@@ -502,6 +498,13 @@ const generateTableDefinitionJson = (model: DataModel, appName: string) => {
                 "WriteCapacityUnits": 100
             }
         }
+        if (!!sk) {
+            gsiDef.KeySchema.push({
+                "AttributeName": sk,
+                "KeyType": "RANGE"
+            })
+        }
+        return gsiDef
     }
 
     for (const gsiDef of model.GSIs) {
@@ -514,7 +517,7 @@ const generateTableDefinitionJson = (model: DataModel, appName: string) => {
                 "AttributeType": gsiSplit[0].startsWith("s") ? "S" : "N"
             })
         }
-        if (tableJson.AttributeDefinitions.filter(attr => attr.AttributeName === gsiSplit[1]).length === 0) {
+        if (!!gsiSplit[1] && tableJson.AttributeDefinitions.filter(attr => attr.AttributeName === gsiSplit[1]).length === 0) {
             tableJson.AttributeDefinitions.push({
                 "AttributeName": gsiSplit[1], //sk
                 "AttributeType": gsiSplit[1].startsWith("s") ? "S" : "N"

@@ -1,5 +1,5 @@
 import { BaseDynamoItemManager } from "aarts-ddb-manager/BaseItemManager"
-import { AllTouristForTouristSeasonItem, ConfirmTouristsReservationsItem, TouristItem } from "../__bootstrap/_DynamoItems"
+import { AllTouristForTouristSeasonItem, ConfirmTouristsReservationsItem, FlightItem, TouristItem } from "../__bootstrap/_DynamoItems"
 import { IIdentity } from "aarts-types/interfaces"
 import { queryItems, versionString, DynamoItem } from "aarts-ddb"
 import { ppjson } from "aarts-utils"
@@ -66,6 +66,7 @@ export class ConfirmTouristsReservationsCommand extends BaseDynamoItemManager<Co
                             "item": TouristItem.__type,
                             "arguments": {
                                 id: tourist.id,
+                                meta: tourist.meta,
                                 revisions: tourist.revisions,
                                 item_state: "cancelled"
                             },
@@ -80,6 +81,7 @@ export class ConfirmTouristsReservationsCommand extends BaseDynamoItemManager<Co
                             "item": TouristItem.__type,
                             "arguments": {
                                 id: tourist.id,
+                                meta: tourist.meta,
                                 revisions: tourist.revisions,
                                 item_state: "confirmed",
                                 tourist_season: tourist.Flight.tourist_season
@@ -106,7 +108,7 @@ export class ConfirmTouristsReservationsCommand extends BaseDynamoItemManager<Co
                         primaryKeyName: "nshard",
                         rangeKeyName: "smetadata",
                         loadPeersLevel: 1,
-                        peersPropsToLoad: ["flight"],
+                        peersPropsToLoad: ["Flight"],
                         ringToken
                     });
                     nextPage = allTouristsReservations.nextPage
@@ -120,6 +122,7 @@ export class ConfirmTouristsReservationsCommand extends BaseDynamoItemManager<Co
                                 "item": TouristItem.__type,
                                 "arguments": {
                                     id: tourist.id,
+                                    meta: tourist.meta,
                                     revisions: tourist.revisions,
                                     item_state: "cancelled"
                                 },
@@ -134,6 +137,7 @@ export class ConfirmTouristsReservationsCommand extends BaseDynamoItemManager<Co
                                 "item": TouristItem.__type,
                                 "arguments": {
                                     id: tourist.id,
+                                    meta: tourist.meta,
                                     revisions: tourist.revisions,
                                     item_state: "confirmed",
                                     tourist_season: tourist.Flight.tourist_season

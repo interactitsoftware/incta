@@ -1,5 +1,5 @@
 import { AnyConstructor, Mixin } from "aarts-types"
-import { uuid, versionString } from "aarts-utils"
+import { newPK, uuid, versionString } from "aarts-utils"
 import { DomainItem, IBaseDynamoItemProps, RefKey } from "./interfaces"
 
 export const DynamoItem =
@@ -7,13 +7,9 @@ export const DynamoItem =
         class DynamoItem extends base implements IBaseDynamoItemProps {
             constructor(...input: any[]) {
                 super(input)
-                const i: string = uuid()
-
-                //@ts-ignore
-                this.id = input["id"] || `${t}|${i}`
-                //@ts-ignore
-                this.meta = input["meta"] || `${versionString(0)}|${t}|${i}`
-
+                const pk = newPK(t)
+                this.id = pk.id
+                this.meta = pk.meta
                 Object.assign(this, input.reduce((accum, arg) => {
                     Object.keys(arg).forEach(k => {
                         accum[k] = arg[k]
@@ -29,8 +25,8 @@ export const DynamoItem =
             (new Map<string, RefKey<InstanceType<T>>>()).set("ringToken", { key: "ringToken" })) 
             || (new Map<string, RefKey<InstanceType<T>>>()).set("ringToken", { key: "ringToken" })
 
-            public id: string// = pk || `${t}|${i}`
-            public meta: string// = sk || `${versionString(0)}|${t}|${i}`
+            public id: string
+            public meta: string
             
             public __typename: string = t
             public item_state?: string

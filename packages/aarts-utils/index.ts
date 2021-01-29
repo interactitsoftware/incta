@@ -69,3 +69,31 @@ export const loginfo = (ringTokenObject: RingTokenSource, ...input: string[]) =>
 }
 
 export const versionString = (nr: number) => `v_${nr}`
+
+/**
+ * either the object {id, meta} or the string id#meta
+ */
+export type IncommingPK = string | {id: string, meta: string}
+
+export const existingPK = (input: IncommingPK) : {id: string, meta: string} => {
+    if (!input) {
+        throw new Error("unknown input for making PK");
+    }
+    if (typeof input === 'string') {
+        const refsplit = input.split('#')
+        const id = refsplit[0]
+        const meta = refsplit.length === 2 && !!refsplit[1] ? refsplit[1] : `${versionString(0)}|${id}`
+        return { id, meta }
+    } else if (typeof input === "object" && !!input.id && !!input.meta) {
+        return { id: input.id, meta: input.meta}
+    } else {
+        throw new Error("unknown input for making PK");
+    }
+}
+
+export const newPK = (__type: string) : {id: string, meta: string} => {
+    const i: string = uuid()
+    return {
+        id: `${__type}|${i}`, meta: `${versionString(0)}|${__type}|${i}`
+    }
+}

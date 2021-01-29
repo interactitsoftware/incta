@@ -249,6 +249,7 @@ export const model = {
   },
   "GSIs": [
     "nshard__smetadata",
+    "smetadata__",
     "smetadata__nSK1",
     "smetadata__nSK2",
     "nPK1__smetadata",

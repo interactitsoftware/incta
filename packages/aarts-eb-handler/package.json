@@ -1,6 +1,6 @@
 {
   "name": "aarts-eb-handler",
-  "version": "0.3.793",
+  "version": "0.3.799",
   "description": "reads messages from sqs and forwards them to aarts-handler",
   "main": "./index.js",
   "types:": "./index.d.ts",
@@ -8,9 +8,9 @@
     "@types/aws-lambda": "^8.10.71",
     "@types/node": "^13.13.40",
     "@types/request": "^2.48.4",
-    "aarts-eb-types": "^0.2.807",
-    "aarts-handler": "^0.3.791",
-    "aarts-utils": "^0.2.810",
+    "aarts-eb-types": "^0.2.812",
+    "aarts-handler": "^0.3.796",
+    "aarts-utils": "^0.2.817",
     "aws-sdk": "^2.831.0"
   },
   "devDependencies": {

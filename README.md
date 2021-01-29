@@ -70,3 +70,25 @@ wsl2 setup again:
 - install [AWS NoSQL Workbench](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.settingup.html) and setup a local connection to localhost:8000
 - `npm install -g aws-cdk`
 - `npm install -g typescript`
+
+
+TODO
+
+- npm namespaces
+
+- lerna
+
+- API gateway as alternative to AppSync
+
+- pre-auth post-auth lambdas in cognito
+    - post auth to attach custom claims on access 
+
+- pass (identity)/id token/access token only? to backend
+    - from appsync
+    - from gateway api
+    - __validate methods to check for claims in token
+    - when item is BASE, check cognito user for admin cognito group or to do authotization based on IAM policy?
+
+- eject infra from aarts-cli
+
+- update tests

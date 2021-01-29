@@ -31,7 +31,6 @@ export const queryItems = async <T extends DdbQueryInput, TResult extends Dynamo
 
     const dexpressionAttributeNames = { [`#${ddbQueryPayload.primaryKeyName}`]: ddbQueryPayload.primaryKeyName }
 
-
     const dexpressionAttributeValues = { [`:${ddbQueryPayload.primaryKeyName}`]: dqueryKeys.pk }
     if ("range" in ddbQueryPayload) {
 

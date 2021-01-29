@@ -2,10 +2,11 @@
     "action": "create",
     "item": "Country",
     "arguments": {
-        "name": "abc",
-        "currency": "abc",
-        "code": "abc",
-        "tax_periods": "abc"
+        "id": "Country|AljirId",
+        "meta": "v_0|Country|AljirId",
+        "name": "Aljir",
+        "currency": "alj",
+        "code": "ALJ"
     },
     "identity": {
         "username": "testuser"

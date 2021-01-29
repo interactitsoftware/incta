@@ -14,15 +14,15 @@
   "dependencies": {
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.22",
-    "aarts-ddb": "^0.4.804",
-    "aarts-ddb-events": "^1.0.795",
-    "aarts-ddb-manager": "^0.4.822",
-    "aarts-eb-dispatcher": "^1.0.790",
-    "aarts-eb-handler": "^0.3.793",
-    "aarts-eb-notifier": "^0.1.494",
-    "aarts-types": "^0.2.823",
-    "aarts-utils": "^0.2.810",
-    "aws-sdk": "^2.831.0"
+    "aarts-ddb": "^0.4.816",
+    "aarts-ddb-events": "^1.0.800",
+    "aarts-ddb-manager": "^0.4.827",
+    "aarts-eb-dispatcher": "^1.0.796",
+    "aarts-eb-handler": "^0.3.798",
+    "aarts-eb-notifier": "^0.1.499",
+    "aarts-types": "^0.2.828",
+    "aarts-utils": "^0.2.817",
+    "aws-sdk": "^2.833.0"
   },
   "devDependencies": {
     "jest": "^26.6.3",
